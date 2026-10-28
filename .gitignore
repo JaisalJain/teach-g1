@@ -1,0 +1,43 @@
+# Cloned upstream repos (HERO, WiLoR, ...). Exact commits are recorded in docs/log.md.
+third_party/*
+!third_party/.gitkeep
+
+# Raw Record3D exports. Only a small hand-picked sample under data/raw/sample/ is committed.
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/sample/
+*.r3d
+
+# Model weights / checkpoints
+*.onnx
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.bin
+*.h5
+checkpoints/
+weights/
+
+# Large videos (GIFs for the README are fine; force-add a small mp4 with `git add -f` if needed)
+*.mp4
+*.MP4
+*.mov
+*.MOV
+*.avi
+*.mkv
+*.webm
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# Tooling / run outputs
+MUJOCO_LOG.TXT
+wandb/
+outputs/
+.vscode/
+.DS_Store
