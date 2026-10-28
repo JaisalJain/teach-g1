@@ -1,0 +1,4143 @@
+{
+  "protocol": {
+    "table_height_m": 0.74,
+    "grasp": {
+      "frame": "cup centre, world-aligned axes",
+      "palm_offset_m": [
+        -0.0933,
+        0.0156,
+        0.015
+      ],
+      "palm_quat_wxyz": [
+        0.9239,
+        0.0,
+        0.0,
+        -0.3827
+      ],
+      "approach_dir": [
+        0.9864,
+        -0.1644,
+        -0.0
+      ],
+      "source": "HERO Dex3 side grasp: offset (0.077, 0.055, 0), wrist yaw 45 deg outward, 6.5 cm above table"
+    },
+    "pregrasp_backoff_m": 0.08,
+    "lift_m": 0.1,
+    "place_clearance_m": 0.01,
+    "settle_stay_m": 0.015,
+    "touch_threshold_N": 0.3,
+    "touch_window_s": 0.2,
+    "palm_box": {
+      "x": [
+        0.35,
+        0.45
+      ],
+      "y": [
+        -0.32,
+        -0.12
+      ]
+    },
+    "min_cup_coaster_dist_m": 0.13,
+    "seed": 1,
+    "settle_cfg": {
+      "period_s": 0.6,
+      "first_event": "start",
+      "first_delay_s": 0.0,
+      "base_mode": "current",
+      "hold_s": 6.0,
+      "reach_min_s": 0.5,
+      "reach_max_s": 3.0,
+      "hold_solved_frames": 5,
+      "stay_threshold_m": 0.015,
+      "skip_below_m": 0.015,
+      "max_replans": 20,
+      "goal_adjust": true,
+      "adjust_gain": 0.6,
+      "adjust_max_step_m": 0.01,
+      "adjust_gate_m": 0.15,
+      "adjust_after_replans": 2,
+      "adjust_mode": "accumulate",
+      "handover_blend_s": 0.3,
+      "start_velocity": "zero",
+      "start_pose": "robot",
+      "stop_frame": null
+    },
+    "odom": "truth",
+    "reach_fail_m": 0.03,
+    "lift_slip_fail_m": 0.02,
+    "palm_box_constrains": "grasp palm xy and nominal place palm xy (pregrasp / lift / transport waypoints are not constrained)",
+    "close_mode": "ramp closure until thumb + index/middle touch, then HERO-demo full closure with squeeze; touch also gates the lift",
+    "place_target": "cup's true in-hand offset measured after the lift (privileged sim state), palm orientation kept",
+    "cup_and_robot_state": "exact simulator state (no perception, no odometry noise)",
+    "success": "cup tilt < 10 deg, cup centre within coaster radius (5 cm), resting on the coaster (|dz| < 4 mm), robot never fell",
+    "fall_rule": "pelvis z < 0.3 m, pelvis tilt > 60.0 deg, or a non-foot/hand body part on floor/table"
+  },
+  "fixed_layout_success": true,
+  "random_success_rate": {
+    "successes": 40,
+    "trials": 40
+  },
+  "failures_by_phase": {},
+  "failures_by_category": {},
+  "runs": [
+    {
+      "cup_xy": [
+        0.4733,
+        -0.1656
+      ],
+      "coaster_xy": [
+        0.5133,
+        -0.3056
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 6.52,
+      "lift_slip_in_hand_cm": 0.69,
+      "cup_final": [
+        0.5165,
+        -0.299,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.73,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.318,
+          "ik_terminal_palm_err_cm": 0.293,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.613,
+          "ik_terminal_palm_err_cm": 0.317,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.111,
+          "ik_terminal_palm_err_cm": 0.152,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.195,
+          "ik_terminal_palm_err_cm": 0.238,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.28,
+          "ik_terminal_palm_err_cm": 0.313,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.21,
+          "ik_terminal_palm_err_cm": 0.189,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 1.84,
+          "palm_err_cm": 1.14,
+          "replans": 3
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.7,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.15,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 20.12,
+      "name": "fixed",
+      "wall_s": 5.2
+    },
+    {
+      "cup_xy": [
+        0.5184,
+        -0.2795
+      ],
+      "coaster_xy": [
+        0.4919,
+        -0.1394
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 6.99,
+      "lift_slip_in_hand_cm": 0.68,
+      "cup_final": [
+        0.4957,
+        -0.1405,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.4,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.372,
+          "ik_terminal_palm_err_cm": 0.435,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.655,
+          "ik_terminal_palm_err_cm": 0.365,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.225,
+          "ik_terminal_palm_err_cm": 0.207,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 684,
+          "path_frames": 84,
+          "ik_max_path_err_cm": 0.176,
+          "ik_terminal_palm_err_cm": 0.112,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.175,
+          "ik_terminal_palm_err_cm": 0.113,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.237,
+          "ik_terminal_palm_err_cm": 0.286,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.04,
+          "palm_err_cm": 1.19,
+          "replans": 5
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.95,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.09,
+          "replans": 0
+        }
+      ],
+      "sim_seconds": 20.38,
+      "name": "random_00",
+      "wall_s": 5.2
+    },
+    {
+      "cup_xy": [
+        0.4594,
+        -0.1416
+      ],
+      "coaster_xy": [
+        0.4949,
+        -0.3124
+      ],
+      "contact_closure": 0.656,
+      "lift_cup_rise_cm": 6.85,
+      "lift_slip_in_hand_cm": 0.61,
+      "cup_final": [
+        0.4944,
+        -0.3081,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.43,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.29,
+          "ik_terminal_palm_err_cm": 0.58,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.59,
+          "ik_terminal_palm_err_cm": 0.47,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.114,
+          "ik_terminal_palm_err_cm": 0.187,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 723,
+          "path_frames": 123,
+          "ik_max_path_err_cm": 0.171,
+          "ik_terminal_palm_err_cm": 0.217,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.25,
+          "ik_terminal_palm_err_cm": 0.285,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.195,
+          "ik_terminal_palm_err_cm": 0.206,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 1.24,
+          "palm_err_cm": 1.18,
+          "replans": 2
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.25,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.1,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 19.96,
+      "name": "random_01",
+      "wall_s": 5.0
+    },
+    {
+      "cup_xy": [
+        0.4625,
+        -0.1751
+      ],
+      "coaster_xy": [
+        0.4625,
+        -0.3192
+      ],
+      "contact_closure": 0.656,
+      "lift_cup_rise_cm": 6.68,
+      "lift_slip_in_hand_cm": 0.75,
+      "cup_final": [
+        0.4638,
+        -0.3144,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.5,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.318,
+          "ik_terminal_palm_err_cm": 0.563,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.599,
+          "ik_terminal_palm_err_cm": 0.412,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.109,
+          "ik_terminal_palm_err_cm": 0.22,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 705,
+          "path_frames": 105,
+          "ik_max_path_err_cm": 0.19,
+          "ik_terminal_palm_err_cm": 0.221,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.213,
+          "ik_terminal_palm_err_cm": 0.275,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.181,
+          "ik_terminal_palm_err_cm": 0.233,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 1.84,
+          "palm_err_cm": 1.2,
+          "replans": 3
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.23,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.14,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 20.2,
+      "name": "random_02",
+      "wall_s": 5.0
+    },
+    {
+      "cup_xy": [
+        0.4707,
+        -0.3341
+      ],
+      "coaster_xy": [
+        0.5079,
+        -0.1916
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 7.87,
+      "lift_slip_in_hand_cm": 0.67,
+      "cup_final": [
+        0.5209,
+        -0.2088,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 2.16,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.372,
+          "ik_terminal_palm_err_cm": 0.248,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.554,
+          "ik_terminal_palm_err_cm": 0.423,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.212,
+          "ik_terminal_palm_err_cm": 0.193,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 680,
+          "path_frames": 80,
+          "ik_max_path_err_cm": 0.173,
+          "ik_terminal_palm_err_cm": 0.141,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.212,
+          "ik_terminal_palm_err_cm": 0.18,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.212,
+          "ik_terminal_palm_err_cm": 0.215,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 4.24,
+          "palm_err_cm": 0.56,
+          "replans": 7
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.92,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.36,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 22.1,
+      "name": "random_03",
+      "wall_s": 5.9
+    },
+    {
+      "cup_xy": [
+        0.4691,
+        -0.1829
+      ],
+      "coaster_xy": [
+        0.5131,
+        -0.3098
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 6.45,
+      "lift_slip_in_hand_cm": 0.9,
+      "cup_final": [
+        0.5172,
+        -0.2998,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 1.08,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.318,
+          "ik_terminal_palm_err_cm": 0.238,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.618,
+          "ik_terminal_palm_err_cm": 0.323,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.11,
+          "ik_terminal_palm_err_cm": 0.157,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 695,
+          "path_frames": 95,
+          "ik_max_path_err_cm": 0.207,
+          "ik_terminal_palm_err_cm": 0.247,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.294,
+          "ik_terminal_palm_err_cm": 0.33,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.215,
+          "ik_terminal_palm_err_cm": 0.186,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 1.84,
+          "palm_err_cm": 0.93,
+          "replans": 3
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.84,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.15,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 20.0,
+      "name": "random_04",
+      "wall_s": 5.2
+    },
+    {
+      "cup_xy": [
+        0.4635,
+        -0.1379
+      ],
+      "coaster_xy": [
+        0.5192,
+        -0.2636
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 6.41,
+      "lift_slip_in_hand_cm": 0.78,
+      "cup_final": [
+        0.5206,
+        -0.2594,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.45,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.318,
+          "ik_terminal_palm_err_cm": 0.562,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.613,
+          "ik_terminal_palm_err_cm": 0.34,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.121,
+          "ik_terminal_palm_err_cm": 0.221,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 700,
+          "path_frames": 100,
+          "ik_max_path_err_cm": 0.177,
+          "ik_terminal_palm_err_cm": 0.195,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.232,
+          "ik_terminal_palm_err_cm": 0.231,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.207,
+          "ik_terminal_palm_err_cm": 0.213,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 1.84,
+          "palm_err_cm": 0.97,
+          "replans": 3
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.91,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 0.98,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 20.1,
+      "name": "random_05",
+      "wall_s": 5.3
+    },
+    {
+      "cup_xy": [
+        0.5216,
+        -0.2853
+      ],
+      "coaster_xy": [
+        0.4509,
+        -0.143
+      ],
+      "contact_closure": 0.576,
+      "lift_cup_rise_cm": 7.14,
+      "lift_slip_in_hand_cm": 0.66,
+      "cup_final": [
+        0.4501,
+        -0.1377,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.54,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.398,
+          "ik_terminal_palm_err_cm": 0.328,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.655,
+          "ik_terminal_palm_err_cm": 0.377,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.231,
+          "ik_terminal_palm_err_cm": 0.212,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 691,
+          "path_frames": 91,
+          "ik_max_path_err_cm": 0.174,
+          "ik_terminal_palm_err_cm": 0.157,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.175,
+          "ik_terminal_palm_err_cm": 0.171,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.279,
+          "ik_terminal_palm_err_cm": 0.336,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.04,
+          "palm_err_cm": 1.24,
+          "replans": 5
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.19,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.09,
+          "replans": 0
+        }
+      ],
+      "sim_seconds": 20.52,
+      "name": "random_06",
+      "wall_s": 5.3
+    },
+    {
+      "cup_xy": [
+        0.5105,
+        -0.1666
+      ],
+      "coaster_xy": [
+        0.5372,
+        -0.331
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 6.35,
+      "lift_slip_in_hand_cm": 1.65,
+      "cup_final": [
+        0.5341,
+        -0.3175,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 1.39,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.345,
+          "ik_terminal_palm_err_cm": 0.504,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.615,
+          "ik_terminal_palm_err_cm": 0.204,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.125,
+          "ik_terminal_palm_err_cm": 0.091,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 710,
+          "path_frames": 110,
+          "ik_max_path_err_cm": 0.242,
+          "ik_terminal_palm_err_cm": 0.312,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.375,
+          "ik_terminal_palm_err_cm": 0.426,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.273,
+          "ik_terminal_palm_err_cm": 0.275,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 2.44,
+          "palm_err_cm": 1.36,
+          "replans": 4
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.66,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.34,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 20.9,
+      "name": "random_07",
+      "wall_s": 5.6
+    },
+    {
+      "cup_xy": [
+        0.4897,
+        -0.1587
+      ],
+      "coaster_xy": [
+        0.475,
+        -0.3313
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 7.5,
+      "lift_slip_in_hand_cm": 0.72,
+      "cup_final": [
+        0.4768,
+        -0.3382,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.71,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.318,
+          "ik_terminal_palm_err_cm": 0.54,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.42,
+          "ik_terminal_palm_err_cm": 0.126,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.114,
+          "ik_terminal_palm_err_cm": 0.117,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 721,
+          "path_frames": 121,
+          "ik_max_path_err_cm": 0.16,
+          "ik_terminal_palm_err_cm": 0.23,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.281,
+          "ik_terminal_palm_err_cm": 0.351,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.182,
+          "ik_terminal_palm_err_cm": 0.169,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 2.44,
+          "palm_err_cm": 0.72,
+          "replans": 4
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.69,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.29,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 21.12,
+      "name": "random_08",
+      "wall_s": 5.5
+    },
+    {
+      "cup_xy": [
+        0.526,
+        -0.3232
+      ],
+      "coaster_xy": [
+        0.4526,
+        -0.1429
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 7.52,
+      "lift_slip_in_hand_cm": 1.15,
+      "cup_final": [
+        0.4498,
+        -0.1408,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.35,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.424,
+          "ik_terminal_palm_err_cm": 0.291,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.626,
+          "ik_terminal_palm_err_cm": 0.476,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.342,
+          "ik_terminal_palm_err_cm": 0.355,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 708,
+          "path_frames": 108,
+          "ik_max_path_err_cm": 0.177,
+          "ik_terminal_palm_err_cm": 0.157,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.177,
+          "ik_terminal_palm_err_cm": 0.166,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.275,
+          "ik_terminal_palm_err_cm": 0.331,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.04,
+          "palm_err_cm": 0.92,
+          "replans": 5
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.16,
+          "replans": 1
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.18,
+          "replans": 0
+        }
+      ],
+      "sim_seconds": 21.46,
+      "name": "random_09",
+      "wall_s": 5.7
+    },
+    {
+      "cup_xy": [
+        0.4773,
+        -0.1607
+      ],
+      "coaster_xy": [
+        0.4852,
+        -0.3191
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 6.08,
+      "lift_slip_in_hand_cm": 1.1,
+      "cup_final": [
+        0.4843,
+        -0.316,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.33,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.318,
+          "ik_terminal_palm_err_cm": 0.357,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.606,
+          "ik_terminal_palm_err_cm": 0.313,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.11,
+          "ik_terminal_palm_err_cm": 0.145,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 709,
+          "path_frames": 109,
+          "ik_max_path_err_cm": 0.151,
+          "ik_terminal_palm_err_cm": 0.203,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.228,
+          "ik_terminal_palm_err_cm": 0.275,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.2,
+          "ik_terminal_palm_err_cm": 0.219,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 1.84,
+          "palm_err_cm": 1.3,
+          "replans": 3
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.68,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.16,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 20.28,
+      "name": "random_10",
+      "wall_s": 5.2
+    },
+    {
+      "cup_xy": [
+        0.536,
+        -0.2111
+      ],
+      "coaster_xy": [
+        0.455,
+        -0.3129
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 9.3,
+      "lift_slip_in_hand_cm": 0.56,
+      "cup_final": [
+        0.4616,
+        -0.3287,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 1.71,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.372,
+          "ik_terminal_palm_err_cm": 0.199,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.627,
+          "ik_terminal_palm_err_cm": 0.47,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.156,
+          "ik_terminal_palm_err_cm": 0.133,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 686,
+          "path_frames": 86,
+          "ik_max_path_err_cm": 0.168,
+          "ik_terminal_palm_err_cm": 0.189,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.237,
+          "ik_terminal_palm_err_cm": 0.313,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.186,
+          "ik_terminal_palm_err_cm": 0.193,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 1.24,
+          "palm_err_cm": 1.41,
+          "replans": 2
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 1.24,
+          "palm_err_cm": 0.49,
+          "replans": 2
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 1.24,
+          "palm_err_cm": 1.03,
+          "replans": 2
+        }
+      ],
+      "sim_seconds": 21.02,
+      "name": "random_11",
+      "wall_s": 5.4
+    },
+    {
+      "cup_xy": [
+        0.5104,
+        -0.197
+      ],
+      "coaster_xy": [
+        0.4597,
+        -0.3308
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 7.93,
+      "lift_slip_in_hand_cm": 0.54,
+      "cup_final": [
+        0.4703,
+        -0.343,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 1.62,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.345,
+          "ik_terminal_palm_err_cm": 0.507,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.576,
+          "ik_terminal_palm_err_cm": 0.182,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.142,
+          "ik_terminal_palm_err_cm": 0.096,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 698,
+          "path_frames": 98,
+          "ik_max_path_err_cm": 0.134,
+          "ik_terminal_palm_err_cm": 0.195,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.266,
+          "ik_terminal_palm_err_cm": 0.339,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.193,
+          "ik_terminal_palm_err_cm": 0.159,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.04,
+          "palm_err_cm": 0.84,
+          "replans": 5
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.76,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 1.24,
+          "palm_err_cm": 0.59,
+          "replans": 2
+        }
+      ],
+      "sim_seconds": 21.86,
+      "name": "random_12",
+      "wall_s": 5.6
+    },
+    {
+      "cup_xy": [
+        0.5054,
+        -0.2856
+      ],
+      "coaster_xy": [
+        0.4833,
+        -0.1462
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 8.06,
+      "lift_slip_in_hand_cm": 0.54,
+      "cup_final": [
+        0.4965,
+        -0.1655,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 2.34,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.372,
+          "ik_terminal_palm_err_cm": 0.385,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.595,
+          "ik_terminal_palm_err_cm": 0.333,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.233,
+          "ik_terminal_palm_err_cm": 0.237,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 679,
+          "path_frames": 79,
+          "ik_max_path_err_cm": 0.197,
+          "ik_terminal_palm_err_cm": 0.154,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.191,
+          "ik_terminal_palm_err_cm": 0.138,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.221,
+          "ik_terminal_palm_err_cm": 0.263,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.64,
+          "palm_err_cm": 0.94,
+          "replans": 6
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.82,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.34,
+          "replans": 0
+        }
+      ],
+      "sim_seconds": 20.88,
+      "name": "random_13",
+      "wall_s": 5.5
+    },
+    {
+      "cup_xy": [
+        0.5179,
+        -0.3102
+      ],
+      "coaster_xy": [
+        0.524,
+        -0.1693
+      ],
+      "contact_closure": 0.576,
+      "lift_cup_rise_cm": 7.22,
+      "lift_slip_in_hand_cm": 0.45,
+      "cup_final": [
+        0.5264,
+        -0.1629,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.69,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.398,
+          "ik_terminal_palm_err_cm": 0.35,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.667,
+          "ik_terminal_palm_err_cm": 0.424,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.279,
+          "ik_terminal_palm_err_cm": 0.286,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 683,
+          "path_frames": 83,
+          "ik_max_path_err_cm": 0.193,
+          "ik_terminal_palm_err_cm": 0.141,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.197,
+          "ik_terminal_palm_err_cm": 0.138,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.214,
+          "ik_terminal_palm_err_cm": 0.223,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.04,
+          "palm_err_cm": 1.22,
+          "replans": 5
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.32,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 0.92,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 20.96,
+      "name": "random_14",
+      "wall_s": 5.5
+    },
+    {
+      "cup_xy": [
+        0.5266,
+        -0.3252
+      ],
+      "coaster_xy": [
+        0.5261,
+        -0.173
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 7.15,
+      "lift_slip_in_hand_cm": 1.12,
+      "cup_final": [
+        0.5304,
+        -0.173,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.43,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.424,
+          "ik_terminal_palm_err_cm": 0.297,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.662,
+          "ik_terminal_palm_err_cm": 0.471,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.353,
+          "ik_terminal_palm_err_cm": 0.369,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 683,
+          "path_frames": 83,
+          "ik_max_path_err_cm": 0.199,
+          "ik_terminal_palm_err_cm": 0.147,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.203,
+          "ik_terminal_palm_err_cm": 0.145,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.214,
+          "ik_terminal_palm_err_cm": 0.225,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.04,
+          "palm_err_cm": 0.96,
+          "replans": 5
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.33,
+          "replans": 1
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 0.77,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 21.56,
+      "name": "random_15",
+      "wall_s": 5.8
+    },
+    {
+      "cup_xy": [
+        0.4817,
+        -0.1381
+      ],
+      "coaster_xy": [
+        0.4839,
+        -0.2756
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 7.5,
+      "lift_slip_in_hand_cm": 0.6,
+      "cup_final": [
+        0.509,
+        -0.288,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 2.8,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.318,
+          "ik_terminal_palm_err_cm": 0.474,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.474,
+          "ik_terminal_palm_err_cm": 0.111,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.118,
+          "ik_terminal_palm_err_cm": 0.158,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.133,
+          "ik_terminal_palm_err_cm": 0.163,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.226,
+          "ik_terminal_palm_err_cm": 0.256,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.198,
+          "ik_terminal_palm_err_cm": 0.201,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 2.44,
+          "palm_err_cm": 0.47,
+          "replans": 4
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.95,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.29,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 20.72,
+      "name": "random_16",
+      "wall_s": 5.3
+    },
+    {
+      "cup_xy": [
+        0.5381,
+        -0.1432
+      ],
+      "coaster_xy": [
+        0.508,
+        -0.2798
+      ],
+      "contact_closure": 0.576,
+      "lift_cup_rise_cm": 7.4,
+      "lift_slip_in_hand_cm": 0.76,
+      "cup_final": [
+        0.5177,
+        -0.275,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 1.08,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.372,
+          "ik_terminal_palm_err_cm": 0.137,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.597,
+          "ik_terminal_palm_err_cm": 0.382,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.132,
+          "ik_terminal_palm_err_cm": 0.1,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 693,
+          "path_frames": 93,
+          "ik_max_path_err_cm": 0.184,
+          "ik_terminal_palm_err_cm": 0.199,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.253,
+          "ik_terminal_palm_err_cm": 0.266,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.208,
+          "ik_terminal_palm_err_cm": 0.209,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 1.24,
+          "palm_err_cm": 1.16,
+          "replans": 2
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.32,
+          "replans": 1
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.09,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 19.96,
+      "name": "random_17",
+      "wall_s": 5.1
+    },
+    {
+      "cup_xy": [
+        0.5425,
+        -0.1903
+      ],
+      "coaster_xy": [
+        0.5301,
+        -0.3257
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 9.45,
+      "lift_slip_in_hand_cm": 0.54,
+      "cup_final": [
+        0.5524,
+        -0.3199,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 2.29,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.372,
+          "ik_terminal_palm_err_cm": 0.208,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.629,
+          "ik_terminal_palm_err_cm": 0.432,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.164,
+          "ik_terminal_palm_err_cm": 0.132,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 693,
+          "path_frames": 93,
+          "ik_max_path_err_cm": 0.27,
+          "ik_terminal_palm_err_cm": 0.319,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.435,
+          "ik_terminal_palm_err_cm": 0.511,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.233,
+          "ik_terminal_palm_err_cm": 0.615,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 1.24,
+          "palm_err_cm": 1.3,
+          "replans": 2
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 1.24,
+          "palm_err_cm": 0.51,
+          "replans": 2
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 1.84,
+          "palm_err_cm": 0.97,
+          "replans": 3
+        }
+      ],
+      "sim_seconds": 21.76,
+      "name": "random_18",
+      "wall_s": 6.0
+    },
+    {
+      "cup_xy": [
+        0.5289,
+        -0.2914
+      ],
+      "coaster_xy": [
+        0.46,
+        -0.1524
+      ],
+      "contact_closure": 0.576,
+      "lift_cup_rise_cm": 7.14,
+      "lift_slip_in_hand_cm": 0.86,
+      "cup_final": [
+        0.4608,
+        -0.1524,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.08,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.398,
+          "ik_terminal_palm_err_cm": 0.198,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.618,
+          "ik_terminal_palm_err_cm": 0.428,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.264,
+          "ik_terminal_palm_err_cm": 0.249,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 687,
+          "path_frames": 87,
+          "ik_max_path_err_cm": 0.19,
+          "ik_terminal_palm_err_cm": 0.166,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.17,
+          "ik_terminal_palm_err_cm": 0.155,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.266,
+          "ik_terminal_palm_err_cm": 0.324,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.04,
+          "palm_err_cm": 0.76,
+          "replans": 5
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.45,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.18,
+          "replans": 0
+        }
+      ],
+      "sim_seconds": 20.44,
+      "name": "random_19",
+      "wall_s": 5.4
+    },
+    {
+      "cup_xy": [
+        0.4987,
+        -0.1504
+      ],
+      "coaster_xy": [
+        0.4435,
+        -0.3031
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 7.65,
+      "lift_slip_in_hand_cm": 0.55,
+      "cup_final": [
+        0.4568,
+        -0.3191,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 2.08,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.345,
+          "ik_terminal_palm_err_cm": 0.497,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.558,
+          "ik_terminal_palm_err_cm": 0.164,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.126,
+          "ik_terminal_palm_err_cm": 0.11,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 713,
+          "path_frames": 113,
+          "ik_max_path_err_cm": 0.155,
+          "ik_terminal_palm_err_cm": 0.184,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.216,
+          "ik_terminal_palm_err_cm": 0.298,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.184,
+          "ik_terminal_palm_err_cm": 0.202,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.04,
+          "palm_err_cm": 0.73,
+          "replans": 5
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.41,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 1.24,
+          "palm_err_cm": 0.89,
+          "replans": 2
+        }
+      ],
+      "sim_seconds": 22.16,
+      "name": "random_20",
+      "wall_s": 5.8
+    },
+    {
+      "cup_xy": [
+        0.4855,
+        -0.3304
+      ],
+      "coaster_xy": [
+        0.4601,
+        -0.1857
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 7.74,
+      "lift_slip_in_hand_cm": 0.74,
+      "cup_final": [
+        0.4787,
+        -0.1936,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 2.02,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.398,
+          "ik_terminal_palm_err_cm": 0.289,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.597,
+          "ik_terminal_palm_err_cm": 0.514,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.286,
+          "ik_terminal_palm_err_cm": 0.316,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 683,
+          "path_frames": 83,
+          "ik_max_path_err_cm": 0.197,
+          "ik_terminal_palm_err_cm": 0.142,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.171,
+          "ik_terminal_palm_err_cm": 0.168,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.214,
+          "ik_terminal_palm_err_cm": 0.247,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 4.24,
+          "palm_err_cm": 0.11,
+          "replans": 7
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.96,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.14,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 22.16,
+      "name": "random_21",
+      "wall_s": 5.9
+    },
+    {
+      "cup_xy": [
+        0.5162,
+        -0.3094
+      ],
+      "coaster_xy": [
+        0.476,
+        -0.1466
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 6.91,
+      "lift_slip_in_hand_cm": 0.79,
+      "cup_final": [
+        0.477,
+        -0.1492,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.28,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.398,
+          "ik_terminal_palm_err_cm": 0.336,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.657,
+          "ik_terminal_palm_err_cm": 0.412,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.271,
+          "ik_terminal_palm_err_cm": 0.278,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 696,
+          "path_frames": 96,
+          "ik_max_path_err_cm": 0.229,
+          "ik_terminal_palm_err_cm": 0.192,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.171,
+          "ik_terminal_palm_err_cm": 0.144,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.26,
+          "ik_terminal_palm_err_cm": 0.311,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.04,
+          "palm_err_cm": 1.4,
+          "replans": 5
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.25,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.38,
+          "replans": 0
+        }
+      ],
+      "sim_seconds": 20.62,
+      "name": "random_22",
+      "wall_s": 5.4
+    },
+    {
+      "cup_xy": [
+        0.4659,
+        -0.3167
+      ],
+      "coaster_xy": [
+        0.5342,
+        -0.1846
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 7.48,
+      "lift_slip_in_hand_cm": 1.62,
+      "cup_final": [
+        0.5407,
+        -0.1785,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.89,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.372,
+          "ik_terminal_palm_err_cm": 0.577,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.619,
+          "ik_terminal_palm_err_cm": 0.456,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.114,
+          "ik_terminal_palm_err_cm": 0.204,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 686,
+          "path_frames": 86,
+          "ik_max_path_err_cm": 0.219,
+          "ik_terminal_palm_err_cm": 0.156,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.229,
+          "ik_terminal_palm_err_cm": 0.168,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.205,
+          "ik_terminal_palm_err_cm": 0.22,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.04,
+          "palm_err_cm": 1.48,
+          "replans": 5
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.07,
+          "replans": 1
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 0.81,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 21.62,
+      "name": "random_23",
+      "wall_s": 5.5
+    },
+    {
+      "cup_xy": [
+        0.4508,
+        -0.3217
+      ],
+      "coaster_xy": [
+        0.4523,
+        -0.1688
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 8.07,
+      "lift_slip_in_hand_cm": 0.92,
+      "cup_final": [
+        0.4585,
+        -0.1791,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 1.2,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.345,
+          "ik_terminal_palm_err_cm": 0.582,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.607,
+          "ik_terminal_palm_err_cm": 0.444,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.111,
+          "ik_terminal_palm_err_cm": 0.219,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 680,
+          "path_frames": 80,
+          "ik_max_path_err_cm": 0.183,
+          "ik_terminal_palm_err_cm": 0.161,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.174,
+          "ik_terminal_palm_err_cm": 0.161,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.245,
+          "ik_terminal_palm_err_cm": 0.302,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.04,
+          "palm_err_cm": 1.42,
+          "replans": 5
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.07,
+          "replans": 1
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.23,
+          "replans": 0
+        }
+      ],
+      "sim_seconds": 20.9,
+      "name": "random_24",
+      "wall_s": 5.2
+    },
+    {
+      "cup_xy": [
+        0.493,
+        -0.2943
+      ],
+      "coaster_xy": [
+        0.4868,
+        -0.1614
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 8.04,
+      "lift_slip_in_hand_cm": 0.6,
+      "cup_final": [
+        0.5023,
+        -0.1751,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 2.08,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.372,
+          "ik_terminal_palm_err_cm": 0.401,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.633,
+          "ik_terminal_palm_err_cm": 0.364,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.208,
+          "ik_terminal_palm_err_cm": 0.221,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.181,
+          "ik_terminal_palm_err_cm": 0.09,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.181,
+          "ik_terminal_palm_err_cm": 0.135,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.217,
+          "ik_terminal_palm_err_cm": 0.245,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.64,
+          "palm_err_cm": 1.45,
+          "replans": 6
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.06,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.46,
+          "replans": 0
+        }
+      ],
+      "sim_seconds": 20.82,
+      "name": "random_25",
+      "wall_s": 5.3
+    },
+    {
+      "cup_xy": [
+        0.467,
+        -0.3285
+      ],
+      "coaster_xy": [
+        0.5204,
+        -0.1455
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 6.98,
+      "lift_slip_in_hand_cm": 1.55,
+      "cup_final": [
+        0.5136,
+        -0.1388,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.95,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.372,
+          "ik_terminal_palm_err_cm": 0.534,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.615,
+          "ik_terminal_palm_err_cm": 0.391,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.151,
+          "ik_terminal_palm_err_cm": 0.173,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 713,
+          "path_frames": 113,
+          "ik_max_path_err_cm": 0.222,
+          "ik_terminal_palm_err_cm": 0.124,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.2,
+          "ik_terminal_palm_err_cm": 0.109,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.207,
+          "ik_terminal_palm_err_cm": 0.222,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.64,
+          "palm_err_cm": 1.66,
+          "replans": 6
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.46,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.34,
+          "replans": 0
+        }
+      ],
+      "sim_seconds": 21.56,
+      "name": "random_26",
+      "wall_s": 5.5
+    },
+    {
+      "cup_xy": [
+        0.5224,
+        -0.1358
+      ],
+      "coaster_xy": [
+        0.4909,
+        -0.2762
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 6.17,
+      "lift_slip_in_hand_cm": 1.23,
+      "cup_final": [
+        0.4938,
+        -0.2742,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.36,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.345,
+          "ik_terminal_palm_err_cm": 0.318,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.615,
+          "ik_terminal_palm_err_cm": 0.17,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.141,
+          "ik_terminal_palm_err_cm": 0.091,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 696,
+          "path_frames": 96,
+          "ik_max_path_err_cm": 0.135,
+          "ik_terminal_palm_err_cm": 0.158,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.202,
+          "ik_terminal_palm_err_cm": 0.224,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.196,
+          "ik_terminal_palm_err_cm": 0.233,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 2.44,
+          "palm_err_cm": 0.91,
+          "replans": 4
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.8,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.05,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 20.62,
+      "name": "random_27",
+      "wall_s": 5.2
+    },
+    {
+      "cup_xy": [
+        0.4685,
+        -0.3134
+      ],
+      "coaster_xy": [
+        0.487,
+        -0.1742
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 7.75,
+      "lift_slip_in_hand_cm": 1.02,
+      "cup_final": [
+        0.4865,
+        -0.1846,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 1.05,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.372,
+          "ik_terminal_palm_err_cm": 0.528,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.45,
+          "ik_terminal_palm_err_cm": 0.425,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.149,
+          "ik_terminal_palm_err_cm": 0.175,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.137,
+          "ik_terminal_palm_err_cm": 0.097,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.183,
+          "ik_terminal_palm_err_cm": 0.142,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.209,
+          "ik_terminal_palm_err_cm": 0.242,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 4.24,
+          "palm_err_cm": 0.86,
+          "replans": 7
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.68,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.42,
+          "replans": 0
+        }
+      ],
+      "sim_seconds": 21.42,
+      "name": "random_28",
+      "wall_s": 5.4
+    },
+    {
+      "cup_xy": [
+        0.4668,
+        -0.1656
+      ],
+      "coaster_xy": [
+        0.5145,
+        -0.2954
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 6.14,
+      "lift_slip_in_hand_cm": 1.14,
+      "cup_final": [
+        0.5158,
+        -0.2914,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.42,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.318,
+          "ik_terminal_palm_err_cm": 0.565,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.649,
+          "ik_terminal_palm_err_cm": 0.326,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.116,
+          "ik_terminal_palm_err_cm": 0.182,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 699,
+          "path_frames": 99,
+          "ik_max_path_err_cm": 0.193,
+          "ik_terminal_palm_err_cm": 0.228,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.265,
+          "ik_terminal_palm_err_cm": 0.287,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.207,
+          "ik_terminal_palm_err_cm": 0.2,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 1.84,
+          "palm_err_cm": 0.94,
+          "replans": 3
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.82,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.09,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 20.08,
+      "name": "random_29",
+      "wall_s": 5.2
+    },
+    {
+      "cup_xy": [
+        0.5065,
+        -0.1716
+      ],
+      "coaster_xy": [
+        0.5366,
+        -0.3031
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 6.28,
+      "lift_slip_in_hand_cm": 1.74,
+      "cup_final": [
+        0.5358,
+        -0.2931,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 1.0,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.345,
+          "ik_terminal_palm_err_cm": 0.53,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.616,
+          "ik_terminal_palm_err_cm": 0.196,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.121,
+          "ik_terminal_palm_err_cm": 0.094,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 691,
+          "path_frames": 91,
+          "ik_max_path_err_cm": 0.211,
+          "ik_terminal_palm_err_cm": 0.268,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.325,
+          "ik_terminal_palm_err_cm": 0.356,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.252,
+          "ik_terminal_palm_err_cm": 0.193,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 2.44,
+          "palm_err_cm": 1.28,
+          "replans": 4
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.75,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.34,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 20.52,
+      "name": "random_30",
+      "wall_s": 5.4
+    },
+    {
+      "cup_xy": [
+        0.4864,
+        -0.2798
+      ],
+      "coaster_xy": [
+        0.5085,
+        -0.1464
+      ],
+      "contact_closure": 0.576,
+      "lift_cup_rise_cm": 8.1,
+      "lift_slip_in_hand_cm": 0.28,
+      "cup_final": [
+        0.5261,
+        -0.1472,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 1.76,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.372,
+          "ik_terminal_palm_err_cm": 0.377,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.491,
+          "ik_terminal_palm_err_cm": 0.266,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.166,
+          "ik_terminal_palm_err_cm": 0.145,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 684,
+          "path_frames": 84,
+          "ik_max_path_err_cm": 0.192,
+          "ik_terminal_palm_err_cm": 0.109,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.208,
+          "ik_terminal_palm_err_cm": 0.133,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.202,
+          "ik_terminal_palm_err_cm": 0.21,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.64,
+          "palm_err_cm": 0.47,
+          "replans": 6
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.16,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.21,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 21.58,
+      "name": "random_31",
+      "wall_s": 5.7
+    },
+    {
+      "cup_xy": [
+        0.4866,
+        -0.2809
+      ],
+      "coaster_xy": [
+        0.4777,
+        -0.1369
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 7.99,
+      "lift_slip_in_hand_cm": 0.28,
+      "cup_final": [
+        0.4938,
+        -0.1384,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 1.62,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.372,
+          "ik_terminal_palm_err_cm": 0.376,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.523,
+          "ik_terminal_palm_err_cm": 0.359,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.17,
+          "ik_terminal_palm_err_cm": 0.154,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 689,
+          "path_frames": 89,
+          "ik_max_path_err_cm": 0.253,
+          "ik_terminal_palm_err_cm": 0.212,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.204,
+          "ik_terminal_palm_err_cm": 0.148,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.242,
+          "ik_terminal_palm_err_cm": 0.283,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.64,
+          "palm_err_cm": 0.78,
+          "replans": 6
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.26,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.38,
+          "replans": 0
+        }
+      ],
+      "sim_seconds": 21.08,
+      "name": "random_32",
+      "wall_s": 5.6
+    },
+    {
+      "cup_xy": [
+        0.5389,
+        -0.3188
+      ],
+      "coaster_xy": [
+        0.4749,
+        -0.1916
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 8.06,
+      "lift_slip_in_hand_cm": 1.59,
+      "cup_final": [
+        0.4806,
+        -0.1942,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.62,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.424,
+          "ik_terminal_palm_err_cm": 0.23,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.668,
+          "ik_terminal_palm_err_cm": 0.594,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.356,
+          "ik_terminal_palm_err_cm": 0.372,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.183,
+          "ik_terminal_palm_err_cm": 0.163,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.174,
+          "ik_terminal_palm_err_cm": 0.172,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.206,
+          "ik_terminal_palm_err_cm": 0.244,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 1.84,
+          "palm_err_cm": 1.48,
+          "replans": 3
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 1.24,
+          "palm_err_cm": 0.94,
+          "replans": 2
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 0.82,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 20.82,
+      "name": "random_33",
+      "wall_s": 5.3
+    },
+    {
+      "cup_xy": [
+        0.4469,
+        -0.3284
+      ],
+      "coaster_xy": [
+        0.4478,
+        -0.1619
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 7.28,
+      "lift_slip_in_hand_cm": 1.09,
+      "cup_final": [
+        0.4474,
+        -0.158,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.39,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.345,
+          "ik_terminal_palm_err_cm": 0.582,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.615,
+          "ik_terminal_palm_err_cm": 0.445,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.11,
+          "ik_terminal_palm_err_cm": 0.212,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 695,
+          "path_frames": 95,
+          "ik_max_path_err_cm": 0.172,
+          "ik_terminal_palm_err_cm": 0.158,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.177,
+          "ik_terminal_palm_err_cm": 0.18,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.273,
+          "ik_terminal_palm_err_cm": 0.329,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.04,
+          "palm_err_cm": 1.2,
+          "replans": 5
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.46,
+          "replans": 1
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 1.07,
+          "replans": 0
+        }
+      ],
+      "sim_seconds": 21.2,
+      "name": "random_34",
+      "wall_s": 5.3
+    },
+    {
+      "cup_xy": [
+        0.4601,
+        -0.3206
+      ],
+      "coaster_xy": [
+        0.5305,
+        -0.1619
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 7.04,
+      "lift_slip_in_hand_cm": 1.05,
+      "cup_final": [
+        0.5373,
+        -0.1566,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.87,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.372,
+          "ik_terminal_palm_err_cm": 0.575,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.625,
+          "ik_terminal_palm_err_cm": 0.391,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.124,
+          "ik_terminal_palm_err_cm": 0.267,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 699,
+          "path_frames": 99,
+          "ik_max_path_err_cm": 0.214,
+          "ik_terminal_palm_err_cm": 0.139,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.211,
+          "ik_terminal_palm_err_cm": 0.135,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.206,
+          "ik_terminal_palm_err_cm": 0.223,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.64,
+          "palm_err_cm": 1.15,
+          "replans": 6
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.48,
+          "replans": 1
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 0.73,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 22.48,
+      "name": "random_35",
+      "wall_s": 5.8
+    },
+    {
+      "cup_xy": [
+        0.5145,
+        -0.1846
+      ],
+      "coaster_xy": [
+        0.4511,
+        -0.3079
+      ],
+      "contact_closure": 0.576,
+      "lift_cup_rise_cm": 6.31,
+      "lift_slip_in_hand_cm": 1.07,
+      "cup_final": [
+        0.4525,
+        -0.3058,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.25,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.345,
+          "ik_terminal_palm_err_cm": 0.505,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.621,
+          "ik_terminal_palm_err_cm": 0.23,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.129,
+          "ik_terminal_palm_err_cm": 0.088,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 691,
+          "path_frames": 91,
+          "ik_max_path_err_cm": 0.158,
+          "ik_terminal_palm_err_cm": 0.179,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.201,
+          "ik_terminal_palm_err_cm": 0.273,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.194,
+          "ik_terminal_palm_err_cm": 0.249,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 2.44,
+          "palm_err_cm": 1.32,
+          "replans": 4
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.73,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.22,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 20.52,
+      "name": "random_36",
+      "wall_s": 5.0
+    },
+    {
+      "cup_xy": [
+        0.5015,
+        -0.3212
+      ],
+      "coaster_xy": [
+        0.5055,
+        -0.1851
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 8.03,
+      "lift_slip_in_hand_cm": 0.34,
+      "cup_final": [
+        0.519,
+        -0.1981,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 1.87,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.398,
+          "ik_terminal_palm_err_cm": 0.297,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.659,
+          "ik_terminal_palm_err_cm": 0.407,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.287,
+          "ik_terminal_palm_err_cm": 0.327,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.188,
+          "ik_terminal_palm_err_cm": 0.129,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.211,
+          "ik_terminal_palm_err_cm": 0.172,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.21,
+          "ik_terminal_palm_err_cm": 0.216,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.64,
+          "palm_err_cm": 1.17,
+          "replans": 6
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.53,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.07,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 21.42,
+      "name": "random_37",
+      "wall_s": 5.7
+    },
+    {
+      "cup_xy": [
+        0.4705,
+        -0.2026
+      ],
+      "coaster_xy": [
+        0.536,
+        -0.3266
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 7.42,
+      "lift_slip_in_hand_cm": 0.5,
+      "cup_final": [
+        0.5405,
+        -0.3279,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.47,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.318,
+          "ik_terminal_palm_err_cm": 0.303,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.644,
+          "ik_terminal_palm_err_cm": 0.169,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.108,
+          "ik_terminal_palm_err_cm": 0.153,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.27,
+          "ik_terminal_palm_err_cm": 0.322,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.415,
+          "ik_terminal_palm_err_cm": 0.475,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.256,
+          "ik_terminal_palm_err_cm": 0.329,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 2.44,
+          "palm_err_cm": 0.9,
+          "replans": 4
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.21,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.39,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 20.72,
+      "name": "random_38",
+      "wall_s": 5.5
+    },
+    {
+      "cup_xy": [
+        0.4505,
+        -0.3043
+      ],
+      "coaster_xy": [
+        0.5406,
+        -0.1529
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 6.84,
+      "lift_slip_in_hand_cm": 0.89,
+      "cup_final": [
+        0.5492,
+        -0.1456,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 1.13,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.345,
+          "ik_terminal_palm_err_cm": 0.575,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.615,
+          "ik_terminal_palm_err_cm": 0.432,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.109,
+          "ik_terminal_palm_err_cm": 0.246,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 703,
+          "path_frames": 103,
+          "ik_max_path_err_cm": 0.23,
+          "ik_terminal_palm_err_cm": 0.139,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.222,
+          "ik_terminal_palm_err_cm": 0.138,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.204,
+          "ik_terminal_palm_err_cm": 0.219,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 3.04,
+          "palm_err_cm": 1.27,
+          "replans": 5
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.32,
+          "replans": 1
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 0.84,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 21.96,
+      "name": "random_39",
+      "wall_s": 5.6
+    }
+  ]
+}

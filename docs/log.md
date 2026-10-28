@@ -178,3 +178,67 @@ starts with HERO's lift waypoint — the rest palm (z 0.704) is below the 0.74/0
 through the slab; (3) cup pair softness mixed as in HERO; (4) initial-plan frame timing aligned with HERO's replan convention (was 1 frame
 early); (5) "torso tilt" → it is pelvis tilt; odom deviation and goal order recorded in the JSON; per-goal pelvis min / tilt / hand contact.
 Refuted by the skeptic: cup touching the idle left hand.
+
+---
+
+## 2026-10-29 (Thu) — M1 sub-task 3: reference builder + first scripted pick-and-place
+
+### Decisions (approved 2026-10-29)
+- Sim table height **0.74 m** from now on.
+- ROS: always run our envs with `env -u PYTHONPATH`; our code never depends on ROS (CLAUDE.md "Environment rules").
+- Capture app is **Stray Scanner** (Record3D is paywalled). Verified on the phone: each recording has `rgb.mp4`, `camera_matrix.csv`,
+  `odometry.csv`, `imu.csv`, `depth/`, `confidence/`. Format details still to be confirmed against StrayRobots/scanner `docs/format.md`
+  and the test clips; parser not written yet. CLAUDE.md updated (approach, env table, layout, data conventions, M2).
+
+### Reference builder: `sim/reference_builder.py`
+- `PathPlanner(BenchReplanner)`: our dense timed palm path (positions + wxyz orientations at 50 Hz) → HERO's whole-body mink IK (same
+  feet / pelvis / CoM / posture / table-clearance tasks, base blended to HERO's benchmark base plan or held) → FK on the training-geometry
+  model → `ClipReference`. Only the palm path differs from HERO's `build_plan` (which draws a straight smoothstep line to one goal).
+- `min_jerk_path(p0, q0, [(pos, quat, seconds), ...])`: timed waypoints → dense path (minimum-jerk position + slerp, rest at each waypoint).
+- HERO's closed-loop goal correction is kept: a settle step runs HERO's `BenchReplanner.step` (GoalAdjuster `g <- g - 0.6 e`, replans
+  every 0.6 s, 0.3 s blend) until the palm error < 1.5 cm.
+
+### Scripted pick-and-place: `sim/pick_place.py` → `results/m1_pick*/`
+- **Grasp** = HERO's Dex3 side grasp (browser demo `computeGraspPreview`), written in the **cup frame** (origin at the cup centre, z up,
+  world-aligned x since the cup is round): palm yaw −45° (HERO's default outward wrist yaw), palm = cup − R·(0.077, 0.055, 0), palm at
+  6.5 cm above the table; approach direction = palm → cup. Moving the cup moves the grasp with it.
+- **Phases** (fresh HERO reference per phase from the live state): stand 2 s → lift over the table, then pregrasp 8 cm before the grasp
+  (base: HERO's benchmark base plan) → settle < 1.5 cm → slow approach 2 s → settle → close: ramp closure until thumb + index/middle
+  touch (> 0.3 N), then finish to HERO's demo grip (full closure; finger kp ×3 and 0.6 × effort squeeze on blocked joints, ported from
+  HERO's `simulation.js` — HERO's Python demo lacks it) → lift 10 cm → transport over the coaster (≤ 8 cm/s) → lower to 1 cm above it →
+  settle → open 0.6 s → retreat 10 cm back / 5 cm up.
+- **Success** = cup tilt < 10°, cup centre within the coaster radius (5 cm), resting on the coaster (|dz| < 4 mm), robot never fell.
+  Failures stop the run and name the phase; categories: missed/knocked cup, slip during lift, dropped while moving, fell, plus
+  "palm could not reach the target" (a settle ending > 3 cm away) and "released but not on the coaster".
+- **Disclosed shortcuts** (scripted oracle baseline): exact simulator state for cup and robot (no perception, odometry = truth); the
+  place target uses the cup's true in-hand offset measured after the lift; layouts constrain only the grasp and nominal place palm xy to
+  the measured box (x 0.35–0.45, y −0.32…−0.12).
+
+### What happened
+1. First run (fixed layout): grasp, lift, transport fine, but the run was failed in "lower" by the in-hand check. Trace: the cup was
+   still held (offset drift 1.2 cm); single 20 ms touch samples flicker to 0 N because contacts chatter at 1 ms. **Fix:** a fingertip counts
+   as touching if it read > 0.3 N within the last 0.2 s. Not a grasp problem → no friction / force / cup-size tuning was needed.
+2. Fixed layout (cup (0.473, −0.166), coaster (0.513, −0.306)): **success**, cup 0.73 cm off the coaster centre, upright.
+3. **10 random layouts (seed 0) inside the measured workspace: 10/10 success** (95 % Wilson CI 72–100 %).
+4. Because 10/10 is a weak estimate and gave no failure to show: **40 more (seed 1): 40/40** → 50/50 combined (95 % CI 93–100 %).
+5. **Stress test outside the measured box** (palm box x 0.28–0.55, y −0.45…−0.02, seed 2): **12/20**. Failures: 5 palm could not reach
+   the target (far right y ≈ −0.40…−0.46, or far x ≈ 0.59–0.64), 2 knocked the cup on the approach (cup close to the body x ≈ 0.38–0.40
+   at y ≈ −0.34…−0.42), 1 dropped while lowering (coaster far forward x 0.62: stretched reach, cup slid 4.3 cm and tilted 15°).
+
+Numbers (successful runs, main / extended sets): cup off the coaster centre mean 1.36 / 1.07 cm, max 2.23 / 2.80 cm; palm error at the end
+of each settle ≈ 1.0 cm (max 1.66); contact detected at closure 0.56–0.66; touch at grasp ≈ 25–30 N on thumb and middle (index rarely
+touches the 8 cm cup); cup rises 6.1–7.5 cm for a 10 cm palm lift (palm lag + slip); slip in the hand during the lift mean 0.70 / 0.86 cm,
+max 1.20 / 1.74 cm; no falls; ~21 s of sim per attempt, ~5–8 s wall incl. IK and video.
+
+### Code review (workflow: 2 reviewers + 2 skeptics, read-only) — fixed before the final numbers
+- Real: a settle that never converged did not stop the run, so out-of-reach targets were reported as "knocked cup" / "not on the coaster"
+  (stress set only; every settle in the 10 + 40 runs converged). Fix: `settle_or_fail` (> 3 cm → "reach" failure); stress set rerun.
+- Also: lift slip now measured relative to the palm; per-plan IK `qp_failures` is now per plan (was cumulative; all 0 anyway); protocol
+  JSON discloses close mode, privileged place target and what the box constrains. Refuted: success threshold / cup-frame math issues.
+- All three result sets rerun after the fixes: identical success counts (10/10, 40/40, fixed OK); stress relabelled as above.
+- The M1 reach test was rerun after the scene changes (grip boost, contact groups): identical numbers.
+
+### Files
+`results/m1_pick/pick_results.json` (fixed + 10), `results/m1_pick_extended/pick_results.json` (40), `results/m1_pick_stress/pick_results.json`
+(20, outside the box). Videos (gitignored): success `results/m1_pick/videos/fixed.mp4`; failures `results/m1_pick_stress/videos/random_13.mp4`
+(dropped while lowering), `random_05.mp4` (knocked cup), `random_12.mp4` (out of reach).

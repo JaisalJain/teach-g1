@@ -33,7 +33,7 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
 
 ## The approach
 
-1. **Record:** iPhone (LiDAR) + Record3D app gives RGB-D + intrinsics + camera pose. Static third-person view, about 60–80 cm from the table at about 45°. In frame: cup, coaster, my hand and forearm. 15–20 demos, cup and coaster in varied positions. Matte cup.
+1. **Record:** iPhone (LiDAR) + **Stray Scanner** app (Record3D is paywalled) gives RGB video + LiDAR depth + confidence + intrinsics + camera odometry + IMU. Static third-person view, about 60–80 cm from the table at about 45°. In frame: cup, coaster, my hand and forearm. 15–20 demos, cup and coaster in varied positions. Matte cup.
 2. **Perceive** (`hoi-perception` env): WiLoR for 3D hand pose (MANO), SAM 2 for cup and coaster masks, LiDAR depth for metric object positions, RANSAC plane fit for the table. Output: one `.npz` per demo.
 3. **Retarget** (`hoi-sim` env):
    - Build a **table frame** (z up, origin on the table plane).
@@ -76,14 +76,16 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
 
 | env              | python                                            | status                                         | purpose                                                                                                                                                                                                                                           |
 | ---------------- | ------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `hoi-perception` | 3.10                                              | **exists**, torch 2.11.0+cu128 verified on GPU | WiLoR, SAM 2, Open3D, Record3D parsing                                                                                                                                                                                                            |
+| `hoi-perception` | 3.10                                              | **exists**, torch 2.11.0+cu128 verified on GPU | WiLoR, SAM 2, Open3D, Stray Scanner parsing                                                                                                                                                                                                            |
 | `hoi-sim`        | 3.11                                              | created 2026-10-28; lock in `envs/`            | HERO (editable, `[bench]`), `numpy<2` (HERO pin), `mujoco==3.13.0` (the version HERO names), mink, daqp, onnxruntime (CPU build — HERO's policy is tiny; avoids CUDA/cuDNN mismatches on Blackwell), pytest, imageio. **No torch.** Every later install: `pip install ... -c envs/hoi-sim.constraints.txt`. |
 | `hoi-policy`     | 3.12                                              | to create at M5                                | LeRobot (needs Python ≥3.12, numpy ≥2 — conflicts with HERO's `numpy<2`) + torch 2.11.0+cu128. Trains ACT/DP; the policy is exported to ONNX and run inside `hoi-sim`.                                                                       |
 
 ### Environment rules
 
 - **Never install anything into `lensing` or `base`** (other project).
-- **No ROS 2.** Plain Python + MuJoCo only.
+- **No ROS 2.** Plain Python + MuJoCo only. Our code must never depend on ROS.
+- **Always run our envs with `env -u PYTHONPATH`** (e.g. `env -u PYTHONPATH conda run -n hoi-sim python -m sim.m1_reach_test`): `~/.bashrc` sources
+  ROS 2 Jazzy, which puts `/opt/ros/jazzy/...` (Python 3.12 packages) on `PYTHONPATH` ahead of every conda env's site-packages.
 - No venv on top of conda; use `pip install` inside the conda env.
 - The two envs communicate **only through files** (`data/demos/*.npz`).
 
@@ -97,9 +99,9 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
   README.md
   third_party/          # cloned repos (HERO, WiLoR, ...) — gitignored; record each repo's exact commit hash in docs/log.md and the README so judges can reproduce
   data/
-    raw/                # Record3D exports (only a small sample committed)
+    raw/                # Stray Scanner recordings (only a small sample committed)
     demos/              # extracted .npz, one per demo
-  perception/           # Record3D parsing, hand + object extraction, viz overlays
+  perception/           # Stray Scanner parsing, hand + object extraction, viz overlays
   retarget/             # table frame, object-centric wrist, finger mapping
   sim/                  # MuJoCo scene (G1 + table + cup + coaster), HERO wrapper, grasp logic
   policy/               # randomized demo generation, training, closed-loop eval
@@ -114,10 +116,13 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
 ## Data conventions
 
 - **Units:** meters, radians, seconds.
-- **Sim world frame:** MuJoCo, z up.
-- **Record3D / ARKit camera frame is y-up, −z-forward** (VERIFY on real export). Convert explicitly and document the convention in code.
-- **Record3D export format:** VERIFY on the first real file before writing parsers.
-  - Expected: `.r3d` (a zip with `metadata` json, RGB jpgs, compressed depth, confidence maps), or "EXR + JPG" export.
+- **Sim world frame:** MuJoCo, z up. Robot stance centre at the origin, x forward (HERO's benchmark frame).
+- **Sim table height: 0.74 m** from now on (one of HERO's three benchmark heights; table near edge at x = 0.30 m, 0.60 m deep).
+- **Capture app: Stray Scanner** (https://github.com/StrayRobots/scanner). Verified on the phone: each recording folder has `rgb.mp4`,
+  `camera_matrix.csv`, `odometry.csv`, `imu.csv`, `depth/` and `confidence/`.
+  - **Format details NOT yet confirmed** — check against the repo's `docs/format.md` and the real test clips before writing the parser
+    (depth encoding/units/resolution, odometry column order + quaternion convention, timestamps and how frames align with `rgb.mp4`).
+  - ARKit camera frame is expected to be y-up, −z-forward (VERIFY on real data). Convert explicitly and document the convention in code.
   - LiDAR depth is low-res (likely 256×192) vs RGB — upsample depth or downsample RGB consistently.
 - **Demo `.npz` schema** (camera frame unless noted). Keep fields stable once the retargeter depends on them:
   - `t` (T,) — timestamps
@@ -140,7 +145,7 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
   - Scene with table + cup + coaster.
   - Fallback decision by end of day.
 - **M2 — Oct 30 — Perception**
-  - Parse Record3D.
+  - Parse Stray Scanner recordings.
   - WiLoR hand + SAM 2 masks + depth produce `.npz` per demo.
   - Overlay video confirming 3D keypoints project back onto the RGB frames.
 - **M3 — Oct 31 — Retargeting**
