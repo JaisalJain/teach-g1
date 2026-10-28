@@ -95,3 +95,86 @@ Read-only — no HERO code was executed. Key spot-checks redone by hand (finger 
   has different waist geometry than the training URDF (do physics on the training-geometry URDF only); one zero-action hold step after
   reset (`policy.reset_target_for(ref)`).
 - No reference clips or benchmark corpus ship in the repo; for M1 we generate our own (standing pose via FK, then IK reaches).
+
+### Decisions (approved 2026-10-28)
+- **hoi-sim env:** Python 3.11, HERO `[bench]` pins, `mujoco==3.13.0`, no torch. Lock + constraints files in `envs/`.
+- **Feet:** capsule feet (`sonic_train`) to match HERO's training. Box sole (`sonic_box`) only as a fix if standing is unstable.
+- **Fingers:** HERO's movable-finger model (`g1_29dof_with_hand_rev_1_0.urdf`) + our own finger PD loop + fingertip touch sensors we add.
+- **Finger retargeting:** no dex-retargeting for now. Plan: fingertip IK with mink on the same MuJoCo Dex3 hand model.
+  Fallback: dex-retargeting offline in `hoi-perception`, joint angles passed via the `.npz`.
+- **Palm motion:** build HERO reference clips from OUR retargeted palm path (replace the smooth-path step of `BenchReplanner`,
+  reuse its IK → FK → `ClipReference` code). HERO's point-to-point replanner = fallback and ablation baseline.
+- **M5:** the learned policy (trained in `hoi-policy`) is exported to ONNX and runs inside `hoi-sim` alongside HERO.
+- CLAUDE.md updated to match (approach steps 3–5, HERO section, env table, `envs/` in the layout).
+
+### ROS 2 packages visible in hoi-perception (investigation only, nothing changed)
+- `mujoco-ros2-control` / `-msgs` 0.1.1 are **not** installed in the env and **not** in `~/.local`: `pip show` reports
+  `Location: /opt/ros/jazzy/lib/python3.12/site-packages`. They leak in through `PYTHONPATH`, which `~/.bashrc` sets by sourcing
+  `/opt/ros/jazzy/setup.bash` (lines 118 and 144). Those six ROS/Gazebo dirs come **before** the env's own site-packages in `sys.path`
+  of every conda env.
+- User site: only `~/.local/lib/python3.12/site-packages` exists (225 entries) → not on the path of the 3.10 / 3.11 envs.
+- Collision check of the 251 top-level ROS module names against what we import (numpy, mujoco, mink, onnxruntime, yaml, cv2, torch,
+  sam2, open3d, ...) and our own package names: no clash except ROS's generic `controller` and `launch` (we must not name modules that).
+  ROS's compiled modules are cp312 and won't load in 3.10/3.11; pure-Python ones would.
+- Mitigation used for our runs: `env -u PYTHONPATH conda run -n hoi-sim ...`. (A permanent fix — e.g. not sourcing ROS in `~/.bashrc`
+  or `conda env config vars set PYTHONPATH=` per env — is the user's call.)
+
+---
+
+## 2026-10-29 (Thu) — M1 sub-task 2: hoi-sim env, our MuJoCo scene, HERO standing + reaching
+
+### hoi-sim created (as approved)
+- `conda create -n hoi-sim python=3.11` + `pip install -e third_party/HERO[bench] mujoco==3.13.0 pytest imageio[ffmpeg]` (dry run first:
+  exactly the planned 25 packages + hero-isaacsim). Install took ~25 min only because the network was slow (imageio-ffmpeg 29 MB).
+- Checks (run with `env -u PYTHONPATH`): `pip check` → "No broken requirements found."; no torch / nvidia-* / onnxruntime-gpu;
+  Python 3.11.18, numpy 1.26.4, mujoco 3.13.0, mink 1.3.0, onnxruntime 1.31.1 (providers Azure + CPU);
+  `HeroExportPolicy` loads: inputs `actor_obs_lower_body`, `actor_obs_upper_body` [1, 1000] → `action` [1, 29], CPUExecutionProvider.
+- `envs/hoi-sim.lock.txt` (pip freeze, 25 pins) and `envs/hoi-sim.constraints.txt` (numpy, scipy, mujoco, mink, onnxruntime).
+
+### Scene: `sim/scene.py` (`TableScene`)
+- HERO's `MujocoPlant` with `g1_29dof_with_hand_rev_1_0.urdf` (14 movable finger joints) and `foot_collision="sonic_train"` (7 capsules
+  per foot). Body physics untouched (HERO's armature tables, Python PD on `qfrc_applied`, 1 kHz × 20). Finger PD copied from HERO's demo
+  (kp 1.2, kd 0.04, effort 2.45/1.4 N·m, 2 rad/s target slew, armature 0.001, damping 0.01), fingers held open in M1.
+- Table in HERO's benchmark layout (stance centre at origin, near edge x = 0.30 m, 0.60 m deep, 1.0 m wide, 3.5 cm top, four legs).
+  Cup = free solid cylinder r 4 cm, h 10 cm, 150 g, condim 4; coaster = static disc r 5 cm. Cup contact = explicit pairs with every hand
+  geom, the table top and the coaster, friction priors from HERO's "glazed ceramic mug" (hand 1.0625, table 0.35; coaster 0.5 = our guess),
+  softness mixed like HERO's `_add_object_contact_pairs`. Hand geoms friction 1.5 (HERO's Dex3 value). Visual-only floor/sky/light.
+- Touch sensors: one MuJoCo `touch` site per distal finger link (thumb_2, index_1, middle_1, both hands), box = the link's collision
+  bounding box + 2 mm.
+- Sanity checks: pelvis spawns at 0.757 m (HERO's STANDING_ROOT_Z 0.7567), total mass 34.54 kg, each hand 0.6965 kg (HERO's nominal),
+  nq 57 / nv 55 / no MuJoCo actuators. Cup at rest: exactly 4 contacts with the table, all from the explicit pair (μ 0.35, solref 0.014,
+  condim 4) → MuJoCo does not add a duplicate mask-based contact for an explicit pair (open question from the code read, now answered).
+- Touch sensors work (scratch check, not a repo result): cup held as a fixed obstacle 2 mm into each right distal link → thumb_2 29.8 N,
+  index_1 73.8 N, middle_1 85.3 N on the touched link (index/middle cross-talk when the cup touches both). First attempt with a free
+  falling cup sampled only every 20 ms and missed the brief contacts — not a sensor problem.
+
+### Reach test: `sim/m1_reach_test.py` → `results/m1_reach/`
+Protocol (details in the script docstring): stand 10 s on a static reference; then 6 right-hand goals in HERO's benchmark ranges
+(x 0.35/0.45, y −0.12/−0.22/−0.32, palm 10 cm above the table, canonical side grasp), 10 s each, one after the other. Initial reach =
+`BenchReplanner.plan_from_state` with HERO's base plan for the height (`_bench_base`: squat at 0.50 m, stand at 0.74/0.88 m); correction =
+HERO's published closed-loop protocol (replan at reach end then every 3 s, base held, goal adjust, 0.3 s blend). Odometry = exact sim pose
+(HERO's published runs use a noisy odometry model — deviation). Error = right palm vs the original goal, world frame.
+
+| table | fell | pelvis z min | pelvis tilt max | final err mean / max (cm) | hold-window mean err (cm) | hold-window max (cm) |
+|---|---|---|---|---|---|---|
+| 0.50 m | no | 0.591 m | 15.7° | 2.17 / 4.86 | 2.46 (mean over goals) | 5.76 |
+| 0.74 m | no | 0.689 m | 12.9° | 1.43 / 1.93 | 1.70 | 6.22 |
+| 0.88 m | no | 0.666 m | 10.2° | 1.40 / 2.16 | 1.89 | 6.30 |
+
+- Standing 10 s (same at every height): pelvis z 0.735–0.752 m, root xy drift 7 mm, pelvis tilt ≤ 1.2°.
+- 17/18 goals end within 2.2 cm. Worst: 0.50 m table, far-right corner (0.45, −0.32) — HERO's own reach prefilter flags it as not
+  reachable at max lean ("squat_prefilter_failed"); final 4.86 cm, IK terminal error 0.95 cm, 4 replans.
+- IK terminal error of the initial plans: 0.11–0.95 cm → the remaining error is HERO's tracking, not the planner.
+- Hold-window max (4–6 cm) is the lag right at the end of the initial reach, before the first correction.
+- No body part other than feet/hands touched floor or table; no hand–table contact; cup moved 0.05 cm (settling); root xy moves up to
+  12 cm during reaches (HERO's planner lets the pelvis shift toward balance).
+- Runtime: 64 s of sim per height in 8–13 s wall (incl. IK), CPU only.
+- Files: `reach_results.json` (all numbers above + per-goal plans), `series_h*.npz` (per-step palm/pelvis/error), `reach_h074.mp4`
+  (71 s, 25 fps; gitignored as a large video).
+
+### Code review before the final run (workflow: 3 reviewers + 3 skeptics, read-only)
+Fixed after review: (1) planners now get HERO's `arm_posture` (idle arm can't drift replan after replan); (2) first reach of a height
+starts with HERO's lift waypoint — the rest palm (z 0.704) is below the 0.74/0.88 m tops and a straight-line path would sweep the fingers
+through the slab; (3) cup pair softness mixed as in HERO; (4) initial-plan frame timing aligned with HERO's replan convention (was 1 frame
+early); (5) "torso tilt" → it is pelvis tilt; odom deviation and goal order recorded in the JSON; per-goal pelvis min / tilt / hand contact.
+Refuted by the skeptic: cup touching the idle left hand.

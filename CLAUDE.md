@@ -38,12 +38,12 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
 3. **Retarget** (`hoi-sim` env):
    - Build a **table frame** (z up, origin on the table plane).
    - Express the wrist trajectory **relative to the cup** (approach/grasp/lift) and **relative to the coaster** (transport/place). This object-centric step is what lets the motion generalize to new layouts (the idea comes from OKAMI, CoRL 2024).
-   - Map fingers to the Dex3 joints with `dex-retargeting`: human thumb → thumb, index → index, middle (+ring/pinky) → middle.
+   - Map fingers to the Dex3 joints by **fingertip IK with `mink` on the same MuJoCo Dex3 hand model**: human thumb → thumb, index → index, middle (+ring/pinky) → middle. Fallback: `dex-retargeting` run offline in `hoi-perception`, joint angles passed via the `.npz`.
 4. **Execute:**
-   - **HERO** whole-body controller drives the G1's 29 body joints from palm targets; the G1 balances itself.
-   - We drive the Dex3 fingers ourselves.
-   - MuJoCo touch sensors on the fingertips confirm the grasp before the lift.
-5. **Learn:** generate a few hundred randomized sim demos with object-aware replay, keep only successes, train a small ACT or Diffusion Policy (LeRobot), evaluate closed-loop.
+   - **HERO** whole-body controller drives the G1's 29 body joints; the G1 balances itself. HERO tracks a **reference clip**, not a palm target: we build the clip from **our retargeted palm path** (replacing the smooth-path step of HERO's `BenchReplanner`, reusing its IK → FK → `ClipReference` code). HERO's point-to-point replanner is the fallback and an ablation baseline.
+   - We drive the Dex3 fingers ourselves (own finger PD loop on HERO's movable-finger model).
+   - MuJoCo touch sensors (added by us) on the fingertips confirm the grasp before the lift.
+5. **Learn:** generate a few hundred randomized sim demos with object-aware replay, keep only successes, train a small ACT or Diffusion Policy (LeRobot, in `hoi-policy`), **export it to ONNX** and evaluate it closed-loop inside `hoi-sim` alongside HERO.
 6. **Prove it:** success rate over 50 random layouts for three variants:
    - (a) naive kinematic replay
    - (b) object-aware replay + contact grasp
@@ -53,14 +53,18 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
 
 7. **Bonus:** live mode — webcam → MediaPipe → the same retargeting → G1.
 
-### HERO (whole-body controller) — key facts, mostly UNVERIFIED by us
+### HERO (whole-body controller) — key facts, VERIFIED from code at commit `416c4e0` (details in docs/log.md, 2026-10-28)
 
-- Repo: https://github.com/RunpeiDong/HERO (MIT). Model: https://huggingface.co/RunpeiDong/HERO
-- Pretrained ONNX policy for G1 + Dex3. It tracks **world-fixed palm targets** and outputs 29 body joint targets at 50 Hz.
-- Actions are residuals around reference arm joints. Joint target = default pose + 0.25 · clip(action), plus the arm reference.
-- `model_hero.json` (the sidecar) is **authoritative** for observation layout, scales, PD gains and joint tables. Never assume a layout.
-- Has a MuJoCo benchmark (`scripts/hero_bench.py`, `pip install -e ".[bench]"`) and `sim2sim/` code. Training needs Isaac — **we do NOT train HERO**, inference only.
-- Brand new repo (few stars). Expect rough edges.
+- Repo: https://github.com/RunpeiDong/HERO (MIT), cloned in `third_party/HERO`. Model: https://huggingface.co/RunpeiDong/HERO. Inference only — **we do NOT train HERO** (training needs Isaac).
+- The example policy (`checkpoints/example/model.onnx` + `model_hero.json`) ships inside the repo. Loaded by `sim2sim.policy_hero_export.HeroExportPolicy(dir, stand_flag=0.0)` on CPU onnxruntime; 50 Hz; outputs 29 body joint targets (not fingers).
+- **It does NOT take a palm target.** It tracks a 50 fps reference clip (`sim2sim.reference.ClipReference`): reference arm joints at t+1, the reference palm pose (in the clip's own pelvis frame → palm error inputs), and the reference root pose at t+{0,5,10,15,20}. A world palm goal becomes a clip via mink IK: `sim2sim.bench.replan.BenchReplanner.plan_from_state` (palm path → IK → FK → clip), with closed-loop replanning + goal adjust `g ← g − 0.6·e`.
+- Action: `q_target = q_default + action_scale_j · clip(a, ±100)`, plus `(q_ref − q_default)` on the 14 arm joints. `action_scale_j = 0.25 · effort_limit_j / kp_j` (0.075–0.55 per joint, **not** a flat 0.25).
+- PD runs in Python, not MuJoCo actuators: `tau = kp(q* − q) − kd·q̇`, clipped to effort limits, written to `qfrc_applied`, 20 × 1 ms substeps per policy step. Use the sidecar kp/kd/effort limits.
+- `model_hero.json` (the sidecar) is **authoritative** for observation layout, PD gains, action scales and joint tables. Some things are hard-coded in Python instead (obs scales h01×0.25, h03×2, h10×0.05; joint order; palm offset) — read the code, never assume.
+- Tracked "palm" = `wrist_yaw_link` + (0.0415, ±0.003, 0) m = the Dex3 palm origin. Finger bases are ~8 cm further forward.
+- Robot model: trained with **fixed** Dex3 fingers (`g1_29dof_dex3fixed_hero.urdf`) and **capsule feet** (`sonic_train`). We use `g1_29dof_with_hand_rev_1_0.urdf` (same masses/geometry, 14 movable finger joints) with capsule feet; box sole (`sonic_box`) only if standing is unstable.
+- Object inputs (h17–h19) only activate for ~0.30 m boxes near the floor → we feed zeros (as HERO's own table demo does). No touch sensors in HERO's models — we add them. HERO's benchmark has no table collision.
+- Has a MuJoCo benchmark (`scripts/hero_bench.py`) and `sim2sim/` code. Brand new repo (few stars). Expect rough edges.
 - **Fallback, if HERO isn't working by end of Day 1:** LeRobot's Unitree G1 MuJoCo sim with `GrootLocomotionController` or `HolosomaLocomotionController` handling the lower body; arms via IK (`mink`). Docs: https://huggingface.co/docs/lerobot/en/unitree_g1
 
 ---
@@ -73,7 +77,8 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
 | env              | python                                            | status                                         | purpose                                                                                                                                                                                                                                           |
 | ---------------- | ------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `hoi-perception` | 3.10                                              | **exists**, torch 2.11.0+cu128 verified on GPU | WiLoR, SAM 2, Open3D, Record3D parsing                                                                                                                                                                                                            |
-| `hoi-sim`        | 3.11 (verify against HERO / LeRobot requirements) | to create                                      | mujoco, onnxruntime (CPU build — HERO's policy is tiny; avoids CUDA/cuDNN mismatches on Blackwell), dex-retargeting, HERO, LeRobot. If LeRobot's deps conflict with HERO's, give LeRobot its own env (`hoi-policy`) rather than forcing versions. |
+| `hoi-sim`        | 3.11                                              | created 2026-10-28; lock in `envs/`            | HERO (editable, `[bench]`), `numpy<2` (HERO pin), `mujoco==3.13.0` (the version HERO names), mink, daqp, onnxruntime (CPU build — HERO's policy is tiny; avoids CUDA/cuDNN mismatches on Blackwell), pytest, imageio. **No torch.** Every later install: `pip install ... -c envs/hoi-sim.constraints.txt`. |
+| `hoi-policy`     | 3.12                                              | to create at M5                                | LeRobot (needs Python ≥3.12, numpy ≥2 — conflicts with HERO's `numpy<2`) + torch 2.11.0+cu128. Trains ACT/DP; the policy is exported to ONNX and run inside `hoi-sim`.                                                                       |
 
 ### Environment rules
 
@@ -100,6 +105,7 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
   policy/               # randomized demo generation, training, closed-loop eval
   live/                 # webcam teleop bonus
   results/              # eval logs, metrics json, videos/GIFs
+  envs/                 # pip lock + constraints files per conda env (reproducible installs)
   docs/log.md           # running log: what was tried, what broke, numbers
 ```
 
