@@ -20,7 +20,8 @@ import yaml
 
 RAW = Path("data/raw")
 WORK = Path("data/work")
-RESULTS = Path("results/m2_perception_v2")        # M2 v2 outputs; v1 stays untouched in RESULTS_V1
+RESULTS = Path("results/m2_perception_v3")        # M2 v3 outputs; v1 and v2 stay untouched
+RESULTS_V2 = Path("results/m2_perception_v2")
 RESULTS_V1 = Path("results/m2_perception")
 DEMOS = Path("data/demos")
 CONFIG = Path("config/objects.yaml")
