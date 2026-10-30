@@ -629,3 +629,33 @@ importing report.py) and checked the overlays by eye; a schema auditor checked e
 **Runtime / memory per stage** (`<clip>/resources.json`; top-down / 90° / 45° / 45°): frames 6–12 s, 0.1 GB; hand (WiLoR, GPU) 63–70 s,
 6.06 GB RSS, 2.82 GB VRAM; masks (SAM 2, GPU) 70–125 s, 5.4–9.4 GB RSS, 0.80 GB VRAM; table 8–22 s, ≤ 0.5 GB; hand_metric 1–2 s;
 objects 20–27 s; table_frame, events, palm, demo < 1 s each; report 3–7 s. Peak RSS anywhere 9.35 GB (< 16 GB). Whole S4–S11 ≈ 40–60 s/clip.
+
+---
+
+## 2026-10-30 (Fri) — M2 v2: why definitions changed
+
+Phase 0 of M2 v2. v1 results stay untouched (`results/m2_perception/`, `results/m1_pick_mug/`); v2 writes to `results/m2_perception_v2/`
+and `results/m1_grasp_fix/`.
+
+**config/objects.yaml:** `handle_height_m` 0.06 (now `measured`), `handle_thickness_m` 0.010 (`measured`, was an estimated 0.012),
+`mass_kg` 0.40 (`estimated`: owner's estimate, no scale; was 0.37), new `mug.ruler_check` (ruler: diameter 0.10 m, height 0.09–0.10 m —
+agrees with the label within ruler resolution; label values stay authoritative). Note: the v1 Track B runs used 0.37 kg and a 12 mm handle.
+
+**Why the definitions change (README material):**
+- **G5 and the contact threshold.** The fixed `r + 5 cm` contact threshold (and G5's upper bound) was set before seeing data, assuming the
+  palm point (midpoint of wrist and middle-finger base) sits 1.5–2.5 cm off the mug surface during a side wrap. The data shows a
+  palm-to-axis distance of 96–102 mm in every clip (v1: 96.1 / 96.6 / 99.4 mm at the grasp frame; the top-down clip's closest approach is
+  0.102 m, `results/m2_perception/26d4118b0c/stages/events.json`), so the threshold sat on the data's edge: one clip passed G5 by 0.1 mm and
+  the top-down clip missed contact by a few millimetres, losing every event. v2 defines contact relative to each clip's own closest approach
+  (`D_min + 1 cm`) and keeps the distance in G5 as information only.
+- **G3.** The 30–80 px plumbing error may come from a near-orthographic hand model (WiLoR's crop camera) placed under the real perspective
+  camera, from a hand-scale mismatch at the true LiDAR depth, or both. v2 fits a hand scale (and a sideways shift) to WiLoR's own 2D palm
+  keypoints to find out; G3 becomes the palm-keypoint reprojection after that fit.
+- **Desk edge (S7).** A real bug: a line's extent counted the gaps between its fragments, so two distant collinear fragments (cup holder +
+  desk corner) passed the "> 0.42 m = long edge" rule on both 45° clips. v2 uses the longest gap-free run (≤ 2 cm steps) and drops contour
+  points near the mug and the coaster.
+- **G8.** v1 gated on the normal-angle drift between the initial and end plane fits (the 90° clip failed at 2.43° — traced to ARKit attitude
+  drift on a static camera). What affects our measurements is the plane offset at the mug, so v2 gates on that (< 1 cm) and reports the
+  angle as information.
+- **G6.** The ruler confirms the label (10 cm vs 9.9 cm), so the +6–7 mm free-fit diameter in every clip is a perception bias to
+  investigate: v2 recomputes the static-window mug masks with SAM 2's image predictor at full resolution and compares.
