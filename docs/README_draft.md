@@ -1,6 +1,6 @@
 <!-- Draft of README.md. Every number links to the saved file it comes from. Links are relative to docs/: when this text
      replaces README.md, drop one "../" from every link and turn "log.md" / "INSTALL.md" into "docs/log.md" / "docs/INSTALL.md".
-     Open slots are HTML comments tagged M5 (selector results), M6 (gallery) and M7 (reproduce script). -->
+     All open slots (M5, M6, M7) are filled. -->
 
 # teach-g1: a standing Unitree G1 learns my mug pick-and-place from four iPhone clips
 
@@ -331,8 +331,11 @@ CPU worker processes. Re-runs match the saved rows: the oracle's trials 0-4 re-r
 ([5 of 5](../results/m4_execute/determinism_checks.json)), and so does every re-rendered video run
 ([M4b](../results/m4b/summary.md)).
 
-<!-- M7: reproduce.sh: one line on scripts/reproduce.sh (re-runs one oracle trial, one b_hybrid_h45 trial and one R2 trial from
-     committed files and regenerates the M4 / M4b / M5 summaries; exits non-zero if anything differs), with its runtime -->
+**Check that it reproduces:** `bash scripts/reproduce.sh` re-runs, from committed files only, one oracle trial, one
+`b_hybrid_h45` trial and one trial of the learned selector (its choice recomputed from the ONNX model). It then regenerates the
+M4 / M4b / M5 summaries. Each step prints whether it matches the saved row, and the script exits non-zero if anything differs.
+On a fresh `git clone` (with `third_party/` linked in) everything matched, in
+[33 s](../results/final/clean_clone_check.txt).
 
 ## Limitations
 

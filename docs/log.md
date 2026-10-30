@@ -1771,3 +1771,49 @@ arm. So each step is tested only as the bundle of changes it makes, and the rank
   - F is 4e103843db 45 everywhere.
   - The best training clip at 45 deg is also 4e103843db, so "b_hybrid_h45 noisy" and "F noisy" are the same runs (the noisy items
     are de-duplicated: 100 noisy runs, not 150).
+
+### Step 4 results — branch D3 (`results/m5/summary.md` / `.json`; 403 eval runs in 748 s on 8 workers, 0 exceptions)
+
+| variant (50 test layouts) | success |
+|---|---|
+| R2 human-first, clean | 49/50 |
+| R1 argmax, clean | 47/50 |
+| F (4e103843db 45), clean | 46/50 |
+| R2, noisy path | 44/50 |
+| F = b_hybrid_h45 4e103843db, noisy path | 38/50 |
+| b_hybrid at each layout's own yaw | 98/200 (26d 22, 4e 11, 49aff 21, e88 44) |
+| oracle | 44/50 |
+
+- **D3:** R1, R2 and F are all at least 30/50, so no "what failed" breakdown is needed.
+- **Paired comparisons:**
+  - R2 vs F: 45 both / 4 R2 only / 1 F only / 0 neither.
+  - R2 vs the oracle: 43 / 6 / 1 / 0. That edge rests on 7 discordant layouts, too few to claim R2 is better than the oracle.
+- **R2's choices:**
+  - It keeps my own heading on 35/50 layouts (e88 phi_h 33, 26d phi_h 2); mean departure 3.4 deg, max 36.7.
+  - By clip: e88 41, 26d 5, 49aff 4, 4e 0. It fell back to R1 on 2 layouts (no p >= 0.8).
+- **Reading:**
+  - Most of R2's success comes from choosing the clip whose own heading the arm can execute (e88), not from a fine per-layout
+    heading. Turning the other clips toward 45 deg does the rest.
+  - b_hybrid at the layout's own yaw (98/200) is lower than M4b's b_hybrid (112/200), which turned the handle with the grasp, so
+    the handle yaw relative to the hand matters.
+- **Noisy path:** only the PATH is built from the noisy layout. The scene is true, and the place correction stays privileged (it
+  reads the true cup pose in the hand and the true coaster).
+
+### Step 5 / M6 / M7
+- **Videos:** the R2 success (e88 at 55 deg, trial00) and the R2 failure (e88 at 55 deg, trial07, released but not on the coaster) are
+  both re-runs identical to their rows; the GIF is `results/m5/r2_success.gif` (4.0 MB).
+- **Gallery** (re-renders checked identical):
+  - new: `results/final/oracle_success.gif` (4.9 MB) and `results/final/b_level_failure.gif` (3.4 MB, M4 e88 trial07 approach
+    knock);
+  - reused: `results/m4b/b_hybrid_success.gif` and `results/m5/r2_success.gif`.
+  - `sim.m4_execute render` now makes a GIF whenever the re-run is identical to its row (success or failure).
+- **Figures:** `results/final/ablation.png` and `heading.png` (`retarget/final_figures.py`, from saved summaries only).
+- **`docs/README_draft.md`:** every number links to its file; README.md is untouched.
+- **`scripts/reproduce.sh`:** one oracle trial, one b_hybrid_h45 trial, one R2 trial from the ONNX model, then the M4 / M4b / M5
+  summaries.
+  - Clean-clone check: git clone of HEAD, third_party/ symlinked, existing envs. ALL MATCH in 33 s, peak RSS 2.7 GB
+    (`results/final/clean_clone_check.txt`).
+  - D4 needed no fix.
+  - The hoi-sim env's HERO is an editable install from this machine's `third_party/HERO`.
+- **Hygiene** (`scripts/hygiene.py` -> `results/final/hygiene_report.md`): one tracked file over 10 MB (the sample's rgb.mp4, 10.68 MB),
+  no secret-looking strings, no README link to an untracked file, no top-level LICENSE (left for the owner).

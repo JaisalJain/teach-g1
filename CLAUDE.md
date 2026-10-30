@@ -309,6 +309,11 @@ Code in `retarget/` (hoi-sim, kinematic only), outputs in `results/m3_retarget/`
   - Inputs: noisy (cup / coaster N(0, 1 cm), yaw N(0, 10 deg)). Training: 5 copies per row, seed 0. CV held-out: per layout, seed 1.
     Test: per trial, seed 2026.
   - Rules: R1 = argmax p; R2 = the smallest departure among p >= 0.8, else R1; F = the fixed-best training candidate.
+- **M5 results:** `results/m5/summary.md`.
+  - Clean: R2 49/50, R1 47/50, F 46/50.
+  - Noisy path: R2 44/50, F 38/50.
+  - CV: AUC 0.916; R1 = F = 115/120 held out (D2: learning does not beat F in CV).
+  - Regenerate with `python -m policy.m5 summarize`. Reproduce check: `bash scripts/reproduce.sh`.
   - Regenerate with `python -m retarget.m4b_summary summarize`.
 
 ---
