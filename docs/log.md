@@ -659,3 +659,6 @@ agrees with the label within ruler resolution; label values stay authoritative).
   angle as information.
 - **G6.** The ruler confirms the label (10 cm vs 9.9 cm), so the +6–7 mm free-fit diameter in every clip is a perception bias to
   investigate: v2 recomputes the static-window mug masks with SAM 2's image predictor at full resolution and compares.
+- **hoi-sim preflight:** `pip install matplotlib==3.11.2 -c envs/hoi-sim.constraints.txt` (B2 asks for a plot; hoi-sim had no plotting
+  library). 9 wheels (matplotlib + contourpy, cycler, fonttools, kiwisolver, pyparsing, python-dateutil, six, tzdata); numpy stays 1.26.4,
+  `pip check` clean; lock regenerated (the diff is exactly those 9 lines).
