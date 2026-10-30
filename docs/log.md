@@ -262,3 +262,20 @@ real clips):
   RGB resolution; `odometry.csv` = timestamp, frame, x y z, qx qy qz qw (scalar-last), camera-to-world. **The app already rotates the camera to
   OpenCV axes (x right, y down, z forward)**, world = ARKit (gravity y-up). This contradicts CLAUDE.md's "ARKit y-up −z-forward" — to be
   verified on a real clip before CLAUDE.md is changed. Possible off-by-one between rgb.mp4 frames and depth/odometry rows (check counts).
+
+### Perception env set up (2026-10-30, approved)
+- Installed into `hoi-perception` with `envs/hoi-perception.constraints.txt` (pins torch 2.11.0+cu128, torchvision 0.26.0+cu128, triton,
+  numpy 2.2.6, opencv-python 4.12.0.88): WiLoR's inference deps (opencv, scikit-image, smplx 0.1.28, yacs, timm, pytorch-lightning, trimesh,
+  ultralytics 8.1.34, ...), `pyrender` (--no-deps; it pins PyOpenGL 3.1.0, we have 3.1.10 — the only `pip check` complaint), `chumpy` from git
+  `580566e` (--no-build-isolation), SAM 2 editable from `third_party/sam2` (`SAM2_BUILD_CUDA=0`), and `dill` (the YOLO hand-detector
+  checkpoint is pickled with dill; not in WiLoR's requirements). After install: torch 2.11.0+cu128, CUDA available, numpy 2.2.6 — unchanged.
+  Lock: `envs/hoi-perception.lock.txt`.
+- Weights (gitignored, in third_party/): WiLoR `detector.pt` 53.6 MB, `wilor_final.ckpt` 2.56 GB (HF Space rolpotamias/WiLoR),
+  SAM 2.1 `sam2.1_hiera_base_plus.pt` 324 MB.
+- Runtime env vars: `TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1` (torch 2.11 defaults to weights_only loading, which these checkpoints fail),
+  `YOLO_AUTOINSTALL=false`, `PYOPENGL_PLATFORM=egl`.
+- Smoke tests: all imports OK. SAM 2.1 base_plus on the GPU (bf16) segments a synthetic box exactly (score 0.996), 0.43 s, 0.74 GB VRAM.
+  WiLoR hand detector on 5 frames from each of the 4 test clips: a "right" hand in every frame where the hand is visible (conf 0.73-0.83),
+  none in the start/end frames without a hand.
+- Still missing: `MANO_RIGHT.pkl` (user registration at mano.is.tue.mpg.de) → the full WiLoR model cannot be loaded yet.
+- Noted from the test frames: the cup is a mug with a handle (sim cup is a plain cylinder) and the table is a striped lap desk.
