@@ -35,8 +35,8 @@
   "peak_vram_gb": null
  },
  "events": {
-  "seconds": 0.88,
-  "peak_rss_gb": 0.211,
+  "seconds": 0.9,
+  "peak_rss_gb": 0.21,
   "peak_vram_gb": null
  },
  "palm": {

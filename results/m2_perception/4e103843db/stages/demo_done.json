@@ -1,7 +1,7 @@
 {
  "stage": "demo",
  "clip": "4e103843db",
- "seconds": 0.06,
+ "seconds": 0.08,
  "peak_rss_gb": 0.036,
  "path": "data/demos/4e103843db.npz",
  "schema_version": 2,

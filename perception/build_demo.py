@@ -46,8 +46,9 @@ Hand (WiLoR MANO right hand, depth-corrected with the LiDAR in S5)
   mano_betas              (T,10)     MANO shape coefficients
                                      (mano_*: WiLoR's own values -- S5 only translates the hand -- on every hand_valid
                                      frame, also where the hand is not metric_valid)
-  depth_shift_m           (T,)       S5 depth shift D = median(lidar - mesh) (+ = WiLoR's hand was too close)
-  lidar_residual_m        (T,)       median |lidar - (mesh + D)| over the S5 pass-2 pixels
+  depth_shift_m           (T,)       S5 depth shift D = median(lidar - mesh) (+ = WiLoR's hand was too close); finite
+                                     wherever S5 could compute D, i.e. also on hand_valid frames that are not metric_valid
+  lidar_residual_m        (T,)       median |lidar - (mesh + D)| over the S5 pass-2 pixels (finite where D is)
   reproj_err_px           (T,)       plumbing check: corrected kp3d projected with K vs WiLoR's own 2D keypoints
                                      (tests our transforms, NOT WiLoR's accuracy)
 Objects (table frame)
@@ -67,7 +68,8 @@ Events (S8, from the raw metric palm)
                                      if g's valid run is shorter than the smoothing window. NaN if g is undefined, or
                                      if S7 found no table x and the handle yaw is invalid
 Dimensions
-  mug_dims, coaster_dims  () str     JSON of the config/objects.yaml blocks (value + source flag per entry)
+  mug_dims, coaster_dims  () str     JSON of the config/objects.yaml blocks, copied as they are (value + source flag per
+                                     entry; the mug's capacity_ml is a bare number in the config)
 """
 
 from __future__ import annotations

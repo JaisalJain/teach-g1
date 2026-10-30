@@ -170,7 +170,7 @@ def body_iou(clip: str, n: int) -> np.ndarray:
 
 def plot(path, clip, t, valid, d_axis, d_final, z, iou, ev, r, z_grasp):
     s = t - t[0]
-    fig = Figure(figsize=(11, 8.5))
+    fig = Figure(figsize=(11, 8.5), layout="constrained")     # constrained: no clipped axis labels
     ax = fig.subplots(4, 1, sharex=True, height_ratios=[3, 3, 2, 1])
     ax[0].plot(s, d_axis, color=BLUE, lw=1.5, label="to initial cup axis")
     ax[0].plot(s, d_final, color=ORANGE, lw=1.5, label="to final cup axis")
@@ -199,8 +199,7 @@ def plot(path, clip, t, valid, d_axis, d_final, z, iou, ev, r, z_grasp):
     for a in ax[:3]:
         a.legend(loc="upper right", fontsize=8, frameon=False)
         a.grid(alpha=0.25, lw=0.5)
-    fig.suptitle(f"{clip}: events from the raw metric palm (table frame)", y=0.995)
-    fig.tight_layout()
+    fig.suptitle(f"{clip}: events from the raw metric palm (table frame)")
     fig.savefig(path, dpi=120)
 
 

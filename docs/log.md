@@ -557,3 +557,75 @@ seed/index, cup/coaster xy, handle yaw, mass, outcome, phase, reason, category, 
 both re-runs identical to the batch (nothing succeeded, so two failures of different categories); `cylinder_repro/pick_results.json`.
 Runtime: three parallel CPU processes; summed per-trial wall time 156 s (50 trials), 73 s and 70 s (20 each); videos via Mesa EGL on the
 Intel iGPU (`__EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json MUJOCO_GL=egl`) while Track A held the NVIDIA GPU.
+
+### Track A — S4–S11, gates, cross-view (all numbers: `results/m2_perception/summary.md`, `<clip>/gates.json`, `<clip>/stages/*.json`)
+**How it was built.** An interface contract (file formats between stages) plus a list of implementation decisions fixed BEFORE any result
+(RANSAC seeds/iterations, dilation kernels, majority = ≥ 6 of 11 frames, grid + Nelder–Mead, event definitions, gap-fill rule, G1/G4
+definitions, …). Five module groups were implemented in parallel by a workflow (implement → 2 adversarial reviewers: spec compliance,
+numerics/frames → fixer), each with a synthetic self-test against known ground truth (scratch, not in the repo). `perception/run_clip.py`
+runs S1–S11 as one process per stage. Adaptation: S7 lives in its own module `perception/table_frame.py` (one module = one stage), and its
+JSON is `data/work/<clip>/table_frame/table_frame.json` (the spec wrote `data/work/<clip>/table_frame.json`).
+
+**Corrections I made after review, before the final runs (none chosen to pass a gate):**
+- S6 silhouette: the contract named `cv2.fillConvexPoly`, which fills every pixel the hull edge touches and rounds the vertices (~0.65 px
+  too large per side). Replaced by a pixel-CENTRE-inside test on the unrounded hull — the same rule that defines SAM 2's masks (logits at
+  pixel centres). Check: a top-down disc covers 0.9987 × πR² px = the 72-gon/circle area ratio. This change moves G6's free-fit diameter
+  UP (on the 90° clip the old rasteriser narrowly passed G6 in a reviewer probe; with the fix every clip fails G6).
+- S9 Savitzky–Golay window: my contract text said 13 / 7 frames, an arithmetic slip; the spec's "odd window nearest 0.2 s" on the real
+  clock (median dt 16.67 ms / 33.33 ms) is 11 frames (0.183 s) / 5 frames (0.167 s), which the code computes.
+- `mano_global_orient` stored in the table frame (the spec's rule: table frame unless the name says cam).
+- `report.py` copies every stage's `done.json` and `<stage>.json` into `results/m2_perception/<clip>/stages/` so all numbers are under results/.
+- Cosmetic: constrained layout for events.png (clipped label), handle-direction legend / "invalid" note in topdown.png; two docstring fixes
+  from the schema audit (depth_shift_m / lidar_residual_m are finite wherever S5 computed D; capacity_ml has no source flag).
+
+**Verification.** A second workflow re-derived every gate value, pass/fail and cross-view value per clip with independent code (not
+importing report.py) and checked the overlays by eye; a schema auditor checked every demo field against S10 and cross-stage consistency
+(76/76 checks on three clips, 72/72 on the top-down). **No numerical or pass/fail mismatch on any clip.**
+
+**Gates** (✔ pass, ✘ fail):
+
+| gate | 26d4118b0c top-down | 4e103843db 90° | 49aff04f7a 45° | e8825dea53 45° |
+|---|---|---|---|---|
+| G1 hand coverage | ✘ events undefined | ✔ 100 %, no gap | ✔ 99.2 %, longest gap 1 frame | ✔ 99.7 %, no gap |
+| G2 LiDAR residual | ✔ 0.53 cm | ✔ 0.55 cm | ✔ 0.38 cm | ✔ 0.82 cm |
+| G3 plumbing reprojection | ✘ 41.8 px | ✘ 61.2 px | ✘ 81.0 px | ✘ 30.9 px |
+| G4 static jitter | ✔ raw std 0.06 cm (1 hold) | ✔ 0.05 cm (1 hold) | N/A no hold | N/A no hold |
+| G5 grasp geometry | ✘ g undefined | ✔ d 99.4 mm (≤ 99.5), z 47.5 mm | ✔ d 96.1 mm, z 61.8 mm | ✔ d 96.6 mm, z 62.7 mm |
+| G6 mug fit | ✘ IoU 0.918, Ø 105.1 mm, h N/A | ✘ IoU 0.943, Ø 105.7, h 86.9 | ✘ IoU 0.947, Ø 106.1, h 85.8 | ✘ IoU 0.938, Ø 105.8, h 88.1 |
+| G7 placement | ✔ 0.81 cm | ✔ 2.15 cm | ✔ 1.04 cm | ✔ 0.54 cm |
+| G8 table frame | ✔ RMS 5.45 mm, drift ok, x 0.8° | ✘ normal drift 2.43° (x 1.7°) | ✘ x 23.9° off 45° | ✔ x 11.0° off 45° (but see below) |
+
+**What failed and why (plainly):**
+- **G3 fails on every clip (31–81 px).** WiLoR's 3D hand comes from a near-orthographic crop camera (f = 5000 px for a 256 px crop); its 2D
+  keypoints agree with a weak-perspective projection of its 3D keypoints to about a pixel (reviewer + verifier probes in the scratchpad, not a
+  saved result). The spec's check projects with the real perspective camera, where a hand ~30–40 cm away and a few cm deep lands tens of
+  pixels off. Our transforms are consistent; the gate as defined cannot reach 8 px for close hands. Needs the user's decision.
+- **G6 fails on every clip the same way:** free-fit diameter 105.1–106.1 mm vs the 99 mm label (+6–7 mm), height 85.8–88.1 mm vs 91 where
+  observable. The SAM 2 body masks are systematically larger than the label-size silhouette (verifier: on the top-down final window the mask
+  extends up to 16 half-res px past it on one side). Cause not identified (SAM 2's 4× lower-resolution logits, the mug's real shape vs its
+  label, or both). The 2-DOF IoU is 0.92–0.95 everywhere.
+- **Top-down 26d4118b0c has no events:** the palm point's closest approach to the cup axis is 0.102 m vs the contact threshold r + 5 cm =
+  0.0995 m (`stages/events.json`), so contact never fires and lift / grasp / place / release are undefined → G1 and G5 fail, 7 cross-view
+  columns are n/a. On the other clips the palm-to-axis distance at g is 96–99 mm, i.e. this grasp style sits at the threshold.
+- **G8 drift on 4e103843db:** plane normals of the initial and end windows differ by 2.43° (> 2°) while the offset at the mug is −0.4 mm.
+  The verifiers traced it to ARKit attitude drift on a static camera (the desk slot stays on the same pixels; scratch probes, not saved).
+- **S7 picked junk "long edges" on both 45° clips.** The rule "any line with inlier extent > 0.42 m is a long edge" is fooled by lines whose
+  inliers are two distant fragments (extent = max − min includes gaps): 49aff04f7a L2 = 0.584 m with a 0.444 m gap (cup holder + desk
+  corner) beat the real edge L0 (0.50 m, gap 0.02 m) under the pre-registered tie-break (group of the longest qualifying line) → x 23.9° off;
+  e8825dea53's only qualifying line L2 = 0.54 m with a 0.26 m gap runs through the mug's outline and the cup holder → its G8 pass (11°) is
+  coincidental. Consequence: on these two clips the table-frame x/y quantities (coaster dx/dy, yaws, palm path in x/y) are rotated; distances,
+  heights and events are not affected. The S7 hole filling did not remove the mug outline because the mug region connects to the off-desk
+  region through the desk's slot / image edge. Not changed: needs the user's decision (gap-aware extent, exclude pixels near object masks, …).
+- **G4 N/A** on both 45° clips (longest slow span shorter than 0.3 s).
+- **e8825dea53: no handle** at i = 1 (hidden) → handle yaw invalid, approach yaw n/a, its cup frame falls back to (junk) table x. Its
+  lift confirmation is uninformative (the hand occludes the mug before contact, IoU < 0.7 already).
+- **Palm below the table at the first / last frames of the hand track** (e.g. −8.4 cm at i = 90 on 4e103843db, with large LiDAR depth shifts):
+  edge-of-track artefacts, outside every gate window, no event moved (palm_height.png, depth_shift.png).
+- Spec items that turned out vacuous / borderline: the S9 "never fill a gap that contains t_contact, g or t_lift" can never fire (those are
+  metric_valid frames by definition); G8's RMS < 6 mm is nearly automatic (RMS over 1 cm-band inliers is ≤ 5.77 mm for uniform residuals);
+  G1's 0.1 s run limit means ≤ 5 frames at 60 Hz (6 frames = 0.10004 s); G5 on the 90° clip passes by 0.1 mm.
+- Palm normal: never flipped where decided (3 clips); undecided on the top-down clip (no g).
+
+**Runtime / memory per stage** (`<clip>/resources.json`; top-down / 90° / 45° / 45°): frames 6–12 s, 0.1 GB; hand (WiLoR, GPU) 63–70 s,
+6.06 GB RSS, 2.82 GB VRAM; masks (SAM 2, GPU) 70–125 s, 5.4–9.4 GB RSS, 0.80 GB VRAM; table 8–22 s, ≤ 0.5 GB; hand_metric 1–2 s;
+objects 20–27 s; table_frame, events, palm, demo < 1 s each; report 3–7 s. Peak RSS anywhere 9.35 GB (< 16 GB). Whole S4–S11 ≈ 40–60 s/clip.

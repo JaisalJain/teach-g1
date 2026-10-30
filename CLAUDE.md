@@ -149,28 +149,75 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
   - x = **my forward** direction: in-plane perpendicular to the desk's long edges (fitted to the desk boundary in depth), signed so the
     first metric palm position has x < 0 (I sit at the near long edge). y = z × x (so y points to my left).
   - `x_axis_method` records how x was found (long-edge rule, largest-extent fallback, reference-direction fallback, or `failed`).
-- **Demo `.npz` schema v2** (`data/demos/<clip>.npz`, written by `perception.build_demo`; `schema_version = 2`). Table frame unless the
-  name says `cam` / `world`. T = number of odometry rows; index i = odometry row = depth/confidence file index (image = decoded frame i−1;
-  i = 0 has no image). Invalid entries are NaN (floats) / False (bools).
-  - Metadata: `schema_version`, `clip_id`, `view_label`, `t` (T,) [s, odometry clock], `K` (T,3,3) RGB-pixel intrinsics (original
-    sideways orientation, 1920×1440), `T_world_cam` (T,4,4) camera-to-world (OpenCV camera axes, ARKit world y-up), `T_table_world` (4,4),
-    `table_plane_world` (4,) [n, d] with n·p + d = 0, n·(+y) > 0, `table_rms_m`, `x_axis_method`, `x_axis_vs_reference_deg`.
-  - Hand: `hand_valid` (T,) (right hand detected + reconstructed), `metric_valid` (T,) (LiDAR depth correction succeeded),
-    `hand_kp_cam` (T,21,3) [m, camera frame, after the LiDAR shift], `hand_kp_table` (T,21,3), `palm_pos_table_raw` / `palm_pos_table`
-    (T,3), `palm_rot_table_raw` / `palm_rot_table` (T,3,3) (columns = palm axes x_f, y, n; raw = per frame, plain = gap-filled +
-    Savitzky–Golay smoothed), `palm_normal_flipped` (bool), `mano_global_orient` (T,3,3) (camera frame), `mano_hand_pose` (T,45)
-    axis-angle, `mano_betas` (T,10), `depth_shift_m` (T,), `lidar_residual_m` (T,), `reproj_err_px` (T,) (plumbing check).
-  - Keypoint order (21): to be filled in from WiLoR's MANO wrapper once verified (expected OpenPose: wrist 0, thumb 1–4, index 5–8,
-    middle 9–12, ring 13–16, pinky 17–20).
-  - Palm: `palm_pos = 0.5·(kp[0] + kp[9])`; x_f = kp[9] − kp[0] normalised; n = (kp[5] − kp[0]) × (kp[17] − kp[0]) normalised (flipped
-    for all frames if needed so that n points toward the cup axis at the grasp frame), orthonormalised; y = n × x_f.
-  - Objects: `cup_init_pos_table`, `cup_final_pos_table` (3,) mug base centre, `cup_init_yaw`, `cup_final_yaw` [rad, handle direction
-    from table x], `cup_yaw_valid`, `cup_init_iou`, `cup_final_iou`, `cup_free_fit_r_h` (2,) [m], `coaster_pos_table` (3,),
-    `coaster_diameter_fit_m`.
-  - Events: `phase` (T,) int (0 approach, 1 grasp [t_contact, t_lift), 2 transport [t_lift, t_place), 3 place [t_place, t_release),
-    4 release/retreat, −1 undefined), `t_contact`, `t_lift`, `t_place`, `t_release` [s, NaN if not detected], `grasp_index` (int, −1 if
-    none), `T_palm_in_cup_at_grasp` (4,4) (cup frame: origin = initial base centre, z up, x toward the handle).
-  - Dimensions: `mug_dims`, `coaster_dims` (copied from `config/objects.yaml`, with their source flags).
+- **Demo `.npz` schema v2** (`data/demos/<clip>.npz`, written by `perception.build_demo` = S10; `schema_version = 2`; the field
+  list below is copied from that module's docstring, which is the master copy). Always written, also for clips that fail
+  their gates: what could not be produced is NaN (False for flags, -1 for indices / phase).
+
+```
+Frames: "table" = the S7 table frame (z = table normal, up; origin = initial mug base centre on the table; x = my
+forward, away from the near desk edge; y = z x x). "cam" = ORIGINAL (sideways) camera frame, OpenCV axes (x right, y down,
+z forward). "world" = ARKit world, y up. Units: metres, radians, seconds. T = number of canonical frames i (odometry
+rows); i = 0 has no image, so every per-image field is NaN / False there.
+
+Metadata
+  schema_version          () int     2
+  clip_id, view_label     () str     view_label: "top-down" | "90deg" | "45deg"
+  t                       (T,)       odometry timestamps [s], ARKit clock (absolute; t - t[0] = clip time)
+  K                       (T,3,3)    RGB intrinsics [px] of the ORIGINAL 1920x1440 image
+  T_world_cam             (T,4,4)    camera-to-world
+  T_table_world           (4,4)      p_table = T_table_world @ p_world; all NaN if S7 found no table x, and then so is
+                                     every table-frame field below
+  table_plane_world       (4,)       [nx, ny, nz, d] with n.p + d = 0 (world), n.(0,1,0) > 0
+  table_rms_m             ()         table-plane inlier RMS (S4)
+  x_axis_method           () str     how S7 found table x: long_edge_extent | largest_total_extent | reference_fallback |
+                                     failed ("missing" if S7 has no output)
+  x_axis_vs_reference_deg ()         signed angle from the S7 reference direction to table x, about z [deg]
+Hand (WiLoR MANO right hand, depth-corrected with the LiDAR in S5)
+  hand_valid              (T,) bool  a right hand was detected and reconstructed (S2)
+  metric_valid            (T,) bool  hand_valid and >= 30 LiDAR pixels in the S5 correction; use only these frames
+  hand_kp_cam             (T,21,3)   21 keypoints after the S5 depth correction, cam frame; NaN where not metric_valid
+                                     (S5 corrects only those frames)
+  hand_kp_table           (T,21,3)   the same keypoints in the table frame (NaN where not metric_valid)
+                                     order (OpenPose, verified in WiLoR's mano_wrapper.py): wrist 0, thumb 1-4,
+                                     index 5-8, middle 9-12, ring 13-16, pinky 17-20 (4, 8, 12, 16, 20 = fingertips)
+  palm_pos_table_raw      (T,3)      0.5 (kp0 + kp9), metric_valid frames (S9)
+  palm_pos_table          (T,3)      gap-filled (gaps <= 0.3 s) and Savitzky-Golay smoothed (S9); finite on the
+                                     metric_valid frames AND the filled gap frames
+  palm_rot_table_raw      (T,3,3)    columns [x_f, y, n]: x_f = wrist -> middle-finger base, n = palm normal (points
+                                     toward the cup at grasp), y = n x x_f
+  palm_rot_table          (T,3,3)    gap-filled (SLERP), smoothed, re-orthonormalised (S9)
+  palm_normal_flipped     () bool    S9 flipped n in every frame. Also False when the flip was NOT decided (grasp frame
+                                     undefined) or S9 has no output: palm/palm.npz flip_decided tells them apart
+  mano_global_orient      (T,3,3)    MANO root rotation in the table frame (R_table_cam @ WiLoR's cam-frame global_orient)
+  mano_hand_pose          (T,45)     15 MANO joint rotations, axis-angle [rad], each relative to its parent joint
+  mano_betas              (T,10)     MANO shape coefficients
+                                     (mano_*: WiLoR's own values -- S5 only translates the hand -- on every hand_valid
+                                     frame, also where the hand is not metric_valid)
+  depth_shift_m           (T,)       S5 depth shift D = median(lidar - mesh) (+ = WiLoR's hand was too close); finite
+                                     wherever S5 could compute D, i.e. also on hand_valid frames that are not metric_valid
+  lidar_residual_m        (T,)       median |lidar - (mesh + D)| over the S5 pass-2 pixels (finite where D is)
+  reproj_err_px           (T,)       plumbing check: corrected kp3d projected with K vs WiLoR's own 2D keypoints
+                                     (tests our transforms, NOT WiLoR's accuracy)
+Objects (table frame)
+  cup_init_pos_table, cup_final_pos_table (3,)  mug base centre on the table plane, initial / final window (S6)
+  cup_init_yaw, cup_final_yaw  ()    handle direction: angle of (handle point P - cup axis) from table x, about z [rad]
+  cup_yaw_valid           (2,) bool  [init, final]: handle mask >= 0.2 % of the body mask (else do not trust the yaw)
+  cup_init_iou, cup_final_iou ()     silhouette IoU of the 2-DOF cylinder fit
+  cup_free_fit_r_h        (2,)       [r, h] of the 4-DOF validation fit, initial window; h NaN = unobservable
+  coaster_pos_table       (3,)       coaster centre on the table plane (initial window)
+  coaster_diameter_fit_m  ()         diameter of the RANSAC circle fit
+Events (S8, from the raw metric palm)
+  phase                   (T,) int8  0 approach, 1 grasp, 2 transport, 3 place, 4 release/retreat, -1 undefined
+  t_contact, t_lift, t_place, t_release ()   [s], same clock as t (NaN = not detected)
+  grasp_index             () int     grasp frame g (index into t), -1 = undefined
+  T_palm_in_cup_at_grasp  (4,4)      smoothed palm pose at g in the cup frame (origin = initial base centre, z up,
+                                     x toward the handle at the initial yaw; table x if that yaw is invalid). Raw pose
+                                     if g's valid run is shorter than the smoothing window. NaN if g is undefined, or
+                                     if S7 found no table x and the handle yaw is invalid
+Dimensions
+  mug_dims, coaster_dims  () str     JSON of the config/objects.yaml blocks, copied as they are (value + source flag per
+                                     entry; the mug's capacity_ml is a bare number in the config)
+```
 
 ---
 

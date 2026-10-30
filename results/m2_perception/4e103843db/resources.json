@@ -45,7 +45,7 @@
   "peak_vram_gb": null
  },
  "demo": {
-  "seconds": 0.06,
+  "seconds": 0.08,
   "peak_rss_gb": 0.036,
   "peak_vram_gb": null
  }

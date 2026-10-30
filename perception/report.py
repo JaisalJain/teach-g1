@@ -439,8 +439,11 @@ def plots(clip, demo, idx, c, out):
         if demo["cup_yaw_valid"][valid]:
             yaw = float(demo[yaw_key])
             tip = xy + handle * np.array([np.cos(yaw), np.sin(yaw)])
-            ax.annotate("", tip, xy, arrowprops={"arrowstyle": "->", "color": col})
+            ax.annotate("", tip, xy, arrowprops={"arrowstyle": "->", "color": col, "lw": 2})
+            ax.plot([], [], color=col, lw=2, label=f"{name}: handle direction (arrow)")
             ends.append(tip)
+        else:
+            ax.plot([], [], " ", label=f"{name}: handle yaw invalid, not drawn")
     ax.add_patch(plt.Circle(demo["coaster_pos_table"][:2], float(demo["coaster_diameter_fit_m"]) / 2, fill=False,
                             color="m", ls="--", label="coaster (fit)"))
     for xy, name, col in (((0.08, 0), "x", "r"), ((0, 0.08), "y", "g")):    # table axes at the origin

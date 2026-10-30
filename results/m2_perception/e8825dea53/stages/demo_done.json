@@ -1,7 +1,7 @@
 {
  "stage": "demo",
  "clip": "e8825dea53",
- "seconds": 0.06,
+ "seconds": 0.07,
  "peak_rss_gb": 0.035,
  "path": "data/demos/e8825dea53.npz",
  "schema_version": 2,
