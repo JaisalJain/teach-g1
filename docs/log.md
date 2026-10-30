@@ -477,3 +477,16 @@ is expected without camera motion. Hand/forearm visibility is a judgement by eye
   `offload_video_to_cpu`). Coaster mask empty in 2 frames (covered by hand + mug at t ≈ 4.7 s); body and handle never empty.
 - `third_party/WiLoR`: importing `wilor` had rewritten 4 `.pyc` files that the upstream repo tracks → restored with `git checkout`,
   generated `__pycache__` files removed, and `wilor_loader` now sets `sys.dont_write_bytecode` (checkout clean at fcb9113 again).
+- **S2 + S3 on all 4 clips** (one GPU process at a time; numbers from each stage's `data/work/<clip>/<stage>/done.json`):
+
+  | clip | hand_valid frames / N | first / last hand_valid | frames with > 1 right box / IoU tie-breaks | WiLoR s/frame (median) | S2 peak VRAM / RSS | SAM 2 time / peak VRAM / RSS | empty mask frames body / handle / coaster |
+  |---|---|---|---|---|---|---|---|
+  | 26d4118b0c (top) | 161 / 250 | 37 / 200 | 0 / 0 | 0.31 | 2.82 / 6.06 GB | 70 s / 0.80 / 5.42 GB | 0 / 0 / 6 |
+  | 4e103843db (90°) | 366 / 514 | 90 / 455 | 2 / 0 | 0.16 | 2.82 / 6.06 GB | 125 s / 0.80 / 9.35 GB | 0 / 0 / 2 |
+  | 49aff04f7a (45°) | 262 / 479 | 106 / 367 | 4 / 3 | 0.22 | 2.82 / 6.06 GB | 102 s / 0.80 / 8.83 GB | 0 / 0 / 5 |
+  | e8825dea53 (45°) | 318 / 474 | 39 / 356 | 0 / 0 | 0.16 | 2.82 / 6.06 GB | 87 s / 0.80 / 8.38 GB | 0 / 473 (no prompt) / 242 |
+
+  `cam_crop_to_full_K` = WiLoR's formula to ≤ 1.8e-13 relative in every clip; fx = fy on every frame of every clip.
+  e8825dea53: the coaster mask is lost at t ≈ 3.8 s while the hand carries the mug over it and stays empty — at the end the mug stands
+  on the coaster and hides almost all of it from this 45° view (checked on frame i = 470). Only the initial-window coaster mask is used
+  downstream (S4 exclusion, S6 circle fit), so this does not feed any gate. Its handle (no prompt) appears at the back of the mug later.
