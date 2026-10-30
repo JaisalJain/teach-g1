@@ -1,0 +1,603 @@
+{
+ "26d4118b0c": {
+  "clip": "26d4118b0c",
+  "format": {
+   "n_odometry_rows": 250,
+   "n_depth_png": 250,
+   "n_confidence_png": 250,
+   "distortion_dir": false,
+   "rgb_size": [
+    1920,
+    1440
+   ],
+   "depth_size": [
+    256,
+    192
+   ],
+   "capture_hz": 30.0,
+   "duration_s": 8.3,
+   "dropped_frames": 0,
+   "camera_matrix_csv_eq_last_odometry_K": true,
+   "fx_range": [
+    1407.9537,
+    1437.2534
+   ],
+   "cx_cy_mean": [
+    957.3113219999999,
+    721.1040824400001
+   ],
+   "depth_dtype_png": "uint16",
+   "depth_zero_frac": 0.0,
+   "confidence_frac_0_1_2": [
+    0.058,
+    0.184,
+    0.759
+   ],
+   "imu_rows": 830,
+   "imu_hz": 100.2,
+   "imu_acc_norm_median": 0.991,
+   "n_video_frames_decoded": 249
+  },
+  "alignment_corr_by_lag_raw": {
+   "-3": 0.202,
+   "-2": 0.203,
+   "-1": 0.234,
+   "0": 0.339,
+   "1": 0.262,
+   "2": 0.232,
+   "3": 0.229
+  },
+  "alignment_best_lag_raw": 0,
+  "alignment_corr_by_lag_highpass": {
+   "-3": -0.06,
+   "-2": -0.078,
+   "-1": 0.012,
+   "0": 0.4,
+   "1": 0.083,
+   "2": -0.0,
+   "3": 0.044
+  },
+  "alignment_best_lag_highpass": 0,
+  "hand_enters_index": 11,
+  "hand_enters_s": 0.37,
+  "static_frames": [
+   1,
+   5
+  ],
+  "table": {
+   "n_points_conf2": 40632,
+   "inlier_frac_of_conf2": 0.813,
+   "inlier_frac_of_image": 0.672,
+   "inlier_rms_mm": 4.91,
+   "inlier_abs_p95_mm": 9.11,
+   "camera_height_above_table_m": 0.394,
+   "optical_axis_to_table_normal_deg": 1.0
+  },
+  "axis_test_angle_table_normal_vs_up_deg": {
+   "opencv_axes_cam_to_world_xyzw (expected)": 5.71,
+   "arkit_axes (y up, z back)": 173.94,
+   "world_to_cam (transposed)": 91.9,
+   "quaternion_wxyz": 175.63
+  },
+  "imu_down_vs_table_normal_deg": 3.73,
+  "cup": {
+   "n_depth_px_in_outline": 3337,
+   "conf_frac_0_1_2": [
+    0.108,
+    0.641,
+    0.251
+   ],
+   "height_above_table_cm_p5_p50_p95_conf2": [
+    1.1,
+    1.4,
+    2.0
+   ],
+   "frac_conf2_px_above_1cm": 0.966,
+   "centre_jitter_mm_std_over_static_frames": 2.83,
+   "camera_to_cup_m": 0.41
+  },
+  "camera_motion": {
+   "odometry_max_translation_from_start_mm": 13.2,
+   "odometry_max_rotation_from_start_deg": 2.23,
+   "image_shift_first_vs_last_px_fullres": 19.1,
+   "depth_changed_frac_last_frame": 0.086
+  },
+  "upright_rot90_k": 3,
+  "changed_frac_every_10th_frame": [
+   0.0,
+   0.002,
+   0.02,
+   0.026,
+   0.059,
+   0.111,
+   0.152,
+   0.146,
+   0.149,
+   0.189,
+   0.252,
+   0.261,
+   0.259,
+   0.179,
+   0.212,
+   0.207,
+   0.181,
+   0.183,
+   0.172,
+   0.172,
+   0.111,
+   0.104,
+   0.102,
+   0.116,
+   0.093
+  ]
+ },
+ "49aff04f7a": {
+  "clip": "49aff04f7a",
+  "format": {
+   "n_odometry_rows": 479,
+   "n_depth_png": 479,
+   "n_confidence_png": 479,
+   "distortion_dir": false,
+   "rgb_size": [
+    1920,
+    1440
+   ],
+   "depth_size": [
+    256,
+    192
+   ],
+   "capture_hz": 59.98,
+   "duration_s": 7.97,
+   "dropped_frames": 0,
+   "camera_matrix_csv_eq_last_odometry_K": true,
+   "fx_range": [
+    1405.0801,
+    1415.4552
+   ],
+   "cx_cy_mean": [
+    960.5012910647183,
+    720.6551797286012
+   ],
+   "depth_dtype_png": "uint16",
+   "depth_zero_frac": 0.0,
+   "confidence_frac_0_1_2": [
+    0.048,
+    0.237,
+    0.715
+   ],
+   "imu_rows": 798,
+   "imu_hz": 100.2,
+   "imu_acc_norm_median": 0.99,
+   "n_video_frames_decoded": 478
+  },
+  "alignment_corr_by_lag_raw": {
+   "-3": 0.603,
+   "-2": 0.643,
+   "-1": 0.677,
+   "0": 0.696,
+   "1": 0.688,
+   "2": 0.676,
+   "3": 0.652
+  },
+  "alignment_best_lag_raw": 0,
+  "alignment_corr_by_lag_highpass": {
+   "-3": -0.046,
+   "-2": 0.031,
+   "-1": 0.133,
+   "0": 0.146,
+   "1": 0.067,
+   "2": 0.022,
+   "3": -0.047
+  },
+  "alignment_best_lag_highpass": 0,
+  "hand_enters_index": 111,
+  "hand_enters_s": 1.85,
+  "static_frames": [
+   1,
+   105
+  ],
+  "table": {
+   "n_points_conf2": 34471,
+   "inlier_frac_of_conf2": 0.821,
+   "inlier_frac_of_image": 0.576,
+   "inlier_rms_mm": 2.54,
+   "inlier_abs_p95_mm": 5.69,
+   "camera_height_above_table_m": 0.342,
+   "optical_axis_to_table_normal_deg": 30.6
+  },
+  "axis_test_angle_table_normal_vs_up_deg": {
+   "opencv_axes_cam_to_world_xyzw (expected)": 1.76,
+   "arkit_axes (y up, z back)": 117.69,
+   "world_to_cam (transposed)": 56.54,
+   "quaternion_wxyz": 146.7
+  },
+  "imu_down_vs_table_normal_deg": 1.44,
+  "cup": {
+   "n_depth_px_in_outline": 3559,
+   "conf_frac_0_1_2": [
+    0.065,
+    0.645,
+    0.29
+   ],
+   "height_above_table_cm_p5_p50_p95_conf2": [
+    1.8,
+    6.2,
+    8.5
+   ],
+   "frac_conf2_px_above_1cm": 0.969,
+   "centre_jitter_mm_std_over_static_frames": 2.02,
+   "camera_to_cup_m": 0.407
+  },
+  "camera_motion": {
+   "odometry_max_translation_from_start_mm": 7.8,
+   "odometry_max_rotation_from_start_deg": 1.29,
+   "image_shift_first_vs_last_px_fullres": 22.5,
+   "depth_changed_frac_last_frame": 0.148
+  },
+  "upright_rot90_k": 3,
+  "changed_frac_every_10th_frame": [
+   0.0,
+   0.0,
+   0.001,
+   0.0,
+   0.001,
+   0.002,
+   0.003,
+   0.003,
+   0.001,
+   0.001,
+   0.0,
+   0.001,
+   0.032,
+   0.083,
+   0.085,
+   0.08,
+   0.077,
+   0.077,
+   0.08,
+   0.147,
+   0.194,
+   0.192,
+   0.174,
+   0.174,
+   0.163,
+   0.158,
+   0.163,
+   0.18,
+   0.166,
+   0.177,
+   0.182,
+   0.178,
+   0.158,
+   0.161,
+   0.182,
+   0.16,
+   0.173,
+   0.201,
+   0.18,
+   0.153,
+   0.155,
+   0.241,
+   0.211,
+   0.165,
+   0.141,
+   0.159,
+   0.151,
+   0.144
+  ]
+ },
+ "4e103843db": {
+  "clip": "4e103843db",
+  "format": {
+   "n_odometry_rows": 514,
+   "n_depth_png": 514,
+   "n_confidence_png": 514,
+   "distortion_dir": false,
+   "rgb_size": [
+    1920,
+    1440
+   ],
+   "depth_size": [
+    256,
+    192
+   ],
+   "capture_hz": 59.98,
+   "duration_s": 8.87,
+   "dropped_frames": 19,
+   "camera_matrix_csv_eq_last_odometry_K": true,
+   "fx_range": [
+    1404.4994,
+    1418.3318
+   ],
+   "cx_cy_mean": [
+    960.9241298054475,
+    721.3444772568093
+   ],
+   "depth_dtype_png": "uint16",
+   "depth_zero_frac": 0.0,
+   "confidence_frac_0_1_2": [
+    0.078,
+    0.267,
+    0.655
+   ],
+   "imu_rows": 890,
+   "imu_hz": 100.3,
+   "imu_acc_norm_median": 0.992,
+   "n_video_frames_decoded": 513
+  },
+  "alignment_corr_by_lag_raw": {
+   "-3": 0.54,
+   "-2": 0.535,
+   "-1": 0.523,
+   "0": 0.635,
+   "1": 0.555,
+   "2": 0.54,
+   "3": 0.531
+  },
+  "alignment_best_lag_raw": 0,
+  "alignment_corr_by_lag_highpass": {
+   "-3": -0.093,
+   "-2": -0.114,
+   "-1": -0.013,
+   "0": 0.42,
+   "1": 0.085,
+   "2": 0.036,
+   "3": -0.001
+  },
+  "alignment_best_lag_highpass": 0,
+  "hand_enters_index": 95,
+  "hand_enters_s": 1.67,
+  "static_frames": [
+   1,
+   89
+  ],
+  "table": {
+   "n_points_conf2": 32225,
+   "inlier_frac_of_conf2": 0.706,
+   "inlier_frac_of_image": 0.463,
+   "inlier_rms_mm": 3.61,
+   "inlier_abs_p95_mm": 7.69,
+   "camera_height_above_table_m": 0.357,
+   "optical_axis_to_table_normal_deg": 36.6
+  },
+  "axis_test_angle_table_normal_vs_up_deg": {
+   "opencv_axes_cam_to_world_xyzw (expected)": 3.42,
+   "arkit_axes (y up, z back)": 103.73,
+   "world_to_cam (transposed)": 54.21,
+   "quaternion_wxyz": 144.17
+  },
+  "imu_down_vs_table_normal_deg": 3.46,
+  "cup": {
+   "n_depth_px_in_outline": 3284,
+   "conf_frac_0_1_2": [
+    0.067,
+    0.761,
+    0.172
+   ],
+   "height_above_table_cm_p5_p50_p95_conf2": [
+    1.2,
+    6.1,
+    8.6
+   ],
+   "frac_conf2_px_above_1cm": 0.972,
+   "centre_jitter_mm_std_over_static_frames": 2.75,
+   "camera_to_cup_m": 0.441
+  },
+  "camera_motion": {
+   "odometry_max_translation_from_start_mm": 5.2,
+   "odometry_max_rotation_from_start_deg": 2.47,
+   "image_shift_first_vs_last_px_fullres": 7.5,
+   "depth_changed_frac_last_frame": 0.139
+  },
+  "upright_rot90_k": 3,
+  "changed_frac_every_10th_frame": [
+   0.0,
+   0.001,
+   0.0,
+   0.0,
+   0.003,
+   0.002,
+   0.0,
+   0.0,
+   0.0,
+   0.001,
+   0.029,
+   0.069,
+   0.088,
+   0.097,
+   0.101,
+   0.114,
+   0.102,
+   0.101,
+   0.1,
+   0.1,
+   0.1,
+   0.11,
+   0.188,
+   0.248,
+   0.256,
+   0.253,
+   0.242,
+   0.282,
+   0.182,
+   0.217,
+   0.179,
+   0.198,
+   0.226,
+   0.22,
+   0.213,
+   0.196,
+   0.19,
+   0.18,
+   0.186,
+   0.192,
+   0.184,
+   0.182,
+   0.181,
+   0.155,
+   0.146,
+   0.14,
+   0.132,
+   0.139,
+   0.127,
+   0.132,
+   0.178,
+   0.156
+  ]
+ },
+ "e8825dea53": {
+  "clip": "e8825dea53",
+  "format": {
+   "n_odometry_rows": 474,
+   "n_depth_png": 474,
+   "n_confidence_png": 474,
+   "distortion_dir": false,
+   "rgb_size": [
+    1920,
+    1440
+   ],
+   "depth_size": [
+    256,
+    192
+   ],
+   "capture_hz": 59.98,
+   "duration_s": 7.887,
+   "dropped_frames": 0,
+   "camera_matrix_csv_eq_last_odometry_K": true,
+   "fx_range": [
+    1401.6108,
+    1419.4933
+   ],
+   "cx_cy_mean": [
+    961.3668325949367,
+    721.7200713502109
+   ],
+   "depth_dtype_png": "uint16",
+   "depth_zero_frac": 0.0,
+   "confidence_frac_0_1_2": [
+    0.053,
+    0.302,
+    0.645
+   ],
+   "imu_rows": 790,
+   "imu_hz": 100.2,
+   "imu_acc_norm_median": 0.992,
+   "n_video_frames_decoded": 473
+  },
+  "alignment_corr_by_lag_raw": {
+   "-3": 0.557,
+   "-2": 0.593,
+   "-1": 0.635,
+   "0": 0.672,
+   "1": 0.635,
+   "2": 0.622,
+   "3": 0.596
+  },
+  "alignment_best_lag_raw": 0,
+  "alignment_corr_by_lag_highpass": {
+   "-3": -0.096,
+   "-2": -0.031,
+   "-1": 0.15,
+   "0": 0.295,
+   "1": 0.076,
+   "2": -0.01,
+   "3": -0.095
+  },
+  "alignment_best_lag_highpass": 0,
+  "hand_enters_index": 32,
+  "hand_enters_s": 0.53,
+  "static_frames": [
+   1,
+   26
+  ],
+  "table": {
+   "n_points_conf2": 33217,
+   "inlier_frac_of_conf2": 0.8,
+   "inlier_frac_of_image": 0.541,
+   "inlier_rms_mm": 4.01,
+   "inlier_abs_p95_mm": 8.42,
+   "camera_height_above_table_m": 0.364,
+   "optical_axis_to_table_normal_deg": 38.7
+  },
+  "axis_test_angle_table_normal_vs_up_deg": {
+   "opencv_axes_cam_to_world_xyzw (expected)": 4.79,
+   "arkit_axes (y up, z back)": 101.74,
+   "world_to_cam (transposed)": 55.35,
+   "quaternion_wxyz": 144.94
+  },
+  "imu_down_vs_table_normal_deg": 5.46,
+  "cup": {
+   "n_depth_px_in_outline": 2344,
+   "conf_frac_0_1_2": [
+    0.103,
+    0.436,
+    0.461
+   ],
+   "height_above_table_cm_p5_p50_p95_conf2": [
+    1.6,
+    6.7,
+    8.8
+   ],
+   "frac_conf2_px_above_1cm": 0.981,
+   "centre_jitter_mm_std_over_static_frames": 1.8,
+   "camera_to_cup_m": 0.482
+  },
+  "camera_motion": {
+   "odometry_max_translation_from_start_mm": 18.3,
+   "odometry_max_rotation_from_start_deg": 2.7,
+   "image_shift_first_vs_last_px_fullres": 45.6,
+   "depth_changed_frac_last_frame": 0.456
+  },
+  "upright_rot90_k": 3,
+  "changed_frac_every_10th_frame": [
+   0.0,
+   0.001,
+   0.001,
+   0.004,
+   0.017,
+   0.213,
+   0.327,
+   0.319,
+   0.32,
+   0.353,
+   0.391,
+   0.392,
+   0.39,
+   0.398,
+   0.366,
+   0.367,
+   0.325,
+   0.359,
+   0.355,
+   0.338,
+   0.44,
+   0.521,
+   0.56,
+   0.568,
+   0.58,
+   0.565,
+   0.536,
+   0.553,
+   0.55,
+   0.54,
+   0.55,
+   0.578,
+   0.575,
+   0.589,
+   0.619,
+   0.533,
+   0.461,
+   0.453,
+   0.424,
+   0.452,
+   0.447,
+   0.428,
+   0.439,
+   0.442,
+   0.425,
+   0.447,
+   0.455,
+   0.451
+  ]
+ }
+}

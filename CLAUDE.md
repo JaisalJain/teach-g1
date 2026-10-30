@@ -120,10 +120,14 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
 - **Sim table height: 0.74 m** from now on (one of HERO's three benchmark heights; table near edge at x = 0.30 m, 0.60 m deep).
 - **Capture app: Stray Scanner** (https://github.com/StrayRobots/scanner). Verified on the phone: each recording folder has `rgb.mp4`,
   `camera_matrix.csv`, `odometry.csv`, `imu.csv`, `depth/` and `confidence/`.
-  - **Format details NOT yet confirmed** — check against the repo's `docs/format.md` and the real test clips before writing the parser
-    (depth encoding/units/resolution, odometry column order + quaternion convention, timestamps and how frames align with `rgb.mp4`).
-  - ARKit camera frame is expected to be y-up, −z-forward (VERIFY on real data). Convert explicitly and document the convention in code.
-  - LiDAR depth is low-res (likely 256×192) vs RGB — upsample depth or downsample RGB consistently.
+  - **Format VERIFIED on 4 test clips (2026-10-30, parser `perception/stray.py`, details in docs/log.md):**
+    RGB 1920×1440 HEVC; depth uint16 **mm**, 256×192, registered to RGB (scale K by 256/1920); confidence 0/1/2;
+    `odometry.csv` = timestamp, frame, x y z, qx qy qz qw (**scalar last**), per-frame fx fy cx cy (RGB pixels); IMU accel in **g**.
+  - **Camera poses are camera-to-world with OpenCV camera axes (x right, y down, z forward)** — the app already converts from ARKit.
+    World = ARKit session frame, **y up** (gravity −y). Verified: table normal from depth vs odometry up 1.8–5.7°, alternatives ≥ 54°.
+  - **Frame alignment:** ffmpeg decodes N−1 video frames for N depth/odometry rows (first frame hidden by the MP4 edit list) →
+    decoded frame k = index k+1; index 0 has no image. Use odometry timestamps, never the video clock (it claims 60 fps even for 30 Hz).
+  - Phone held in portrait → frames come out sideways; rotate with `stray.upright_rot90` for viewing / detectors.
 - **Demo `.npz` schema** (camera frame unless noted). Keep fields stable once the retargeter depends on them:
   - `t` (T,) — timestamps
   - `K` (3,3) — intrinsics

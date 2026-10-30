@@ -279,3 +279,88 @@ real clips):
   none in the start/end frames without a hand.
 - Still missing: `MANO_RIGHT.pkl` (user registration at mano.is.tue.mpg.de) → the full WiLoR model cannot be loaded yet.
 - Noted from the test frames: the cup is a mug with a handle (sim cup is a plain cylinder) and the table is a striped lap desk.
+
+---
+
+## 2026-10-30 (Fri) — M2 sub-task 1: Stray Scanner format check, parser, choice of camera view
+
+4 test clips of the same right-hand mug → coaster move, one per camera view, in `data/raw/<id>/` (unzipped; gitignored).
+Parser `perception/stray.py` (numpy + Pillow + ffmpeg/ffprobe binaries); checks `perception/check_views.py` → `results/m2_views/`
+(`views.json`, `table.md`, per clip `overlay.jpg`, `cup_label.jpg`, `contact_sheet.jpg`, `overlay.mp4` (gitignored)). Run in hoi-sim:
+`env -u PYTHONPATH conda run -n hoi-sim python -m perception.check_views` (18 s).
+
+### Format (docs/format.md + app source `StrayScanner/Helpers/*.swift`, checked on all 4 clips)
+- Files: `rgb.mp4`, `depth/`, `confidence/`, `odometry.csv`, `imu.csv`, `camera_matrix.csv`; no `distortion/` (distortion columns empty).
+- RGB HEVC 1920×1440. Depth uint16 PNG in **mm**, 256×192 (same 4:3 field of view → K scaled by 256/1920). ARKit fills every
+  depth pixel (0 % zeros); confidence 0/1/2 = 5–8 % / 18–30 % / 64–76 % of a frame.
+- `odometry.csv`: `timestamp, frame, x, y, z, qx, qy, qz, qw, fx, fy, cx, cy, distortion_center_x/y`; one row per depth PNG.
+  `camera_matrix.csv` = the last row's K exactly. fx varies per frame by up to 2 % (focus: 1402–1437 px) → use per-frame K.
+- IMU 100 Hz; acceleration in **g** (|a| median 0.99), not m/s² as the doc says.
+- **Off-by-one confirmed:** every clip has N packets = N depth PNGs = N odometry rows, but ffmpeg decodes N−1 frames. Cause (app
+  source): the first frame is stamped PTS −1/60 s and the writer session starts at 0, so the MP4 edit list hides it (ffprobe: the only
+  negative-PTS packet is the first, flagged discard). → decoded frame k = depth/odometry index k+1. Checked on data: correlation of
+  RGB motion vs depth motion (high-passed) peaks at our alignment in all 4 clips (0.40 / 0.15 / 0.42 / 0.29) vs the naive
+  alignment (0.01 / 0.13 / −0.01 / 0.15); clip 49aff04f7a's peak is weak but on the same side.
+- **Video clock is wrong:** the app stamps frame n at n/60 s whatever the capture rate. Clip 26d4118b0c was captured at 30 Hz (8.3 s of
+  odometry) but its video says 4.15 s. 4e103843db has 19 gaps in its timestamps (14 app drops visible as video PTS gaps). Use
+  odometry timestamps. Parser uses `-fps_mode passthrough` so ffmpeg never duplicates frames to fill gaps (513 frames, not 527).
+- **Axes:** app writes `q_WA * q_AC` with q_AC = 180° about x → camera-to-world pose with **OpenCV camera axes** (x right, y down,
+  z forward), ARKit world (y up). Verified on data: table normal fitted in the camera frame from depth vs world-up from the odometry
+  pose: 1.8–5.7° for this convention; ARKit axes 102–174°, transposed pose 54–92°, wxyz quaternion order 144–176°. Independent check
+  with the IMU (CoreMotion axes mapped to the back camera): 1.4–5.5°. CLAUDE.md data conventions updated.
+- Phone was held in **portrait**, so all frames are sideways (world-up points to image −x); `stray.upright_rot90` gives the rotation.
+
+### Which clip is which view (from the contact sheets + gravity)
+| clip | view | optical axis from vertical | arm enters from |
+|---|---|---|---|
+| 26d4118b0c | top-down | 1° | bottom (your side) |
+| 4e103843db | "90°": square to the table edge, from your side | 37° | bottom-right (your side) |
+| 49aff04f7a | 45°, camera to your **left** (likely) | 31° | right edge |
+| e8825dea53 | 45°, camera to your **right** (likely) | 39° | bottom-left |
+Left/right is inferred from where your right arm enters the frame; confirm with your memory of the setup.
+
+### Comparison (`results/m2_views/table.md`)
+| | 26d4118b0c top | 49aff04f7a 45° L | 4e103843db 90° | e8825dea53 45° R |
+|---|---|---|---|---|
+| capture rate [Hz] / dropped frames | 30 / 0 | 60 / 0 | 60 / 19 | 60 / 0 |
+| camera height above table / to cup [m] | 0.39 / 0.41 | 0.34 / 0.41 | 0.36 / 0.44 | 0.36 / 0.48 |
+| table plane inliers (of conf-2 px) / RMS [mm] | 81 % / 4.9 | 82 % / 2.5 | 71 % / 3.6 | 80 % / 4.0 |
+| cup: depth px in outline / conf-2 share | 3337 / 25 % | 3559 / 29 % | 3284 / 17 % | 2344 / 46 % |
+| cup: conf-2 height above table p5/p50/p95 [cm] | 1.1/1.4/2.0 | 1.8/6.2/8.5 | 1.2/6.1/8.6 | 1.6/6.7/8.8 |
+| cup centre jitter over static frames [mm] | 2.8 (5 fr) | 2.0 (105 fr) | 2.8 (89 fr) | 1.8 (26 fr) |
+| odometry max drift [mm / deg] | 13 / 2.2 | 8 / 1.3 | 5 / 2.5 | 18 / 2.7 |
+| image shift, first vs last frame [px] | 19 | 22 | **8** | 46 |
+| depth changed > 2 cm in last frame | 9 % | 15 % | 14 % | **46 %** |
+| hand + forearm in frame (contact sheet, by eye) | yes, throughout | forearm outside the right edge during approach/grasp | **yes, throughout** | hand cut by the frame corner during grasp/lift |
+
+Definitions: table plane = RANSAC (1 cm) + least-squares refit on the median depth of the frames before the hand enters (hand entry =
+first frame where > 0.5 % of pixels change depth by > 2 cm). Cup = depth pixels inside a cup outline hand-labelled on frame 1 (mug
+body, no handle; drawn back in `cup_label.jpg`). Cup centre = median of conf-2 cup points > 1 cm above the table, projected onto it.
+"Image shift" = phase correlation of the first and last frame (no hand in either); the cup has moved by then, so ~10–15 % changed depth
+is expected without camera motion. Hand/forearm visibility is a judgement by eye on 24 frames per clip (no hand detector run here).
+
+### Reading the numbers
+- Every view gives usable metric depth: table fit 2.5–4.9 mm RMS, static cup centre jitter ≤ 2.8 mm.
+- **Top view:** depth on the mug is its *inside floor* (heights 1–2 cm), never the wall or rim → cup position only from the 2D mask;
+  the lift happens along the optical axis; it was also recorded at 30 Hz. Hand always in frame.
+- **45° views:** the hand / forearm leave the frame (narrow portrait field of view at ~0.4 m). e8825dea53's camera also moved (46 px,
+  46 % of the depth changed) — the phone stand was probably bumped or is on the soft bed.
+- **90° view (4e103843db):** the most static camera (8 px), hand + forearm visible for the whole reach → grasp → transport → release,
+  cup wall seen by depth (p95 8.6 cm). Weak spot: only 17 % of cup pixels are high confidence (76 % medium) — dark glossy mug.
+- Depth registration to RGB looks right in the overlays (hand silhouette edges match).
+
+### Recommendation (for the 15–20 real demos)
+**Use the 4e103843db setup: "90°", camera on your side, square to the table edge, ~35–40° from vertical.** Plus, if possible:
+- Move the phone back (now 0.44 m to the cup; plan said 0.6–0.8 m) and/or record in **landscape** so cup/coaster anywhere on the desk
+  plus the forearm stay in frame. Landscape orientation needs one short test clip (frames should come out upright).
+- Mount the phone rigidly, not on the bed (camera motion in 3 of 4 clips: 19–46 px).
+- Keep the app at 60 Hz (26d4118b0c was 30 Hz).
+- Matte cup would raise the cup's high-confidence share; the glossy dark-green mug is usable (heights look right) but low confidence.
+
+### Incident: GPU unusable after my first analysis run (my fault)
+- First version of `check_views.py` called `np.linalg.svd` with the default `full_matrices=True` on ~34 k points → a 34k×34k matrix
+  (~9.5 GB) per plane fit, 4 clips in parallel → host RAM exhausted at 17:59–18:00 (kernel OOM killer killed one of my workers).
+- At the same moment the NVIDIA driver logged `NV_ERR_NO_MEMORY` and then `GSP unload failed at suspend` / `can't suspend`; the GPU's
+  runtime PM status is now `error` and `nvidia-smi` fails ("Unable to determine the device handle for GPU0: Unknown Error").
+  Very likely caused by the RAM exhaustion. Fix: `full_matrices=False` (run now uses < 1 GB per clip, 18 s). **A reboot is needed**
+  to get the GPU back; nothing was changed on the driver side.
