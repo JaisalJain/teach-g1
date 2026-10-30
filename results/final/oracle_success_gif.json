@@ -1,0 +1,38 @@
+{
+  "source_check": "results/final/videos/oracle/videos/videos.json",
+  "run": "oracle_mug_v1__trial00",
+  "identical": true,
+  "file": "results/final/oracle_success.gif",
+  "source": "results/final/videos/oracle/videos/oracle_mug_v1__trial00.mp4",
+  "chosen": {
+    "width": 576,
+    "fps": 10.0,
+    "size_bytes": 4908382
+  },
+  "tried": [
+    {
+      "width": 960,
+      "fps": 12.5,
+      "size_bytes": 14513720
+    },
+    {
+      "width": 800,
+      "fps": 10.0,
+      "size_bytes": 8738193
+    },
+    {
+      "width": 640,
+      "fps": 10.0,
+      "size_bytes": 5669305
+    },
+    {
+      "width": 576,
+      "fps": 10.0,
+      "size_bytes": 4908382
+    }
+  ],
+  "max_bytes": 5000000,
+  "real_time": true,
+  "frames": 211,
+  "tool": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+}

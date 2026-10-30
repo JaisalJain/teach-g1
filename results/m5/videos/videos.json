@@ -1,0 +1,88 @@
+{
+  "rule": "policy/m5.py video_picks: the first R2 success and the first R2 failure (trial order)",
+  "renderer": "Intel / Mesa Intel(R) Graphics (ARL) (EGL)",
+  "camera": "grasp_right",
+  "resolution": "1280x720",
+  "fps": "25 (one frame per 2 control steps of 50 Hz)",
+  "videos": [
+    {
+      "run": "e8825dea53__phi55__trial00",
+      "video": "results/m5/videos/e8825dea53__phi55__trial00.mp4",
+      "saved_row": "results/m5/eval/runs/e8825dea53__phi55__trial00.json",
+      "saved_success": true,
+      "saved_category": null,
+      "rerun_success": true,
+      "rerun_category": null,
+      "identical": true,
+      "fields_differing": [],
+      "control_steps": 1155,
+      "frames_in_file": 577,
+      "width": 1280,
+      "height": 720,
+      "fps": "25/1",
+      "size_bytes": 5462562
+    },
+    {
+      "run": "e8825dea53__phi55__trial07",
+      "video": "results/m5/videos/e8825dea53__phi55__trial07.mp4",
+      "saved_row": "results/m5/eval/runs/e8825dea53__phi55__trial07.json",
+      "saved_success": false,
+      "saved_category": "released but not on the coaster",
+      "rerun_success": false,
+      "rerun_category": "released but not on the coaster",
+      "identical": true,
+      "fields_differing": [],
+      "control_steps": 1065,
+      "frames_in_file": 532,
+      "width": 1280,
+      "height": 720,
+      "fps": "25/1",
+      "size_bytes": 5153325
+    }
+  ],
+  "gif": {
+    "run": "e8825dea53__phi55__trial00",
+    "file": "results/m5/r2_success.gif",
+    "source": "results/m5/videos/e8825dea53__phi55__trial00.mp4",
+    "chosen": {
+      "width": 480,
+      "fps": 10.0,
+      "size_bytes": 4016656
+    },
+    "tried": [
+      {
+        "width": 960,
+        "fps": 12.5,
+        "size_bytes": 16276991
+      },
+      {
+        "width": 800,
+        "fps": 10.0,
+        "size_bytes": 9728350
+      },
+      {
+        "width": 640,
+        "fps": 10.0,
+        "size_bytes": 6411330
+      },
+      {
+        "width": 576,
+        "fps": 10.0,
+        "size_bytes": 5512335
+      },
+      {
+        "width": 480,
+        "fps": 10.0,
+        "size_bytes": 4016656
+      }
+    ],
+    "max_bytes": 5000000,
+    "real_time": true,
+    "frames": 231,
+    "tool": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+  },
+  "resources": {
+    "wall_s": 60.7,
+    "peak_rss_mb": 1770
+  }
+}

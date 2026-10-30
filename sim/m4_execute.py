@@ -860,7 +860,7 @@ def cmd_videos(args):
 def cmd_render(args):
     """M4b videos: re-run the given saved rows with video (each through run_one, as ``videos`` does) and compare each new row with
     its saved one, every field except wall_s and worker_peak_rss_mb; optionally a GIF (make_gif) from one of them, only if its
-    re-run is an identical success. Writes <out>/videos.json; exit 1 if any re-run differs."""
+    re-run is identical to its saved row. Writes <out>/videos.json; exit 1 if any re-run differs."""
     if os.environ.get("MUJOCO_GL") != "egl" or not os.environ.get("__EGL_VENDOR_LIBRARY_FILENAMES"):
         raise SystemExit("render: set MUJOCO_GL=egl and __EGL_VENDOR_LIBRARY_FILENAMES (Mesa's) on the command line")
     from sim.m1_grasp_final import gl_renderer
@@ -882,11 +882,11 @@ def cmd_render(args):
         print(f"{saved['run']}: saved {saved['success']} {saved['category']}, rerun {again['success']} {again['category']}, identical {not differing}", flush=True)
     if args.gif:
         entry = next(v for v in report["videos"] if v["run"] == args.gif)
-        if entry["identical"] and entry["rerun_success"]:
+        if entry["identical"]:                         # the re-run is the saved row's run (success or failure)
             report["gif"] = dict(run=args.gif, **make_gif(Path(entry["video"]), args.gif_file))
             print(f"GIF: {args.gif_file} {report['gif']['chosen']['size_bytes'] / 1e6:.2f} MB")
         else:
-            print(f"no GIF: the re-run of {args.gif} is not an identical success")
+            print(f"no GIF: the re-run of {args.gif} differs from its saved row")
     report["resources"] = dict(wall_s=round(time.perf_counter() - t0, 1), peak_rss_mb=peak_rss_mb())
     (args.out / "videos.json").write_text(json.dumps(report, indent=2))
     if any(not v["identical"] for v in report["videos"]):

@@ -1,0 +1,47 @@
+{
+  "what": "retarget/final_figures.py",
+  "sources": [
+    "results/m5/summary.json",
+    "results/m4b/summary.json",
+    "results/m5/choices.json",
+    "results/m5/eval/runs"
+  ],
+  "figures": [
+    "ablation.png",
+    "heading.png"
+  ],
+  "r2_choices_plotted": {
+    "26d4118b0c 65.0": {
+      "chosen": 1,
+      "successes": 1
+    },
+    "26d4118b0c 75.0": {
+      "chosen": 2,
+      "successes": 2
+    },
+    "26d4118b0c 81.9": {
+      "chosen": 2,
+      "successes": 2
+    },
+    "49aff04f7a 45.0": {
+      "chosen": 1,
+      "successes": 1
+    },
+    "49aff04f7a 75.0": {
+      "chosen": 3,
+      "successes": 3
+    },
+    "e8825dea53 45.0": {
+      "chosen": 3,
+      "successes": 3
+    },
+    "e8825dea53 55.0": {
+      "chosen": 5,
+      "successes": 4
+    },
+    "e8825dea53 61.7": {
+      "chosen": 33,
+      "successes": 33
+    }
+  }
+}

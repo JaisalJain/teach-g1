@@ -86,3 +86,9 @@ Candidate-oracle ceiling: 120/120 (0.97-1.00). Fixed-best F: 4e103843db 45. b_hy
 - the place correction reads privileged simulator state (the cup's true pose in the hand) in every variant, the selector rules and the oracle alike; in the noisy runs only the PATH is built from the noisy layout
 - the 50 eval layouts were also used in M4 / M4b (to compare variants), but never to train, select or set a threshold here: the selector, F and the h45 clip come from the 120 training layouts only
 - b_hybrid_h45 (M4b rows) and b_hybrid at the original yaw use the trial's own handle yaw, as do the selector runs
+
+## Videos
+
+- `results/m5/videos/e8825dea53__phi55__trial00.mp4` (gitignored): saved success, re-run identical True
+- `results/m5/videos/e8825dea53__phi55__trial07.mp4` (gitignored): saved released but not on the coaster, re-run identical True
+- GIF `results/m5/r2_success.gif` (4.02 MB)

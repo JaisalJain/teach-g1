@@ -1,0 +1,61 @@
+{
+  "rule": "M6 gallery: M4's b_level approach knock (the first by trial, as M4's videos chose it)",
+  "renderer": "Intel / Mesa Intel(R) Graphics (ARL) (EGL)",
+  "camera": "grasp_right",
+  "resolution": "1280x720",
+  "fps": "25 (one frame per 2 control steps of 50 Hz)",
+  "videos": [
+    {
+      "run": "e8825dea53__b_level__trial07",
+      "video": "results/final/videos/b_level_failure/e8825dea53__b_level__trial07.mp4",
+      "saved_row": "results/m4_execute/runs/e8825dea53__b_level__trial07.json",
+      "saved_success": false,
+      "saved_category": "missed/knocked cup",
+      "rerun_success": false,
+      "rerun_category": "missed/knocked cup",
+      "identical": true,
+      "fields_differing": [],
+      "control_steps": 570,
+      "frames_in_file": 285,
+      "width": 1280,
+      "height": 720,
+      "fps": "25/1",
+      "size_bytes": 2779333
+    }
+  ],
+  "gif": {
+    "run": "e8825dea53__b_level__trial07",
+    "file": "results/final/b_level_failure.gif",
+    "source": "results/final/videos/b_level_failure/e8825dea53__b_level__trial07.mp4",
+    "chosen": {
+      "width": 640,
+      "fps": 10.0,
+      "size_bytes": 3364532
+    },
+    "tried": [
+      {
+        "width": 960,
+        "fps": 12.5,
+        "size_bytes": 8532474
+      },
+      {
+        "width": 800,
+        "fps": 10.0,
+        "size_bytes": 5112290
+      },
+      {
+        "width": 640,
+        "fps": 10.0,
+        "size_bytes": 3364532
+      }
+    ],
+    "max_bytes": 5000000,
+    "real_time": true,
+    "frames": 114,
+    "tool": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+  },
+  "resources": {
+    "wall_s": 26.2,
+    "peak_rss_mb": 1776
+  }
+}
