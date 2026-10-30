@@ -1167,3 +1167,137 @@ Trials 0-49 of `sim.m1_pick_mug.trials()` with legacy-grasp layouts, R3's handle
 The parent RSS is 147 MB here against 63 MB in the ladder because `m1_grasp_final` sets MUJOCO_GL=egl before importing mujoco. This has no effect on physics (the r0 rows are identical to L3_R0). The libEGL warning about PCI id 10de:2d59 is Mesa skipping the NVIDIA card.
 
 (Main agent: the README.md write the checker saw during this run was mine — a brief run-commands README the user asked for, committed separately in bfdefb0. The legacy R0 re-check was run with `--out results/m1_grasp_fix/v3_final` because the literal command would have written into the frozen `v3/` folder; the ladder now writes ladder.json only into its own folder.)
+
+---
+
+## M3 — kinematic retargeting
+
+Date: 2026-10-31. Code: `retarget/{frames,grasp,warp,naive,run_m3}.py`, `tests/test_retarget_grasp.py`, plus one change in `sim/reference_builder.py` (`plan_path(..., return_fk=False)`). All outputs are in `results/m3_retarget/`. Kinematic only: the only physics is the 2 s setup hold that `PickPlace.run` does before its first move. Perception was not touched. CPU only.
+
+Every number below comes from a file under `results/m3_retarget/`: `summary.md` / `summary.json` (made by `python -m retarget.run_m3 summarize` from `runs/*.json`, `verify.json`, `run_resources.json`, `r0_after_m3/runs/R0_after_m3.json`, `videos.json`), `human_values.json`, `palm_axes.json`, `test_retarget_grasp.log`. The checker re-derived the tables from the per-run JSONs, found no mismatch, and re-ran the unit test.
+
+### What was done and why
+
+Goal: turn my 4 recorded demos into dense 50 Hz right-palm paths and ask one question per path: can HERO's whole-body IK (the same `plan_path` / FK code M4 will use to build the reference clip) follow it? "Reachable" is a kinematic property. No physics success is claimed here.
+
+1. **Frames and axes (`frames.py`).** The human table frame maps to the robot world by the identity rotation (forward x to x, left y to y, z up) plus a per-layout xy translation; human table plane z = 0 maps to the sim table top z = 0.74. Human cup positions are base centres, the sim cup pose is the body centre (cup_height / 2 higher), converted explicitly. Human palm frame columns are [x_f, y_h, n] (n points at the cup). Mapping `R_robot = R_human @ M`, M columns (e1, e3, -e2), det(M) = 1 asserted: robot x = x_f, robot y (palm normal) = n, robot z = x_f x n. Heading of the palm normal: `atan2(R[1,1], R[0,1])` for robot rotations, `atan2(R_h[1,2], R_h[0,2])` (the n column) for human ones.
+2. **Palm-axes check (gate, passed)** (`palm_axes.json`): at the oracle grasp pose the mean of the right fingertip bodies has palm-x = +8.02 cm (needs > 0) and the cup axis has palm-y = +6.28 cm (needs > 0). At that pose the plant palm is 3.77 mm / 0.08 deg from the target and 0.0003 mm from the clip's FK palm.
+3. **Grasp poses (`grasp.py`).** Oracle reference (mug_v1): R_ora = Grasp.hero_side_grasp rotation, o = radius_consistent_offset(r_mug) = (0.077, 0.0645, 0), phi_ora = 45.0 deg, h_frac_ora = 0.714. Human values at the grasp frame g: phi_h (heading of n), h_frac_h = palm height above table / cup height. Two variants, both with q = (cup axis x, y, table top + h_frac_h * h) and p = q - R * o:
+   - **b_level**: R = R_z(phi_h - phi_ora) @ R_ora (my palm heading, the oracle's level wrist).
+   - **b_tilt**: R = R_h(g) @ M (my full wrist orientation).
+   Headings equal phi_h to 1e-9 by assertion. Why two: they differ only in wrist tilt, so any reachability difference is attributable to tilt.
+4. **Unit test (passed)** (`test_retarget_grasp.log`): b_level at phi_h = phi_ora and h_frac_h = h_frac_ora reproduces the oracle grasp, max |p - p_ora| = 0 m and max |R - R_ora| = 0 (tolerance 1e-9).
+5. **Time scale k (my design choice per the spec).** v_h = 95th percentile of my smoothed palm speed over the approach and transport segments; v_o = the larger oracle min-jerk peak speed (pregrasp leg 0.244 m/s, transport leg 0.15 m/s) at the recorded layout with mug_v1; k = max(1, v_h / v_o). Human times are multiplied by k. Reason: my hand is faster than the oracle's, so the same path would otherwise demand faster motion than the robot's reference clips. v_o = 0.244 m/s for every clip.
+6. **Dense paths (`warp.py`, `naive.py`).**
+   - Approach segment a0..g, where a0 = first frame of the last contiguous run ending at g in which palm_pos_table is finite and z >= 0.02 m (first tracked frames are below the table, an entry artefact). a0 z is 0.022 to 0.068 m.
+   - Prelude (robot-specific, the robot starts with arms at its sides): standing palm to (p_s.x, p_s.y, z_clear) over 1.2 s, ending at R_G, exactly like the oracle's first pregrasp waypoint. z_clear = max(clearance height, G_z) = 0.9428 m for 4e103843db.
+   - **b (object-aware)**, my design choices: approach `p(s) = p~(s) + (1-w)(p_r0 - p~(0)) + w (G - p~(1))`, w = 10s^3 - 15s^4 + 6s^5, then clamp z >= table top + 0.03 m (count recorded); orientation HELD at R_G for the whole approach (the human wrist rotation during approach is not transferred); a 0.5 s hold (`i_pause`) at the first sample whose remaining arc length to G is <= 0.08 m (M4 replaces it with the oracle's closed-loop settle). Close: 1.75 s hold at G, closure 0 to 1 over the first 1.25 s. Transport: `p(s) = p~(s) + (1-s)(G - p~(0)) + s(P - p~(1))`, P = G + (coaster_xy - cup_xy, COASTER_THICKNESS + PLACE_CLEARANCE), orientation held at R_G, and if the bump above the straight G to P line exceeds LIFT_HEIGHT (0.10 m) it is scaled down uniformly (bump scale). Release and retreat as the oracle does: closure 1 to 0 over 0.6 s, 0.6 s hold, retreat -0.10 u + (0, 0, 0.05) over 1.5 s, 1.0 s hold.
+   - **a (naive)**: mapped human palm position and R_h(t) @ M from a0 to t_release, time-scaled by k, with the translation fixed at the recorded layout. No warp, clamp or pause. A 1.0 s min-jerk move to the mapped pose at a0 follows the prelude. Closure ramps 0 to 1 over 1.25 s from the mapped t_contact and 1 to 0 over 0.6 s at the mapped t_release.
+7. **Layouts and runs (`run_m3.py`).** Recorded layout: cup xy = PALM_BOX centre - legacy palm offset xy; coaster = cup + my (coaster - cup) offset; handle yaw = cup_init_yaw if valid. Random layouts: trials 0 to 9 of `sim.m1_pick_mug.trials()` (legacy grasp), handle yaw = trial yaw + (phi_h - phi_ora). Runs: b_level and b_tilt x 4 clips x (recorded + 10) = 88, plus a_naive x 4 clips x recorded = 4 (its path ignores the layout, so its result holds for every layout). Total 92.
+8. **Per run**: set up exactly as `PickPlace.run` does before its first move, make ONE `plan_path(base="plan", base_goal=_goal(G, R_G), return_fk=True)` call, assert path sample 0 equals palm_start (< 1 mm; observed max 0.090 mm), report FK error against the path, joint-limit hits (any of 14 arm joints within 0.01 rad of its limit), and the hand-mug and hand-handle signed distances at i_G (open hand, `mj_geomDistance`). The clip-to-plant joint mapping is checked at i_G: 92/92 within 1 mm (max 0.0005 mm).
+9. **Reachable** = FK error at G and at P both < 1.0 cm and < 10 deg AND path max position error < 2 cm. Written down before the run and never tuned.
+10. **Checks (`verify.json`, passed).** `plan_path` default output byte-identical with and without `return_fk` (all clip arrays plus info); the setup is repeatable; the R0 rung re-run after the `plan_path` change gives 20/20 successes, identical to M1 in 20/20 trials and to B3 R0 in 20/20 (`r0_after_m3/runs/R0_after_m3.json`; written to a separate `--out` so the frozen M1 results stay untouched). verify, run and videos ran on identical code (SHA-256 of the 8 code files equal).
+
+### Results
+
+Per-clip human values (`human_values.json`; phi_ora = 45.0 deg and h_frac_ora = 0.714 for all):
+
+| clip | phi_h (deg) | palm-point azimuth (info) | h_frac_h | k | a0 time (s) | clamped, recorded (b_level / b_tilt) |
+|---|---|---|---|---|---|---|
+| 26d4118b0c | 81.9 | -135.3 | 0.554 | 1.588 | 1.267 | 0 / 0 |
+| 4e103843db | 85.8 | -122.1 | 0.480 | 1.091 | 1.801 | 0 / 12 |
+| 49aff04f7a | 81.7 | -134.9 | 0.692 | 1.739 | 1.884 | 0 / 0 |
+| e8825dea53 | 61.7 | -137.0 | 0.700 | 1.520 | 0.700 | 0 / 0 |
+
+Clamped frames: 0 for b_level on every layout; b_tilt 12 for 4e103843db on every layout, 0 for the others. The bump scale is 1.000 everywhere except e8825dea53 (0.888, both b variants).
+
+Reachability (runs reachable / runs):
+
+| clip | a_naive | b_level | b_tilt |
+|---|---|---|---|
+| 26d4118b0c | 0/1 | 0/11 | 0/11 |
+| 4e103843db | 0/1 | 0/11 | 0/11 |
+| 49aff04f7a | 0/1 | 0/11 | 0/11 |
+| e8825dea53 | 0/1 | 10/11 | 0/11 |
+| all clips | 0/4 | 10/44 | 0/44 |
+
+Which part of the rule failed (runs passing / runs):
+
+| clip | variant | at G | at P | path max < 2 cm |
+|---|---|---|---|---|
+| 26d4118b0c | b_level | 0/11 | 8/11 | 0/11 |
+| 26d4118b0c | b_tilt | 0/11 | 3/11 | 0/11 |
+| 4e103843db | b_level | 1/11 | 6/11 | 0/11 |
+| 4e103843db | b_tilt | 0/11 | 0/11 | 0/11 |
+| 49aff04f7a | b_level | 5/11 | 9/11 | 0/11 |
+| 49aff04f7a | b_tilt | 0/11 | 6/11 | 0/11 |
+| e8825dea53 | b_level | 10/11 | 11/11 | 11/11 |
+| e8825dea53 | b_tilt | 0/11 | 0/11 | 0/11 |
+| all clips | a_naive | 0/4 | 0/4 | 0/4 |
+
+Aggregates over all runs per variant: median FK position error at G / at P (cm): b_level 1.16 / 0.48, b_tilt 3.19 / 1.72, a_naive 2.67 / 2.07. Largest orientation error: b_level 0.7 deg, b_tilt 1.7 deg, a_naive 7.9 deg. QP failures: 0 in all 92 runs. Joint-limit hits: 0 in all 92 runs (minimum margin to a limit 0.032 rad, so the 0.01 rad rule is never close to triggering). Where the path maximum sits: b_level always in the robot-specific prelude (44/44, 1.90 to 2.86 cm), b_tilt always in the approach (44/44, 2.78 to 6.32 cm), a_naive always in the replay (4/4, 3.60 to 9.86 cm).
+
+Recorded layout, FK position error max / at G / at P (cm):
+
+| clip | a_naive | b_level | b_tilt |
+|---|---|---|---|
+| 26d4118b0c | 3.60 / 3.15 / 2.04 | 2.82 / 1.40 / 1.27 | 3.06 / 2.86 / 1.83 |
+| 4e103843db | 5.88 / 4.83 / 4.04 | 2.86 / 1.31 / 1.70 | 6.20 / 5.83 / 4.32 |
+| 49aff04f7a | 6.07 / 2.18 / 2.09 | 2.82 / 0.97 / 1.14 | 2.89 / 2.62 / 1.45 |
+| e8825dea53 | 9.86 / 1.46 / 1.99 | 1.90 / 0.81 / 0.77 | 3.77 / 3.38 / 1.96 |
+
+Only e8825dea53 b_level is reachable on its recorded layout.
+
+Hand-mug and hand-handle distance at G (mm, open hand, negative = overlap; min over layouts for each variant over the 4 clips; per clip in `summary.md`):
+
+| variant | hand-mug | hand-handle |
+|---|---|---|
+| b_level | -11.7 to -3.3 | 42.5 to 84.8 |
+| b_tilt | -12.6 to +1.4 | 44.6 to 90.6 |
+| a_naive | -2.7 to +10.9 | 74.8 to 89.1 |
+
+For reference, the oracle's own exact planned pose gives -2.4 mm hand-mug and 79.7 mm hand-handle (`results/m1_grasp_fix/v3/l1_check.json`). Nearly every b run already overlaps the mug with an open hand (information for M4's settle; no M3 rule uses it).
+
+Runtime and peak RSS (CPU only, from `run_resources.json` and `summary.md`):
+
+| step | wall | peak RSS |
+|---|---|---|
+| verify | 4.8 s | 1659 MB |
+| run (92 runs, 4 processes) | 84.8 s | max process 1668 MB, sum 6492 MB, parent 148 MB |
+| R0 after_m3 (4 processes) | 33.9 s | max process 1674 MB, sum 6495 MB |
+| videos | 31.3 s | 2185 MB |
+| summarize | 0.02 s | 151 MB |
+
+Per-run worker peak RSS in the run JSONs is a worker high-water mark so far, not an isolated per-run peak. The unit-test log's 'wall 0.00 s' times only the test body (imports are excluded).
+
+Videos (clip 4e103843db, recorded layout): `results/m3_retarget/videos/4e103843db__{a_naive,b_level,b_tilt}__recorded.mp4` (gitignored) and the b_level GIF `results/m3_retarget/4e103843db__b_level__recorded.gif` (2.82 MB, under the 5 MB limit; `videos.json`). The robot comes from the clip's joints, fingers blend open to closed by closure, and the mug moves rigidly with the palm from the end of the close hold to the release (b: frames 281 to 403; a_naive: 232 to 406). The videos are re-plans of the saved runs and differ from the saved runs in nothing.
+
+### What failed (stated plainly)
+
+- Under the rule as written, 10 of 44 b_level runs and 0 of 44 b_tilt runs and 0 of 4 a_naive runs are reachable. Only clip e8825dea53 (phi_h = 61.7 deg, nearest to the oracle's 45 deg) passes with b_level; the other three clips (phi_h 81.7 to 85.8 deg) pass for none of their 44 runs.
+- b_tilt never passes: taking my wrist tilt raises the error at G, with the worst at 4e103843db (5.8 to 6.0 cm, with 12 clamped frames). b_level keeps the oracle's level wrist and has smaller errors at G (per-run values in results/m3_retarget/summary.md).
+- a_naive fails everywhere; its errors peak in the replay (3.60 to 9.86 cm), which fits a fixed, layout-blind human path.
+- For b_level the failures come from the path-max rule, driven by the robot-specific prelude (arms-at-sides to over the table), not by my demo. The oracle's own pregrasp plan has a 1.77 cm IK path residual. By a one-liner on `summary.json` (not saved as a number): of the 77 b runs failing the path < 2 cm rule, 26 (all b_level) are under 2 cm everywhere after the prelude, and 3 of those (49aff04f7a b_level trial01, trial02, trial05) also pass at G and at P. The rule was left unchanged.
+- e8825dea53 b_level trial08 fails only at G: 1.024 cm against the 1.0 cm limit. Reported as is, not tuned.
+- On all 4 clips the coaster's nominal place palm lies outside PALM_BOX with either sign convention (`coaster_place_palm_in_palm_box` False in the recorded runs).
+- Nothing was run in physics. These results say nothing about whether the grasp closes or lifts. That is M4.
+
+### Adaptations (differences from the task text, all in the integration notes)
+
+- The R0 re-check was run with `--out results/m3_retarget/r0_after_m3 --overwrite`, because the literal command without `--out` would write into the frozen `results/m1_grasp_fix/v3/` and rewrite its `ladder.json`.
+- `summarize` is run after `videos` as well, since it embeds `videos.json`.
+- `retarget.frames` and `retarget.warp` were re-run in the final pass so that every M3 file comes from one run of the current code. Their values equal the earlier ones.
+
+### Open questions (literal reading implemented in each case)
+
+1. Should the path-max < 2 cm rule exclude the robot-specific prelude? Implemented as written. b_level's path maximum is in the prelude in 44/44 runs.
+2. Place palm: the spec writes coaster - legacy palm_offset[:2], but `sample_layouts` implies coaster + offset. Implemented literally; all 4 clips are outside PALM_BOX either way.
+3. Naive prelude orientation: there is no R_G in (a), so the mapped pose at g, R_h(g) @ M, is used. The alternative is the pose at a0.
+4. Naive release: the 1 to 0 ramp starts at the mapped t_release (plus 30 appended frames); the alternative is a ramp that ends there.
+5. Naive video: a_naive has no close hold, so the mug attaches at the first frame with closure = 1 (232). Is that intended?
+6. Velocity jumps at segment joins (spec followed literally): the approach starts at my hand-entry speed at a0 (0.59 to 0.97 m/s after k) right after the prelude ends at rest; transport starts at my lift speed after the close hold. Should the warp match velocities, or should a0 skip the fast entry frames?
+7. Joint-limit hits are 0 in all 92 runs, essentially by construction (HERO's QP keeps joints at least 0.032 rad inside the URDF range). Is the per-run minimum margin (recorded) enough, or should the check use the QP's limits?
+8. Hand-mug overlap at G (b_level -11.7 to -3.3 mm, b_tilt -12.6 to +1.4 mm; the oracle's own exact pose is -2.4 mm): information for M4's settle.
+9. Cosmetic: `frames.verify_palm_axes` sets the robot with `ref.root_pos_from_joint_pos` / `root_quat_from_joint_pos`, `run_m3` with `ref.root_pos_w` / `root_quat_w` (HERO's `rollout_clip`). Both pass their palm-match checks (0.0003 mm and at most 0.0005 mm).
+
+(Main agent: the review found only minor issues — docstring wording in warp.py / frames.py, a positional `L.insert` in run_m3.summary_md, the unit-test log timing only the test body, and runtime/RSS of palm axes / human values living in their own files. None changes a number; not fixed, to keep M3 lean. Numbers from the integration report that are not in a results file (per-variant FK-error medians, counts of b_level runs under 2 cm after the prelude) are left out of this log.)

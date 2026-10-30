@@ -1,0 +1,76 @@
+{
+  "step": "videos",
+  "clip": "4e103843db",
+  "layout": "recorded",
+  "renderer": "sim/m1_reach_test.py VideoWriter (640 x 480, every 2nd frame -> 25 fps), MUJOCO_GL=egl on Mesa (__EGL_VENDOR_LIBRARY_FILENAMES)",
+  "videos": [
+    {
+      "run": "4e103843db__a_naive__recorded",
+      "video": "results/m3_retarget/videos/4e103843db__a_naive__recorded.mp4",
+      "rerun_fields_differing_from_saved_run": [],
+      "path_identical_to_saved": true,
+      "attach_frame": 232,
+      "attach_rule": "first frame with closure = 1 (no 'close' phase in this path)",
+      "release_frame": 406,
+      "frames": 437,
+      "mug_carried_frames": 175
+    },
+    {
+      "run": "4e103843db__b_level__recorded",
+      "video": "results/m3_retarget/videos/4e103843db__b_level__recorded.mp4",
+      "rerun_fields_differing_from_saved_run": [],
+      "path_identical_to_saved": true,
+      "attach_frame": 281,
+      "attach_rule": "last frame of the 'close' phase (end of the close hold)",
+      "release_frame": 403,
+      "frames": 589,
+      "mug_carried_frames": 123,
+      "gif": {
+        "gif": "results/m3_retarget/4e103843db__b_level__recorded.gif",
+        "size": [
+          320,
+          240
+        ],
+        "attempts": [
+          {
+            "stride": 2,
+            "frames": 147,
+            "frame_ms": 80,
+            "bytes": 2821055
+          }
+        ],
+        "used": {
+          "stride": 2,
+          "frames": 147,
+          "frame_ms": 80,
+          "bytes": 2821055
+        },
+        "bytes": 2821055,
+        "under_5MB": true
+      }
+    },
+    {
+      "run": "4e103843db__b_tilt__recorded",
+      "video": "results/m3_retarget/videos/4e103843db__b_tilt__recorded.mp4",
+      "rerun_fields_differing_from_saved_run": [],
+      "path_identical_to_saved": true,
+      "attach_frame": 281,
+      "attach_rule": "last frame of the 'close' phase (end of the close hold)",
+      "release_frame": 403,
+      "frames": 589,
+      "mug_carried_frames": 123
+    }
+  ],
+  "runtime_s": 31.3,
+  "peak_rss_mb": 2185,
+  "code_sha256": {
+    "retarget/frames.py": "45f367363cdad5a87c220fab863356b10f27e89f0b9aa682d7aa0448351401db",
+    "retarget/grasp.py": "23d1c45f9be1329e3f4f4a9ce7ef042d163c4eb9ba13d270a0ce659ac2f2e6f2",
+    "retarget/warp.py": "21640b51712410c0266a769dd0909dc9819ead238d8c36a55eb4f1a32f5ba8c8",
+    "retarget/naive.py": "9eb0e7f3d4adfc9cbea199d65823e23105141e9640ca84017d0f71a4402e6c4e",
+    "retarget/run_m3.py": "95649d9b4dedba594fcb2c72e7369b4e7fa6128211ca912b9871d1e4ac7d514d",
+    "sim/reference_builder.py": "c97d7d40f98be21e279648808a34e1d7e1ae97a9484c5a0cc1881ade10b48165",
+    "sim/pick_place.py": "2c4bf6e7f5d53b72efa6877d5f28fb059097260cc463bf629bb27c8f9a116813",
+    "sim/scene.py": "7cbbf28125f8076dccd722cc6fb6f4e2a0165cddb8be9060637f7eca5e03b39c"
+  }
+}

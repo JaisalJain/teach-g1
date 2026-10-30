@@ -248,6 +248,26 @@ Dimensions
                                      entry; the mug's capacity_ml is a bare number in the config)
 ```
 
+
+---
+
+## Retarget conventions
+
+Code in `retarget/` (hoi-sim, kinematic only), outputs in `results/m3_retarget/`. Details and results are in docs/log.md "M3".
+
+- **Frames:** human table frame to sim world = identity rotation (x forward, y left, z up) plus a per-layout xy translation; human table z = 0 maps to the sim table top z = 0.74. Human cup positions are base centres, the sim cup pose is the body centre (cup_height / 2 higher); convert explicitly (`frames.base_to_centre`).
+- **Palm axes (verified from the model at the oracle grasp):** robot palm x points toward the finger bases, palm y (the palm normal) toward the object, z = x x y. The cup axis is `o = (0.077, r + 0.015, 0)` in the palm frame.
+- **M:** `R_robot = R_human @ M`, M columns (e1, e3, -e2), det = 1 (robot x = x_f, y = n, z = x_f x n). Human palm frame columns are [x_f, y_h, n].
+- **Heading:** `phi(R) = atan2(R[1,1], R[0,1])` for robot rotations; for human rotations the n column `atan2(R_h[1,2], R_h[0,2])`.
+- **Grasp variants (both: q = cup axis xy, table top + h_frac_h * h; p = q - R * o):** `b_level` R = R_z(phi_h - phi_ora) @ R_ora (my heading, level wrist); `b_tilt` R = R_h(g) @ M (full wrist). `a_naive` replays the mapped human palm and R_h(t) @ M at a fixed recorded-layout translation. phi_ora = 45 deg, h_frac_ora = 0.714.
+- **a0 rule:** a0 = first frame of the last contiguous run ending at g with finite palm_pos_table and z >= 0.02 m (removes the below-table entry artefact).
+- **Time scale k:** per clip, at the recorded layout: `k = max(1, v_h / v_o)`; v_h = p95 of smoothed palm speed over approach + transport, v_o = larger oracle min-jerk peak (pregrasp 0.244 m/s, transport 0.15 m/s). Human times x k, resampled to 50 Hz.
+- **Prelude (robot-specific):** standing palm to (p_s.x, p_s.y, z_clear) over 1.2 s ending at R_G, like the oracle's first waypoint.
+- **Warps (b):** approach = mapped human path plus a smooth-step offset blending the start to p_r0 and the end to G (w = 10s^3 - 15s^4 + 6s^5), z clamped >= table + 0.03 m (count recorded), orientation held at R_G, 0.5 s pause (`i_pause`) at 0.08 m arc length to G; close 1.75 s at G (closure ramps 0 to 1 in 1.25 s); transport = mapped path blended linearly from G to P, bump over the G to P line capped at 0.10 m; release and retreat as the oracle.
+- **Reachable:** FK error at G and at P < 1 cm and < 10 deg, and path max < 2 cm. Joint-limit hit = any arm joint within 0.01 rad of its limit.
+- **Output format:** `results/m3_retarget/paths/<clip>__<variant>__<layout>.npz` with `palm_pos` (T,3), `palm_quat_wxyz` (T,4) (world frame, 50 Hz), `closure` (T,) in [0, 1] (0 = HERO open), `phase` (T,) fixed-width unicode strings (prelude, approach, pause, close, transport, release, retreat; naive: prelude, to_a0, replay, release), and the indices `i_pause` (-1 for naive), `i_G`, `i_P`, `i_release`. Per-run metrics in `runs/<same name>.json`; summary in `summary.md` / `summary.json`.
+- **Plan API:** `PathPlanner.plan_path(..., return_fk=True)` additionally returns the per-frame FK palm position and wxyz quaternion; default output unchanged.
+
 ---
 
 ## Milestones (one per day — stop and report at each)

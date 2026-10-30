@@ -55,11 +55,16 @@ class PathPlanner(BenchReplanner):
         return palms[self.goal.hand]
 
     def plan_path(self, st, plant, path_pos: np.ndarray, path_quat: np.ndarray, *, base: str = "current",
-                  hold_frames: int = 5, hold_s: float = 12.0) -> tuple[ClipReference, dict]:
+                  hold_frames: int = 5, hold_s: float = 12.0, return_fk: bool = False):
         """Whole-body reference whose active palm follows ``path_pos`` / ``path_quat`` (T frames at 50 Hz), then holds.
 
         Mirrors ``BenchReplanner.plan_from_state`` (state ingestion, task priming, IK, padding, FK, clip) with our
         palm path in place of HERO's straight smoothstep path. Frame 0 should be the robot's palm (``palm_start``).
+
+        Returns ``(ref, info)``. With ``return_fk=True`` (M3's kinematic check) it returns ``(ref, info, (fk_pos, fk_quat))``:
+        the active palm's position (T, 3) and orientation (T, 4, wxyz) for the T path frames (not the hold padding), read from
+        the same training-geometry FK pass the clip is built from, so they are what HERO will be asked to track. The flag only
+        adds a return value: the default output is unchanged (results/m3_retarget/verify.json checks it byte for byte).
         """
         if base not in ("current", "plan"):
             raise ValueError("base must be 'current' or 'plan'")
@@ -79,6 +84,9 @@ class PathPlanner(BenchReplanner):
                 "ik_max_path_err_cm": float(resid[:n_path, 0].max()) * 100.0,
                 "ik_terminal_palm_err_cm": float(np.linalg.norm(fk["palm_pos_w"][n_path - 1, self.goal.hand_index] - path_pos[-1])) * 100.0,
                 "qp_failures": int(self.solver.qp_failures - qp_failures_before)}
+        if return_fk:
+            hand = self.goal.hand_index
+            return ref, info, (fk["palm_pos_w"][:n_path, hand].copy(), fk["palm_quat_w"][:n_path, hand].copy())
         return ref, info
 
     def _build_path_plan(self, state, q_start, path_pos, path_quat, base_mode, hold_frames):

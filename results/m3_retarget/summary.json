@@ -1,0 +1,4885 @@
+{
+  "protocol": {
+    "runs": "92 = 4 clips x (a_naive on the recorded layout + b_level and b_tilt on the recorded layout and trials 0-9)",
+    "profile": "PickPlace(cup_model='mug', **GRASP_PROFILES['mug_v1'])",
+    "setup": "PickPlace.run up to its first move (SetupOnly), incl. the 2 s hold",
+    "plan": "one PathPlanner.plan_path(base='plan', base_goal=task._goal(G, R_G), return_fk=True) per run",
+    "reachable": "FK error at G and at P < 1 cm and < 10 deg, AND path max position error < 2 cm",
+    "joint_limit_hit": "a path frame in which any of the 14 arm joints is within 0.01 rad of its URDF limit",
+    "distances": "mj_geomDistance from the 8 right-hand collision geoms (open hand) to cup_geom / cup_handle_* at the clip's frame i_G; negative = overlap",
+    "angles": "deg; phi = heading of the palm normal, atan2(y, x)"
+  },
+  "checks": {
+    "palm_axes": {
+      "passed": true,
+      "conditions": {
+        "fingertip_mean_palm_x_positive": {
+          "value_m": 0.08016494330817131,
+          "pass": true
+        },
+        "cup_axis_palm_y_positive": {
+          "value_m": 0.0627687054337857,
+          "pass": true
+        }
+      },
+      "fingertip_bodies_in_palm_m": {
+        "thumb_2": [
+          -0.00651,
+          0.05433,
+          0.0
+        ],
+        "index_1": [
+          0.1235,
+          -0.0016,
+          0.0285
+        ],
+        "middle_1": [
+          0.1235,
+          -0.0016,
+          -0.0285
+        ]
+      },
+      "fingertip_mean_in_palm_m": [
+        0.08016,
+        0.01704,
+        0.0
+      ],
+      "cup_axis_at_palm_height_in_palm_m": [
+        0.07825,
+        0.06277,
+        5e-05
+      ],
+      "oracle_cup_axis_in_palm_o_m": [
+        0.077,
+        0.0645,
+        0.0
+      ],
+      "pose": {
+        "layout_cup_xy": [
+          0.49334,
+          -0.23556
+        ],
+        "handle_yaw_rad": -0.08811049820511048,
+        "oracle_grasp_palm": [
+          0.39328,
+          -0.22672,
+          0.805
+        ],
+        "oracle_grasp_quat_wxyz": [
+          0.92388,
+          0.0,
+          0.0,
+          -0.382683
+        ],
+        "plant_palm": [
+          0.39361,
+          -0.22473,
+          0.80819
+        ],
+        "plant_palm_quat_wxyz": [
+          0.924115,
+          -0.000128,
+          0.000222,
+          -0.382114
+        ],
+        "plant_palm_minus_target_mm": 3.7697445553138915,
+        "plant_palm_vs_target_deg": 0.07650674229564752,
+        "plant_palm_minus_clip_fk_palm_mm": 0.00030623114525148935,
+        "plant_palm_vs_clip_fk_deg": 7.776373593278652e-05,
+        "path_frames": 251,
+        "plan_info": {
+          "frames": 851,
+          "path_frames": 251,
+          "ik_max_path_err_cm": 1.818780860403263,
+          "ik_terminal_palm_err_cm": 0.3769628251927541,
+          "qp_failures": 0
+        }
+      },
+      "method": "PickPlace(mug_v1), spawn pose (no physics), oracle waypoints (z_clear 1.2 s, pre-grasp 1.8 s, grasp 2.0 s) in one plan_path(base='plan'); robot set to the last path frame (plant.reset with the clip's root pose + 29 joints), right and left hands at HERO's open pose, mug at its layout pose, mj_forward; palm frame = plant.palm_pose() (wrist_yaw_link + PALM_OFFSET); fingertips = body origins of right_hand_{thumb_2,index_1,middle_1}_link",
+      "resources": {
+        "wall_s": 0.87,
+        "peak_rss_mb": 1658.5
+      }
+    },
+    "return_fk_byte_identity": true,
+    "setup_repeatable": true,
+    "r0_after_m3": {
+      "file": "results/m3_retarget/r0_after_m3/runs/R0_after_m3.json",
+      "successes": 20,
+      "trials": 20,
+      "trials_identical_to_m1": 20,
+      "trials_identical_to_b3_r0": 20,
+      "passed": true
+    },
+    "path_start_vs_palm_start_mm_max": 0.09014472896523588,
+    "mapping_check_passed": 92,
+    "mapping_check_of": 92,
+    "mapping_mm_max": 0.0004666511201944644,
+    "same_code": {
+      "now": {
+        "retarget/frames.py": "45f367363cdad5a87c220fab863356b10f27e89f0b9aa682d7aa0448351401db",
+        "retarget/grasp.py": "23d1c45f9be1329e3f4f4a9ce7ef042d163c4eb9ba13d270a0ce659ac2f2e6f2",
+        "retarget/warp.py": "21640b51712410c0266a769dd0909dc9819ead238d8c36a55eb4f1a32f5ba8c8",
+        "retarget/naive.py": "9eb0e7f3d4adfc9cbea199d65823e23105141e9640ca84017d0f71a4402e6c4e",
+        "retarget/run_m3.py": "95649d9b4dedba594fcb2c72e7369b4e7fa6128211ca912b9871d1e4ac7d514d",
+        "sim/reference_builder.py": "c97d7d40f98be21e279648808a34e1d7e1ae97a9484c5a0cc1881ade10b48165",
+        "sim/pick_place.py": "2c4bf6e7f5d53b72efa6877d5f28fb059097260cc463bf629bb27c8f9a116813",
+        "sim/scene.py": "7cbbf28125f8076dccd722cc6fb6f4e2a0165cddb8be9060637f7eca5e03b39c"
+      },
+      "verify_equal": true,
+      "run_equal": true,
+      "videos_equal": true
+    },
+    "coaster_place_palm_outside_palm_box": [
+      "26d4118b0c",
+      "4e103843db",
+      "49aff04f7a",
+      "e8825dea53"
+    ],
+    "coaster_plus_offset_outside_palm_box_information": [
+      "26d4118b0c",
+      "4e103843db",
+      "49aff04f7a",
+      "e8825dea53"
+    ]
+  },
+  "per_clip": {
+    "26d4118b0c": {
+      "phi_h_deg": 81.93991346704513,
+      "phi_ora_deg": 45.00000000000001,
+      "palm_point_azimuth": {
+        "azimuth_rad": -2.36060164371489,
+        "azimuth_deg": -135.25251129650803,
+        "note": "information only: angle of (palm point at g - initial mug base centre) about the cup axis, from table x (= world x)"
+      },
+      "h_frac_h": 0.5540357396184526,
+      "h_frac_ora": 0.7142857142857137,
+      "k": 1.587832380448152,
+      "a0": 38,
+      "a0_time_s": 1.266692416043952,
+      "a0_z_m": 0.06828623427812071,
+      "v_h_m_s": 0.38722838965739287,
+      "v_o_m_s": 0.2438723346529191,
+      "n_clamped_recorded": {
+        "b_level": 0,
+        "b_tilt": 0
+      },
+      "n_clamped_over_layouts": {
+        "b_level": {
+          "n": 11,
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "b_tilt": {
+          "n": 11,
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        }
+      },
+      "k_same_in_every_run": true,
+      "recorded_layout": {
+        "name": "recorded",
+        "cup_xy": [
+          0.4933380951166243,
+          -0.23555634918610405
+        ],
+        "coaster_xy": [
+          0.4976353504076602,
+          -0.37984585602295656
+        ],
+        "handle_yaw": 0.07160951943706387,
+        "cup_height": 0.091,
+        "handle_yaw_source": "cup_init_yaw",
+        "coaster_place_palm_xy": [
+          0.5909734455242845,
+          -0.3954022052090606
+        ],
+        "coaster_place_palm_in_palm_box": false
+      },
+      "coaster_place_palm": {
+        "spec_formula": "coaster - legacy palm_offset[:2]",
+        "spec_xy": [
+          0.5909734455242845,
+          -0.3954022052090606
+        ],
+        "spec_in_box": false,
+        "coaster_plus_offset_xy": [
+          0.40429725529103594,
+          -0.3642895068368525
+        ],
+        "coaster_plus_offset_in_box": false,
+        "palm_box": {
+          "x": [
+            0.35,
+            0.45
+          ],
+          "y": [
+            -0.32,
+            -0.12
+          ]
+        }
+      }
+    },
+    "4e103843db": {
+      "phi_h_deg": 85.84558610023504,
+      "phi_ora_deg": 45.00000000000001,
+      "palm_point_azimuth": {
+        "azimuth_rad": -2.1302707723718664,
+        "azimuth_deg": -122.05552447698204,
+        "note": "information only: angle of (palm point at g - initial mug base centre) about the cup axis, from table x (= world x)"
+      },
+      "h_frac_h": 0.4799327307361841,
+      "h_frac_ora": 0.7142857142857137,
+      "k": 1.0912241075636362,
+      "a0": 103,
+      "a0_time_s": 1.8007395410677418,
+      "a0_z_m": 0.021735889849099313,
+      "v_h_m_s": 0.2661193707410921,
+      "v_o_m_s": 0.2438723346529191,
+      "n_clamped_recorded": {
+        "b_level": 0,
+        "b_tilt": 12
+      },
+      "n_clamped_over_layouts": {
+        "b_level": {
+          "n": 11,
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "b_tilt": {
+          "n": 11,
+          "min": 12.0,
+          "median": 12.0,
+          "max": 12.0
+        }
+      },
+      "k_same_in_every_run": true,
+      "recorded_layout": {
+        "name": "recorded",
+        "cup_xy": [
+          0.4933380951166243,
+          -0.23555634918610405
+        ],
+        "coaster_xy": [
+          0.4995833828783407,
+          -0.3795036263131936
+        ],
+        "handle_yaw": 1.4275195552148534,
+        "cup_height": 0.091,
+        "handle_yaw_source": "cup_init_yaw",
+        "coaster_place_palm_xy": [
+          0.592921477994965,
+          -0.39505997549929767
+        ],
+        "coaster_place_palm_in_palm_box": false
+      },
+      "coaster_place_palm": {
+        "spec_formula": "coaster - legacy palm_offset[:2]",
+        "spec_xy": [
+          0.592921477994965,
+          -0.39505997549929767
+        ],
+        "spec_in_box": false,
+        "coaster_plus_offset_xy": [
+          0.4062452877617164,
+          -0.3639472771270896
+        ],
+        "coaster_plus_offset_in_box": false,
+        "palm_box": {
+          "x": [
+            0.35,
+            0.45
+          ],
+          "y": [
+            -0.32,
+            -0.12
+          ]
+        }
+      }
+    },
+    "49aff04f7a": {
+      "phi_h_deg": 81.67776196222137,
+      "phi_ora_deg": 45.00000000000001,
+      "palm_point_azimuth": {
+        "azimuth_rad": -2.3542342479462763,
+        "azimuth_deg": -134.88768639247704,
+        "note": "information only: angle of (palm point at g - initial mug base centre) about the cup axis, from table x (= world x)"
+      },
+      "h_frac_h": 0.69236748568396,
+      "h_frac_ora": 0.7142857142857137,
+      "k": 1.7386864576969785,
+      "a0": 113,
+      "a0_time_s": 1.8841074580559507,
+      "a0_z_m": 0.023843731806861026,
+      "v_h_m_s": 0.424017525667976,
+      "v_o_m_s": 0.2438723346529191,
+      "n_clamped_recorded": {
+        "b_level": 0,
+        "b_tilt": 0
+      },
+      "n_clamped_over_layouts": {
+        "b_level": {
+          "n": 11,
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "b_tilt": {
+          "n": 11,
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        }
+      },
+      "k_same_in_every_run": true,
+      "recorded_layout": {
+        "name": "recorded",
+        "cup_xy": [
+          0.4933380951166243,
+          -0.23555634918610405
+        ],
+        "coaster_xy": [
+          0.4908415707984213,
+          -0.3721462561471624
+        ],
+        "handle_yaw": 1.2573348873173578,
+        "cup_height": 0.091,
+        "handle_yaw_source": "cup_init_yaw",
+        "coaster_place_palm_xy": [
+          0.5841796659150456,
+          -0.38770260533326645
+        ],
+        "coaster_place_palm_in_palm_box": false
+      },
+      "coaster_place_palm": {
+        "spec_formula": "coaster - legacy palm_offset[:2]",
+        "spec_xy": [
+          0.5841796659150456,
+          -0.38770260533326645
+        ],
+        "spec_in_box": false,
+        "coaster_plus_offset_xy": [
+          0.397503475681797,
+          -0.35658990696105836
+        ],
+        "coaster_plus_offset_in_box": false,
+        "palm_box": {
+          "x": [
+            0.35,
+            0.45
+          ],
+          "y": [
+            -0.32,
+            -0.12
+          ]
+        }
+      }
+    },
+    "e8825dea53": {
+      "phi_h_deg": 61.69248416329159,
+      "phi_ora_deg": 45.00000000000001,
+      "palm_point_azimuth": {
+        "azimuth_rad": -2.391626682539416,
+        "azimuth_deg": -137.03011508038293,
+        "note": "information only: angle of (palm point at g - initial mug base centre) about the cup axis, from table x (= world x)"
+      },
+      "h_frac_h": 0.6999487872637248,
+      "h_frac_ora": 0.7142857142857137,
+      "k": 1.5200686709747955,
+      "a0": 42,
+      "a0_time_s": 0.7002877499908209,
+      "a0_z_m": 0.02328685565198998,
+      "v_h_m_s": 0.3707026956233833,
+      "v_o_m_s": 0.2438723346529191,
+      "n_clamped_recorded": {
+        "b_level": 0,
+        "b_tilt": 0
+      },
+      "n_clamped_over_layouts": {
+        "b_level": {
+          "n": 11,
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "b_tilt": {
+          "n": 11,
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        }
+      },
+      "k_same_in_every_run": true,
+      "recorded_layout": {
+        "name": "recorded",
+        "cup_xy": [
+          0.4933380951166243,
+          -0.23555634918610405
+        ],
+        "coaster_xy": [
+          0.46758121694448496,
+          -0.40308902246576966
+        ],
+        "handle_yaw": 1.0767369723838973,
+        "cup_height": 0.091,
+        "handle_yaw_source": "phi_h",
+        "coaster_place_palm_xy": [
+          0.5609193120611092,
+          -0.4186453716518737
+        ],
+        "coaster_place_palm_in_palm_box": false
+      },
+      "coaster_place_palm": {
+        "spec_formula": "coaster - legacy palm_offset[:2]",
+        "spec_xy": [
+          0.5609193120611092,
+          -0.4186453716518737
+        ],
+        "spec_in_box": false,
+        "coaster_plus_offset_xy": [
+          0.3742431218278607,
+          -0.3875326732796656
+        ],
+        "coaster_plus_offset_in_box": false,
+        "palm_box": {
+          "x": [
+            0.35,
+            0.45
+          ],
+          "y": [
+            -0.32,
+            -0.12
+          ]
+        }
+      }
+    }
+  },
+  "reachability": {
+    "26d4118b0c": {
+      "a_naive": {
+        "reachable": 0,
+        "of": 1,
+        "fraction": 0.0,
+        "parts_passed": {
+          "at_G": 0,
+          "at_P": 0,
+          "path": 0
+        },
+        "layouts": "recorded only; the path ignores the layout, so this holds for every layout"
+      },
+      "b_level": {
+        "reachable": 0,
+        "of": 11,
+        "fraction": 0.0,
+        "parts_passed": {
+          "at_G": 0,
+          "at_P": 8,
+          "path": 0
+        },
+        "layouts": "recorded + trials 0-9"
+      },
+      "b_tilt": {
+        "reachable": 0,
+        "of": 11,
+        "fraction": 0.0,
+        "parts_passed": {
+          "at_G": 0,
+          "at_P": 3,
+          "path": 0
+        },
+        "layouts": "recorded + trials 0-9"
+      }
+    },
+    "4e103843db": {
+      "a_naive": {
+        "reachable": 0,
+        "of": 1,
+        "fraction": 0.0,
+        "parts_passed": {
+          "at_G": 0,
+          "at_P": 0,
+          "path": 0
+        },
+        "layouts": "recorded only; the path ignores the layout, so this holds for every layout"
+      },
+      "b_level": {
+        "reachable": 0,
+        "of": 11,
+        "fraction": 0.0,
+        "parts_passed": {
+          "at_G": 1,
+          "at_P": 6,
+          "path": 0
+        },
+        "layouts": "recorded + trials 0-9"
+      },
+      "b_tilt": {
+        "reachable": 0,
+        "of": 11,
+        "fraction": 0.0,
+        "parts_passed": {
+          "at_G": 0,
+          "at_P": 0,
+          "path": 0
+        },
+        "layouts": "recorded + trials 0-9"
+      }
+    },
+    "49aff04f7a": {
+      "a_naive": {
+        "reachable": 0,
+        "of": 1,
+        "fraction": 0.0,
+        "parts_passed": {
+          "at_G": 0,
+          "at_P": 0,
+          "path": 0
+        },
+        "layouts": "recorded only; the path ignores the layout, so this holds for every layout"
+      },
+      "b_level": {
+        "reachable": 0,
+        "of": 11,
+        "fraction": 0.0,
+        "parts_passed": {
+          "at_G": 5,
+          "at_P": 9,
+          "path": 0
+        },
+        "layouts": "recorded + trials 0-9"
+      },
+      "b_tilt": {
+        "reachable": 0,
+        "of": 11,
+        "fraction": 0.0,
+        "parts_passed": {
+          "at_G": 0,
+          "at_P": 6,
+          "path": 0
+        },
+        "layouts": "recorded + trials 0-9"
+      }
+    },
+    "e8825dea53": {
+      "a_naive": {
+        "reachable": 0,
+        "of": 1,
+        "fraction": 0.0,
+        "parts_passed": {
+          "at_G": 0,
+          "at_P": 0,
+          "path": 0
+        },
+        "layouts": "recorded only; the path ignores the layout, so this holds for every layout"
+      },
+      "b_level": {
+        "reachable": 10,
+        "of": 11,
+        "fraction": 0.9090909090909091,
+        "parts_passed": {
+          "at_G": 10,
+          "at_P": 11,
+          "path": 11
+        },
+        "layouts": "recorded + trials 0-9"
+      },
+      "b_tilt": {
+        "reachable": 0,
+        "of": 11,
+        "fraction": 0.0,
+        "parts_passed": {
+          "at_G": 0,
+          "at_P": 0,
+          "path": 0
+        },
+        "layouts": "recorded + trials 0-9"
+      }
+    }
+  },
+  "reachability_all_clips": {
+    "a_naive": {
+      "reachable": 0,
+      "of": 4
+    },
+    "b_level": {
+      "reachable": 10,
+      "of": 44
+    },
+    "b_tilt": {
+      "reachable": 0,
+      "of": 44
+    }
+  },
+  "distances_at_G": {
+    "26d4118b0c": {
+      "a_naive": {
+        "hand_mug_mm": {
+          "n": 1,
+          "min": 10.880529648184954,
+          "median": 10.880529648184954,
+          "max": 10.880529648184954
+        },
+        "hand_handle_mm": {
+          "n": 1,
+          "min": 74.78287739055061,
+          "median": 74.78287739055061,
+          "max": 74.78287739055061
+        },
+        "recorded_hand_mug_mm": 10.880529648184954,
+        "recorded_hand_handle_mm": 74.78287739055061
+      },
+      "b_level": {
+        "hand_mug_mm": {
+          "n": 11,
+          "min": -10.203889497164068,
+          "median": -8.288224002988633,
+          "max": -5.3965640644108985
+        },
+        "hand_handle_mm": {
+          "n": 11,
+          "min": 43.72243435277007,
+          "median": 57.07073287785614,
+          "max": 82.20026087417554
+        },
+        "recorded_hand_mug_mm": -6.989907927889481,
+        "recorded_hand_handle_mm": 50.83561885919582
+      },
+      "b_tilt": {
+        "hand_mug_mm": {
+          "n": 11,
+          "min": -12.645630261649552,
+          "median": -10.6894925649317,
+          "max": -7.501344325967629
+        },
+        "hand_handle_mm": {
+          "n": 11,
+          "min": 44.59097083015812,
+          "median": 58.228724301292935,
+          "max": 82.83682795051247
+        },
+        "recorded_hand_mug_mm": -9.161905562975985,
+        "recorded_hand_handle_mm": 52.13936911691737
+      }
+    },
+    "4e103843db": {
+      "a_naive": {
+        "hand_mug_mm": {
+          "n": 1,
+          "min": 2.270721652714346,
+          "median": 2.270721652714346,
+          "max": 2.270721652714346
+        },
+        "hand_handle_mm": {
+          "n": 1,
+          "min": 80.22389684487798,
+          "median": 80.22389684487798,
+          "max": 80.22389684487798
+        },
+        "recorded_hand_mug_mm": 2.270721652714346,
+        "recorded_hand_handle_mm": 80.22389684487798
+      },
+      "b_level": {
+        "hand_mug_mm": {
+          "n": 11,
+          "min": -11.705829742661765,
+          "median": -9.123397023312044,
+          "max": -5.927941504913594
+        },
+        "hand_handle_mm": {
+          "n": 11,
+          "min": 42.54706283774337,
+          "median": 65.95623693722898,
+          "max": 81.52179042574491
+        },
+        "recorded_hand_mug_mm": -7.6420564264088355,
+        "recorded_hand_handle_mm": 80.8897933142488
+      },
+      "b_tilt": {
+        "hand_mug_mm": {
+          "n": 11,
+          "min": -12.138928033049794,
+          "median": -7.723542761270916,
+          "max": -4.053711468742616
+        },
+        "hand_handle_mm": {
+          "n": 11,
+          "min": 47.94799553349279,
+          "median": 71.91662614072358,
+          "max": 84.56646807764378
+        },
+        "recorded_hand_mug_mm": -5.790148770438331,
+        "recorded_hand_handle_mm": 84.38213316790106
+      }
+    },
+    "49aff04f7a": {
+      "a_naive": {
+        "hand_mug_mm": {
+          "n": 1,
+          "min": 6.177380952305469,
+          "median": 6.177380952305469,
+          "max": 6.177380952305469
+        },
+        "hand_handle_mm": {
+          "n": 1,
+          "min": 89.05153110997631,
+          "median": 89.05153110997631,
+          "max": 89.05153110997631
+        },
+        "recorded_hand_mug_mm": 6.177380952305469,
+        "recorded_hand_handle_mm": 89.05153110997631
+      },
+      "b_level": {
+        "hand_mug_mm": {
+          "n": 11,
+          "min": -9.73984634425624,
+          "median": -7.739288931603756,
+          "max": -4.774885800566056
+        },
+        "hand_handle_mm": {
+          "n": 11,
+          "min": 45.300588036890574,
+          "median": 68.01259386449102,
+          "max": 83.3418694579624
+        },
+        "recorded_hand_mug_mm": -6.371126090366864,
+        "recorded_hand_handle_mm": 82.47649378898198
+      },
+      "b_tilt": {
+        "hand_mug_mm": {
+          "n": 11,
+          "min": -10.98256995736454,
+          "median": -8.764377071127823,
+          "max": -5.609565051279292
+        },
+        "hand_handle_mm": {
+          "n": 11,
+          "min": 45.97305566804362,
+          "median": 68.76152291964168,
+          "max": 83.89041303610107
+        },
+        "recorded_hand_mug_mm": -7.431463934389822,
+        "recorded_hand_handle_mm": 83.579288817817
+      }
+    },
+    "e8825dea53": {
+      "a_naive": {
+        "hand_mug_mm": {
+          "n": 1,
+          "min": -2.7196941823998984,
+          "median": -2.7196941823998984,
+          "max": -2.7196941823998984
+        },
+        "hand_handle_mm": {
+          "n": 1,
+          "min": 75.35352517198574,
+          "median": 75.35352517198574,
+          "max": 75.35352517198574
+        },
+        "recorded_hand_mug_mm": -2.7196941823998984,
+        "recorded_hand_handle_mm": 75.35352517198574
+      },
+      "b_level": {
+        "hand_mug_mm": {
+          "n": 11,
+          "min": -5.6738825600313465,
+          "median": -4.930341713362737,
+          "max": -3.341387827319376
+        },
+        "hand_handle_mm": {
+          "n": 11,
+          "min": 48.98484194706556,
+          "median": 69.508610233173,
+          "max": 84.75256608751972
+        },
+        "recorded_hand_mug_mm": -4.227127190350037,
+        "recorded_hand_handle_mm": 83.90717256164913
+      },
+      "b_tilt": {
+        "hand_mug_mm": {
+          "n": 11,
+          "min": -4.423277596982905,
+          "median": -2.547201968148715,
+          "max": 1.3645484071222582
+        },
+        "hand_handle_mm": {
+          "n": 11,
+          "min": 54.90983050642469,
+          "median": 75.71719195045488,
+          "max": 90.5714452265477
+        },
+        "recorded_hand_mug_mm": -1.5784885129864232,
+        "recorded_hand_handle_mm": 87.08164401505256
+      }
+    }
+  },
+  "oracle_planned_pose_distance_reference": {
+    "file": "results/m1_grasp_fix/v3/l1_check.json",
+    "field": "b_mug_L1",
+    "min_signed_distance_mm": -2.4,
+    "min_pair": {
+      "hand_geom": "hand_contact_right_hand_palm_link_8",
+      "hand_body": "right_hand_palm_link",
+      "object_geom": "cup_geom"
+    },
+    "handle_min_distance_mm": 79.693,
+    "note": "information: the mug with the mug_v1 (radius) offset placed exactly where the oracle plans it relative to the palm (no IK error), open hand, at the 20 trials' handle yaws (minimum reported)"
+  },
+  "recorded_layout": [
+    {
+      "run": "26d4118b0c__a_naive__recorded",
+      "clip": "26d4118b0c",
+      "variant": "a_naive",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.603730737359847,
+      "pos_err_cm_G": 3.154712087067922,
+      "pos_err_cm_P": 2.043732518443276,
+      "pos_err_cm_max_phase": "replay",
+      "pos_err_cm_max_after_prelude": 3.603730737359847,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.673303254720892,
+        "to_a0": 0.5558484793122099,
+        "replay": 3.603730737359847,
+        "release": 1.7292602940392123
+      },
+      "ori_err_deg_max": 7.927163254852782,
+      "ori_err_deg_G": 0.7921888950859477,
+      "ori_err_deg_P": 0.4432544131518154,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 541,
+      "n_clamped": 0,
+      "bump_scale": null,
+      "hand_mug_mm": 10.880529648184954,
+      "hand_handle_mm": 74.78287739055061,
+      "mapping_mm": 0.00038476621340335145,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_level__recorded",
+      "clip": "26d4118b0c",
+      "variant": "b_level",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8245926960088608,
+      "pos_err_cm_G": 1.3950685789317483,
+      "pos_err_cm_P": 1.265122549452349,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.7896950830365184,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8245926960088608,
+        "approach": 1.7896950830365184,
+        "pause": 0.3171695871667711,
+        "close": 1.3960516665730953,
+        "transport": 1.3255741938832621,
+        "release": 1.2630845194324798,
+        "retreat": 1.1867240587180214
+      },
+      "ori_err_deg_max": 0.6967589018137604,
+      "ori_err_deg_G": 0.17946744506851378,
+      "ori_err_deg_P": 0.20014251314258338,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -6.989907927889481,
+      "hand_handle_mm": 50.83561885919582,
+      "mapping_mm": 0.0003780365616446665,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_tilt__recorded",
+      "clip": "26d4118b0c",
+      "variant": "b_tilt",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.057551995047641,
+      "pos_err_cm_G": 2.8645207008311324,
+      "pos_err_cm_P": 1.8333413819043722,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.057551995047641,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.67222093661428,
+        "approach": 3.057551995047641,
+        "pause": 0.3697358759707364,
+        "close": 2.863835314769054,
+        "transport": 2.6126005003495933,
+        "release": 1.832522679403687,
+        "retreat": 1.7765307456740427
+      },
+      "ori_err_deg_max": 0.7636046993781145,
+      "ori_err_deg_G": 0.7220268750067097,
+      "ori_err_deg_P": 0.47281778047544876,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -9.161905562975985,
+      "hand_handle_mm": 52.13936911691737,
+      "mapping_mm": 0.000371148569832455,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__a_naive__recorded",
+      "clip": "4e103843db",
+      "variant": "a_naive",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 5.875670098864524,
+      "pos_err_cm_G": 4.826409748425237,
+      "pos_err_cm_P": 4.038585548771553,
+      "pos_err_cm_max_phase": "replay",
+      "pos_err_cm_max_after_prelude": 5.875670098864524,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 3.256785542472334,
+        "to_a0": 4.45286783603295,
+        "replay": 5.875670098864524,
+        "release": 2.741549214326448
+      },
+      "ori_err_deg_max": 1.3646066728043387,
+      "ori_err_deg_G": 1.1536955922811616,
+      "ori_err_deg_P": 0.9994580052125059,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 437,
+      "n_clamped": 0,
+      "bump_scale": null,
+      "hand_mug_mm": 2.270721652714346,
+      "hand_handle_mm": 80.22389684487798,
+      "mapping_mm": 0.0003855797495409125,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_level__recorded",
+      "clip": "4e103843db",
+      "variant": "b_level",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8581705667592257,
+      "pos_err_cm_G": 1.3114680153676295,
+      "pos_err_cm_P": 1.704946589827325,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.9727350221584998,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8581705667592257,
+        "approach": 1.9727350221584998,
+        "pause": 0.3694220951492248,
+        "close": 1.3130559771383856,
+        "transport": 1.7145109663187539,
+        "release": 1.7003783909768082,
+        "retreat": 1.6199755404252545
+      },
+      "ori_err_deg_max": 0.7064698477982718,
+      "ori_err_deg_G": 0.24064925002196352,
+      "ori_err_deg_P": 0.19718615264064682,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -7.6420564264088355,
+      "hand_handle_mm": 80.8897933142488,
+      "mapping_mm": 0.00038340452780408663,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_tilt__recorded",
+      "clip": "4e103843db",
+      "variant": "b_tilt",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 6.195222625761657,
+      "pos_err_cm_G": 5.825011469216367,
+      "pos_err_cm_P": 4.315738064113173,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 6.195222625761657,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 3.258132430204799,
+        "approach": 6.195222625761657,
+        "pause": 2.474651471552469,
+        "close": 5.823906613317151,
+        "transport": 5.348132889649437,
+        "release": 4.31461485385534,
+        "retreat": 4.249764467016256
+      },
+      "ori_err_deg_max": 1.4195412379370167,
+      "ori_err_deg_G": 1.3427692125541406,
+      "ori_err_deg_P": 1.0769359537149468,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 12,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -5.790148770438331,
+      "hand_handle_mm": 84.38213316790106,
+      "mapping_mm": 0.00036768733591498014,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__a_naive__recorded",
+      "clip": "49aff04f7a",
+      "variant": "a_naive",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 6.071270337491595,
+      "pos_err_cm_G": 2.177442981272402,
+      "pos_err_cm_P": 2.093010640614603,
+      "pos_err_cm_max_phase": "replay",
+      "pos_err_cm_max_after_prelude": 6.071270337491595,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.6693006482457333,
+        "to_a0": 5.99141934843712,
+        "replay": 6.071270337491595,
+        "release": 4.828498635563443
+      },
+      "ori_err_deg_max": 1.4483362533074973,
+      "ori_err_deg_G": 0.5495297468383508,
+      "ori_err_deg_P": 0.46761886774217154,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 493,
+      "n_clamped": 0,
+      "bump_scale": null,
+      "hand_mug_mm": 6.177380952305469,
+      "hand_handle_mm": 89.05153110997631,
+      "mapping_mm": 0.00039812921864044147,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_level__recorded",
+      "clip": "49aff04f7a",
+      "variant": "b_level",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8218223406570995,
+      "pos_err_cm_G": 0.969529453334513,
+      "pos_err_cm_P": 1.1365218805021011,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.4236075082295785,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8218223406570995,
+        "approach": 1.193793009958819,
+        "pause": 0.26100647789275355,
+        "close": 0.9692906368597293,
+        "transport": 1.4236075082295785,
+        "release": 1.1225485777545954,
+        "retreat": 1.0496972801269489
+      },
+      "ori_err_deg_max": 0.6961059712094986,
+      "ori_err_deg_G": 0.10275367481051516,
+      "ori_err_deg_P": 0.14506830544314123,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -6.371126090366864,
+      "hand_handle_mm": 82.47649378898198,
+      "mapping_mm": 0.00039570997590581395,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_tilt__recorded",
+      "clip": "49aff04f7a",
+      "variant": "b_tilt",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.886054401191702,
+      "pos_err_cm_G": 2.6194507794491217,
+      "pos_err_cm_P": 1.4451625159633883,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 2.886054401191702,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.669760839104043,
+        "approach": 2.886054401191702,
+        "pause": 0.37167429504368527,
+        "close": 2.6180483103763796,
+        "transport": 2.3160239873636983,
+        "release": 1.4312335583023248,
+        "retreat": 1.3531775344304033
+      },
+      "ori_err_deg_max": 0.8173955536454702,
+      "ori_err_deg_G": 0.671484381172997,
+      "ori_err_deg_P": 0.3547312287589635,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -7.431463934389822,
+      "hand_handle_mm": 83.579288817817,
+      "mapping_mm": 0.00036883013804843694,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__a_naive__recorded",
+      "clip": "e8825dea53",
+      "variant": "a_naive",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 9.857071067849175,
+      "pos_err_cm_G": 1.463151137330192,
+      "pos_err_cm_P": 1.988538081295237,
+      "pos_err_cm_max_phase": "replay",
+      "pos_err_cm_max_after_prelude": 9.857071067849175,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.9873544893342245,
+        "to_a0": 0.7543417754025787,
+        "replay": 9.857071067849175,
+        "release": 2.5111413669568976
+      },
+      "ori_err_deg_max": 3.1362751306008,
+      "ori_err_deg_G": 0.3949575879849168,
+      "ori_err_deg_P": 0.5430606149971876,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 510,
+      "n_clamped": 0,
+      "bump_scale": null,
+      "hand_mug_mm": -2.7196941823998984,
+      "hand_handle_mm": 75.35352517198574,
+      "mapping_mm": 0.00039852961228102455,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_level__recorded",
+      "clip": "e8825dea53",
+      "variant": "b_level",
+      "layout": "recorded",
+      "reachable": true,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": true,
+        "path": true
+      },
+      "pos_err_cm_max": 1.8963644226815748,
+      "pos_err_cm_G": 0.8111760422396952,
+      "pos_err_cm_P": 0.7672346201753836,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.163389457263928,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 1.8963644226815748,
+        "approach": 1.163389457263928,
+        "pause": 0.17994160529175882,
+        "close": 0.8136461748192902,
+        "transport": 0.9424966072442124,
+        "release": 0.764311647272008,
+        "retreat": 0.7246305191794274
+      },
+      "ori_err_deg_max": 0.6345288377327761,
+      "ori_err_deg_G": 0.16829178796804756,
+      "ori_err_deg_P": 0.07434967872554961,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -4.227127190350037,
+      "hand_handle_mm": 83.90717256164913,
+      "mapping_mm": 0.0003698885491695041,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_tilt__recorded",
+      "clip": "e8825dea53",
+      "variant": "b_tilt",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.7739660057997435,
+      "pos_err_cm_G": 3.380839357321456,
+      "pos_err_cm_P": 1.9588206265406842,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.7739660057997435,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.9882433080650666,
+        "approach": 3.7739660057997435,
+        "pause": 0.30003948278256515,
+        "close": 3.3805376258528885,
+        "transport": 3.099439786176909,
+        "release": 1.9580283046251372,
+        "retreat": 1.904350112428549
+      },
+      "ori_err_deg_max": 0.883799594476642,
+      "ori_err_deg_G": 0.8007528927633649,
+      "ori_err_deg_P": 0.5588862725519258,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -1.5784885129864232,
+      "hand_handle_mm": 87.08164401505256,
+      "mapping_mm": 0.0003384141562294523,
+      "start_mm": 0.09014472896523588
+    }
+  ],
+  "runs": [
+    {
+      "run": "26d4118b0c__a_naive__recorded",
+      "clip": "26d4118b0c",
+      "variant": "a_naive",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.603730737359847,
+      "pos_err_cm_G": 3.154712087067922,
+      "pos_err_cm_P": 2.043732518443276,
+      "pos_err_cm_max_phase": "replay",
+      "pos_err_cm_max_after_prelude": 3.603730737359847,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.673303254720892,
+        "to_a0": 0.5558484793122099,
+        "replay": 3.603730737359847,
+        "release": 1.7292602940392123
+      },
+      "ori_err_deg_max": 7.927163254852782,
+      "ori_err_deg_G": 0.7921888950859477,
+      "ori_err_deg_P": 0.4432544131518154,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 541,
+      "n_clamped": 0,
+      "bump_scale": null,
+      "hand_mug_mm": 10.880529648184954,
+      "hand_handle_mm": 74.78287739055061,
+      "mapping_mm": 0.00038476621340335145,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_level__recorded",
+      "clip": "26d4118b0c",
+      "variant": "b_level",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8245926960088608,
+      "pos_err_cm_G": 1.3950685789317483,
+      "pos_err_cm_P": 1.265122549452349,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.7896950830365184,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8245926960088608,
+        "approach": 1.7896950830365184,
+        "pause": 0.3171695871667711,
+        "close": 1.3960516665730953,
+        "transport": 1.3255741938832621,
+        "release": 1.2630845194324798,
+        "retreat": 1.1867240587180214
+      },
+      "ori_err_deg_max": 0.6967589018137604,
+      "ori_err_deg_G": 0.17946744506851378,
+      "ori_err_deg_P": 0.20014251314258338,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -6.989907927889481,
+      "hand_handle_mm": 50.83561885919582,
+      "mapping_mm": 0.0003780365616446665,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_level__trial00",
+      "clip": "26d4118b0c",
+      "variant": "b_level",
+      "layout": "trial00",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8244080154339875,
+      "pos_err_cm_G": 1.2940471332002235,
+      "pos_err_cm_P": 1.093527838154498,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.6973623629751786,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8244080154339875,
+        "approach": 1.6973623629751786,
+        "pause": 0.21132456655993762,
+        "close": 1.2959719716289169,
+        "transport": 1.093527838154498,
+        "release": 1.0884212400987532,
+        "retreat": 1.023278262251723
+      },
+      "ori_err_deg_max": 0.696830726650161,
+      "ori_err_deg_G": 0.16661056449978687,
+      "ori_err_deg_P": 0.1821176820705468,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -5.607474808368129,
+      "hand_handle_mm": 48.187067303216295,
+      "mapping_mm": 0.0003130743114773237,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_level__trial01",
+      "clip": "26d4118b0c",
+      "variant": "b_level",
+      "layout": "trial01",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8252970445519927,
+      "pos_err_cm_G": 1.4769157248774258,
+      "pos_err_cm_P": 0.931146625157944,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.7841232550341628,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8252970445519927,
+        "approach": 1.7841232550341628,
+        "pause": 0.1515356570754745,
+        "close": 1.4799239763693608,
+        "transport": 1.2692408971985547,
+        "release": 0.9248505885673584,
+        "retreat": 0.8792005167433278
+      },
+      "ori_err_deg_max": 0.6967490689064633,
+      "ori_err_deg_G": 0.13910268731257042,
+      "ori_err_deg_P": 0.1873295760579735,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -5.3965640644108985,
+      "hand_handle_mm": 76.3566147823865,
+      "mapping_mm": 0.0003198567450140469,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_level__trial02",
+      "clip": "26d4118b0c",
+      "variant": "b_level",
+      "layout": "trial02",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8244080154339875,
+      "pos_err_cm_G": 1.341142905120627,
+      "pos_err_cm_P": 0.7421745369733069,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.7017718583567158,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8244080154339875,
+        "approach": 1.7017718583567158,
+        "pause": 0.21186652819373603,
+        "close": 1.3429994889509431,
+        "transport": 1.1065173726778708,
+        "release": 0.7361694042309851,
+        "retreat": 0.6760894278592823
+      },
+      "ori_err_deg_max": 0.696830726650161,
+      "ori_err_deg_G": 0.15385392713987783,
+      "ori_err_deg_P": 0.18169369981633418,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -5.871460863664701,
+      "hand_handle_mm": 66.55490551703056,
+      "mapping_mm": 0.0003305202501059553,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_level__trial03",
+      "clip": "26d4118b0c",
+      "variant": "b_level",
+      "layout": "trial03",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.824256124634426,
+      "pos_err_cm_G": 1.559610157908057,
+      "pos_err_cm_P": 0.24821053011314884,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.930483635432284,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.824256124634426,
+        "approach": 1.930483635432284,
+        "pause": 0.47718720257519526,
+        "close": 1.5597705775259607,
+        "transport": 1.2819449243788927,
+        "release": 0.24688470252041053,
+        "retreat": 0.3223022231641897
+      },
+      "ori_err_deg_max": 0.6968005220920923,
+      "ori_err_deg_G": 0.21834379500025436,
+      "ori_err_deg_P": 0.0174295219974548,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -8.920526709417393,
+      "hand_handle_mm": 57.07073287785614,
+      "mapping_mm": 0.00043910183684726044,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_level__trial04",
+      "clip": "26d4118b0c",
+      "variant": "b_level",
+      "layout": "trial04",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.824256124634426,
+      "pos_err_cm_G": 1.510405305539009,
+      "pos_err_cm_P": 0.27083098132163214,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.776805219480922,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.824256124634426,
+        "approach": 1.776805219480922,
+        "pause": 0.43623621830056375,
+        "close": 1.510769044880527,
+        "transport": 1.2342615741826553,
+        "release": 0.27134679894172703,
+        "retreat": 0.3404466193946046
+      },
+      "ori_err_deg_max": 0.6968005220920923,
+      "ori_err_deg_G": 0.17497435763679442,
+      "ori_err_deg_P": 0.03494250967250386,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -8.288224002988633,
+      "hand_handle_mm": 56.81604830914543,
+      "mapping_mm": 0.00042228129969852673,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_level__trial05",
+      "clip": "26d4118b0c",
+      "variant": "b_level",
+      "layout": "trial05",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.824610896997582,
+      "pos_err_cm_G": 1.452967710826909,
+      "pos_err_cm_P": 1.0070079000997414,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.7860600832737807,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.824610896997582,
+        "approach": 1.7860600832737807,
+        "pause": 0.15314401826926233,
+        "close": 1.4555371583924626,
+        "transport": 1.2357290572351727,
+        "release": 1.001321784065903,
+        "retreat": 0.9457191091895548
+      },
+      "ori_err_deg_max": 0.6968379431819489,
+      "ori_err_deg_G": 0.12713459621154868,
+      "ori_err_deg_P": 0.1935198591130967,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -5.6048918349560415,
+      "hand_handle_mm": 82.20026087417554,
+      "mapping_mm": 0.00032931178027205014,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_level__trial06",
+      "clip": "26d4118b0c",
+      "variant": "b_level",
+      "layout": "trial06",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.824256124634426,
+      "pos_err_cm_G": 1.5600316254865065,
+      "pos_err_cm_P": 0.31356003840396685,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.811017255849015,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.824256124634426,
+        "approach": 1.811017255849015,
+        "pause": 0.4174654439690033,
+        "close": 1.5604719073148543,
+        "transport": 1.2877726847422228,
+        "release": 0.31329958859727164,
+        "retreat": 0.36044094882891964
+      },
+      "ori_err_deg_max": 0.6968005220920923,
+      "ori_err_deg_G": 0.17714520229540864,
+      "ori_err_deg_P": 0.03440162717581587,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -8.301071989495314,
+      "hand_handle_mm": 80.69719770794411,
+      "mapping_mm": 0.00042290826173263404,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_level__trial07",
+      "clip": "26d4118b0c",
+      "variant": "b_level",
+      "layout": "trial07",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.824256124634426,
+      "pos_err_cm_G": 1.4952526925199578,
+      "pos_err_cm_P": 0.242946787057324,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.9144780678480695,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.824256124634426,
+        "approach": 1.9144780678480695,
+        "pause": 0.5448325683384372,
+        "close": 1.4950518442396163,
+        "transport": 1.209632774943999,
+        "release": 0.240462035432194,
+        "retreat": 0.24734320994261988
+      },
+      "ori_err_deg_max": 0.6968005220920923,
+      "ori_err_deg_G": 0.2479134126592555,
+      "ori_err_deg_P": 0.015728087336530923,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -9.220075272966536,
+      "hand_handle_mm": 43.72243435277007,
+      "mapping_mm": 0.0004442708096780464,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_level__trial08",
+      "clip": "26d4118b0c",
+      "variant": "b_level",
+      "layout": "trial08",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.824256124634426,
+      "pos_err_cm_G": 1.7560575670843663,
+      "pos_err_cm_P": 0.2923253561702755,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 2.2374103281076576,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.824256124634426,
+        "approach": 2.2374103281076576,
+        "pause": 0.6681927542426446,
+        "close": 1.7553862241123528,
+        "transport": 1.4559264668890297,
+        "release": 0.2927451271828978,
+        "retreat": 0.35146085181120373
+      },
+      "ori_err_deg_max": 0.6968005220920923,
+      "ori_err_deg_G": 0.19770256231835884,
+      "ori_err_deg_P": 0.03187979121422546,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -10.203889497164068,
+      "hand_handle_mm": 70.03417737969896,
+      "mapping_mm": 0.0004599604997839696,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_level__trial09",
+      "clip": "26d4118b0c",
+      "variant": "b_level",
+      "layout": "trial09",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.824256124634426,
+      "pos_err_cm_G": 1.5693857001131868,
+      "pos_err_cm_P": 0.27759406724186003,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.9820782616117614,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.824256124634426,
+        "approach": 1.9820782616117614,
+        "pause": 0.5623208920581971,
+        "close": 1.5691013367479367,
+        "transport": 1.2898047264473638,
+        "release": 0.27866654556215453,
+        "retreat": 0.3498160174325394
+      },
+      "ori_err_deg_max": 0.6968005220920923,
+      "ori_err_deg_G": 0.2757614832676854,
+      "ori_err_deg_P": 0.029814521362404096,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -9.851788287874676,
+      "hand_handle_mm": 51.16055480184491,
+      "mapping_mm": 0.0004590438643162061,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_tilt__recorded",
+      "clip": "26d4118b0c",
+      "variant": "b_tilt",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.057551995047641,
+      "pos_err_cm_G": 2.8645207008311324,
+      "pos_err_cm_P": 1.8333413819043722,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.057551995047641,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.67222093661428,
+        "approach": 3.057551995047641,
+        "pause": 0.3697358759707364,
+        "close": 2.863835314769054,
+        "transport": 2.6126005003495933,
+        "release": 1.832522679403687,
+        "retreat": 1.7765307456740427
+      },
+      "ori_err_deg_max": 0.7636046993781145,
+      "ori_err_deg_G": 0.7220268750067097,
+      "ori_err_deg_P": 0.47281778047544876,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -9.161905562975985,
+      "hand_handle_mm": 52.13936911691737,
+      "mapping_mm": 0.000371148569832455,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_tilt__trial00",
+      "clip": "26d4118b0c",
+      "variant": "b_tilt",
+      "layout": "trial00",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.0128336447221185,
+      "pos_err_cm_G": 2.8187909633205495,
+      "pos_err_cm_P": 1.6471332372370406,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.0128336447221185,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.671831284839228,
+        "approach": 3.0128336447221185,
+        "pause": 0.2502328202245249,
+        "close": 2.818344866424783,
+        "transport": 2.583993992313285,
+        "release": 1.6446369895074653,
+        "retreat": 1.5917379379932446
+      },
+      "ori_err_deg_max": 0.7526946762765788,
+      "ori_err_deg_G": 0.7104249532837591,
+      "ori_err_deg_P": 0.4384645175344692,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -7.812848317437225,
+      "hand_handle_mm": 49.550512910986974,
+      "mapping_mm": 0.00029942036612850404,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_tilt__trial01",
+      "clip": "26d4118b0c",
+      "variant": "b_tilt",
+      "layout": "trial01",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.0315852732214092,
+      "pos_err_cm_G": 2.838954244373864,
+      "pos_err_cm_P": 1.4694111893571042,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.0315852732214092,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.6710546914286404,
+        "approach": 3.0315852732214092,
+        "pause": 0.18049028190518734,
+        "close": 2.838746895629452,
+        "transport": 2.6268015816015837,
+        "release": 1.4680392869919618,
+        "retreat": 1.4352260260228402
+      },
+      "ori_err_deg_max": 0.7526901507581008,
+      "ori_err_deg_G": 0.70915758247805,
+      "ori_err_deg_P": 0.3953658492113803,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -7.501344325967629,
+      "hand_handle_mm": 78.16814402543405,
+      "mapping_mm": 0.0003070694996113263,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_tilt__trial02",
+      "clip": "26d4118b0c",
+      "variant": "b_tilt",
+      "layout": "trial02",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.062336685594049,
+      "pos_err_cm_G": 2.868712007562428,
+      "pos_err_cm_P": 1.3639630550219763,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.062336685594049,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.671831284839228,
+        "approach": 3.062336685594049,
+        "pause": 0.26193115903144104,
+        "close": 2.8682501356378025,
+        "transport": 2.633202729821346,
+        "release": 1.3634244535531597,
+        "retreat": 1.3244288764581573
+      },
+      "ori_err_deg_max": 0.76581589253416,
+      "ori_err_deg_G": 0.7242013178897118,
+      "ori_err_deg_P": 0.4018566734222765,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -8.08417446405526,
+      "hand_handle_mm": 68.03301507764695,
+      "mapping_mm": 0.0003146775835727903,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_tilt__trial03",
+      "clip": "26d4118b0c",
+      "variant": "b_tilt",
+      "layout": "trial03",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.181788989475557,
+      "pos_err_cm_G": 2.991803058790043,
+      "pos_err_cm_P": 1.0732869699061998,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.181788989475557,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.67261149818782,
+        "approach": 3.181788989475557,
+        "pause": 0.9356587953526837,
+        "close": 2.9907083574688227,
+        "transport": 2.7098641187796133,
+        "release": 1.073863260457913,
+        "retreat": 1.0630638370100112
+      },
+      "ori_err_deg_max": 0.7933568591581425,
+      "ori_err_deg_G": 0.7520194032334708,
+      "ori_err_deg_P": 0.26041667141624547,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -11.109177968073709,
+      "hand_handle_mm": 58.228724301292935,
+      "mapping_mm": 0.00043453661375744516,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_tilt__trial04",
+      "clip": "26d4118b0c",
+      "variant": "b_tilt",
+      "layout": "trial04",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.0539467651746253,
+      "pos_err_cm_G": 2.86308008586987,
+      "pos_err_cm_P": 1.1844470171454669,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.0539467651746253,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.67261149818782,
+        "approach": 3.0539467651746253,
+        "pause": 0.7653279715301012,
+        "close": 2.8620278015704903,
+        "transport": 2.5739733703654903,
+        "release": 1.1856288407343465,
+        "retreat": 1.1801438784882485
+      },
+      "ori_err_deg_max": 0.7746457856569533,
+      "ori_err_deg_G": 0.7331247433000797,
+      "ori_err_deg_P": 0.3064405741544023,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -10.873212376230326,
+      "hand_handle_mm": 57.67821519797273,
+      "mapping_mm": 0.0004128613992338281,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_tilt__trial05",
+      "clip": "26d4118b0c",
+      "variant": "b_tilt",
+      "layout": "trial05",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.0407952415904043,
+      "pos_err_cm_G": 2.8480207140957323,
+      "pos_err_cm_P": 1.6009066650450074,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.0407952415904043,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.671442536487538,
+        "approach": 3.0407952415904043,
+        "pause": 0.18772870902437697,
+        "close": 2.847723883242625,
+        "transport": 2.6297837068767977,
+        "release": 1.5992034662932402,
+        "retreat": 1.5533164684550098
+      },
+      "ori_err_deg_max": 0.7542633637750236,
+      "ori_err_deg_G": 0.7129394030800895,
+      "ori_err_deg_P": 0.44364986035143966,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -7.7717060075804865,
+      "hand_handle_mm": 82.83682795051247,
+      "mapping_mm": 0.00031441485965193926,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_tilt__trial06",
+      "clip": "26d4118b0c",
+      "variant": "b_tilt",
+      "layout": "trial06",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 3.0477053953008433,
+      "pos_err_cm_G": 2.8567106532297895,
+      "pos_err_cm_P": 0.8928118650084919,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.0477053953008433,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.67261149818782,
+        "approach": 3.0477053953008433,
+        "pause": 0.749159953975025,
+        "close": 2.8557123265166053,
+        "transport": 2.5827735327841435,
+        "release": 0.8940695537193812,
+        "retreat": 0.8827880349917789
+      },
+      "ori_err_deg_max": 0.7627109008179852,
+      "ori_err_deg_G": 0.7213403425469943,
+      "ori_err_deg_P": 0.24887358854655406,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -10.6894925649317,
+      "hand_handle_mm": 80.51442556506262,
+      "mapping_mm": 0.000418287320086444,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_tilt__trial07",
+      "clip": "26d4118b0c",
+      "variant": "b_tilt",
+      "layout": "trial07",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.1470149067237343,
+      "pos_err_cm_G": 2.9583542089139527,
+      "pos_err_cm_P": 1.208777216718328,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.1470149067237343,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.67261149818782,
+        "approach": 3.1470149067237343,
+        "pause": 0.9117076880020549,
+        "close": 2.957116655438539,
+        "transport": 2.6612686791297047,
+        "release": 1.2109475143683035,
+        "retreat": 1.1921432125501519
+      },
+      "ori_err_deg_max": 0.7879381823518407,
+      "ori_err_deg_G": 0.7465011888280635,
+      "ori_err_deg_P": 0.27851733493951386,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -11.564472732682198,
+      "hand_handle_mm": 44.59097083015812,
+      "mapping_mm": 0.00044077013915044263,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_tilt__trial08",
+      "clip": "26d4118b0c",
+      "variant": "b_tilt",
+      "layout": "trial08",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 3.250795783595585,
+      "pos_err_cm_G": 3.067168025210391,
+      "pos_err_cm_P": 0.9456551987359257,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.250795783595585,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.67261149818782,
+        "approach": 3.250795783595585,
+        "pause": 1.06909930988815,
+        "close": 3.065687928735121,
+        "transport": 2.7508186904687495,
+        "release": 0.9474094406995472,
+        "retreat": 0.9374692914861343
+      },
+      "ori_err_deg_max": 0.8060887965724626,
+      "ori_err_deg_G": 0.7649178000642086,
+      "ori_err_deg_P": 0.24537123559014296,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -12.645630261649552,
+      "hand_handle_mm": 71.0528622757708,
+      "mapping_mm": 0.0004583953749943508,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "26d4118b0c__b_tilt__trial09",
+      "clip": "26d4118b0c",
+      "variant": "b_tilt",
+      "layout": "trial09",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 3.2516021587622825,
+      "pos_err_cm_G": 3.0645109576716667,
+      "pos_err_cm_P": 0.9917990045905732,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.2516021587622825,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.67261149818782,
+        "approach": 3.2516021587622825,
+        "pause": 1.0790406820887437,
+        "close": 3.0632486677977346,
+        "transport": 2.7716447709882877,
+        "release": 0.9930583628148347,
+        "retreat": 0.9831822906771407
+      },
+      "ori_err_deg_max": 0.8085664241722602,
+      "ori_err_deg_G": 0.7674375275608892,
+      "ori_err_deg_P": 0.25250816009746924,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 664,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -12.071513197427791,
+      "hand_handle_mm": 52.158081146714686,
+      "mapping_mm": 0.00045433253026349213,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__a_naive__recorded",
+      "clip": "4e103843db",
+      "variant": "a_naive",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 5.875670098864524,
+      "pos_err_cm_G": 4.826409748425237,
+      "pos_err_cm_P": 4.038585548771553,
+      "pos_err_cm_max_phase": "replay",
+      "pos_err_cm_max_after_prelude": 5.875670098864524,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 3.256785542472334,
+        "to_a0": 4.45286783603295,
+        "replay": 5.875670098864524,
+        "release": 2.741549214326448
+      },
+      "ori_err_deg_max": 1.3646066728043387,
+      "ori_err_deg_G": 1.1536955922811616,
+      "ori_err_deg_P": 0.9994580052125059,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 437,
+      "n_clamped": 0,
+      "bump_scale": null,
+      "hand_mug_mm": 2.270721652714346,
+      "hand_handle_mm": 80.22389684487798,
+      "mapping_mm": 0.0003855797495409125,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_level__recorded",
+      "clip": "4e103843db",
+      "variant": "b_level",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8581705667592257,
+      "pos_err_cm_G": 1.3114680153676295,
+      "pos_err_cm_P": 1.704946589827325,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.9727350221584998,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8581705667592257,
+        "approach": 1.9727350221584998,
+        "pause": 0.3694220951492248,
+        "close": 1.3130559771383856,
+        "transport": 1.7145109663187539,
+        "release": 1.7003783909768082,
+        "retreat": 1.6199755404252545
+      },
+      "ori_err_deg_max": 0.7064698477982718,
+      "ori_err_deg_G": 0.24064925002196352,
+      "ori_err_deg_P": 0.19718615264064682,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -7.6420564264088355,
+      "hand_handle_mm": 80.8897933142488,
+      "mapping_mm": 0.00038340452780408663,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_level__trial00",
+      "clip": "4e103843db",
+      "variant": "b_level",
+      "layout": "trial00",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8584480666861327,
+      "pos_err_cm_G": 1.005728968727839,
+      "pos_err_cm_P": 1.543509281317391,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.8820613591502566,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8584480666861327,
+        "approach": 1.8820613591502566,
+        "pause": 0.2603042065147036,
+        "close": 1.0491299931012548,
+        "transport": 1.543509281317391,
+        "release": 1.5038335119804336,
+        "retreat": 1.408953916331692
+      },
+      "ori_err_deg_max": 0.7064762250002798,
+      "ori_err_deg_G": 0.2772970957181478,
+      "ori_err_deg_P": 0.13218287392654357,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -6.134589289522838,
+      "hand_handle_mm": 47.55317692567098,
+      "mapping_mm": 0.00031845886282070386,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_level__trial01",
+      "clip": "4e103843db",
+      "variant": "b_level",
+      "layout": "trial01",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8587253538016086,
+      "pos_err_cm_G": 1.1492282335421968,
+      "pos_err_cm_P": 1.2295401665327765,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.8812859301089027,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8587253538016086,
+        "approach": 1.8812859301089027,
+        "pause": 0.17637685412622806,
+        "close": 1.167532883701302,
+        "transport": 1.2295401665327765,
+        "release": 1.2187110956337297,
+        "retreat": 1.1568865573922278
+      },
+      "ori_err_deg_max": 0.7064826831724034,
+      "ori_err_deg_G": 0.3234207808144886,
+      "ori_err_deg_P": 0.17324747020062567,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -5.927941504913594,
+      "hand_handle_mm": 75.72150493802745,
+      "mapping_mm": 0.00031915428151123537,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_level__trial02",
+      "clip": "4e103843db",
+      "variant": "b_level",
+      "layout": "trial02",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8584480666861327,
+      "pos_err_cm_G": 0.9871101915821674,
+      "pos_err_cm_P": 1.1575333741704112,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.9339363777979235,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8584480666861327,
+        "approach": 1.9339363777979235,
+        "pause": 0.26253890158803833,
+        "close": 1.0359777273108284,
+        "transport": 1.1582149002438298,
+        "release": 1.1465567830931929,
+        "retreat": 1.087816876533184
+      },
+      "ori_err_deg_max": 0.7064762250002798,
+      "ori_err_deg_G": 0.2659721489164913,
+      "ori_err_deg_P": 0.1835419339829913,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -6.40003618722668,
+      "hand_handle_mm": 65.95623693722898,
+      "mapping_mm": 0.000337753943900425,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_level__trial03",
+      "clip": "4e103843db",
+      "variant": "b_level",
+      "layout": "trial03",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.857909440539265,
+      "pos_err_cm_G": 1.4083132257297333,
+      "pos_err_cm_P": 0.4215420458325024,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 2.0950474806435677,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.857909440539265,
+        "approach": 2.0950474806435677,
+        "pause": 0.8020013238712993,
+        "close": 1.4209878632616004,
+        "transport": 1.0170201802268435,
+        "release": 0.42157262641397286,
+        "retreat": 0.3471336815326153
+      },
+      "ori_err_deg_max": 0.7064612159828347,
+      "ori_err_deg_G": 0.32711122585240515,
+      "ori_err_deg_P": 0.027058954459403907,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -9.909333969291417,
+      "hand_handle_mm": 55.96086113014247,
+      "mapping_mm": 0.0004437296230963905,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_level__trial04",
+      "clip": "4e103843db",
+      "variant": "b_level",
+      "layout": "trial04",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.857909440539265,
+      "pos_err_cm_G": 1.2464995222663255,
+      "pos_err_cm_P": 0.48436331718700554,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 2.016609843554462,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.857909440539265,
+        "approach": 2.016609843554462,
+        "pause": 0.6614868692696851,
+        "close": 1.2714840240991208,
+        "transport": 0.8817128537187642,
+        "release": 0.4845000134423084,
+        "retreat": 0.3478416673691899
+      },
+      "ori_err_deg_max": 0.7064612159828347,
+      "ori_err_deg_G": 0.2882733588996475,
+      "ori_err_deg_P": 0.06364576341286861,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -9.166822473432747,
+      "hand_handle_mm": 55.82698643384397,
+      "mapping_mm": 0.00042833344720401924,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_level__trial05",
+      "clip": "4e103843db",
+      "variant": "b_level",
+      "layout": "trial05",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8587253538016086,
+      "pos_err_cm_G": 1.178645434202188,
+      "pos_err_cm_P": 1.4543294240105313,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.924326991634492,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8587253538016086,
+        "approach": 1.924326991634492,
+        "pause": 0.18480787346694325,
+        "close": 1.1854112419942495,
+        "transport": 1.4543294240105313,
+        "release": 1.4083341193091783,
+        "retreat": 1.3363585522815644
+      },
+      "ori_err_deg_max": 0.7064826831724034,
+      "ori_err_deg_G": 0.31000935490176396,
+      "ori_err_deg_P": 0.11502778966627995,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -6.152939057853818,
+      "hand_handle_mm": 81.52179042574491,
+      "mapping_mm": 0.00033319383864305503,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_level__trial06",
+      "clip": "4e103843db",
+      "variant": "b_level",
+      "layout": "trial06",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.857909440539265,
+      "pos_err_cm_G": 1.2404845702349918,
+      "pos_err_cm_P": 0.7759002642117127,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 2.045358554787097,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.857909440539265,
+        "approach": 2.045358554787097,
+        "pause": 0.644337014307434,
+        "close": 1.2623783060478966,
+        "transport": 0.8764223046441018,
+        "release": 0.5233245416960716,
+        "retreat": 0.44896141657676614
+      },
+      "ori_err_deg_max": 0.7064612159828347,
+      "ori_err_deg_G": 0.2934982568793038,
+      "ori_err_deg_P": 0.016822659834709354,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -9.123397023312044,
+      "hand_handle_mm": 79.88383297999862,
+      "mapping_mm": 0.0004306150449723415,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_level__trial07",
+      "clip": "4e103843db",
+      "variant": "b_level",
+      "layout": "trial07",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.857909440539265,
+      "pos_err_cm_G": 1.4453792871730746,
+      "pos_err_cm_P": 0.39137961275384847,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 2.2297827319121977,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.857909440539265,
+        "approach": 2.2297827319121977,
+        "pause": 0.8577849688816808,
+        "close": 1.4499572940567194,
+        "transport": 1.044850380894237,
+        "release": 0.33394486376733845,
+        "retreat": 0.29687824045566447
+      },
+      "ori_err_deg_max": 0.7064612159828347,
+      "ori_err_deg_G": 0.3059622979182399,
+      "ori_err_deg_P": 0.05110959276938222,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -10.314686776428157,
+      "hand_handle_mm": 42.54706283774337,
+      "mapping_mm": 0.0004483044697973495,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_level__trial08",
+      "clip": "4e103843db",
+      "variant": "b_level",
+      "layout": "trial08",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.857909440539265,
+      "pos_err_cm_G": 1.831267941452979,
+      "pos_err_cm_P": 0.47214577399337837,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 2.3035879013960603,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.857909440539265,
+        "approach": 2.3035879013960603,
+        "pause": 1.064043573310349,
+        "close": 1.8296804739347239,
+        "transport": 1.3836183078367708,
+        "release": 0.4743091651900364,
+        "retreat": 0.3651184010378531
+      },
+      "ori_err_deg_max": 0.7064612159828347,
+      "ori_err_deg_G": 0.33724298700868394,
+      "ori_err_deg_P": 0.06913304658999345,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -11.705829742661765,
+      "hand_handle_mm": 68.31416558579359,
+      "mapping_mm": 0.0004583636748688141,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_level__trial09",
+      "clip": "4e103843db",
+      "variant": "b_level",
+      "layout": "trial09",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.857909440539265,
+      "pos_err_cm_G": 1.7937222118050402,
+      "pos_err_cm_P": 0.6268830294326434,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 2.3167984492714244,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.857909440539265,
+        "approach": 2.3167984492714244,
+        "pause": 0.8610651455340359,
+        "close": 1.7936464136510923,
+        "transport": 1.319118401592596,
+        "release": 0.4590437636654725,
+        "retreat": 0.35574124846313343
+      },
+      "ori_err_deg_max": 0.7064612159828347,
+      "ori_err_deg_G": 0.24587569837191212,
+      "ori_err_deg_P": 0.0714069346107052,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -11.009585649709427,
+      "hand_handle_mm": 49.888669204406355,
+      "mapping_mm": 0.0004601500517463253,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_tilt__recorded",
+      "clip": "4e103843db",
+      "variant": "b_tilt",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 6.195222625761657,
+      "pos_err_cm_G": 5.825011469216367,
+      "pos_err_cm_P": 4.315738064113173,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 6.195222625761657,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 3.258132430204799,
+        "approach": 6.195222625761657,
+        "pause": 2.474651471552469,
+        "close": 5.823906613317151,
+        "transport": 5.348132889649437,
+        "release": 4.31461485385534,
+        "retreat": 4.249764467016256
+      },
+      "ori_err_deg_max": 1.4195412379370167,
+      "ori_err_deg_G": 1.3427692125541406,
+      "ori_err_deg_P": 1.0769359537149468,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 12,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -5.790148770438331,
+      "hand_handle_mm": 84.38213316790106,
+      "mapping_mm": 0.00036768733591498014,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_tilt__trial00",
+      "clip": "4e103843db",
+      "variant": "b_tilt",
+      "layout": "trial00",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 6.063305769518883,
+      "pos_err_cm_G": 5.695261650993512,
+      "pos_err_cm_P": 4.2005038686965435,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 6.063305769518883,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 3.2586119608702413,
+        "approach": 6.063305769518883,
+        "pause": 1.7345182243274613,
+        "close": 5.694624328175259,
+        "transport": 5.252737270628498,
+        "release": 4.199053013273048,
+        "retreat": 4.154582004358849
+      },
+      "ori_err_deg_max": 1.38231181288406,
+      "ori_err_deg_G": 1.306319656889141,
+      "ori_err_deg_P": 1.0464255300748129,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 12,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -4.179512929225506,
+      "hand_handle_mm": 53.972607300680735,
+      "mapping_mm": 0.0002973905152537093,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_tilt__trial01",
+      "clip": "4e103843db",
+      "variant": "b_tilt",
+      "layout": "trial01",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 6.152767231696608,
+      "pos_err_cm_G": 5.633419977728361,
+      "pos_err_cm_P": 4.090688298055779,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 6.152767231696608,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 3.258851612127363,
+        "approach": 6.152767231696608,
+        "pause": 1.7813809230704791,
+        "close": 5.6328575193227595,
+        "transport": 5.205816459460589,
+        "release": 4.089382074328948,
+        "retreat": 4.046669470062507
+      },
+      "ori_err_deg_max": 1.6941073997136091,
+      "ori_err_deg_G": 1.2841290213764036,
+      "ori_err_deg_P": 1.0022503493816801,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 12,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -4.053711468742616,
+      "hand_handle_mm": 81.08405275517266,
+      "mapping_mm": 0.0002922829836659055,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_tilt__trial02",
+      "clip": "4e103843db",
+      "variant": "b_tilt",
+      "layout": "trial02",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 6.166204149661234,
+      "pos_err_cm_G": 5.798757738511895,
+      "pos_err_cm_P": 4.198281145068135,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 6.166204149661234,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 3.2586119608702413,
+        "approach": 6.166204149661234,
+        "pause": 1.8310924014148455,
+        "close": 5.798108977865871,
+        "transport": 5.355239859216104,
+        "release": 4.19773070174597,
+        "retreat": 4.155840704366411
+      },
+      "ori_err_deg_max": 1.4053897093875534,
+      "ori_err_deg_G": 1.3292958197207008,
+      "ori_err_deg_P": 1.0113967805204687,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 12,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -4.3517347869938225,
+      "hand_handle_mm": 71.91662614072358,
+      "mapping_mm": 0.00031391254071468967,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_tilt__trial03",
+      "clip": "4e103843db",
+      "variant": "b_tilt",
+      "layout": "trial03",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 6.246756994953567,
+      "pos_err_cm_G": 5.880374979261359,
+      "pos_err_cm_P": 4.172839078882584,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 6.246756994953567,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 3.258132430204799,
+        "approach": 6.246756994953567,
+        "pause": 3.0347534437548855,
+        "close": 5.878904672546574,
+        "transport": 5.378952061887303,
+        "release": 4.1744720175020085,
+        "retreat": 4.163491379865866
+      },
+      "ori_err_deg_max": 1.433653137191042,
+      "ori_err_deg_G": 1.3571500141262869,
+      "ori_err_deg_P": 0.9305115154397546,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 12,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -8.740294606388101,
+      "hand_handle_mm": 61.62436075578847,
+      "mapping_mm": 0.0004350004262099427,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_tilt__trial04",
+      "clip": "4e103843db",
+      "variant": "b_tilt",
+      "layout": "trial04",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 6.118629620824826,
+      "pos_err_cm_G": 5.751110544637526,
+      "pos_err_cm_P": 4.162664591007468,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 6.118629620824826,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 3.258132430204799,
+        "approach": 6.118629620824826,
+        "pause": 2.9197917065560106,
+        "close": 5.749686313383968,
+        "transport": 5.254493112263491,
+        "release": 4.164164589855504,
+        "retreat": 4.157334643472865
+      },
+      "ori_err_deg_max": 1.4110387346685103,
+      "ori_err_deg_G": 1.3344205993487714,
+      "ori_err_deg_P": 0.9428646094000818,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 12,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -8.128268530503332,
+      "hand_handle_mm": 61.24367033124579,
+      "mapping_mm": 0.0004176905812206669,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_tilt__trial05",
+      "clip": "4e103843db",
+      "variant": "b_tilt",
+      "layout": "trial05",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 6.252570387838564,
+      "pos_err_cm_G": 5.867344482552009,
+      "pos_err_cm_P": 4.139501374503196,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 6.252570387838564,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 3.258851612127363,
+        "approach": 6.252570387838564,
+        "pause": 1.8091881917783041,
+        "close": 5.865695024138923,
+        "transport": 5.429483373789478,
+        "release": 4.137940946854475,
+        "retreat": 4.088800827879561
+      },
+      "ori_err_deg_max": 1.7332808967085225,
+      "ori_err_deg_G": 1.6502100610650825,
+      "ori_err_deg_P": 1.0156484228923766,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 12,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -5.225353148249697,
+      "hand_handle_mm": 84.56646807764378,
+      "mapping_mm": 0.0002823535737720212,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_tilt__trial06",
+      "clip": "4e103843db",
+      "variant": "b_tilt",
+      "layout": "trial06",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 6.269395835463907,
+      "pos_err_cm_G": 5.901875728175003,
+      "pos_err_cm_P": 4.145141259221507,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 6.269395835463907,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 3.258132430204799,
+        "approach": 6.269395835463907,
+        "pause": 3.0556176052869177,
+        "close": 5.9005515847306125,
+        "transport": 5.406367790828013,
+        "release": 4.146190765564615,
+        "retreat": 4.135651846881692
+      },
+      "ori_err_deg_max": 1.4404905119636409,
+      "ori_err_deg_G": 1.3637896822840776,
+      "ori_err_deg_P": 0.9480526810279704,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 12,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -7.723542761270916,
+      "hand_handle_mm": 82.99959905383125,
+      "mapping_mm": 0.0004153503023550917,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_tilt__trial07",
+      "clip": "4e103843db",
+      "variant": "b_tilt",
+      "layout": "trial07",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 6.215231077755973,
+      "pos_err_cm_G": 5.849712096571664,
+      "pos_err_cm_P": 4.172482736016216,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 6.215231077755973,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 3.258132430204799,
+        "approach": 6.215231077755973,
+        "pause": 3.255676989581352,
+        "close": 5.8478751990709075,
+        "transport": 5.328681997246525,
+        "release": 4.173079764504035,
+        "retreat": 4.1570675809101365
+      },
+      "ori_err_deg_max": 1.4521978783529224,
+      "ori_err_deg_G": 1.3759352804294702,
+      "ori_err_deg_P": 0.9125359027394545,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 12,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -9.907179678456641,
+      "hand_handle_mm": 47.94799553349279,
+      "mapping_mm": 0.00043607110947318725,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_tilt__trial08",
+      "clip": "4e103843db",
+      "variant": "b_tilt",
+      "layout": "trial08",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 6.32475689204982,
+      "pos_err_cm_G": 5.967222453281208,
+      "pos_err_cm_P": 3.804297113925001,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 6.32475689204982,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 3.258132430204799,
+        "approach": 6.32475689204982,
+        "pause": 3.342315155978138,
+        "close": 5.965848088261836,
+        "transport": 5.444155341620078,
+        "release": 3.806156051612582,
+        "retreat": 3.795750623864346
+      },
+      "ori_err_deg_max": 1.5172769042848062,
+      "ori_err_deg_G": 1.4323234688162003,
+      "ori_err_deg_P": 0.8692246308804763,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 12,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -12.138928033049794,
+      "hand_handle_mm": 72.35709820606748,
+      "mapping_mm": 0.00044300363377761516,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "4e103843db__b_tilt__trial09",
+      "clip": "4e103843db",
+      "variant": "b_tilt",
+      "layout": "trial09",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 6.245259092929518,
+      "pos_err_cm_G": 5.882752191078526,
+      "pos_err_cm_P": 4.166473165095011,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 6.245259092929518,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 3.258132430204799,
+        "approach": 6.245259092929518,
+        "pause": 3.2768310200274335,
+        "close": 5.881675163433086,
+        "transport": 5.372659086718948,
+        "release": 4.1678146356173595,
+        "retreat": 4.158162702016384
+      },
+      "ori_err_deg_max": 1.460755417052728,
+      "ori_err_deg_G": 1.3754172452197373,
+      "ori_err_deg_P": 0.9407947656613497,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 589,
+      "n_clamped": 12,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -10.722533718614805,
+      "hand_handle_mm": 54.973339605792,
+      "mapping_mm": 0.0004483413182699264,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__a_naive__recorded",
+      "clip": "49aff04f7a",
+      "variant": "a_naive",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 6.071270337491595,
+      "pos_err_cm_G": 2.177442981272402,
+      "pos_err_cm_P": 2.093010640614603,
+      "pos_err_cm_max_phase": "replay",
+      "pos_err_cm_max_after_prelude": 6.071270337491595,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.6693006482457333,
+        "to_a0": 5.99141934843712,
+        "replay": 6.071270337491595,
+        "release": 4.828498635563443
+      },
+      "ori_err_deg_max": 1.4483362533074973,
+      "ori_err_deg_G": 0.5495297468383508,
+      "ori_err_deg_P": 0.46761886774217154,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 493,
+      "n_clamped": 0,
+      "bump_scale": null,
+      "hand_mug_mm": 6.177380952305469,
+      "hand_handle_mm": 89.05153110997631,
+      "mapping_mm": 0.00039812921864044147,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_level__recorded",
+      "clip": "49aff04f7a",
+      "variant": "b_level",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8218223406570995,
+      "pos_err_cm_G": 0.969529453334513,
+      "pos_err_cm_P": 1.1365218805021011,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.4236075082295785,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8218223406570995,
+        "approach": 1.193793009958819,
+        "pause": 0.26100647789275355,
+        "close": 0.9692906368597293,
+        "transport": 1.4236075082295785,
+        "release": 1.1225485777545954,
+        "retreat": 1.0496972801269489
+      },
+      "ori_err_deg_max": 0.6961059712094986,
+      "ori_err_deg_G": 0.10275367481051516,
+      "ori_err_deg_P": 0.14506830544314123,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -6.371126090366864,
+      "hand_handle_mm": 82.47649378898198,
+      "mapping_mm": 0.00039570997590581395,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_level__trial00",
+      "clip": "49aff04f7a",
+      "variant": "b_level",
+      "layout": "trial00",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.822194491948227,
+      "pos_err_cm_G": 0.8736499458905445,
+      "pos_err_cm_P": 1.1283237801588428,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.1283237801588428,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.822194491948227,
+        "approach": 1.1166759352272064,
+        "pause": 0.18176651522752474,
+        "close": 0.8746902732612755,
+        "transport": 1.1283237801588428,
+        "release": 1.1119157859618998,
+        "retreat": 1.0449686718002147
+      },
+      "ori_err_deg_max": 0.6960847318515894,
+      "ori_err_deg_G": 0.08846186584800883,
+      "ori_err_deg_P": 0.12635564070352992,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -4.937262143464727,
+      "hand_handle_mm": 49.96407314384545,
+      "mapping_mm": 0.0003356360759933861,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_level__trial01",
+      "clip": "49aff04f7a",
+      "variant": "b_level",
+      "layout": "trial01",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8219673321220897,
+      "pos_err_cm_G": 0.8688505487947495,
+      "pos_err_cm_P": 0.7786141397651724,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.1158678878403379,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8219673321220897,
+        "approach": 1.1158678878403379,
+        "pause": 0.12099185933896152,
+        "close": 0.8710722692183642,
+        "transport": 0.7797355644138461,
+        "release": 0.7629358936084621,
+        "retreat": 0.7162271739950612
+      },
+      "ori_err_deg_max": 0.6961722065900391,
+      "ori_err_deg_G": 0.16838335516560163,
+      "ori_err_deg_P": 0.09119150812191991,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -4.774885800566056,
+      "hand_handle_mm": 77.64918938353644,
+      "mapping_mm": 0.0003393337202087884,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_level__trial02",
+      "clip": "49aff04f7a",
+      "variant": "b_level",
+      "layout": "trial02",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.822194491948227,
+      "pos_err_cm_G": 0.8828962032715617,
+      "pos_err_cm_P": 0.6322624198029783,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.1229128067390937,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.822194491948227,
+        "approach": 1.1229128067390937,
+        "pause": 0.18577764125208968,
+        "close": 0.8837740218054155,
+        "transport": 0.7541026303751829,
+        "release": 0.6183115405751055,
+        "retreat": 0.5706885831925413
+      },
+      "ori_err_deg_max": 0.6960847318515894,
+      "ori_err_deg_G": 0.08648871079144457,
+      "ori_err_deg_P": 0.0963073426051379,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -5.20318496414486,
+      "hand_handle_mm": 68.01259386449102,
+      "mapping_mm": 0.0003531158799844943,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_level__trial03",
+      "clip": "49aff04f7a",
+      "variant": "b_level",
+      "layout": "trial03",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8215363123693376,
+      "pos_err_cm_G": 1.12659119554371,
+      "pos_err_cm_P": 0.21281070768382238,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.320643075543917,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8215363123693376,
+        "approach": 1.320643075543917,
+        "pause": 0.4052236313891076,
+        "close": 1.1245002473204588,
+        "transport": 0.8250114408975208,
+        "release": 0.2552560554764802,
+        "retreat": 0.2666213414971226
+      },
+      "ori_err_deg_max": 0.6960166778872052,
+      "ori_err_deg_G": 0.16689802173950083,
+      "ori_err_deg_P": 0.01817060215628261,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -8.385699676467759,
+      "hand_handle_mm": 58.543807656046155,
+      "mapping_mm": 0.000449245458789978,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_level__trial04",
+      "clip": "49aff04f7a",
+      "variant": "b_level",
+      "layout": "trial04",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8215363123693376,
+      "pos_err_cm_G": 1.06349357747367,
+      "pos_err_cm_P": 0.23435487551415896,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.2665159246566848,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8215363123693376,
+        "approach": 1.2665159246566848,
+        "pause": 0.3790262765896208,
+        "close": 1.0617778498190245,
+        "transport": 0.7615536950804029,
+        "release": 0.27798371942532085,
+        "retreat": 0.3152961365361417
+      },
+      "ori_err_deg_max": 0.6960166778872052,
+      "ori_err_deg_G": 0.15824291022577522,
+      "ori_err_deg_P": 0.01846801334414561,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -7.775930834337717,
+      "hand_handle_mm": 58.245339039514306,
+      "mapping_mm": 0.0004318848488474115,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_level__trial05",
+      "clip": "49aff04f7a",
+      "variant": "b_level",
+      "layout": "trial05",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8219673321220897,
+      "pos_err_cm_G": 0.8792071784413822,
+      "pos_err_cm_P": 0.9706700328226381,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.1238115902714072,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8219673321220897,
+        "approach": 1.1238115902714072,
+        "pause": 0.12341710054930145,
+        "close": 0.881214394508204,
+        "transport": 0.9706700328226381,
+        "release": 0.9539182480436165,
+        "retreat": 0.904259420569262
+      },
+      "ori_err_deg_max": 0.6961722065900391,
+      "ori_err_deg_G": 0.17035586263519087,
+      "ori_err_deg_P": 0.11530749397643437,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -4.998027340666792,
+      "hand_handle_mm": 83.3418694579624,
+      "mapping_mm": 0.0003519590150017516,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_level__trial06",
+      "clip": "49aff04f7a",
+      "variant": "b_level",
+      "layout": "trial06",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.821715513455857,
+      "pos_err_cm_G": 1.0589396529301485,
+      "pos_err_cm_P": 0.2695629662174399,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.2628970677012332,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.821715513455857,
+        "approach": 1.2628970677012332,
+        "pause": 0.36282259168499514,
+        "close": 1.0575580412705667,
+        "transport": 0.7806042782750529,
+        "release": 0.26711892497113565,
+        "retreat": 0.28114325501905074
+      },
+      "ori_err_deg_max": 0.6960775946382557,
+      "ori_err_deg_G": 0.15723858108168298,
+      "ori_err_deg_P": 0.022976112006384226,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -7.739288931603756,
+      "hand_handle_mm": 81.26208099329688,
+      "mapping_mm": 0.0004379343894965394,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_level__trial07",
+      "clip": "49aff04f7a",
+      "variant": "b_level",
+      "layout": "trial07",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8215363123693376,
+      "pos_err_cm_G": 1.1668480878381915,
+      "pos_err_cm_P": 0.19409175043505333,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.349192546603137,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8215363123693376,
+        "approach": 1.349192546603137,
+        "pause": 0.49923290895400446,
+        "close": 1.1637239024772075,
+        "transport": 0.8673114038850307,
+        "release": 0.20991550339608742,
+        "retreat": 0.21261384659256805
+      },
+      "ori_err_deg_max": 0.6960166778872052,
+      "ori_err_deg_G": 0.16494473566643578,
+      "ori_err_deg_P": 0.020521826032489247,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -8.710027420538168,
+      "hand_handle_mm": 45.300588036890574,
+      "mapping_mm": 0.00045216593520954276,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_level__trial08",
+      "clip": "49aff04f7a",
+      "variant": "b_level",
+      "layout": "trial08",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8215363123693376,
+      "pos_err_cm_G": 1.4370061249750887,
+      "pos_err_cm_P": 0.24975363294220168,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.5773619864110706,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8215363123693376,
+        "approach": 1.5773619864110706,
+        "pause": 0.6338289330716961,
+        "close": 1.433096242651983,
+        "transport": 1.116597046175751,
+        "release": 0.28751465265534637,
+        "retreat": 0.3180727843207108
+      },
+      "ori_err_deg_max": 0.6960166778872052,
+      "ori_err_deg_G": 0.14526252709126303,
+      "ori_err_deg_P": 0.018228863458242102,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -9.73984634425624,
+      "hand_handle_mm": 71.28438402942517,
+      "mapping_mm": 0.00046634499870821893,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_level__trial09",
+      "clip": "49aff04f7a",
+      "variant": "b_level",
+      "layout": "trial09",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8215363123693376,
+      "pos_err_cm_G": 1.2680538378897452,
+      "pos_err_cm_P": 0.23947538477281338,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.4437173940867851,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.8215363123693376,
+        "approach": 1.4437173940867851,
+        "pause": 0.49878994477370564,
+        "close": 1.2652025122916273,
+        "transport": 0.9624977810203192,
+        "release": 0.28155642593675984,
+        "retreat": 0.3138127487472265
+      },
+      "ori_err_deg_max": 0.6960166778872052,
+      "ori_err_deg_G": 0.1849050740622845,
+      "ori_err_deg_P": 0.017461051344282157,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -9.340821989994003,
+      "hand_handle_mm": 52.82207350055951,
+      "mapping_mm": 0.0004666511201944644,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_tilt__recorded",
+      "clip": "49aff04f7a",
+      "variant": "b_tilt",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.886054401191702,
+      "pos_err_cm_G": 2.6194507794491217,
+      "pos_err_cm_P": 1.4451625159633883,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 2.886054401191702,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.669760839104043,
+        "approach": 2.886054401191702,
+        "pause": 0.37167429504368527,
+        "close": 2.6180483103763796,
+        "transport": 2.3160239873636983,
+        "release": 1.4312335583023248,
+        "retreat": 1.3531775344304033
+      },
+      "ori_err_deg_max": 0.8173955536454702,
+      "ori_err_deg_G": 0.671484381172997,
+      "ori_err_deg_P": 0.3547312287589635,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -7.431463934389822,
+      "hand_handle_mm": 83.579288817817,
+      "mapping_mm": 0.00036883013804843694,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_tilt__trial00",
+      "clip": "49aff04f7a",
+      "variant": "b_tilt",
+      "layout": "trial00",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.8661370605028167,
+      "pos_err_cm_G": 2.5959422788715107,
+      "pos_err_cm_P": 1.637961903072666,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 2.8661370605028167,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.6700763257488167,
+        "approach": 2.8661370605028167,
+        "pause": 0.2504275172485604,
+        "close": 2.595166736037966,
+        "transport": 2.3229854829724306,
+        "release": 1.6272656849487908,
+        "retreat": 1.5559453064012096
+      },
+      "ori_err_deg_max": 0.8173953482492818,
+      "ori_err_deg_G": 0.66183479984284,
+      "ori_err_deg_P": 0.411509578812614,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -5.875705092839324,
+      "hand_handle_mm": 50.953350463516195,
+      "mapping_mm": 0.0003037530000599175,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_tilt__trial01",
+      "clip": "49aff04f7a",
+      "variant": "b_tilt",
+      "layout": "trial01",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.9402357233840624,
+      "pos_err_cm_G": 2.670121721380008,
+      "pos_err_cm_P": 1.3634550702855248,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 2.9402357233840624,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.670233995341529,
+        "approach": 2.9402357233840624,
+        "pause": 0.17381545372910884,
+        "close": 2.669633347595014,
+        "transport": 2.4126025982165418,
+        "release": 1.355662437501777,
+        "retreat": 1.3121574619492937
+      },
+      "ori_err_deg_max": 0.8173953569869278,
+      "ori_err_deg_G": 0.6763558519697702,
+      "ori_err_deg_P": 0.37081150335730223,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -5.609565051279292,
+      "hand_handle_mm": 78.81458619454405,
+      "mapping_mm": 0.00030060083596463924,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_tilt__trial02",
+      "clip": "49aff04f7a",
+      "variant": "b_tilt",
+      "layout": "trial02",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.7792111701346607,
+      "pos_err_cm_G": 2.509608303820652,
+      "pos_err_cm_P": 1.2170667244300297,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 2.7792111701346607,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.6699186038766745,
+        "approach": 2.7792111701346607,
+        "pause": 0.24698034967748725,
+        "close": 2.508675810811251,
+        "transport": 2.2255068574558625,
+        "release": 1.2091498177466218,
+        "retreat": 1.1528415771155855
+      },
+      "ori_err_deg_max": 0.8173954135239003,
+      "ori_err_deg_G": 0.6473290668967399,
+      "ori_err_deg_P": 0.3747058013022066,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -6.451576503971603,
+      "hand_handle_mm": 68.76152291964168,
+      "mapping_mm": 0.0003140798793190658,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_tilt__trial03",
+      "clip": "49aff04f7a",
+      "variant": "b_tilt",
+      "layout": "trial03",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 3.0016510849954035,
+      "pos_err_cm_G": 2.7451725388673824,
+      "pos_err_cm_P": 0.8615450167559985,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.0016510849954035,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.6696030399289254,
+        "approach": 3.0016510849954035,
+        "pause": 0.7196146089007549,
+        "close": 2.7429074832709066,
+        "transport": 2.4050613668559904,
+        "release": 0.8616219179300031,
+        "retreat": 0.8493692880528919
+      },
+      "ori_err_deg_max": 0.8173957698481735,
+      "ori_err_deg_G": 0.7029636682732149,
+      "ori_err_deg_P": 0.22917628259870323,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -9.574809662913902,
+      "hand_handle_mm": 59.34538416222348,
+      "mapping_mm": 0.0004301303117698112,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_tilt__trial04",
+      "clip": "49aff04f7a",
+      "variant": "b_tilt",
+      "layout": "trial04",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 2.961031592397348,
+      "pos_err_cm_G": 2.7004007486766466,
+      "pos_err_cm_P": 0.7902140549880832,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 2.961031592397348,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.6696030399289254,
+        "approach": 2.961031592397348,
+        "pause": 0.692193764399173,
+        "close": 2.6983602956791053,
+        "transport": 2.3674143352504236,
+        "release": 0.7899392470985416,
+        "retreat": 0.7774374632020997
+      },
+      "ori_err_deg_max": 0.8173957698481735,
+      "ori_err_deg_G": 0.6867238180295698,
+      "ori_err_deg_P": 0.22983927805768953,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -8.764377071127823,
+      "hand_handle_mm": 59.279691332662956,
+      "mapping_mm": 0.00041711141778812377,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_tilt__trial05",
+      "clip": "49aff04f7a",
+      "variant": "b_tilt",
+      "layout": "trial05",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 2.9196087733181377,
+      "pos_err_cm_G": 2.651912586596632,
+      "pos_err_cm_P": 1.4495581449383952,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 2.9196087733181377,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.6700763257488167,
+        "approach": 2.9196087733181377,
+        "pause": 0.18851707325564265,
+        "close": 2.6512869978435187,
+        "transport": 2.3852203325703414,
+        "release": 1.4383875692570949,
+        "retreat": 1.3763635614775498
+      },
+      "ori_err_deg_max": 0.8173953482492818,
+      "ori_err_deg_G": 0.7726349729817713,
+      "ori_err_deg_P": 0.4036166379452849,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -6.2332902595313,
+      "hand_handle_mm": 83.89041303610107,
+      "mapping_mm": 0.0003008139698026937,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_tilt__trial06",
+      "clip": "49aff04f7a",
+      "variant": "b_tilt",
+      "layout": "trial06",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 3.0182491802799425,
+      "pos_err_cm_G": 2.7566767746099745,
+      "pos_err_cm_P": 0.6902669757020643,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.0182491802799425,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.6696030399289254,
+        "approach": 3.0182491802799425,
+        "pause": 0.6793127184521004,
+        "close": 2.7547530270194653,
+        "transport": 2.418511263002382,
+        "release": 0.6892840121565913,
+        "retreat": 0.6655541452694541
+      },
+      "ori_err_deg_max": 0.8173957698481735,
+      "ori_err_deg_G": 0.7058043393498189,
+      "ori_err_deg_P": 0.21643623798048844,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -8.830105254358774,
+      "hand_handle_mm": 82.12736799222743,
+      "mapping_mm": 0.00041303131623315377,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_tilt__trial07",
+      "clip": "49aff04f7a",
+      "variant": "b_tilt",
+      "layout": "trial07",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 3.0851630070263765,
+      "pos_err_cm_G": 2.8345456834997917,
+      "pos_err_cm_P": 0.9740983372571664,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.0851630070263765,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.6696030399289254,
+        "approach": 3.0851630070263765,
+        "pause": 0.8980458004325867,
+        "close": 2.831853064460121,
+        "transport": 2.476042206318594,
+        "release": 0.9740623692835824,
+        "retreat": 0.9557446269997186
+      },
+      "ori_err_deg_max": 0.8173957698481735,
+      "ori_err_deg_G": 0.7275347187303592,
+      "ori_err_deg_P": 0.23607801253201943,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -9.845806671032125,
+      "hand_handle_mm": 45.97305566804362,
+      "mapping_mm": 0.00043582385726626357,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_tilt__trial08",
+      "clip": "49aff04f7a",
+      "variant": "b_tilt",
+      "layout": "trial08",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 3.0647754876007043,
+      "pos_err_cm_G": 2.834432263097124,
+      "pos_err_cm_P": 0.8775658976370007,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.0647754876007043,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.6696030399289254,
+        "approach": 3.0647754876007043,
+        "pause": 1.0079983770025265,
+        "close": 2.8310484845068036,
+        "transport": 2.4526104519006493,
+        "release": 0.8774700127265028,
+        "retreat": 0.8630205493778311
+      },
+      "ori_err_deg_max": 0.8173957698481735,
+      "ori_err_deg_G": 0.7064744414463339,
+      "ori_err_deg_P": 0.24772880285070853,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -10.98256995736454,
+      "hand_handle_mm": 71.77936694395486,
+      "mapping_mm": 0.0004568401186987652,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "49aff04f7a__b_tilt__trial09",
+      "clip": "49aff04f7a",
+      "variant": "b_tilt",
+      "layout": "trial09",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": false
+      },
+      "pos_err_cm_max": 3.076249970497071,
+      "pos_err_cm_G": 2.8283718952892807,
+      "pos_err_cm_P": 0.7323996761828419,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.076249970497071,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.6696030399289254,
+        "approach": 3.076249970497071,
+        "pause": 0.9066227620813008,
+        "close": 2.8256639577876275,
+        "transport": 2.4746630904758224,
+        "release": 0.7322801023313166,
+        "retreat": 0.7168070004496563
+      },
+      "ori_err_deg_max": 0.8173957698481735,
+      "ori_err_deg_G": 0.7191588990582626,
+      "ori_err_deg_P": 0.2184242404755593,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 603,
+      "n_clamped": 0,
+      "bump_scale": 1.0,
+      "hand_mug_mm": -10.550558413196548,
+      "hand_handle_mm": 53.374137887382865,
+      "mapping_mm": 0.00045012468831350075,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__a_naive__recorded",
+      "clip": "e8825dea53",
+      "variant": "a_naive",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 9.857071067849175,
+      "pos_err_cm_G": 1.463151137330192,
+      "pos_err_cm_P": 1.988538081295237,
+      "pos_err_cm_max_phase": "replay",
+      "pos_err_cm_max_after_prelude": 9.857071067849175,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.9873544893342245,
+        "to_a0": 0.7543417754025787,
+        "replay": 9.857071067849175,
+        "release": 2.5111413669568976
+      },
+      "ori_err_deg_max": 3.1362751306008,
+      "ori_err_deg_G": 0.3949575879849168,
+      "ori_err_deg_P": 0.5430606149971876,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 510,
+      "n_clamped": 0,
+      "bump_scale": null,
+      "hand_mug_mm": -2.7196941823998984,
+      "hand_handle_mm": 75.35352517198574,
+      "mapping_mm": 0.00039852961228102455,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_level__recorded",
+      "clip": "e8825dea53",
+      "variant": "b_level",
+      "layout": "recorded",
+      "reachable": true,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": true,
+        "path": true
+      },
+      "pos_err_cm_max": 1.8963644226815748,
+      "pos_err_cm_G": 0.8111760422396952,
+      "pos_err_cm_P": 0.7672346201753836,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.163389457263928,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 1.8963644226815748,
+        "approach": 1.163389457263928,
+        "pause": 0.17994160529175882,
+        "close": 0.8136461748192902,
+        "transport": 0.9424966072442124,
+        "release": 0.764311647272008,
+        "retreat": 0.7246305191794274
+      },
+      "ori_err_deg_max": 0.6345288377327761,
+      "ori_err_deg_G": 0.16829178796804756,
+      "ori_err_deg_P": 0.07434967872554961,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -4.227127190350037,
+      "hand_handle_mm": 83.90717256164913,
+      "mapping_mm": 0.0003698885491695041,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_level__trial00",
+      "clip": "e8825dea53",
+      "variant": "b_level",
+      "layout": "trial00",
+      "reachable": true,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": true,
+        "path": true
+      },
+      "pos_err_cm_max": 1.8963644226815748,
+      "pos_err_cm_G": 0.7584653047194956,
+      "pos_err_cm_P": 0.6413012700328591,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.125151129455341,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 1.8963644226815748,
+        "approach": 1.125151129455341,
+        "pause": 0.1417797697146839,
+        "close": 0.7606939051786215,
+        "transport": 0.6413012700328591,
+        "release": 0.635679510138403,
+        "retreat": 0.595202200079092
+      },
+      "ori_err_deg_max": 0.6345288377327761,
+      "ori_err_deg_G": 0.17383907557313175,
+      "ori_err_deg_P": 0.05623139144722972,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -3.5211900199613644,
+      "hand_handle_mm": 51.34517963409216,
+      "mapping_mm": 0.00030720167015195536,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_level__trial01",
+      "clip": "e8825dea53",
+      "variant": "b_level",
+      "layout": "trial01",
+      "reachable": true,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": true,
+        "path": true
+      },
+      "pos_err_cm_max": 1.8966161975936344,
+      "pos_err_cm_G": 0.7867089463672005,
+      "pos_err_cm_P": 0.5345709394655568,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.1525422354889208,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 1.8966161975936344,
+        "approach": 1.1525422354889208,
+        "pause": 0.11979577545558218,
+        "close": 0.7902391634388233,
+        "transport": 0.5776410911240472,
+        "release": 0.5289829910830101,
+        "retreat": 0.5028461939682591
+      },
+      "ori_err_deg_max": 0.634543191494984,
+      "ori_err_deg_G": 0.20751919570323907,
+      "ori_err_deg_P": 0.06135142061865935,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -3.341387827319376,
+      "hand_handle_mm": 79.05548847483216,
+      "mapping_mm": 0.000323480610411759,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_level__trial02",
+      "clip": "e8825dea53",
+      "variant": "b_level",
+      "layout": "trial02",
+      "reachable": true,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": true,
+        "path": true
+      },
+      "pos_err_cm_max": 1.8963644226815748,
+      "pos_err_cm_G": 0.7543606573632564,
+      "pos_err_cm_P": 0.351406850494901,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.1195750753281926,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 1.8963644226815748,
+        "approach": 1.1195750753281926,
+        "pause": 0.13727823166979952,
+        "close": 0.7563745831921712,
+        "transport": 0.5004663760361808,
+        "release": 0.3493426334264167,
+        "retreat": 0.32957250882823264
+      },
+      "ori_err_deg_max": 0.6345288377327761,
+      "ori_err_deg_G": 0.16843431953282917,
+      "ori_err_deg_P": 0.035572154887449865,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -3.6734928324713865,
+      "hand_handle_mm": 69.508610233173,
+      "mapping_mm": 0.000324693719748402,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_level__trial03",
+      "clip": "e8825dea53",
+      "variant": "b_level",
+      "layout": "trial03",
+      "reachable": true,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": true,
+        "path": true
+      },
+      "pos_err_cm_max": 1.8961123297177278,
+      "pos_err_cm_G": 0.8902141307888202,
+      "pos_err_cm_P": 0.14689499225849517,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.228094540559353,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 1.8961123297177278,
+        "approach": 1.228094540559353,
+        "pause": 0.27587249834471156,
+        "close": 0.892408382211115,
+        "transport": 0.6211818061912662,
+        "release": 0.17420844050075834,
+        "retreat": 0.17844445969121314
+      },
+      "ori_err_deg_max": 0.6345147662884986,
+      "ori_err_deg_G": 0.17174951526220472,
+      "ori_err_deg_P": 0.05986553575790622,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -5.316453562949675,
+      "hand_handle_mm": 61.61609295345403,
+      "mapping_mm": 0.00042315583881037493,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_level__trial04",
+      "clip": "e8825dea53",
+      "variant": "b_level",
+      "layout": "trial04",
+      "reachable": true,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": true,
+        "path": true
+      },
+      "pos_err_cm_max": 1.896238412250811,
+      "pos_err_cm_G": 0.8765352504670434,
+      "pos_err_cm_P": 0.1564743422761134,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.2162396299307168,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 1.896238412250811,
+        "approach": 1.2162396299307168,
+        "pause": 0.26014271714851656,
+        "close": 0.8788444863111003,
+        "transport": 0.6239459190065445,
+        "release": 0.17316921863593243,
+        "retreat": 0.17546962930121052
+      },
+      "ori_err_deg_max": 0.6345217662831725,
+      "ori_err_deg_G": 0.17216061577889893,
+      "ori_err_deg_P": 0.06371628361930065,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -4.930341713362737,
+      "hand_handle_mm": 61.04124382379534,
+      "mapping_mm": 0.00040878024253058977,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_level__trial05",
+      "clip": "e8825dea53",
+      "variant": "b_level",
+      "layout": "trial05",
+      "reachable": true,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": true,
+        "path": true
+      },
+      "pos_err_cm_max": 1.8964903537974636,
+      "pos_err_cm_G": 0.7745173655151986,
+      "pos_err_cm_P": 0.571811898273645,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.1410934169275861,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 1.8964903537974636,
+        "approach": 1.1410934169275861,
+        "pause": 0.11073392778497418,
+        "close": 0.7783333770281952,
+        "transport": 0.571811898273645,
+        "release": 0.566345082883948,
+        "retreat": 0.5339024079987746
+      },
+      "ori_err_deg_max": 0.6345359796860398,
+      "ori_err_deg_G": 0.19984643694982424,
+      "ori_err_deg_P": 0.05680532444491958,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -3.55498607185412,
+      "hand_handle_mm": 84.75256608751972,
+      "mapping_mm": 0.00032920988191319114,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_level__trial06",
+      "clip": "e8825dea53",
+      "variant": "b_level",
+      "layout": "trial06",
+      "reachable": true,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": true,
+        "path": true
+      },
+      "pos_err_cm_max": 1.896238412250811,
+      "pos_err_cm_G": 0.8593402600581995,
+      "pos_err_cm_P": 0.18809080856545515,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.2018471361755723,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 1.896238412250811,
+        "approach": 1.2018471361755723,
+        "pause": 0.23179366826421585,
+        "close": 0.8618871595117589,
+        "transport": 0.6059012349268091,
+        "release": 0.19761219178413758,
+        "retreat": 0.1991962773304653
+      },
+      "ori_err_deg_max": 0.6345217662831725,
+      "ori_err_deg_G": 0.16822124711534378,
+      "ori_err_deg_P": 0.05851876399301179,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -4.97109596016878,
+      "hand_handle_mm": 84.03285675813781,
+      "mapping_mm": 0.0004124158839209332,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_level__trial07",
+      "clip": "e8825dea53",
+      "variant": "b_level",
+      "layout": "trial07",
+      "reachable": true,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": true,
+        "path": true
+      },
+      "pos_err_cm_max": 1.8961123297177278,
+      "pos_err_cm_G": 0.9535799170630386,
+      "pos_err_cm_P": 0.13854617788173557,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.2794606640296433,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 1.8961123297177278,
+        "approach": 1.2794606640296433,
+        "pause": 0.3627410558030723,
+        "close": 0.9553507451615787,
+        "transport": 0.6835186666022331,
+        "release": 0.15749459307787472,
+        "retreat": 0.16202877097088023
+      },
+      "ori_err_deg_max": 0.6345147662884986,
+      "ori_err_deg_G": 0.18137659678462384,
+      "ori_err_deg_P": 0.05649747031819273,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -5.292766896463736,
+      "hand_handle_mm": 48.98484194706556,
+      "mapping_mm": 0.0004242913741054825,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_level__trial08",
+      "clip": "e8825dea53",
+      "variant": "b_level",
+      "layout": "trial08",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": true,
+        "path": true
+      },
+      "pos_err_cm_max": 1.895986181335978,
+      "pos_err_cm_G": 1.02397402245229,
+      "pos_err_cm_P": 0.18911607795047666,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.329490483112062,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 1.895986181335978,
+        "approach": 1.329490483112062,
+        "pause": 0.43502797520367326,
+        "close": 1.0253942943970535,
+        "transport": 0.7283484702063749,
+        "release": 0.2349913866357965,
+        "retreat": 0.24549036704133625
+      },
+      "ori_err_deg_max": 0.6345078390906392,
+      "ori_err_deg_G": 0.12863461119142408,
+      "ori_err_deg_P": 0.05283909267219367,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -5.558606061875079,
+      "hand_handle_mm": 76.07850750748231,
+      "mapping_mm": 0.0004427591155106717,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_level__trial09",
+      "clip": "e8825dea53",
+      "variant": "b_level",
+      "layout": "trial09",
+      "reachable": true,
+      "reachable_parts": {
+        "at_G": true,
+        "at_P": true,
+        "path": true
+      },
+      "pos_err_cm_max": 1.8961123297177278,
+      "pos_err_cm_G": 0.961928948580345,
+      "pos_err_cm_P": 0.16860201436488947,
+      "pos_err_cm_max_phase": "prelude",
+      "pos_err_cm_max_after_prelude": 1.2873214254102934,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 1.8961123297177278,
+        "approach": 1.2873214254102934,
+        "pause": 0.34355438032450164,
+        "close": 0.9641039158004185,
+        "transport": 0.6996105205888483,
+        "release": 0.19796712854837029,
+        "retreat": 0.2034376231197459
+      },
+      "ori_err_deg_max": 0.6345147662884986,
+      "ori_err_deg_G": 0.17914557628829428,
+      "ori_err_deg_P": 0.05633291026827798,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -5.6738825600313465,
+      "hand_handle_mm": 56.550566252745476,
+      "mapping_mm": 0.0004426323057292194,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_tilt__recorded",
+      "clip": "e8825dea53",
+      "variant": "b_tilt",
+      "layout": "recorded",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.7739660057997435,
+      "pos_err_cm_G": 3.380839357321456,
+      "pos_err_cm_P": 1.9588206265406842,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.7739660057997435,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.9882433080650666,
+        "approach": 3.7739660057997435,
+        "pause": 0.30003948278256515,
+        "close": 3.3805376258528885,
+        "transport": 3.099439786176909,
+        "release": 1.9580283046251372,
+        "retreat": 1.904350112428549
+      },
+      "ori_err_deg_max": 0.883799594476642,
+      "ori_err_deg_G": 0.8007528927633649,
+      "ori_err_deg_P": 0.5588862725519258,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -1.5784885129864232,
+      "hand_handle_mm": 87.08164401505256,
+      "mapping_mm": 0.0003384141562294523,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_tilt__trial00",
+      "clip": "e8825dea53",
+      "variant": "b_tilt",
+      "layout": "trial00",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.7562314465425373,
+      "pos_err_cm_G": 3.3641499174541116,
+      "pos_err_cm_P": 1.9684876550481167,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.7562314465425373,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.9884468120182457,
+        "approach": 3.7562314465425373,
+        "pause": 0.22766719898797053,
+        "close": 3.3641108354658855,
+        "transport": 3.1182557377227393,
+        "release": 1.966818108098113,
+        "retreat": 1.9243269978001218
+      },
+      "ori_err_deg_max": 0.8527999003646735,
+      "ori_err_deg_G": 0.7709781481347988,
+      "ori_err_deg_P": 0.5462324335751827,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": 0.3404477521611611,
+      "hand_handle_mm": 58.74282391156341,
+      "mapping_mm": 0.00030209520388394423,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_tilt__trial01",
+      "clip": "e8825dea53",
+      "variant": "b_tilt",
+      "layout": "trial01",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.7350322770482087,
+      "pos_err_cm_G": 3.345641410998,
+      "pos_err_cm_P": 1.7601132656297722,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.7350322770482087,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.9886502162611164,
+        "approach": 3.7350322770482087,
+        "pause": 0.14655763523020243,
+        "close": 3.3457165367847437,
+        "transport": 3.107124990832446,
+        "release": 1.7592460703913484,
+        "retreat": 1.7321815898851864
+      },
+      "ori_err_deg_max": 0.8443922858081226,
+      "ori_err_deg_G": 0.762714971385914,
+      "ori_err_deg_P": 0.4772396101238137,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": 0.3078451527069079,
+      "hand_handle_mm": 84.69204916835271,
+      "mapping_mm": 0.0003039043291494975,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_tilt__trial02",
+      "clip": "e8825dea53",
+      "variant": "b_tilt",
+      "layout": "trial02",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.779723493224396,
+      "pos_err_cm_G": 3.3869331607065534,
+      "pos_err_cm_P": 1.762835544050186,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.779723493224396,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.9884468120182457,
+        "approach": 3.779723493224396,
+        "pause": 0.22327939330078753,
+        "close": 3.3867102099670707,
+        "transport": 3.1332619314942516,
+        "release": 1.7625461111071494,
+        "retreat": 1.7338026295320452
+      },
+      "ori_err_deg_max": 0.8623051570555472,
+      "ori_err_deg_G": 0.7805660088306108,
+      "ori_err_deg_P": 0.4877223826883218,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -0.12333745301199749,
+      "hand_handle_mm": 75.71719195045488,
+      "mapping_mm": 0.0003070593116514626,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_tilt__trial03",
+      "clip": "e8825dea53",
+      "variant": "b_tilt",
+      "layout": "trial03",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.7362651434893457,
+      "pos_err_cm_G": 3.3448473537562675,
+      "pos_err_cm_P": 1.715216607729113,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.7362651434893457,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.9880397148578526,
+        "approach": 3.7362651434893457,
+        "pause": 0.6129288436189037,
+        "close": 3.3445620022450524,
+        "transport": 3.0383418287989903,
+        "release": 1.715557278744072,
+        "retreat": 1.7040095173715493
+      },
+      "ori_err_deg_max": 0.8983346868676604,
+      "ori_err_deg_G": 0.8144300315179329,
+      "ori_err_deg_P": 0.4035363069794279,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -3.391146126739218,
+      "hand_handle_mm": 66.74696105424664,
+      "mapping_mm": 0.0004016587480639687,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_tilt__trial04",
+      "clip": "e8825dea53",
+      "variant": "b_tilt",
+      "layout": "trial04",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.8186104269445575,
+      "pos_err_cm_G": 3.4254722027515796,
+      "pos_err_cm_P": 1.7621967611291862,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.8186104269445575,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.9880397148578526,
+        "approach": 3.8186104269445575,
+        "pause": 0.4055732131142296,
+        "close": 3.4251127897063,
+        "transport": 3.1225299450478965,
+        "release": 1.7625264593412036,
+        "retreat": 1.7539033820389214
+      },
+      "ori_err_deg_max": 0.9087943351572961,
+      "ori_err_deg_G": 0.8249883730987505,
+      "ori_err_deg_P": 0.42296676200905764,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -2.547201968148715,
+      "hand_handle_mm": 66.71757079015023,
+      "mapping_mm": 0.0003843264511614751,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_tilt__trial05",
+      "clip": "e8825dea53",
+      "variant": "b_tilt",
+      "layout": "trial05",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.780752140263946,
+      "pos_err_cm_G": 3.3941755889030945,
+      "pos_err_cm_P": 1.9788057285251903,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.780752140263946,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.9886502162611164,
+        "approach": 3.780752140263946,
+        "pause": 0.15678522872256845,
+        "close": 3.3942746779103485,
+        "transport": 3.1631773824421936,
+        "release": 1.9778203713514246,
+        "retreat": 1.9486536967887917
+      },
+      "ori_err_deg_max": 0.8744894701269352,
+      "ori_err_deg_G": 0.789373908678197,
+      "ori_err_deg_P": 0.5379526212921193,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": 1.3645484071222582,
+      "hand_handle_mm": 90.5714452265477,
+      "mapping_mm": 0.00031288058689904886,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_tilt__trial06",
+      "clip": "e8825dea53",
+      "variant": "b_tilt",
+      "layout": "trial06",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.7283309466883727,
+      "pos_err_cm_G": 3.335861347668844,
+      "pos_err_cm_P": 1.7434722353903545,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.7283309466883727,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.9880397148578526,
+        "approach": 3.7283309466883727,
+        "pause": 0.4713641544613307,
+        "close": 3.3355522706390364,
+        "transport": 3.0352479913417807,
+        "release": 1.7439476622682466,
+        "retreat": 1.7358373370656401
+      },
+      "ori_err_deg_max": 0.8910906051883202,
+      "ori_err_deg_G": 0.8072464714302668,
+      "ori_err_deg_P": 0.4266618559869062,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -2.998394489076271,
+      "hand_handle_mm": 87.40163207755114,
+      "mapping_mm": 0.0003821823287529558,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_tilt__trial07",
+      "clip": "e8825dea53",
+      "variant": "b_tilt",
+      "layout": "trial07",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.8301938170365646,
+      "pos_err_cm_G": 3.4365343396544548,
+      "pos_err_cm_P": 1.7800320159891865,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.8301938170365646,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.9878360418315464,
+        "approach": 3.8301938170365646,
+        "pause": 0.5679239089648627,
+        "close": 3.435996987008108,
+        "transport": 3.106523877805444,
+        "release": 1.7817542901606551,
+        "retreat": 1.760799831215681
+      },
+      "ori_err_deg_max": 0.925591185468762,
+      "ori_err_deg_G": 0.8414588051167261,
+      "ori_err_deg_P": 0.4030791214848359,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -3.1945862221417562,
+      "hand_handle_mm": 54.90983050642469,
+      "mapping_mm": 0.0004098150922045526,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_tilt__trial08",
+      "clip": "e8825dea53",
+      "variant": "b_tilt",
+      "layout": "trial08",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.6987484092305163,
+      "pos_err_cm_G": 3.3100996987912934,
+      "pos_err_cm_P": 1.7492069036504112,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.6987484092305163,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.9878360418315464,
+        "approach": 3.6987484092305163,
+        "pause": 0.943531517413939,
+        "close": 3.3095137154350467,
+        "transport": 2.9604768482008232,
+        "release": 1.749506155645679,
+        "retreat": 1.7371115592151005
+      },
+      "ori_err_deg_max": 0.9175767658839676,
+      "ori_err_deg_G": 0.8336101002151549,
+      "ori_err_deg_P": 0.41005129493793735,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -4.423277596982905,
+      "hand_handle_mm": 79.80291292592871,
+      "mapping_mm": 0.0004335664213312002,
+      "start_mm": 0.09014472896523588
+    },
+    {
+      "run": "e8825dea53__b_tilt__trial09",
+      "clip": "e8825dea53",
+      "variant": "b_tilt",
+      "layout": "trial09",
+      "reachable": false,
+      "reachable_parts": {
+        "at_G": false,
+        "at_P": false,
+        "path": false
+      },
+      "pos_err_cm_max": 3.8043091789342385,
+      "pos_err_cm_G": 3.411995196830988,
+      "pos_err_cm_P": 1.7293725256388461,
+      "pos_err_cm_max_phase": "approach",
+      "pos_err_cm_max_after_prelude": 3.8043091789342385,
+      "pos_err_cm_max_by_phase": {
+        "prelude": 2.9878360418315464,
+        "approach": 3.8043091789342385,
+        "pause": 0.7627068797300695,
+        "close": 3.411587476084098,
+        "transport": 3.0849486412376206,
+        "release": 1.7297463821931414,
+        "retreat": 1.7178634247332916
+      },
+      "ori_err_deg_max": 0.9190550054749395,
+      "ori_err_deg_G": 0.8349194763317647,
+      "ori_err_deg_P": 0.40766490270236383,
+      "qp_failures": 0,
+      "joint_limit_hit_frames": 0,
+      "frames": 640,
+      "n_clamped": 0,
+      "bump_scale": 0.8883719431343713,
+      "hand_mug_mm": -3.7874371749139333,
+      "hand_handle_mm": 61.92702434601249,
+      "mapping_mm": 0.00042491642505795824,
+      "start_mm": 0.09014472896523588
+    }
+  ],
+  "videos": {
+    "step": "videos",
+    "clip": "4e103843db",
+    "layout": "recorded",
+    "renderer": "sim/m1_reach_test.py VideoWriter (640 x 480, every 2nd frame -> 25 fps), MUJOCO_GL=egl on Mesa (__EGL_VENDOR_LIBRARY_FILENAMES)",
+    "videos": [
+      {
+        "run": "4e103843db__a_naive__recorded",
+        "video": "results/m3_retarget/videos/4e103843db__a_naive__recorded.mp4",
+        "rerun_fields_differing_from_saved_run": [],
+        "path_identical_to_saved": true,
+        "attach_frame": 232,
+        "attach_rule": "first frame with closure = 1 (no 'close' phase in this path)",
+        "release_frame": 406,
+        "frames": 437,
+        "mug_carried_frames": 175
+      },
+      {
+        "run": "4e103843db__b_level__recorded",
+        "video": "results/m3_retarget/videos/4e103843db__b_level__recorded.mp4",
+        "rerun_fields_differing_from_saved_run": [],
+        "path_identical_to_saved": true,
+        "attach_frame": 281,
+        "attach_rule": "last frame of the 'close' phase (end of the close hold)",
+        "release_frame": 403,
+        "frames": 589,
+        "mug_carried_frames": 123,
+        "gif": {
+          "gif": "results/m3_retarget/4e103843db__b_level__recorded.gif",
+          "size": [
+            320,
+            240
+          ],
+          "attempts": [
+            {
+              "stride": 2,
+              "frames": 147,
+              "frame_ms": 80,
+              "bytes": 2821055
+            }
+          ],
+          "used": {
+            "stride": 2,
+            "frames": 147,
+            "frame_ms": 80,
+            "bytes": 2821055
+          },
+          "bytes": 2821055,
+          "under_5MB": true
+        }
+      },
+      {
+        "run": "4e103843db__b_tilt__recorded",
+        "video": "results/m3_retarget/videos/4e103843db__b_tilt__recorded.mp4",
+        "rerun_fields_differing_from_saved_run": [],
+        "path_identical_to_saved": true,
+        "attach_frame": 281,
+        "attach_rule": "last frame of the 'close' phase (end of the close hold)",
+        "release_frame": 403,
+        "frames": 589,
+        "mug_carried_frames": 123
+      }
+    ],
+    "runtime_s": 31.3,
+    "peak_rss_mb": 2185,
+    "code_sha256": {
+      "retarget/frames.py": "45f367363cdad5a87c220fab863356b10f27e89f0b9aa682d7aa0448351401db",
+      "retarget/grasp.py": "23d1c45f9be1329e3f4f4a9ce7ef042d163c4eb9ba13d270a0ce659ac2f2e6f2",
+      "retarget/warp.py": "21640b51712410c0266a769dd0909dc9819ead238d8c36a55eb4f1a32f5ba8c8",
+      "retarget/naive.py": "9eb0e7f3d4adfc9cbea199d65823e23105141e9640ca84017d0f71a4402e6c4e",
+      "retarget/run_m3.py": "95649d9b4dedba594fcb2c72e7369b4e7fa6128211ca912b9871d1e4ac7d514d",
+      "sim/reference_builder.py": "c97d7d40f98be21e279648808a34e1d7e1ae97a9484c5a0cc1881ade10b48165",
+      "sim/pick_place.py": "2c4bf6e7f5d53b72efa6877d5f28fb059097260cc463bf629bb27c8f9a116813",
+      "sim/scene.py": "7cbbf28125f8076dccd722cc6fb6f4e2a0165cddb8be9060637f7eca5e03b39c"
+    }
+  },
+  "resources": {
+    "verify": {
+      "runtime_s": 4.8,
+      "peak_rss_mb": 1659
+    },
+    "run": {
+      "wall_s": 84.8,
+      "parent_peak_rss_mb": 148,
+      "per_process": [
+        {
+          "runs": 23,
+          "wall_s": 84.7,
+          "peak_rss_mb": 1574
+        },
+        {
+          "runs": 23,
+          "wall_s": 76.7,
+          "peak_rss_mb": 1600
+        },
+        {
+          "runs": 23,
+          "wall_s": 79.8,
+          "peak_rss_mb": 1650
+        },
+        {
+          "runs": 23,
+          "wall_s": 82.2,
+          "peak_rss_mb": 1668
+        }
+      ],
+      "peak_rss_mb_sum_of_processes": 6492
+    },
+    "r0_after_m3": {
+      "wall_s": 33.9,
+      "peak_rss_mb_sum_of_processes": 6495,
+      "peak_rss_mb_max_process": 1674
+    },
+    "videos": {
+      "runtime_s": 31.3,
+      "peak_rss_mb": 2185
+    },
+    "gpu": "none (CPU only; videos render on Mesa EGL)",
+    "summarize": {
+      "runtime_s": 0.02,
+      "peak_rss_mb": 151
+    }
+  }
+}

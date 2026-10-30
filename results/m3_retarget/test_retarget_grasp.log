@@ -1,0 +1,1 @@
+test_retarget_grasp: OK -- b_level at phi_ora / h_frac_ora = oracle grasp: max |p - p_ora| 0.00e+00 m, max |R - R_ora| 0.00e+00 (tolerance 1e-09); M checks pass; phi_ora 45.0000 deg, h_frac_ora 0.714286; wall 0.00 s, peak RSS 147 MB

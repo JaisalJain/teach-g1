@@ -1,0 +1,91 @@
+{
+  "passed": true,
+  "conditions": {
+    "fingertip_mean_palm_x_positive": {
+      "value_m": 0.08016494330817131,
+      "pass": true
+    },
+    "cup_axis_palm_y_positive": {
+      "value_m": 0.0627687054337857,
+      "pass": true
+    }
+  },
+  "fingertip_bodies_in_palm_m": {
+    "thumb_2": [
+      -0.00651,
+      0.05433,
+      0.0
+    ],
+    "index_1": [
+      0.1235,
+      -0.0016,
+      0.0285
+    ],
+    "middle_1": [
+      0.1235,
+      -0.0016,
+      -0.0285
+    ]
+  },
+  "fingertip_mean_in_palm_m": [
+    0.08016,
+    0.01704,
+    0.0
+  ],
+  "cup_axis_at_palm_height_in_palm_m": [
+    0.07825,
+    0.06277,
+    5e-05
+  ],
+  "oracle_cup_axis_in_palm_o_m": [
+    0.077,
+    0.0645,
+    0.0
+  ],
+  "pose": {
+    "layout_cup_xy": [
+      0.49334,
+      -0.23556
+    ],
+    "handle_yaw_rad": -0.08811049820511048,
+    "oracle_grasp_palm": [
+      0.39328,
+      -0.22672,
+      0.805
+    ],
+    "oracle_grasp_quat_wxyz": [
+      0.92388,
+      0.0,
+      0.0,
+      -0.382683
+    ],
+    "plant_palm": [
+      0.39361,
+      -0.22473,
+      0.80819
+    ],
+    "plant_palm_quat_wxyz": [
+      0.924115,
+      -0.000128,
+      0.000222,
+      -0.382114
+    ],
+    "plant_palm_minus_target_mm": 3.7697445553138915,
+    "plant_palm_vs_target_deg": 0.07650674229564752,
+    "plant_palm_minus_clip_fk_palm_mm": 0.00030623114525148935,
+    "plant_palm_vs_clip_fk_deg": 7.776373593278652e-05,
+    "path_frames": 251,
+    "plan_info": {
+      "frames": 851,
+      "path_frames": 251,
+      "ik_max_path_err_cm": 1.818780860403263,
+      "ik_terminal_palm_err_cm": 0.3769628251927541,
+      "qp_failures": 0
+    }
+  },
+  "method": "PickPlace(mug_v1), spawn pose (no physics), oracle waypoints (z_clear 1.2 s, pre-grasp 1.8 s, grasp 2.0 s) in one plan_path(base='plan'); robot set to the last path frame (plant.reset with the clip's root pose + 29 joints), right and left hands at HERO's open pose, mug at its layout pose, mj_forward; palm frame = plant.palm_pose() (wrist_yaw_link + PALM_OFFSET); fingertips = body origins of right_hand_{thumb_2,index_1,middle_1}_link",
+  "resources": {
+    "wall_s": 1.88,
+    "peak_rss_mb": 1802.6
+  }
+}
