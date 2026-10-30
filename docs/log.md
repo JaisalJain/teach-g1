@@ -364,3 +364,38 @@ is expected without camera motion. Hand/forearm visibility is a judgement by eye
   runtime PM status is now `error` and `nvidia-smi` fails ("Unable to determine the device handle for GPU0: Unknown Error").
   Very likely caused by the RAM exhaustion. Fix: `full_matrices=False` (run now uses < 1 GB per clip, 18 s). **A reboot is needed**
   to get the GPU back; nothing was changed on the driver side.
+
+### Setup 2026-10-30 — GPU check, MANO install (chumpy-free), object config
+1. **GPU** (after reboot + `prime-select nvidia`): `prime-select query` = nvidia; driver 580.178.04 (CUDA 13.0), RTX 5060 Laptop GPU idle
+   (P8, 13 MiB / 8151 MiB). hoi-perception: torch 2.11.0+cu128, `cuda.is_available()` True, 2048² matmul OK. PASS.
+2. **MANO:** `mano_v1_2.zip` (175 MB) was inside the repo by mistake → moved to `~/Downloads` (never git-added; MANO licence forbids
+   redistribution), extracted to /tmp. `third_party/WiLoR/mano_data/` held only `mano_mean_params.npz` (untouched). Copied
+   `MANO_RIGHT.pkl` + an untouched copy `MANO_RIGHT_orig.pkl`. PASS.
+3. **chumpy-free MANO:** WiLoR mentions chumpy only in `requirements.txt` (no code import); none of our code uses it.
+   - Reference: loaded `MANO_RIGHT_orig.pkl` WITH chumpy 0.71 → `/tmp/mano_ref.npz`. Only `shapedirs` is a chumpy object.
+   - `perception/tools/strip_chumpy.py` unpickles chumpy classes as stubs (chumpy blocked via `sys.modules["chumpy"] = None`).
+   - **First attempt failed:** it took the only top-level numeric array of the `shapedirs` stub, which was `idxs` (23340,) int64 —
+     `shapedirs` is a `chumpy.reordering.Select` view, not a plain array. Mismatch → stopped, `MANO_RIGHT.pkl` restored from the original.
+   - **Fix (approved):** handle exactly two classes — plain `Ch` (value = `x`; error if any other numeric state) and `Select`
+     (`resolve(a).ravel()[idxs].reshape(preferred_shape)`); anything else raises naming the class. Asserts before writing: shapedirs
+     (778,3,10) float64, all expected shapes, integer arrays only in `f` / `kintree_table`.
+   - **Result: all 13 keys equal the chumpy reference exactly** (`np.array_equal`, dtype included). Shapes OK: v_template (778,3),
+     shapedirs (778,3,10), posedirs (778,3,135), J_regressor (16,778) sparse, weights (778,16), f (1538,3), hands_components (45,45),
+     hands_mean (45,), kintree_table (2,16). Info: `a.x` is (778,3,20) and `idxs` selects exactly the first 10 of the 20 shape components.
+   - **chumpy removed:** it was installed on 2026-10-29 (git `580566e`) during WiLoR setup; uninstalled today because it is unmaintained
+     and judges should not need it. Lock regenerated (`pip freeze --exclude-editable`): the only diff is the removed chumpy line.
+     torch 2.11.0+cu128, numpy 2.2.6 unchanged.
+4. **smplx load without chumpy:** `smplx.MANO(model_path='third_party/WiLoR/mano_data', is_rhand=True, use_pca=False)` → vertices
+   (1,778,3), joints (1,16,3), all finite. PASS (folder path works).
+5. **Weights inventory** (size bytes, sha256):
+   - detector.pt 53582271 `5ef3df44e42d2db52d4ffe91f83a22ce9925e2acc9abebf453f2c5d22e380033`
+   - wilor_final.ckpt 2564989533 `3e97aafc7dd08d883a4cc5a027df61fdb6fda6136dbd1319405413862ada6bb2`
+   - sam2.1_hiera_base_plus.pt 323606802 `a2345aede8715ab1d5d31b4a509fb160c5a4af1970f199d9054ccfb746c004c5`
+   - MANO_RIGHT.pkl (chumpy-free) 3447680 `ed3ac9bfe93c48319616e2d38010afc802405140b23079320680174652286830`
+   - MANO_RIGHT_orig.pkl (official) 3821356 `45d60aa3b27ef9107a7afd4e00808f307fd91111e1cfa35afd5c4a62de264767`
+6. **Git hygiene:** added `*.zip` and `data/work/` to .gitignore; `git check-ignore -v` confirms third_party/, mano_data/*.pkl, *.ckpt,
+   *.pt, *.zip, data/work/, data/raw/ (except the allowed `data/raw/sample/`), results/**/*.mp4. `git status` shows no weight/MANO/zip file.
+7. **`config/objects.yaml`** created (mug from its base label: Ø 9.9 cm, H 9.1 cm, W with handle 14.3 cm; handle protrusion derived 4.4 cm;
+   handle size unknown; mass 0.37 kg estimated; coaster Ø 10.4 cm / 5 mm estimated).
+8. **Disk / RAM:** /home 410 G, 37 G free (≥ 30 G required, but only just; 91 % used). RAM 30 Gi, 24 Gi available; swap 14 Gi.
+9. Cleaned /tmp/mano_unzip and /tmp/mano_ref.npz; zip kept in ~/Downloads.
