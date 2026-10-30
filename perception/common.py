@@ -20,7 +20,8 @@ import yaml
 
 RAW = Path("data/raw")
 WORK = Path("data/work")
-RESULTS = Path("results/m2_perception")
+RESULTS = Path("results/m2_perception_v2")        # M2 v2 outputs; v1 stays untouched in RESULTS_V1
+RESULTS_V1 = Path("results/m2_perception")
 DEMOS = Path("data/demos")
 CONFIG = Path("config/objects.yaml")
 CLIPS = {"26d4118b0c": "top-down", "4e103843db": "90deg", "49aff04f7a": "45deg", "e8825dea53": "45deg"}
@@ -63,11 +64,16 @@ def _watchdog():
         time.sleep(0.5)
 
 
-def stage_cli(stage: str, run, gpu: bool = False) -> None:
+def stage_cli(stage, run=None, gpu: bool = False) -> None:
+    """Standard main() of a stage module. A module with several stages passes a dict {--stage value: (stage name, run, gpu)};
+    the first entry is the default."""
+    stages = stage if isinstance(stage, dict) else {stage: (stage, run, gpu)}
     ap = argparse.ArgumentParser()
     ap.add_argument("--clip", required=True, choices=sorted(CLIPS))
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--stage", choices=list(stages), default=next(iter(stages)))
     args = ap.parse_args()
+    stage, run, gpu = stages[args.stage]
     if is_done(args.clip, stage) and not args.force:
         print(f"{stage} {args.clip}: cached, skipping (--force to redo)")
         return
