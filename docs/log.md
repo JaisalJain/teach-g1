@@ -943,3 +943,131 @@ placement (palm px vs v2's scale fit: lower on 1 clip, higher on 3; vs the S5 ha
 pass 45 s. GPU: none in v3 (S2/S3/A4 caches).
 **Process notes:** sub-agents ran no git in v3 Track A (per their reports); the demo field `t_rise` is on the odometry clock (like
 `t_contact`), the cross-view column uses clip time.
+
+### Track B v3 — fix ladder
+
+**Question.** Does any cumulative change in the order L1, L2, L3 get the full mug (B3's R3: config mug, 0.40 kg, B3's 20 fixed trials) to at least 18/20? **Answer: no.** L1 0/20, L2 0/20, L3 11/20. No rung reached 18/20, so the 50-layout final evaluation and the example videos were not run. Everything below is in `results/m1_grasp_fix/v3/`. CPU only, no GPU, hoi-sim. Every number below was re-derived from the per-trial rows and per-D maxima by an independent check; the "Checked" lines say how.
+
+**Constraints kept.** No friction coefficient, PD gain, torque limit, mug geometry or mug mass was changed. Every change is a named `PickPlace` parameter with the legacy value as default (`grasp_offset`, `closing_targets`, `contact_model`). A compile check of legacy against L3's contact model shows that only `geom_condim` (4 right-hand geoms) and the options `cone`, `impratio` and `noslip_iterations` differ. Trials for every rung and for R0 are B3's trials 0-19 (layouts and handle yaws computed with the legacy grasp and asserted per trial), so a new grasp offset never re-samples the layouts.
+
+#### Radius-consistent pose and its assert
+`pick_place.py` kept the object axis at palm-frame (0.077, 0.055, 0). The palm-normal component 0.055 = r_old (0.040) + 0.015. The radius-consistent pose keeps x and z and sets the palm-normal component to r + 0.015. It is `radius_consistent_offset(r)`, with `PALM_SURFACE_GAP = 0.015`. The assert on import is `radius_consistent_offset(0.040)[1] == 0.055 and np.array_equal(radius_consistent_offset(0.040), GRASP_OFFSET)`. It holds exactly in float64. For the mug, r = 0.0495 m is read from the compiled `cup_geom`, which gives (0.077, 0.0645, 0). The 8 cm pre-grasp backoff is unchanged. Because the offset changed, the approach direction in the palm frame went from 35.54 deg to 39.95 deg (world (0.9864, -0.1644) to (0.9961, -0.088)); the palm offset went from (-0.0933, 0.0156, 0.015) to (-0.1001, 0.0088, 0.0195).
+
+#### B2v3 — capacity at the radius-consistent pose (`b2v3_capacity.json`, `.png`)
+Same method as v2 (grid, touching rule: tip distance in [0, 3] mm and no geom of that digit deeper than 1 mm; phi definition, mu = 1.0625 from the explicit cup x fingertip pair, thresholds comfortable >= 90 deg, marginal >= 43.26 deg = 90 - atan(1.0625)). One change: the cylinder axis sits at the radius-consistent pose for r = D/2, base on the table, height 0.091 m (as in v2). phi = 0 is the cylinder point facing the palm. An assert checks that this point lies on the surface at the radius set. The verdict is the weaker of the thumb and the best finger (the best finger is the larger of index and middle).
+
+| D (mm) | thumb max phi (deg) | best finger max phi (deg) | thumb touching configs | verdict |
+|---|---|---|---|---|
+| 60 | 148.095 | 90.931 (middle) | 299 | comfortable |
+| 65 | 144.033 | 86.598 | 319 | marginal |
+| 70 | 138.925 | 83.837 | 327 | marginal |
+| 75 | 133.697 | 79.748 | 352 | marginal |
+| **80 (positive control)** | 130.113 | 77.523 | 356 | **marginal** |
+| 85 | 124.906 | 73.434 | 352 | marginal |
+| 90 | 121.962 | 71.129 | 344 | marginal |
+| 95 | 118.712 | 68.490 | 314 | marginal |
+| **99 (gate)** | 115.858 | 66.568 (index) | 285 | **marginal** |
+| 100 | 113.854 | 66.136 | 290 | marginal |
+| 105 | 110.784 | 64.336 | 256 | marginal |
+| 110 | 108.052 | 62.101 | 203 | marginal |
+
+- **Positive control passed:** 80 mm is marginal, not infeasible. At 80 mm the pose is exactly the oracle's `GRASP_OFFSET`. The row uses h = 0.091 m like every row, not the M1 cylinder's 0.10 m.
+- **99 mm gate passed:** marginal (thumb 115.86 deg, best finger 66.57 deg, margin to infeasible 23.3 deg). Decision in the json: continue to the ladder.
+- Thumb: above 90 deg at every D, and 203-356 touching configurations per D. In v2 the thumb had 0 at every D because the cylinder was slid along the palm normal until it touched the palm. The v3 axis sits at palm x = 0.077, away from the thumb base.
+- Fingers: only the 60 mm row is comfortable. Fingers have only 4-6 of 441 configurations touching per D (the 0-3 mm band is thin against the joint step), so finger maxima are coarse grid lower bounds.
+- At 99 mm all three digits have a touching configuration, so L2 is computable for all three. Max-wrap points: thumb on the side (tip gap 0.313 mm); index on the **top rim edge** (gap 1.218 mm); middle on the side at 66.55 deg (gap 1.132 mm). The index point is on the top rim edge at every D.
+- Palm geom distance to the cylinder at the pose (information, not used by the touching rule): -1.712 mm (60 mm) to -2.504 mm (110 mm); -2.151 mm at 80 mm (equals B1's -2.15 mm for the legacy cylinder) and -2.400 mm at 99 mm. The wrist_yaw geom stays 36.3-50.9 mm clear at every D (38.989 mm at 99 mm).
+- Checked: every verdict re-derived from the per-D maxima (12/12 match); thumb touching counts as above.
+- Cost: 1.7 s, peak RSS 924 MB.
+
+#### L1 — geom-distance check (`l1_check.json`)
+Hand open at the planned pose; minimum signed distance over all right-hand collision geoms x all object geoms (`mj_geomDistance`).
+- (a) M1 cylinder, legacy offset: **-2.151 mm**, pair palm hull `hand_contact_right_hand_palm_link_8` and `cup_geom`.
+- (b) Mug at L1: **-2.400 mm**, same pair. Identical at all 20 trial handle yaws. The handle stays at least 51.98 mm from the hand.
+- b minus a = -0.249 mm. That is within the 0.5 mm limit, so the check passes. Nothing was adjusted.
+- Other geoms come closer by more than 0.5 mm (thumb_2 36.51 to 27.63 mm, -8.87 mm change; thumb_1 20.48 to 14.29 mm; index_0 and middle_0 7.05 to 6.59 mm, with those fingers' base links slightly less far), but none becomes the minimum.
+- Important reading: both poses have the palm hull inside the object. The legacy offset on the mug would put the palm 11.65 mm inside (B1). L1 backs the palm out by 9.25 mm, to the same 2.15-2.40 mm overlap the cylinder has. So L1 reproduces the old overlap; it does not create clearance.
+- The placement code reproduces B1's independent placement exactly (max difference 0.00 mm for cylinder and mug). L1's trials equal B3 R3's 20/20.
+- Cost: 2.3 s, peak RSS 2989 MB (three scenes built).
+
+#### Ladder (`ladder.json`; per-trial rows in `runs/`)
+Rungs are cumulative; contact fraction at lift = thumb AND (index or middle) AND palm touching an object geom at the last substep of the first control step of the lift phase (B3's definition, denominator 20). Re-derived from the per-trial rows (success, categories, Wilson 95 % CI, slip mean/median over trials that reached the lift, rise, contact): 0 mismatches.
+
+| rung | change (cumulative) | success | Wilson 95 % | failures | lift slip mean / median (mm) | over 20 mm | rise mean / median (cm) | contact at lift |
+|---|---|---|---|---|---|---|---|---|
+| B3 R3 (reference) | none | 0/20 | 0.000-0.161 | slip 12, dropped 8 | 20.75 / 20.1 (n 20) | 10 | 5.11 / 4.98 | 13/20 |
+| L1 | radius-consistent palm target | 0/20 | 0.000-0.161 | slip 15, dropped 5 | 21.96 / 22.7 (n 20) | 12 | 4.99 / 4.96 | 14/20 |
+| L2 | L1 + per-digit IK closing targets | 0/20 | 0.000-0.161 | slip 19, dropped 1 | 47.06 / 30.3 (n 20) | 19 | 3.21 / 4.34 | 14/20 |
+| L3 | L1 + L2 + contact model | 11/20 | 0.342-0.742 | close-gate miss 9 | 6.8 / 6.6 (n 11) | 0 | 6.87 / 6.86 | 5/20 |
+
+The stop rule (>= 18/20) is never met. `stopped_at` is null, and `next` reads "no accepted rung reached >= 18/20". L3 was the last spec rung.
+
+**L1 (0/20).** Compared with R3 nothing moved for the better: more trials over 20 mm (12 against 10), rise 4.99 against 5.11 cm, index touching 10 against 6. 3 of the 15 lift failures (trials 2, 7, 10) had slip <= 20 mm and failed only on rise < 5 cm; 5 more trials with slip <= 20 mm failed later, in transport. The 14/20 contact fraction is 0.70 (thumb 20, index 10, middle 20, palm 14).
+
+**L2 (0/20).** IK per digit (`l2_targets.json`, scipy `least_squares`, joints of that digit only, bounds = joint ranges), from each digit's B2v3 99 mm max-wrap configuration; target = the closest cylinder point moved 5 mm radially into the cylinder.
+- Closed targets (thumb_0, thumb_1, thumb_2, index_0, index_1, middle_0, middle_1) in rad: (-1.9e-9, 0.4064, -1.1901, 0.2179, 1.2948, 0.2173, 1.2936). HERO's: (0, 0, -1.2, 1.57, 1.2, 1.2, 1.2). Open pose, ramp, touch logic, kp/kd and squeeze rule unchanged.
+- IK residuals: thumb 2e-6 mm; index 0.105 mm (along palm z); middle 2.8e-5 mm. No joint at its limit; scipy status 1 (gtol) for all three. Tip geom distance at the solution: thumb_2 -5.155 mm, index_1 -5.185 mm, middle_1 -5.227 mm.
+- Index caveat: its max-wrap point is on the top rim edge, so a radial 5 mm move puts the target on the top-cap plane, 0.0 mm inside the solid (thumb and middle: 5.0 mm). Implemented literally, as the contract says.
+- Result: 19 slip failures, 1 dropped. Slip got worse (47.06 / 30.3 mm). In 7 trials the cup stayed essentially on the table while the hand lifted: rise <= 1.01 cm in trials 1, 6, 8, 11, 12, 14, 15 (0.08, -0.04, 1.01, 0.00, 0.69, 0.00, 0.00 cm). Median closure at first contact: 0.976 (L1: 0.488). Substep sensitivity: grasp contact in any substep 20/20, in all substeps 9/20, in the last substep 14/20.
+- **Not measured:** why. A hypothesis is that the targets sit only 0.05-0.07 rad past the touching configuration (near the squeeze rule's 0.05 rad threshold), so the grip torque is low; no finger torque was logged.
+
+**L3 (11/20, accepted by its guards, below the stop rule).** `contact_model="grasp"`: elliptic cones, `impratio` 10, `noslip_iterations` 3, condim 4 on right palm, thumb_2, index_1, middle_1 (the cup geoms and its 72 explicit pairs were already condim 4). Solver (Newton) and tolerance 1e-8 unchanged.
+- Failures: 9, all "no thumb + finger contact at full closure (missed the cup)" in the close phase (trials 0, 2, 3, 4, 8, 9, 15, 17, 18). The label in the rows is M1's "missed/knocked cup", but the cup was **not** knocked: tilt <= 0.1 deg, still at z 0.7855 m, moved 1.5-10.8 mm. The 11 trials that reached the lift all passed: slip mean 6.8 / median 6.6 mm, none over 20 mm, rise 6.87 / 6.86 cm.
+- Slip is no longer a failure mode, and the failure moved to the 0.3 N touch gate. Contact at lift is 5/20 (thumb 11, index 4, middle 10, palm 5 of the 11 that reached the lift).
+- **Not measured:** which digit stays under 0.3 N in the 9 failures; no fingertip force was logged.
+- Guards (spec): (1) `m1_reach_test` at 0.74 m with the L3 options, `reach_l3/`: no fall; pelvis z min 0.686 m (M1 0.689), tilt max 12.8 deg (M1 12.9), no body part on floor or table, drift 0.086 m (M1 0.088), palm error mean of means 1.73 cm and mean of finals 1.51 cm (M1 1.70 / 1.43). (2) R0 with L3's own change only (`L3_R0`: cylinder, 0.15 kg, B3 R0 trials, `contact_model` grasp): 20/20, Wilson 0.839-1.0, slip 3.86 / 3.25 mm, rise 7.79 / 7.94 cm, contact 10/20. Both pass, so `accepted = true`. L1 and L2 have `accepted = null` in the json (no guard in the spec). The reach test's legacy default reproduces M1's `results/m1_reach` field by field and array by array (excluding only wall-clock fields `wall_time_s` and `initial_plan.ik_s`).
+
+**R0 at legacy settings through the new code.** 20/20 (Wilson 0.839-1.0) in `runs/R0.json`, and again after the L2 and L3 shared-code edits (`runs/R0_after_l2.json`, `runs/R0_after_l3.json`). All 20 trials are identical to B3 R0 in every row field except wall time, and identical to M1. Slip 7.8 / 6.85 mm, rise 7.28 / 7.16 cm, contact 12/20 each time.
+
+#### MuJoCo documentation for L3 (3.13.0, doc sources at tag 3.13.0, RST markup removed)
+- Modeling > Tips and tricks > Preventing slip > Slow slippage (https://mujoco.readthedocs.io/en/stable/modeling.html#cslowslippage): "a. Use elliptic cones and increase impratio. This makes the friction dimensions harder relative to the normal dimension without increasing the friction coefficient. It reduces slow slippage but does not guarantee exact sticking. [...] b. For stronger suppression, enable the NoSlip solver by setting noslip_iterations to a positive integer. A small number (1, 2 or 3) is usually sufficient. [...]"
+- Modeling > Preventing slip (https://mujoco.readthedocs.io/en/stable/modeling.html#cslippage): "Increase condim to 4 or 6 and choose appropriate friction coefficients. condim 4 enables torsional friction, preventing rotation around the normal."
+- Modeling > Introduction > Solver settings (https://mujoco.readthedocs.io/en/stable/modeling.html#calgorithms): "When contact slip is a problem, the best way to suppress it is to use elliptic cones, large impratio, and the Newton algorithm with very small tolerance. If that is not sufficient, enable the Noslip solver."
+- Overview > Softness and slip (https://mujoco.readthedocs.io/en/stable/overview.html#soft): "Thus using the Newton solver with elliptic friction cones and large value of impratio is the recommended way of reducing slip."
+- XML Reference > option > impratio (https://mujoco.readthedocs.io/en/stable/XMLreference.html#option-impratio), noslip_iterations (#option-noslip-iterations), cone (#option-cone); Computation > Constraint solver > NoSlip (https://mujoco.readthedocs.io/en/stable/computation/index.html#sonoslip). Full quotes are in `ladder.json`, `rungs[L3].contact_model_sources`.
+- The values: the docs give no number for `impratio`. 10 is the value DeepMind's MuJoCo Menagerie uses with `cone="elliptic"` in robotiq_2f85, aloha, wonik_allegro and shadow_hand (LEAP uses 100). `noslip_iterations` 3 is the top of the docs' "1, 2 or 3". Both were fixed before the first L3 run, and no other values were tried.
+
+#### Adaptations (reading the spec literally)
+- L1 pre-grasp: the 8 cm backoff is kept, but its direction follows the new offset (39.95 deg against 35.54 deg in the palm frame). The retreat uses the same approach direction. B3's handle yaws stay centred on the legacy approach direction, so the handle spread is about 4.4 deg off L1's own approach.
+- L2 start/target: each digit starts from its own B2v3 99 mm argmax with the other digits at 0. The fixed point is the tip-geom point that was closest in that configuration. L2 reads `l2_targets.json`, so the run uses the saved numbers.
+- The L2 closed pose changes the squeeze rule's closing direction (sign of closed minus open). On the flexion joints this is unchanged; only thumb_0 goes from 0 to -1 because the IK returned -1.9e-9, and thumb_0 is not a flexion joint.
+- L3's R0 guard uses L3's own change only (`contact_model` grasp). L1 is a no-op on the 80 mm cylinder and L2's targets are for the 99 mm mug.
+- Parallelism: 4 processes of 5 consecutive trials, 1 onnxruntime thread each.
+
+#### Open questions
+1. `impratio` = 10 is not from the MuJoCo docs (they give no number); it is the Menagerie value for elliptic-cone hands. `noslip_iterations` = 3 is the top of the docs' range; 1 and 2 were not tried. The solver tolerance stayed 1e-8 although the docs' advice says "very small tolerance"; the spec names only cone, condim, impratio, noslip.
+2. B2v3's saved `argmax` holds only the closest point on the cylinder, not the tip-side point; L2 recomputed it. Should B2v3 save it?
+3. The index's max-wrap point is on the top rim edge (all D), so L2's radial 5 mm move leaves its target on the top-cap plane (0.0 mm inside). The alternatives (inward normal, or a point lower on the side) were not run. The middle reaches almost the same angle on the side (66.55 against 66.57 deg).
+4. The palm hull overlaps the cylinder at the B2v3 pose (-1.7 to -2.5 mm). The touching rule's 1 mm tolerance applies only to the swept digit's geoms, so the overlap is reported, not used. The b2v3 json has no `open_questions` block saying so.
+5. Rise is measured at the end of the 1.5 s lift with no settle; R0 itself rises only 7.28 cm for a 10 cm palm lift with 7.8 mm slip, so part of the shortfall may be palm tracking lag under load rather than slip. Inference only; the palm's own rise is not stored.
+6. L1's pre-grasp and retreat direction (the alternative: keep the legacy approach vector) was not run.
+7. L3 was run only as the cumulative L1+L2+L3 on the mug; the full cumulative on the cylinder for the R0 guard was not run. The guard also runs only the right-hand condim change; the left hand stays condim 3.
+8. The legacy check of the reach test excludes wall-clock fields; `m1_reach_test` now also writes `protocol.contact_model` and a `resources` block, which M1's file predates.
+9. (Fixed by the main agent) `python -m sim.b2_capacity` used to default to `--version v2` and would have rewritten the v2 result
+   files; `--version` is now required (v2: `--version v2`, v3: `--version v3`). The v2 files were never rewritten (mtime 21:38).
+10. `sim/pick_place.py` was edited by two agents at once (B2v3: `radius_consistent_offset`, `PALM_SURFACE_GAP`, the assert; L1: `grasp_offset`, `GRASP_OFFSETS`). The full diffs of `sim/scene.py`, `sim/pick_place.py`, `sim/m1_reach_test.py`, `sim/m1_grasp_ladder.py`, `sim/b2_capacity.py` need one review pass by the main agent. (Main agent: scene.py diff reviewed; the checker's compiled-model diff shows only
+   the intended condim / option changes under contact_model="grasp", and legacy R0 is identical to M1 trial by trial after every edit.)
+
+#### Runtime and peak RSS per step (all CPU, from the saved files)
+| step | wall | peak RSS |
+|---|---|---|
+| B2v3 (`b2v3_capacity.json`) | 1.7 s | 924 MB |
+| L1 check (`l1_check.json`) | 2.3 s | 2989 MB |
+| R0 (`runs/R0.json`) | 28.4 s | 1711 MB max per process, sum 6598 MB |
+| L1 (`runs/L1.json`) | 28.1 s | 1796 MB max, sum 6636 MB |
+| L2 IK (`l2_targets.json`) | 0.38 s in-script | 991 MB |
+| R0 after L2 | 27.7 s | 1759 MB max, sum 6755 MB |
+| L2 (`runs/L2.json`) | 19.9 s | 1712 MB max, sum 6802 MB |
+| reach legacy check | 12.6 s | 1712 MB |
+| R0 after L3 | 29.0 s | 1657 MB max, sum 6397 MB |
+| reach L3 (with video, Mesa EGL) | 49.3 s | 1648 MB |
+| L3 R0 guard | 37.8 s | 1719 MB max, sum 6570 MB |
+| L3 (`runs/L3.json`) | 26.8 s | 1676 MB max, sum 6573 MB |
+| ladder.json rebuild | 0.0 s | 64 MB |
+
+Each parallel run also had a parent process of 63 MB. The 16 GB cap was never approached (at most about 8.2 GB, one 4-process run plus one reach test).
+
+#### What failed
+- Nothing reached 18/20. L1 and L2 stayed at 0/20, and L2 made slip worse (47 mm mean). L3 fixed slip (0 of 11 over 20 mm) but moved the failure to the close-phase touch gate (9/20). The best result is 11/20 (95 % CI 0.34-0.74), which does not support "the mug is grasped repeatably".
+- The final 50-layout evaluation and the videos were not run (no rung >= 18/20). The only video is `reach_l3/reach_h074.mp4` (the L3 reach guard; gitignored).
+- The causes of the L2 slip and of the L3 close-gate misses were not measured (no fingertip force or torque logs). The spec did not ask for them, so none was built.

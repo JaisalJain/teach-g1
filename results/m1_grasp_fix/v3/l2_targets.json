@@ -1,0 +1,307 @@
+{
+  "question": "L2: per-digit Dex3 closing targets for the 99 mm mug: fingertip 5 mm inside the mug surface, by IK from each digit's B2v3 max-wrap configuration",
+  "method": {
+    "scene": "sim/b2_capacity.py Capacity(anchor='radius_consistent') = B2v3's scene and placement; cylinder D 99 mm",
+    "start": "per digit, B2v3's 99 mm argmax (max-wrap touching configuration); other digits at 0, as in B2v3",
+    "fixed_point": "the fingertip collision geom's closest point to the cylinder in the start configuration (mj_geomDistance witness point), fixed in the fingertip link frame",
+    "target": "the start configuration's closest point on the cylinder, moved 5 mm radially (horizontally, toward the axis) into the cylinder",
+    "ik": "scipy.optimize.least_squares (trf, default tolerances, 2-point finite-difference Jacobian) over that digit's joints only, bounds = joint ranges, x0 = start; residual = FK(fixed point) - target in the palm frame",
+    "use": "PickPlace(closing_targets='ik_mug') sets these 7 angles as the right hand's closed pose (TableScene.set_closed_pose); the closure ramp blends HERO's open pose into them; gains, torque limits, touch logic and squeeze rule unchanged",
+    "target_depth_inside": "information: smallest distance from the target to the cylinder's side or caps (> 0 inside)",
+    "geom_distance_at_ik": "information: mj_geomDistance of each geom of the digit to the 99 mm cylinder at the IK solution (negative = inside; convex hulls)"
+  },
+  "source": {
+    "file": "results/m1_grasp_fix/v3/b2v3_capacity.json",
+    "row": "D_mm 99.0",
+    "verdict_99mm": "marginal"
+  },
+  "cylinder": {
+    "radius_m": 0.0495,
+    "height_m": 0.091,
+    "axis_palm_frame_m": [
+      0.077,
+      0.0645,
+      -0.0195
+    ],
+    "axis_source": "sim/pick_place.py radius_consistent_offset(r) = (GRASP_OFFSET x, r + 0.015, GRASP_OFFSET z) + the centre's height",
+    "phi_zero_point_palm_frame_m": [
+      0.077,
+      0.015,
+      -0.0195
+    ],
+    "palm_geom_distance_mm": -2.4,
+    "table_plane_z_palm_frame_m": -0.065,
+    "wrist_yaw_geom_distance_mm": 38.989
+  },
+  "target_depth_m": 0.005,
+  "digits": {
+    "thumb": {
+      "computable": true,
+      "joints": [
+        "right_hand_thumb_0_joint",
+        "right_hand_thumb_1_joint",
+        "right_hand_thumb_2_joint"
+      ],
+      "start": {
+        "source": "results/m1_grasp_fix/v3/b2v3_capacity.json rows[D 99 mm].digits.thumb.argmax",
+        "q_rad": [
+          0.0,
+          0.4585852530000001,
+          -1.1344640125
+        ],
+        "phi_deg": 115.858,
+        "tip_gap_mm": 0.313,
+        "closest_point_on_cylinder_palm_frame_m": [
+          0.032455975386229775,
+          0.08608888290729436,
+          0.00041808935633733113
+        ],
+        "closest_point_surface": "side"
+      },
+      "fixed_point_tip_link_frame_m": [
+        0.006799366464493034,
+        0.03859584307607791,
+        0.000418089356337345
+      ],
+      "fixed_point_link": "thumb_2_link",
+      "target_palm_frame_m": [
+        0.03695537181739312,
+        0.08390818766145312,
+        0.00041808935633733113
+      ],
+      "radial_direction_palm_frame": [
+        -0.899879286232669,
+        0.4361390491682465,
+        0.0
+      ],
+      "target_depth_inside_mm": 5.0,
+      "ik": {
+        "q_rad": [
+          -1.8900699564274753e-09,
+          0.40640453785762337,
+          -1.1900825215189528
+        ],
+        "residual_palm_frame_mm": [
+          0.0,
+          2e-06,
+          0.0
+        ],
+        "residual_norm_mm": 2e-06,
+        "at_range_limit": [
+          false,
+          false,
+          false
+        ],
+        "status": 1,
+        "message": "`gtol` termination condition is satisfied.",
+        "nfev": 4,
+        "cost": 1.444990147174806e-18
+      },
+      "joint_change_from_start_rad": [
+        -0.0,
+        -0.052181,
+        -0.055619
+      ],
+      "geom_distance_at_ik_mm": {
+        "thumb_0_link": 7.179,
+        "thumb_1_link": 8.97,
+        "thumb_2_link": -5.155
+      }
+    },
+    "index": {
+      "computable": true,
+      "joints": [
+        "right_hand_index_0_joint",
+        "right_hand_index_1_joint"
+      ],
+      "start": {
+        "source": "results/m1_grasp_fix/v3/b2v3_capacity.json rows[D 99 mm].digits.index.argmax",
+        "q_rad": [
+          0.157079632,
+          1.221730475
+        ],
+        "phi_deg": 66.568,
+        "tip_gap_mm": 1.218,
+        "closest_point_on_cylinder_palm_frame_m": [
+          0.12241789267119657,
+          0.04481586884202507,
+          0.02599999999995939
+        ],
+        "closest_point_surface": "top rim edge"
+      },
+      "fixed_point_tip_link_frame_m": [
+        0.038170039748379694,
+        0.006813546518883489,
+        -0.002394899465250359
+      ],
+      "fixed_point_link": "index_1_link",
+      "target_palm_frame_m": [
+        0.11783022673932407,
+        0.04680416492096713,
+        0.02599999999995939
+      ],
+      "radial_direction_palm_frame": [
+        0.9175331863745009,
+        -0.39765921578841285,
+        0.0
+      ],
+      "target_depth_inside_mm": 0.0,
+      "ik": {
+        "q_rad": [
+          0.21794381993844808,
+          1.2947705302946848
+        ],
+        "residual_palm_frame_mm": [
+          2.1e-05,
+          2.4e-05,
+          0.105101
+        ],
+        "residual_norm_mm": 0.105101,
+        "at_range_limit": [
+          false,
+          false
+        ],
+        "status": 1,
+        "message": "`gtol` termination condition is satisfied.",
+        "nfev": 4,
+        "cost": 5.523061712162533e-09
+      },
+      "joint_change_from_start_rad": [
+        0.060864,
+        0.07304
+      ],
+      "geom_distance_at_ik_mm": {
+        "index_0_link": 1.385,
+        "index_1_link": -5.185
+      }
+    },
+    "middle": {
+      "computable": true,
+      "joints": [
+        "right_hand_middle_0_joint",
+        "right_hand_middle_1_joint"
+      ],
+      "start": {
+        "source": "results/m1_grasp_fix/v3/b2v3_capacity.json rows[D 99 mm].digits.middle.argmax",
+        "q_rad": [
+          0.157079632,
+          1.221730475
+        ],
+        "phi_deg": 66.55,
+        "tip_gap_mm": 1.132,
+        "closest_point_on_cylinder_palm_frame_m": [
+          0.12241172136358014,
+          0.044801635752081875,
+          -0.02892268857091526
+        ],
+        "closest_point_surface": "side"
+      },
+      "fixed_point_tip_link_frame_m": [
+        0.03817204360898201,
+        0.006896160380782262,
+        -0.00042268857301707135
+      ],
+      "fixed_point_link": "middle_1_link",
+      "target_palm_frame_m": [
+        0.11782467879340933,
+        0.04679136951805176,
+        -0.02892268857091526
+      ],
+      "radial_direction_palm_frame": [
+        0.9174085140341636,
+        -0.39794675319397665,
+        0.0
+      ],
+      "target_depth_inside_mm": 5.0,
+      "ik": {
+        "q_rad": [
+          0.21731573343849736,
+          1.2935655223191085
+        ],
+        "residual_palm_frame_mm": [
+          1.9e-05,
+          2.1e-05,
+          -0.0
+        ],
+        "residual_norm_mm": 2.8e-05,
+        "at_range_limit": [
+          false,
+          false
+        ],
+        "status": 1,
+        "message": "`gtol` termination condition is satisfied.",
+        "nfev": 4,
+        "cost": 3.9090548271485223e-16
+      },
+      "joint_change_from_start_rad": [
+        0.060236,
+        0.071835
+      ],
+      "geom_distance_at_ik_mm": {
+        "middle_0_link": 1.401,
+        "middle_1_link": -5.227
+      }
+    }
+  },
+  "closed_targets_right": {
+    "right_hand_thumb_0_joint": -1.8900699564274753e-09,
+    "right_hand_thumb_1_joint": 0.40640453785762337,
+    "right_hand_thumb_2_joint": -1.1900825215189528,
+    "right_hand_index_0_joint": 0.21794381993844808,
+    "right_hand_index_1_joint": 1.2947705302946848,
+    "right_hand_middle_0_joint": 0.21731573343849736,
+    "right_hand_middle_1_joint": 1.2935655223191085
+  },
+  "hero_closed_right": {
+    "right_hand_thumb_0_joint": 0.0,
+    "right_hand_thumb_1_joint": 0.0,
+    "right_hand_thumb_2_joint": -1.2,
+    "right_hand_index_0_joint": 1.57,
+    "right_hand_index_1_joint": 1.2,
+    "right_hand_middle_0_joint": 1.2,
+    "right_hand_middle_1_joint": 1.2
+  },
+  "hero_open_right": {
+    "right_hand_thumb_0_joint": 0.0,
+    "right_hand_thumb_1_joint": 0.7,
+    "right_hand_thumb_2_joint": 0.0,
+    "right_hand_index_0_joint": 0.0,
+    "right_hand_index_1_joint": 0.0,
+    "right_hand_middle_0_joint": 0.0,
+    "right_hand_middle_1_joint": 0.0
+  },
+  "closing_direction": {
+    "note": "sign of closed - open per joint; the squeeze rule (sim/scene.py, flexion joints only) pushes blocked joints this way when they are > 0.05 rad short of their target at full closure",
+    "hero": {
+      "right_hand_thumb_0_joint": 0.0,
+      "right_hand_thumb_1_joint": -1.0,
+      "right_hand_thumb_2_joint": -1.0,
+      "right_hand_index_0_joint": 1.0,
+      "right_hand_index_1_joint": 1.0,
+      "right_hand_middle_0_joint": 1.0,
+      "right_hand_middle_1_joint": 1.0
+    },
+    "l2": {
+      "right_hand_thumb_0_joint": -1.0,
+      "right_hand_thumb_1_joint": -1.0,
+      "right_hand_thumb_2_joint": -1.0,
+      "right_hand_index_0_joint": 1.0,
+      "right_hand_index_1_joint": 1.0,
+      "right_hand_middle_0_joint": 1.0,
+      "right_hand_middle_1_joint": 1.0
+    },
+    "flexion_joints": [
+      "right_hand_thumb_2_joint",
+      "right_hand_index_0_joint",
+      "right_hand_index_1_joint",
+      "right_hand_middle_0_joint",
+      "right_hand_middle_1_joint"
+    ],
+    "same_on_flexion_joints": true
+  },
+  "mujoco": "3.13.0",
+  "scipy": "1.17.1",
+  "runtime_s": 0.38,
+  "peak_rss_mb": 991,
+  "gpu": "none (CPU only)"
+}

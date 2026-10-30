@@ -1,0 +1,2215 @@
+{
+  "rung": "L3",
+  "tag": null,
+  "base_run": "R3",
+  "object": "full mug (config), handle 0.06 x 0.010 m",
+  "cup_model": "mug",
+  "mass_kg": 0.4,
+  "cup_yaw": "each trial's handle yaw (= B3 R3)",
+  "params": {
+    "grasp_offset": "radius",
+    "closing_targets": "ik_mug",
+    "contact_model": "grasp"
+  },
+  "effective_params": {
+    "grasp_offset": "radius",
+    "closing_targets": "ik_mug",
+    "contact_model": "grasp"
+  },
+  "legacy_defaults": {
+    "grasp_offset": "legacy",
+    "closing_targets": "hero",
+    "contact_model": "legacy"
+  },
+  "change": "contact model: elliptic friction cones, impratio 10 and 3 NoSlip iterations (global solver options, MuJoCo docs' advice against slip), condim 4 on the right fingertip (thumb_2, index_1, middle_1) and palm geoms (the mug geoms and the cup pairs are condim 4 already); friction coefficients, solref / solimp, gains, torque limits, mug geometry and mass unchanged (sim/scene.py GRASP_OPTIONS)",
+  "ladder_order": [
+    "L1",
+    "L2",
+    "L3"
+  ],
+  "trials": "trials 0-19 of sim.m1_pick_mug.trials() built with the legacy grasp (B3's layouts and handle yaws, asserted per trial against results/m1_grasp_fix/b3_runs/R3.json), whatever grasp this rung uses",
+  "processes": "4 parallel CPU processes of consecutive trials: [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9], [10, 11, 12, 13, 14], [15, 16, 17, 18, 19]]",
+  "grasp": {
+    "grasp_offset": "radius",
+    "cup_radius_m": 0.0495,
+    "cup_in_palm_frame_m": [
+      0.077,
+      0.0645,
+      0.0
+    ],
+    "palm_point_to_surface_along_normal_m": 0.015,
+    "approach_dir_in_palm_frame_deg": 39.95,
+    "palm_offset_m": [
+      -0.1001,
+      0.0088,
+      0.0195
+    ],
+    "approach_dir_world": [
+      0.9961,
+      -0.088,
+      -0.0
+    ],
+    "palm_quat_wxyz": [
+      0.9239,
+      0.0,
+      0.0,
+      -0.3827
+    ],
+    "closing_targets": "ik_mug",
+    "closing_targets_source": "results/m1_grasp_fix/v3/l2_targets.json",
+    "right_hand_closed_pose_rad": {
+      "thumb_0": -1.8900699564274753e-09,
+      "thumb_1": 0.40640453785762337,
+      "thumb_2": -1.1900825215189528,
+      "index_0": 0.21794381993844808,
+      "index_1": 1.2947705302946848,
+      "middle_0": 0.21731573343849736,
+      "middle_1": 1.2935655223191085
+    }
+  },
+  "contact": {
+    "contact_model": "grasp",
+    "cone": "mjCONE_ELLIPTIC",
+    "impratio": 10.0,
+    "noslip_iterations": 3,
+    "solver": "mjSOL_NEWTON",
+    "solver_tolerance": 1e-08,
+    "condim_right_hand_geoms": {
+      "right_hand_palm_link": 4,
+      "right_hand_thumb_0_link": 3,
+      "right_hand_thumb_1_link": 3,
+      "right_hand_thumb_2_link": 4,
+      "right_hand_middle_0_link": 3,
+      "right_hand_middle_1_link": 4,
+      "right_hand_index_0_link": 3,
+      "right_hand_index_1_link": 4
+    },
+    "condim_cup_geoms": [
+      4
+    ],
+    "condim_explicit_pairs": [
+      4
+    ]
+  },
+  "mass_properties": {
+    "mass_kg": 0.4,
+    "com_offset_m": [
+      0.00129,
+      0.0,
+      0.0
+    ],
+    "inertia_diag_kgm2": [
+      0.0005155,
+      0.0005551,
+      0.0005212
+    ]
+  },
+  "cup_height_m": 0.091,
+  "summary": {
+    "successes": 11,
+    "trials": 20,
+    "rate": 0.55,
+    "wilson95": [
+      0.342,
+      0.742
+    ],
+    "failures_by_category": {
+      "missed/knocked cup": 9
+    },
+    "lift_slip_in_hand_mm": {
+      "n": 11,
+      "mean": 6.8,
+      "median": 6.6,
+      "min": 4.3,
+      "max": 12.0,
+      "over_lift_slip_limit": 0
+    },
+    "lift_cup_rise_cm": {
+      "n": 11,
+      "mean": 6.87,
+      "median": 6.86,
+      "min": 6.32,
+      "max": 8.14
+    },
+    "lift_frame": {
+      "reached": 11,
+      "grasp_contact": 5,
+      "fraction_of_all": 0.25,
+      "fraction_of_reached": 0.455,
+      "part_touching_counts": {
+        "thumb": 11,
+        "index": 4,
+        "middle": 10,
+        "palm": 5
+      },
+      "substep_sensitivity": {
+        "grasp_contact_last_substep": 5,
+        "grasp_contact_any_substep": 8,
+        "grasp_contact_all_substeps": 4,
+        "part_touching_any_substep": {
+          "thumb": 11,
+          "index": 6,
+          "middle": 11,
+          "palm": 8
+        }
+      }
+    }
+  },
+  "resources": {
+    "wall_s": 26.8,
+    "parent_peak_rss_mb": 63,
+    "per_process": [
+      {
+        "trials": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "wall_s": 21.1,
+        "peak_rss_mb": 1594
+      },
+      {
+        "trials": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "wall_s": 25.4,
+        "peak_rss_mb": 1660
+      },
+      {
+        "trials": [
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "wall_s": 26.7,
+        "peak_rss_mb": 1676
+      },
+      {
+        "trials": [
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "wall_s": 22.6,
+        "peak_rss_mb": 1643
+      }
+    ],
+    "peak_rss_mb_sum_of_processes": 6573,
+    "gpu": "none (CPU only, onnxruntime CPU)"
+  },
+  "runs": [
+    {
+      "trial": 0,
+      "layout_seed": 0,
+      "layout_index": 0,
+      "cup_xy": [
+        0.4977,
+        -0.1485
+      ],
+      "coaster_xy": [
+        0.5249,
+        -0.335
+      ],
+      "cup_yaw_deg": -38.36,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "close",
+      "reason": "no thumb + finger contact at full closure (missed the cup)",
+      "category": "missed/knocked cup",
+      "contact_closure": null,
+      "lift_slip_in_hand_cm": null,
+      "lift_cup_rise_cm": null,
+      "cup_off_coaster_center_cm": 19.08,
+      "cup_tilt_deg": 0.1,
+      "lift_frame_contacts": null,
+      "lift_frame_substeps": null,
+      "wall_s": 3.3,
+      "detail": {
+        "cup_final": [
+          0.4984,
+          -0.1461,
+          0.7855
+        ],
+        "cup_height_above_resting_cm": -0.6,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.77,
+            "ik_terminal_palm_err_cm": 0.529,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.614,
+            "ik_terminal_palm_err_cm": 0.126,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 2.44,
+            "palm_err_cm": 1.29,
+            "replans": 4
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.78,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 11.3
+      }
+    },
+    {
+      "trial": 1,
+      "layout_seed": 0,
+      "layout_index": 1,
+      "cup_xy": [
+        0.4517,
+        -0.169
+      ],
+      "coaster_xy": [
+        0.522,
+        -0.2877
+      ],
+      "cup_yaw_deg": 3.13,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.96,
+      "lift_slip_in_hand_cm": 0.85,
+      "lift_cup_rise_cm": 6.35,
+      "cup_off_coaster_center_cm": 0.55,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 8,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 20,
+          "palm": 8
+        }
+      },
+      "wall_s": 5.2,
+      "detail": {
+        "cup_final": [
+          0.521,
+          -0.2823,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.771,
+            "ik_terminal_palm_err_cm": 0.564,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.604,
+            "ik_terminal_palm_err_cm": 0.494,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.116,
+            "ik_terminal_palm_err_cm": 0.213,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 687,
+            "path_frames": 87,
+            "ik_max_path_err_cm": 0.193,
+            "ik_terminal_palm_err_cm": 0.202,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.235,
+            "ik_terminal_palm_err_cm": 0.254,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.201,
+            "ik_terminal_palm_err_cm": 0.206,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.24,
+            "palm_err_cm": 1.21,
+            "replans": 2
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 1.03,
+            "replans": 1
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.49,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 19.84
+      }
+    },
+    {
+      "trial": 2,
+      "layout_seed": 0,
+      "layout_index": 2,
+      "cup_xy": [
+        0.4884,
+        -0.1763
+      ],
+      "coaster_xy": [
+        0.4664,
+        -0.3252
+      ],
+      "cup_yaw_deg": -12.41,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "close",
+      "reason": "no thumb + finger contact at full closure (missed the cup)",
+      "category": "missed/knocked cup",
+      "contact_closure": null,
+      "lift_slip_in_hand_cm": null,
+      "lift_cup_rise_cm": null,
+      "cup_off_coaster_center_cm": 15.19,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": null,
+      "lift_frame_substeps": null,
+      "wall_s": 3.3,
+      "detail": {
+        "cup_final": [
+          0.491,
+          -0.1753,
+          0.7855
+        ],
+        "cup_height_above_resting_cm": -0.6,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.77,
+            "ik_terminal_palm_err_cm": 0.443,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.527,
+            "ik_terminal_palm_err_cm": 0.156,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 2.44,
+            "palm_err_cm": 0.91,
+            "replans": 4
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.47,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 11.3
+      }
+    },
+    {
+      "trial": 3,
+      "layout_seed": 0,
+      "layout_index": 3,
+      "cup_xy": [
+        0.4798,
+        -0.3145
+      ],
+      "coaster_xy": [
+        0.5062,
+        -0.1501
+      ],
+      "cup_yaw_deg": -21.12,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "close",
+      "reason": "no thumb + finger contact at full closure (missed the cup)",
+      "category": "missed/knocked cup",
+      "contact_closure": null,
+      "lift_slip_in_hand_cm": null,
+      "lift_cup_rise_cm": null,
+      "cup_off_coaster_center_cm": 16.53,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": null,
+      "lift_frame_substeps": null,
+      "wall_s": 4.0,
+      "detail": {
+        "cup_final": [
+          0.4782,
+          -0.313,
+          0.7855
+        ],
+        "cup_height_above_resting_cm": -0.6,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.764,
+            "ik_terminal_palm_err_cm": 0.26,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.618,
+            "ik_terminal_palm_err_cm": 0.439,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 4.24,
+            "palm_err_cm": 1.37,
+            "replans": 7
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.04,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 13.1
+      }
+    },
+    {
+      "trial": 4,
+      "layout_seed": 0,
+      "layout_index": 4,
+      "cup_xy": [
+        0.4913,
+        -0.2891
+      ],
+      "coaster_xy": [
+        0.5235,
+        -0.1509
+      ],
+      "cup_yaw_deg": -22.52,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "close",
+      "reason": "no thumb + finger contact at full closure (missed the cup)",
+      "category": "missed/knocked cup",
+      "contact_closure": null,
+      "lift_slip_in_hand_cm": null,
+      "lift_cup_rise_cm": null,
+      "cup_off_coaster_center_cm": 14.28,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": null,
+      "lift_frame_substeps": null,
+      "wall_s": 3.8,
+      "detail": {
+        "cup_final": [
+          0.4899,
+          -0.2896,
+          0.7855
+        ],
+        "cup_height_above_resting_cm": -0.6,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.764,
+            "ik_terminal_palm_err_cm": 0.342,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.473,
+            "ik_terminal_palm_err_cm": 0.389,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 0.65,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.23,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 12.5
+      }
+    },
+    {
+      "trial": 5,
+      "layout_seed": 0,
+      "layout_index": 5,
+      "cup_xy": [
+        0.4474,
+        -0.1892
+      ],
+      "coaster_xy": [
+        0.5048,
+        -0.3299
+      ],
+      "cup_yaw_deg": 16.68,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.944,
+      "lift_slip_in_hand_cm": 0.81,
+      "lift_cup_rise_cm": 6.32,
+      "cup_off_coaster_center_cm": 0.19,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 18,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 20,
+          "palm": 18
+        }
+      },
+      "wall_s": 5.3,
+      "detail": {
+        "cup_final": [
+          0.5035,
+          -0.3284,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.771,
+            "ik_terminal_palm_err_cm": 0.563,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.605,
+            "ik_terminal_palm_err_cm": 0.522,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.115,
+            "ik_terminal_palm_err_cm": 0.201,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 698,
+            "path_frames": 98,
+            "ik_max_path_err_cm": 0.181,
+            "ik_terminal_palm_err_cm": 0.22,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.246,
+            "ik_terminal_palm_err_cm": 0.288,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.183,
+            "ik_terminal_palm_err_cm": 0.203,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.24,
+            "palm_err_cm": 1.36,
+            "replans": 2
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 1.39,
+            "replans": 1
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.64,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 20.06
+      }
+    },
+    {
+      "trial": 6,
+      "layout_seed": 0,
+      "layout_index": 6,
+      "cup_xy": [
+        0.4749,
+        -0.299
+      ],
+      "coaster_xy": [
+        0.5313,
+        -0.1731
+      ],
+      "cup_yaw_deg": 27.0,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.976,
+      "lift_slip_in_hand_cm": 0.72,
+      "lift_cup_rise_cm": 6.99,
+      "cup_off_coaster_center_cm": 0.94,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 14,
+        "parts": {
+          "thumb": 20,
+          "index": 12,
+          "middle": 14,
+          "palm": 20
+        }
+      },
+      "wall_s": 5.6,
+      "detail": {
+        "cup_final": [
+          0.522,
+          -0.1717,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.764,
+            "ik_terminal_palm_err_cm": 0.575,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.589,
+            "ik_terminal_palm_err_cm": 0.349,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.131,
+            "ik_terminal_palm_err_cm": 0.183,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 685,
+            "path_frames": 85,
+            "ik_max_path_err_cm": 0.201,
+            "ik_terminal_palm_err_cm": 0.124,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.198,
+            "ik_terminal_palm_err_cm": 0.133,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.201,
+            "ik_terminal_palm_err_cm": 0.223,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 1.4,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.36,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.87,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 21.0
+      }
+    },
+    {
+      "trial": 7,
+      "layout_seed": 0,
+      "layout_index": 7,
+      "cup_xy": [
+        0.5148,
+        -0.3021
+      ],
+      "coaster_xy": [
+        0.4829,
+        -0.1535
+      ],
+      "cup_yaw_deg": -38.5,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.96,
+      "lift_slip_in_hand_cm": 0.43,
+      "lift_cup_rise_cm": 7.09,
+      "cup_off_coaster_center_cm": 0.48,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 0,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 0
+        }
+      },
+      "wall_s": 6.1,
+      "detail": {
+        "cup_final": [
+          0.4782,
+          -0.1524,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.76,
+            "ik_terminal_palm_err_cm": 0.323,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.603,
+            "ik_terminal_palm_err_cm": 0.382,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.283,
+            "ik_terminal_palm_err_cm": 0.303,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.205,
+            "ik_terminal_palm_err_cm": 0.165,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.165,
+            "ik_terminal_palm_err_cm": 0.137,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.256,
+            "ik_terminal_palm_err_cm": 0.301,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 0.7,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.75,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.77,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 21.32
+      }
+    },
+    {
+      "trial": 8,
+      "layout_seed": 0,
+      "layout_index": 8,
+      "cup_xy": [
+        0.5311,
+        -0.3182
+      ],
+      "coaster_xy": [
+        0.5142,
+        -0.1777
+      ],
+      "cup_yaw_deg": 4.29,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "close",
+      "reason": "no thumb + finger contact at full closure (missed the cup)",
+      "category": "missed/knocked cup",
+      "contact_closure": null,
+      "lift_slip_in_hand_cm": null,
+      "lift_cup_rise_cm": null,
+      "cup_off_coaster_center_cm": 13.89,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": null,
+      "lift_frame_substeps": null,
+      "wall_s": 3.6,
+      "detail": {
+        "cup_final": [
+          0.5342,
+          -0.3152,
+          0.7855
+        ],
+        "cup_height_above_resting_cm": -0.6,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.754,
+            "ik_terminal_palm_err_cm": 0.264,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.684,
+            "ik_terminal_palm_err_cm": 0.465,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.04,
+            "palm_err_cm": 1.21,
+            "replans": 5
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 1.15,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 12.5
+      }
+    },
+    {
+      "trial": 9,
+      "layout_seed": 0,
+      "layout_index": 9,
+      "cup_xy": [
+        0.484,
+        -0.3355
+      ],
+      "coaster_xy": [
+        0.5178,
+        -0.1652
+      ],
+      "cup_yaw_deg": -27.62,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "close",
+      "reason": "no thumb + finger contact at full closure (missed the cup)",
+      "category": "missed/knocked cup",
+      "contact_closure": null,
+      "lift_slip_in_hand_cm": null,
+      "lift_cup_rise_cm": null,
+      "cup_off_coaster_center_cm": 17.22,
+      "cup_tilt_deg": 0.1,
+      "lift_frame_contacts": null,
+      "lift_frame_substeps": null,
+      "wall_s": 3.3,
+      "detail": {
+        "cup_final": [
+          0.4826,
+          -0.3338,
+          0.7855
+        ],
+        "cup_height_above_resting_cm": -0.6,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.76,
+            "ik_terminal_palm_err_cm": 0.268,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.655,
+            "ik_terminal_palm_err_cm": 0.447,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 4.24,
+            "palm_err_cm": 0.83,
+            "replans": 7
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.06,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 13.1
+      }
+    },
+    {
+      "trial": 10,
+      "layout_seed": 1,
+      "layout_index": 0,
+      "cup_xy": [
+        0.5184,
+        -0.2795
+      ],
+      "coaster_xy": [
+        0.4919,
+        -0.1394
+      ],
+      "cup_yaw_deg": 32.56,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.96,
+      "lift_slip_in_hand_cm": 0.65,
+      "lift_cup_rise_cm": 6.91,
+      "cup_off_coaster_center_cm": 0.8,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 0,
+        "parts": {
+          "thumb": 20,
+          "index": 2,
+          "middle": 20,
+          "palm": 0
+        }
+      },
+      "wall_s": 5.5,
+      "detail": {
+        "cup_final": [
+          0.4844,
+          -0.1366,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.764,
+            "ik_terminal_palm_err_cm": 0.398,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.651,
+            "ik_terminal_palm_err_cm": 0.349,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.222,
+            "ik_terminal_palm_err_cm": 0.211,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 698,
+            "path_frames": 98,
+            "ik_max_path_err_cm": 0.247,
+            "ik_terminal_palm_err_cm": 0.198,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.172,
+            "ik_terminal_palm_err_cm": 0.131,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.266,
+            "ik_terminal_palm_err_cm": 0.311,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.04,
+            "palm_err_cm": 1.27,
+            "replans": 5
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.96,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.74,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 20.66
+      }
+    },
+    {
+      "trial": 11,
+      "layout_seed": 1,
+      "layout_index": 1,
+      "cup_xy": [
+        0.4594,
+        -0.1416
+      ],
+      "coaster_xy": [
+        0.4949,
+        -0.3124
+      ],
+      "cup_yaw_deg": 28.32,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.96,
+      "lift_slip_in_hand_cm": 0.62,
+      "lift_cup_rise_cm": 6.44,
+      "cup_off_coaster_center_cm": 0.9,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 5.0,
+      "detail": {
+        "cup_final": [
+          0.4916,
+          -0.304,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.771,
+            "ik_terminal_palm_err_cm": 0.572,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.605,
+            "ik_terminal_palm_err_cm": 0.46,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.113,
+            "ik_terminal_palm_err_cm": 0.203,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 714,
+            "path_frames": 114,
+            "ik_max_path_err_cm": 0.233,
+            "ik_terminal_palm_err_cm": 0.25,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.215,
+            "ik_terminal_palm_err_cm": 0.261,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.185,
+            "ik_terminal_palm_err_cm": 0.226,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.24,
+            "palm_err_cm": 1.24,
+            "replans": 2
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.38,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.63,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 19.78
+      }
+    },
+    {
+      "trial": 12,
+      "layout_seed": 1,
+      "layout_index": 2,
+      "cup_xy": [
+        0.4625,
+        -0.1751
+      ],
+      "coaster_xy": [
+        0.4625,
+        -0.3192
+      ],
+      "cup_yaw_deg": 2.77,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.976,
+      "lift_slip_in_hand_cm": 0.66,
+      "lift_cup_rise_cm": 6.41,
+      "cup_off_coaster_center_cm": 0.5,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 9,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 20,
+          "palm": 9
+        }
+      },
+      "wall_s": 4.8,
+      "detail": {
+        "cup_final": [
+          0.4604,
+          -0.3146,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.77,
+            "ik_terminal_palm_err_cm": 0.557,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.611,
+            "ik_terminal_palm_err_cm": 0.416,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.108,
+            "ik_terminal_palm_err_cm": 0.227,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 697,
+            "path_frames": 97,
+            "ik_max_path_err_cm": 0.153,
+            "ik_terminal_palm_err_cm": 0.176,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.199,
+            "ik_terminal_palm_err_cm": 0.271,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.189,
+            "ik_terminal_palm_err_cm": 0.245,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.84,
+            "palm_err_cm": 1.11,
+            "replans": 3
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.47,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.71,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 20.04
+      }
+    },
+    {
+      "trial": 13,
+      "layout_seed": 1,
+      "layout_index": 3,
+      "cup_xy": [
+        0.4707,
+        -0.3341
+      ],
+      "coaster_xy": [
+        0.5079,
+        -0.1916
+      ],
+      "cup_yaw_deg": 13.28,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.944,
+      "lift_slip_in_hand_cm": 0.44,
+      "lift_cup_rise_cm": 8.14,
+      "cup_off_coaster_center_cm": 0.72,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 5.6,
+      "detail": {
+        "cup_final": [
+          0.5014,
+          -0.1885,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.764,
+            "ik_terminal_palm_err_cm": 0.589,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.616,
+            "ik_terminal_palm_err_cm": 0.445,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.137,
+            "ik_terminal_palm_err_cm": 0.227,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 688,
+            "path_frames": 88,
+            "ik_max_path_err_cm": 0.226,
+            "ik_terminal_palm_err_cm": 0.2,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.191,
+            "ik_terminal_palm_err_cm": 0.172,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.217,
+            "ik_terminal_palm_err_cm": 0.255,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 1.48,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 1.23,
+            "replans": 1
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.07,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 21.66
+      }
+    },
+    {
+      "trial": 14,
+      "layout_seed": 1,
+      "layout_index": 4,
+      "cup_xy": [
+        0.4691,
+        -0.1829
+      ],
+      "coaster_xy": [
+        0.5131,
+        -0.3098
+      ],
+      "cup_yaw_deg": -8.1,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.944,
+      "lift_slip_in_hand_cm": 1.2,
+      "lift_cup_rise_cm": 6.84,
+      "cup_off_coaster_center_cm": 0.48,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": false,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 18,
+          "palm": 20
+        }
+      },
+      "wall_s": 4.4,
+      "detail": {
+        "cup_final": [
+          0.5093,
+          -0.307,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.77,
+            "ik_terminal_palm_err_cm": 0.566,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.608,
+            "ik_terminal_palm_err_cm": 0.425,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.118,
+            "ik_terminal_palm_err_cm": 0.213,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 687,
+            "path_frames": 87,
+            "ik_max_path_err_cm": 0.171,
+            "ik_terminal_palm_err_cm": 0.21,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.245,
+            "ik_terminal_palm_err_cm": 0.281,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.194,
+            "ik_terminal_palm_err_cm": 0.201,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.84,
+            "palm_err_cm": 1.3,
+            "replans": 3
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.58,
+            "replans": 1
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.57,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 20.44
+      }
+    },
+    {
+      "trial": 15,
+      "layout_seed": 1,
+      "layout_index": 5,
+      "cup_xy": [
+        0.4635,
+        -0.1379
+      ],
+      "coaster_xy": [
+        0.5192,
+        -0.2636
+      ],
+      "cup_yaw_deg": 19.87,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "close",
+      "reason": "no thumb + finger contact at full closure (missed the cup)",
+      "category": "missed/knocked cup",
+      "contact_closure": null,
+      "lift_slip_in_hand_cm": null,
+      "lift_cup_rise_cm": null,
+      "cup_off_coaster_center_cm": 14.32,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": null,
+      "lift_frame_substeps": null,
+      "wall_s": 3.1,
+      "detail": {
+        "cup_final": [
+          0.4698,
+          -0.1291,
+          0.7855
+        ],
+        "cup_height_above_resting_cm": -0.6,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.771,
+            "ik_terminal_palm_err_cm": 0.576,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.607,
+            "ik_terminal_palm_err_cm": 0.469,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.24,
+            "palm_err_cm": 1.24,
+            "replans": 2
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.67,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 10.7
+      }
+    },
+    {
+      "trial": 16,
+      "layout_seed": 1,
+      "layout_index": 6,
+      "cup_xy": [
+        0.5216,
+        -0.2853
+      ],
+      "coaster_xy": [
+        0.4509,
+        -0.143
+      ],
+      "cup_yaw_deg": -14.11,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.96,
+      "lift_slip_in_hand_cm": 0.43,
+      "lift_cup_rise_cm": 7.21,
+      "cup_off_coaster_center_cm": 0.45,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 5.9,
+      "detail": {
+        "cup_final": [
+          0.447,
+          -0.1407,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.76,
+            "ik_terminal_palm_err_cm": 0.306,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.601,
+            "ik_terminal_palm_err_cm": 0.344,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.264,
+            "ik_terminal_palm_err_cm": 0.254,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 706,
+            "path_frames": 106,
+            "ik_max_path_err_cm": 0.191,
+            "ik_terminal_palm_err_cm": 0.144,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.167,
+            "ik_terminal_palm_err_cm": 0.173,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.321,
+            "ik_terminal_palm_err_cm": 0.399,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 0.59,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.69,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.54,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 21.42
+      }
+    },
+    {
+      "trial": 17,
+      "layout_seed": 1,
+      "layout_index": 7,
+      "cup_xy": [
+        0.5105,
+        -0.1666
+      ],
+      "coaster_xy": [
+        0.5372,
+        -0.331
+      ],
+      "cup_yaw_deg": -23.97,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "close",
+      "reason": "no thumb + finger contact at full closure (missed the cup)",
+      "category": "missed/knocked cup",
+      "contact_closure": null,
+      "lift_slip_in_hand_cm": null,
+      "lift_cup_rise_cm": null,
+      "cup_off_coaster_center_cm": 16.78,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": null,
+      "lift_frame_substeps": null,
+      "wall_s": 3.5,
+      "detail": {
+        "cup_final": [
+          0.5118,
+          -0.1651,
+          0.7855
+        ],
+        "cup_height_above_resting_cm": -0.6,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.767,
+            "ik_terminal_palm_err_cm": 0.517,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.569,
+            "ik_terminal_palm_err_cm": 0.143,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.04,
+            "palm_err_cm": 1.07,
+            "replans": 5
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.08,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 11.9
+      }
+    },
+    {
+      "trial": 18,
+      "layout_seed": 1,
+      "layout_index": 8,
+      "cup_xy": [
+        0.4897,
+        -0.1587
+      ],
+      "coaster_xy": [
+        0.475,
+        -0.3313
+      ],
+      "cup_yaw_deg": -29.45,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "close",
+      "reason": "no thumb + finger contact at full closure (missed the cup)",
+      "category": "missed/knocked cup",
+      "contact_closure": null,
+      "lift_slip_in_hand_cm": null,
+      "lift_cup_rise_cm": null,
+      "cup_off_coaster_center_cm": 17.64,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": null,
+      "lift_frame_substeps": null,
+      "wall_s": 3.2,
+      "detail": {
+        "cup_final": [
+          0.4929,
+          -0.1558,
+          0.7855
+        ],
+        "cup_height_above_resting_cm": -0.6,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.77,
+            "ik_terminal_palm_err_cm": 0.426,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.607,
+            "ik_terminal_palm_err_cm": 0.13,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 2.44,
+            "palm_err_cm": 1.16,
+            "replans": 4
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.63,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 11.3
+      }
+    },
+    {
+      "trial": 19,
+      "layout_seed": 1,
+      "layout_index": 9,
+      "cup_xy": [
+        0.526,
+        -0.3232
+      ],
+      "coaster_xy": [
+        0.4526,
+        -0.1429
+      ],
+      "cup_yaw_deg": -34.09,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.96,
+      "lift_slip_in_hand_cm": 0.67,
+      "lift_cup_rise_cm": 6.86,
+      "cup_off_coaster_center_cm": 1.63,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 0,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 20,
+          "palm": 0
+        }
+      },
+      "wall_s": 5.4,
+      "detail": {
+        "cup_final": [
+          0.4378,
+          -0.1361,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.76,
+            "ik_terminal_palm_err_cm": 0.326,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.616,
+            "ik_terminal_palm_err_cm": 0.478,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.345,
+            "ik_terminal_palm_err_cm": 0.375,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 724,
+            "path_frames": 124,
+            "ik_max_path_err_cm": 0.184,
+            "ik_terminal_palm_err_cm": 0.162,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.162,
+            "ik_terminal_palm_err_cm": 0.163,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.322,
+            "ik_terminal_palm_err_cm": 0.402,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.04,
+            "palm_err_cm": 0.93,
+            "replans": 5
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.43,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.38,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 21.18
+      }
+    }
+  ]
+}

@@ -95,10 +95,12 @@ def hand_parts(scene) -> dict[int, str]:
 
 
 class ContactPickPlace(PickPlace):
-    """PickPlace that also records which hand parts touch the cup at the lift frame. Only reads data.contact: same behaviour."""
+    """PickPlace that also records which hand parts touch the cup at the lift frame. Only reads data.contact: same behaviour.
 
-    def __init__(self, policy, cup_model: str, cup_mass: float):
-        super().__init__(policy, cup_model=cup_model, cup_mass=cup_mass)
+    ``params``: PickPlace's named fix-ladder parameters (sim/m1_grasp_ladder.py); none given = the legacy oracle (B3)."""
+
+    def __init__(self, policy, cup_model: str, cup_mass: float, **params):
+        super().__init__(policy, cup_model=cup_model, cup_mass=cup_mass, **params)
         m = self.scene.model
         self.part_of_geom = hand_parts(self.scene)
         self.cup_geoms = {g for g in range(m.ngeom) if m.geom_bodyid[g] == self.scene.cup_body}
@@ -143,6 +145,20 @@ def substep_counts(substeps: list[dict]) -> dict:
     return dict(n=len(substeps), grasp_contact=sum(map(grasp_contact, substeps)), parts={p: sum(c[p] for c in substeps) for p in PARTS})
 
 
+def trial_row(task: ContactPickPlace, t: dict, use_handle_yaw: bool) -> dict:
+    """Run one trial of ``trials()`` (handle yaw, or 0 for the round objects) and return its row: the fields above, the rest
+    of PickPlace.run's result under "detail"."""
+    yaw_deg = t["handle_yaw_deg"] if use_handle_yaw else 0.0
+    t0 = time.perf_counter()
+    r = task.run(t["cup_xy"], t["coaster_xy"], cup_yaw=math.radians(yaw_deg))
+    row = dict(trial=t["trial"], layout_seed=t["layout_seed"], layout_index=t["layout_index"], cup_xy=r["cup_xy"],
+               coaster_xy=r["coaster_xy"], cup_yaw_deg=round(yaw_deg, 2), mass_kg=task.scene.cup_mass,
+               **{k: r.get(k) for k in RESULT_KEYS}, lift_frame_contacts=r["lift_frame_contacts"],
+               lift_frame_substeps=r["lift_frame_substeps"], wall_s=round(time.perf_counter() - t0, 1))
+    row["detail"] = {k: v for k, v in r.items() if k not in row}
+    return row
+
+
 def runs_path(out: Path, run: str) -> Path:
     return out / "b3_runs" / f"{run}.json"
 
@@ -171,14 +187,7 @@ def cmd_run(args):
     results = dict(run=args.run, config=cfg, mass_properties=mass_properties(task.scene), cup_height_m=task.scene.cup_height,
                    grasp_palm_offset_m=task.grasp.palm_offset.round(4).tolist(), runs=[])
     for t in trial_list:
-        yaw_deg = t["handle_yaw_deg"] if cfg["use_handle_yaw"] else 0.0
-        t0 = time.perf_counter()
-        r = task.run(t["cup_xy"], t["coaster_xy"], cup_yaw=math.radians(yaw_deg))
-        row = dict(trial=t["trial"], layout_seed=t["layout_seed"], layout_index=t["layout_index"], cup_xy=r["cup_xy"],
-                   coaster_xy=r["coaster_xy"], cup_yaw_deg=round(yaw_deg, 2), mass_kg=task.scene.cup_mass,
-                   **{k: r.get(k) for k in RESULT_KEYS}, lift_frame_contacts=r["lift_frame_contacts"],
-                   lift_frame_substeps=r["lift_frame_substeps"], wall_s=round(time.perf_counter() - t0, 1))
-        row["detail"] = {k: v for k, v in r.items() if k not in row}
+        row = trial_row(task, t, cfg["use_handle_yaw"])
         results["runs"].append(row)
         path.write_text(json.dumps(results, indent=2))          # saved after every trial
         print(f"{args.run} trial {row['trial']:2d} -> " + ("SUCCESS" if row["success"] else f"FAIL {row['failed_phase']}: {row['reason']}")

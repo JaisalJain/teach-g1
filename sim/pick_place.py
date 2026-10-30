@@ -15,6 +15,26 @@ outward wrist yaw), palm = cup centre - R (0.077, 0.055, 0), at 6.5 cm above the
 For the mug the cup centre is the centre of its body cylinder and the grasp ignores the handle (same palm pose for any yaw);
 the cup's height comes from the scene, so "6.5 cm above the table", the resting height and the place clearance keep their meaning.
 
+``grasp_offset`` (Track B v3 fix ladder, rung L1; the default is M1's behaviour):
+- "legacy": the offset (0.077, 0.055, 0) above for every object. It leaves 15 mm along the palm normal between the palm point and
+  the surface of the 8 cm M1 cylinder it was validated on, but wider objects come closer: 5.5 mm for the 99 mm mug, whose
+  planned pose then puts the palm hull 11.65 mm inside it (results/m1_grasp_fix/b1_facts.md).
+- "radius": ``radius_consistent_offset(r)``, r = the compiled radius of the cup's body cylinder: only the palm-normal component
+  changes, to r + 0.015, so every object keeps the M1 cylinder's 15 mm. For r = 0.040 this is the legacy offset exactly.
+In both, the pre-grasp is 8 cm back along palm -> cup centre, the approach direction of whichever offset is used.
+
+``closing_targets`` (rung L2; the default is M1's behaviour):
+- "hero": the closure ramp blends HERO's open Dex3 pose into HERO's closed one (one pose for every object).
+- "ik_mug": the right hand's closed pose becomes the mug-specific targets in results/m1_grasp_fix/v3/l2_targets.json
+  (sim/l2_closing_targets.py: per digit, fingertip IK to 5 mm inside the 99 mm mug from its B2v3 max-wrap configuration).
+  Open pose, ramp, touch logic, gains, torque limits and the squeeze rule are unchanged (TableScene.set_closed_pose).
+
+``contact_model`` (rung L3; the default is M1's behaviour): passed to ``TableScene`` -- "legacy" = MuJoCo's default contact
+solver settings, "grasp" = elliptic cones, impratio 10, 3 NoSlip iterations and condim 4 on the right fingertips and palm
+(sim/scene.py GRASP_OPTIONS). Global options: they also change the feet's contacts.
+Note: ``sample_layouts`` derives the cup positions from the grasp's palm offset, so layouts that must stay fixed across grasps are
+built with the legacy grasp (sim/m1_grasp_ladder.py does).
+
 Success = cup upright (< 10 deg), centred on the coaster (centre within the coaster radius) and resting on it, and the robot
 never fell. A failed run reports the phase it failed in.
 
@@ -44,13 +64,14 @@ from data_tools import hero_reach_generator as gen
 from data_tools import reach_specs as rs
 from hero_isaacsim.paths import CHECKPOINTS_ROOT
 from sim2sim.bench.replan import BenchGoal, BenchReplanner, ReplanConfig
+from sim2sim.interactive_scene import FINGER_SUFFIXES
 from sim2sim.mathutil import xyzw_to_wxyz
 from sim2sim.policy_hero_export import HeroExportPolicy
 from sim2sim.state import read_state
 
 from sim.m1_reach_test import FALL_PELVIS_Z, FALL_TILT_DEG, VideoWriter, standing_reference
 from sim.reference_builder import PathPlanner, min_jerk_path
-from sim.scene import COASTER_RADIUS, CUP_MODELS, TableScene
+from sim.scene import CONTACT_MODELS, COASTER_RADIUS, CUP_MODELS, TableScene
 
 FPS = 50
 TABLE_HEIGHT = 0.74
@@ -59,6 +80,30 @@ GRASP_OFFSET = np.array([0.077, 0.055, 0.0])       # cup centre in the palm fram
 WRIST_YAW = math.radians(-45.0)                     # HERO demo: 45 deg outward wrist yaw (right hand -> negative yaw)
 GRASP_Z_ABOVE_TABLE = 0.065
 PREGRASP_BACKOFF = 0.08
+# Radius-consistent grasp pose (M2 v3; used by B2v3 in sim/b2_capacity.py and by L1). GRASP_OFFSET ignores the object's size:
+# its palm-normal component 0.055 = the M1 cylinder's radius 0.040 + a 15 mm gap between the palm and the cylinder's surface.
+# Keeping that 15 mm gap for any radius r (and the other two components as they are) keeps the palm where it was relative to
+# the object's surface, instead of e.g. inside a 99 mm mug.
+PALM_SURFACE_GAP = 0.015
+
+
+def radius_consistent_offset(r: float) -> np.ndarray:
+    """Object axis in the palm frame (same frame and meaning as GRASP_OFFSET) for an object of radius ``r`` [m]."""
+    return np.array([GRASP_OFFSET[0], r + PALM_SURFACE_GAP, GRASP_OFFSET[2]])
+
+
+def l2_closed_targets() -> np.ndarray:
+    """L2's right-hand closed pose (FINGER_SUFFIXES order) as saved by sim/l2_closing_targets.py. Read from the results file,
+    so a run uses exactly the targets that file reports; it refuses targets with a digit marked not computable."""
+    data = json.loads(L2_TARGETS.read_text())
+    missing = [digit for digit, v in data["digits"].items() if not v["computable"]]
+    if missing:
+        raise ValueError(f"{L2_TARGETS}: no L2 target for {missing} (no touching configuration in B2v3 at 99 mm)")
+    return np.array([data["closed_targets_right"][f"right_hand_{f}_joint"] for f in FINGER_SUFFIXES])
+
+
+# At the M1 cylinder's radius the radius-consistent pose IS the oracle's (exact in float64)
+assert radius_consistent_offset(0.040)[1] == 0.055 and np.array_equal(radius_consistent_offset(0.040), GRASP_OFFSET)
 # Motion
 LIFT_HEIGHT = 0.10
 PLACE_CLEARANCE = 0.01          # cup bottom above the coaster top when the fingers open
@@ -76,6 +121,9 @@ PALM_BOX = dict(x=(0.35, 0.45), y=(-0.32, -0.12))
 MIN_CUP_COASTER_DIST = 0.13
 OUT_DIR = Path("results/m1_pick")
 MUG_OUT_DIR = Path("results/m1_pick_mug_yaw0")
+GRASP_OFFSETS = ("legacy", "radius")        # PickPlace(grasp_offset=...): GRASP_OFFSET, or radius_consistent_offset(cup radius)
+CLOSING_TARGETS = ("hero", "ik_mug")        # PickPlace(closing_targets=...): HERO's closed Dex3 pose, or L2's IK targets
+L2_TARGETS = Path(__file__).resolve().parents[1] / "results/m1_grasp_fix/v3/l2_targets.json"   # sim/l2_closing_targets.py
 
 SETTLE_CFG = ReplanConfig(first_event="start", period_s=0.6, base_mode="current", goal_adjust=True, handover_blend_s=0.3,
                           stay_threshold_m=SETTLE_STAY_M, skip_below_m=SETTLE_STAY_M, hold_s=6.0)
@@ -89,9 +137,10 @@ class Grasp:
     approach_dir: np.ndarray      # horizontal unit vector, palm -> cup
 
     @classmethod
-    def hero_side_grasp(cls, cup_height: float) -> "Grasp":
+    def hero_side_grasp(cls, cup_height: float, cup_in_palm: np.ndarray = GRASP_OFFSET) -> "Grasp":
+        """HERO's side grasp with the cup centre at ``cup_in_palm`` in the palm frame (default: HERO's GRASP_OFFSET)."""
         R = rs.palm_rotation(WRIST_YAW, 0.0, 0.0)
-        offset = -R @ GRASP_OFFSET + np.array([0.0, 0.0, GRASP_Z_ABOVE_TABLE - cup_height / 2])   # cup centre is cup_height / 2 up
+        offset = -R @ cup_in_palm + np.array([0.0, 0.0, GRASP_Z_ABOVE_TABLE - cup_height / 2])   # cup centre is cup_height / 2 up
         approach = -offset * np.array([1, 1, 0])
         return cls(offset, rs.mat_to_quat_wxyz(R), approach / np.linalg.norm(approach))
 
@@ -114,13 +163,29 @@ class PickPlace:
     """One scene + HERO policy + planners; ``run(cup_xy, coaster_xy)`` performs one pick-and-place attempt.
 
     ``cup_model`` / ``cup_mass`` go to ``TableScene`` ("mug" or "cylinder"; None = the model's own mass).
+    Fix-ladder parameters (Track B v3), legacy = M1 by default: ``grasp_offset`` "legacy" | "radius", ``closing_targets``
+    "hero" | "ik_mug", ``contact_model`` "legacy" | "grasp" (module docstring).
     """
 
-    def __init__(self, policy: HeroExportPolicy, cup_model: str = "mug", cup_mass: float | None = None):
+    def __init__(self, policy: HeroExportPolicy, cup_model: str = "mug", cup_mass: float | None = None, grasp_offset: str = "legacy",
+                 closing_targets: str = "hero", contact_model: str = "legacy"):
+        if grasp_offset not in GRASP_OFFSETS:
+            raise ValueError(f"grasp_offset must be one of {GRASP_OFFSETS}")
+        if closing_targets not in CLOSING_TARGETS:
+            raise ValueError(f"closing_targets must be one of {CLOSING_TARGETS}")
+        if contact_model not in CONTACT_MODELS:
+            raise ValueError(f"contact_model must be one of {CONTACT_MODELS}")
         self.policy = policy
         self.scene = TableScene(TABLE_HEIGHT, policy.kp, policy.kd, policy.effort_limit, policy.default_dof_pos,
-                                cup_model=cup_model, cup_mass=cup_mass)
-        self.grasp = Grasp.hero_side_grasp(self.scene.cup_height)
+                                cup_model=cup_model, cup_mass=cup_mass, contact_model=contact_model)
+        self.closing_targets = closing_targets
+        if closing_targets == "ik_mug":
+            self.scene.set_closed_pose("right", l2_closed_targets())
+        # r from the object itself: every cup model's body cylinder is the geom "cup_geom" (the mug's handle is ignored)
+        self.cup_radius = float(self.scene.model.geom_size[mujoco.mj_name2id(self.scene.model, mujoco.mjtObj.mjOBJ_GEOM, "cup_geom"), 0])
+        self.grasp_offset = grasp_offset
+        self.cup_in_palm = GRASP_OFFSET if grasp_offset == "legacy" else radius_consistent_offset(self.cup_radius)
+        self.grasp = Grasp.hero_side_grasp(self.scene.cup_height, self.cup_in_palm)
         self.goal_template = BenchGoal(clip_name="pick", hand="right", pos_w=np.zeros(3), quat_wxyz=self.grasp.quat_wxyz,
                                        table=self.scene.ik_table(), reach_end_frame=1, pelvis_drop=0.0, pelvis_pitch=0.0,
                                        waist_pitch=0.0, base_family="stand", height_label="h074")

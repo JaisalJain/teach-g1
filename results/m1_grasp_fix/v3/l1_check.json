@@ -1,0 +1,299 @@
+{
+  "question": "L1 check: at the planned grasp pose with the hand open, the minimum signed distance between the right-hand geoms and the object, (a) M1 cylinder at legacy settings vs (b) the mug at L1; expected to match within 0.5 mm",
+  "method": {
+    "placement": "kinematics only (mj_kinematics, nothing simulated): robot in its spawn pose, the object placed where run() plans it relative to the palm: palm = cup centre + Grasp.palm_offset with palm orientation R_plan, so the cup centre is R_plan^T (-palm_offset) in the palm frame (HERO's tracked palm = right_hand_palm_link, asserted) and its yaw is taken relative to R_plan (palm z = world z in the side grasp)",
+    "distance": "mujoco.mj_geomDistance (signed: negative = overlap; meshes as their convex hulls), every right-hand collision geom (palm, thumb_0/1/2, index_0/1, middle_0/1) x every collision geom of the cup body (cylinder: 1; mug: body cylinder + 3 handle capsules); distmax 1.0 m",
+    "hand": "HERO's open Dex3 targets (TableScene.reset): thumb_1 0.7 rad, all other right-hand joints 0",
+    "a": "TableScene cup_model 'cylinder' (r 0.040, h 0.100 m, 0.15 kg) = B3 R0; PickPlace grasp_offset 'legacy'; yaw 0",
+    "b": "TableScene cup_model 'mug' (config: r 0.0495, h 0.091 m, 0.40 kg) = B3 R3; PickPlace grasp_offset 'radius'; at each of the 20 trials' handle yaws (B3 R3's), reported: the yaw with the smallest minimum",
+    "tolerance_mm": 0.5
+  },
+  "radius_consistent_offset": {
+    "m1_cylinder": [
+      0.077,
+      0.055,
+      0.0
+    ],
+    "legacy_GRASP_OFFSET": [
+      0.077,
+      0.055,
+      0.0
+    ],
+    "identical": true
+  },
+  "a_cylinder_legacy": {
+    "grasp": {
+      "grasp_offset": "legacy",
+      "cup_radius_m": 0.04,
+      "cup_in_palm_frame_m": [
+        0.077,
+        0.055,
+        0.0
+      ],
+      "palm_point_to_surface_along_normal_m": 0.015,
+      "approach_dir_in_palm_frame_deg": 35.54,
+      "palm_offset_m": [
+        -0.0933,
+        0.0156,
+        0.015
+      ],
+      "approach_dir_world": [
+        0.9864,
+        -0.1644,
+        -0.0
+      ],
+      "palm_quat_wxyz": [
+        0.9239,
+        0.0,
+        0.0,
+        -0.3827
+      ]
+    },
+    "cup_yaw_deg": 0.0,
+    "min_signed_distance_mm": -2.151,
+    "min_pair": {
+      "hand_geom": "hand_contact_right_hand_palm_link_8",
+      "hand_body": "right_hand_palm_link",
+      "object_geom": "cup_geom"
+    },
+    "handle_min_distance_mm": null,
+    "per_hand_geom_mm": {
+      "right_hand_palm_link": {
+        "distance_mm": -2.151,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": -2.151
+      },
+      "right_hand_thumb_0_link": {
+        "distance_mm": 10.69,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": 10.69
+      },
+      "right_hand_thumb_1_link": {
+        "distance_mm": 20.477,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": 20.477
+      },
+      "right_hand_thumb_2_link": {
+        "distance_mm": 36.508,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": 36.508
+      },
+      "right_hand_middle_0_link": {
+        "distance_mm": 7.052,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": 7.052
+      },
+      "right_hand_middle_1_link": {
+        "distance_mm": 26.252,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": 26.252
+      },
+      "right_hand_index_0_link": {
+        "distance_mm": 7.052,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": 7.052
+      },
+      "right_hand_index_1_link": {
+        "distance_mm": 26.418,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": 26.418
+      }
+    }
+  },
+  "b_mug_L1": {
+    "grasp": {
+      "grasp_offset": "radius",
+      "cup_radius_m": 0.0495,
+      "cup_in_palm_frame_m": [
+        0.077,
+        0.0645,
+        0.0
+      ],
+      "palm_point_to_surface_along_normal_m": 0.015,
+      "approach_dir_in_palm_frame_deg": 39.95,
+      "palm_offset_m": [
+        -0.1001,
+        0.0088,
+        0.0195
+      ],
+      "approach_dir_world": [
+        0.9961,
+        -0.088,
+        -0.0
+      ],
+      "palm_quat_wxyz": [
+        0.9239,
+        0.0,
+        0.0,
+        -0.3827
+      ]
+    },
+    "reported_at_trial_yaw": 12,
+    "cup_yaw_deg": 2.77,
+    "min_signed_distance_mm": -2.4,
+    "min_pair": {
+      "hand_geom": "hand_contact_right_hand_palm_link_8",
+      "hand_body": "right_hand_palm_link",
+      "object_geom": "cup_geom"
+    },
+    "handle_min_distance_mm": 79.693,
+    "per_hand_geom_mm": {
+      "right_hand_palm_link": {
+        "distance_mm": -2.4,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": -2.4
+      },
+      "right_hand_thumb_0_link": {
+        "distance_mm": 7.179,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": 7.179
+      },
+      "right_hand_thumb_1_link": {
+        "distance_mm": 14.288,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": 14.288
+      },
+      "right_hand_thumb_2_link": {
+        "distance_mm": 27.634,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": 27.634
+      },
+      "right_hand_middle_0_link": {
+        "distance_mm": 6.587,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": 6.587
+      },
+      "right_hand_middle_1_link": {
+        "distance_mm": 24.344,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": 24.344
+      },
+      "right_hand_index_0_link": {
+        "distance_mm": 6.587,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": 6.587
+      },
+      "right_hand_index_1_link": {
+        "distance_mm": 25.097,
+        "object_geom": "cup_geom",
+        "to_body_cylinder_mm": 25.097
+      }
+    },
+    "min_over_trial_yaws_mm": {
+      "min": -2.4,
+      "max": -2.4
+    },
+    "same_minimum_pair_at_every_trial_yaw": true,
+    "handle_min_distance_over_trial_yaws_mm": 51.981
+  },
+  "b_minus_a_mm": -0.249,
+  "match": true,
+  "per_hand_geom_change": {
+    "right_hand_palm_link": {
+      "a_mm": -2.151,
+      "b_mm": -2.4,
+      "b_minus_a_mm": -0.249
+    },
+    "right_hand_thumb_0_link": {
+      "a_mm": 10.69,
+      "b_mm": 7.179,
+      "b_minus_a_mm": -3.511
+    },
+    "right_hand_thumb_1_link": {
+      "a_mm": 20.477,
+      "b_mm": 14.288,
+      "b_minus_a_mm": -6.19
+    },
+    "right_hand_thumb_2_link": {
+      "a_mm": 36.508,
+      "b_mm": 27.634,
+      "b_minus_a_mm": -8.874
+    },
+    "right_hand_middle_0_link": {
+      "a_mm": 7.052,
+      "b_mm": 6.587,
+      "b_minus_a_mm": -0.465
+    },
+    "right_hand_middle_1_link": {
+      "a_mm": 26.252,
+      "b_mm": 24.344,
+      "b_minus_a_mm": -1.908
+    },
+    "right_hand_index_0_link": {
+      "a_mm": 7.052,
+      "b_mm": 6.587,
+      "b_minus_a_mm": -0.465
+    },
+    "right_hand_index_1_link": {
+      "a_mm": 26.418,
+      "b_mm": 25.097,
+      "b_minus_a_mm": -1.321
+    }
+  },
+  "largest_per_geom_change": {
+    "hand_body": "right_hand_thumb_2_link",
+    "a_mm": 36.508,
+    "b_mm": 27.634,
+    "b_minus_a_mm": -8.874
+  },
+  "same_minimum_geom_pair": true,
+  "trials_check": {
+    "l1_trials_equal_b3_r3": "20/20",
+    "trials_from_l1_own_grasp_equal_b3_r3": "0/20",
+    "compared": "trial, layout_seed, layout_index, cup_xy, coaster_xy, cup_yaw_deg (as B3 stores them: xy to 0.1 mm, yaw to 0.01 deg)",
+    "note": "the second line is not used anywhere: it shows that building the trials from L1's grasp would re-sample the layouts and yaws"
+  },
+  "cross_check_b1": {
+    "note": "information: this placement code vs B1's independent placement (sim/grasp_fix_b1.py, b1_model.json nominal_grasp.clearance_open_mm, body cylinder only, rounded to 0.01 mm), legacy offset",
+    "cylinder_legacy": {
+      "this_check_mm": {
+        "right_hand_palm_link": -2.15,
+        "right_hand_thumb_0_link": 10.69,
+        "right_hand_thumb_1_link": 20.48,
+        "right_hand_thumb_2_link": 36.51,
+        "right_hand_middle_0_link": 7.05,
+        "right_hand_middle_1_link": 26.25,
+        "right_hand_index_0_link": 7.05,
+        "right_hand_index_1_link": 26.42
+      },
+      "b1_mm": {
+        "right_hand_palm_link": -2.15,
+        "right_hand_thumb_0_link": 10.69,
+        "right_hand_thumb_1_link": 20.48,
+        "right_hand_thumb_2_link": 36.51,
+        "right_hand_middle_0_link": 7.05,
+        "right_hand_middle_1_link": 26.25,
+        "right_hand_index_0_link": 7.05,
+        "right_hand_index_1_link": 26.42
+      },
+      "max_abs_diff_mm": 0.0
+    },
+    "mug_legacy": {
+      "this_check_mm": {
+        "right_hand_palm_link": -11.65,
+        "right_hand_thumb_0_link": 1.19,
+        "right_hand_thumb_1_link": 10.98,
+        "right_hand_thumb_2_link": 27.01,
+        "right_hand_middle_0_link": -2.45,
+        "right_hand_middle_1_link": 16.75,
+        "right_hand_index_0_link": -2.45,
+        "right_hand_index_1_link": 17.52
+      },
+      "b1_mm": {
+        "right_hand_palm_link": -11.65,
+        "right_hand_thumb_0_link": 1.19,
+        "right_hand_thumb_1_link": 10.98,
+        "right_hand_thumb_2_link": 27.01,
+        "right_hand_middle_0_link": -2.45,
+        "right_hand_middle_1_link": 16.75,
+        "right_hand_index_0_link": -2.45,
+        "right_hand_index_1_link": 17.52
+      },
+      "max_abs_diff_mm": 0.0
+    }
+  },
+  "mujoco": "3.13.0",
+  "runtime_s": 2.3,
+  "peak_rss_mb": 2989,
+  "gpu": "none (CPU only)"
+}

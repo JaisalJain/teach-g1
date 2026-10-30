@@ -1,0 +1,2053 @@
+{
+  "rung": "L2",
+  "tag": null,
+  "base_run": "R3",
+  "object": "full mug (config), handle 0.06 x 0.010 m",
+  "cup_model": "mug",
+  "mass_kg": 0.4,
+  "cup_yaw": "each trial's handle yaw (= B3 R3)",
+  "params": {
+    "grasp_offset": "radius",
+    "closing_targets": "ik_mug"
+  },
+  "effective_params": {
+    "grasp_offset": "radius",
+    "closing_targets": "ik_mug"
+  },
+  "legacy_defaults": {
+    "grasp_offset": "legacy",
+    "closing_targets": "hero"
+  },
+  "change": "finger closing targets for this radius: the right hand's closed pose = per-digit fingertip IK (5 mm radially inside the 99 mm mug, from each digit's B2v3 max-wrap configuration; results/m1_grasp_fix/v3/l2_targets.json) instead of HERO's closed pose; open pose, ramp, gains, torque limits and squeeze rule unchanged",
+  "ladder_order": [
+    "L1",
+    "L2"
+  ],
+  "trials": "trials 0-19 of sim.m1_pick_mug.trials() built with the legacy grasp (B3's layouts and handle yaws, asserted per trial against results/m1_grasp_fix/b3_runs/R3.json), whatever grasp this rung uses",
+  "processes": "4 parallel CPU processes of consecutive trials: [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9], [10, 11, 12, 13, 14], [15, 16, 17, 18, 19]]",
+  "grasp": {
+    "grasp_offset": "radius",
+    "cup_radius_m": 0.0495,
+    "cup_in_palm_frame_m": [
+      0.077,
+      0.0645,
+      0.0
+    ],
+    "palm_point_to_surface_along_normal_m": 0.015,
+    "approach_dir_in_palm_frame_deg": 39.95,
+    "palm_offset_m": [
+      -0.1001,
+      0.0088,
+      0.0195
+    ],
+    "approach_dir_world": [
+      0.9961,
+      -0.088,
+      -0.0
+    ],
+    "palm_quat_wxyz": [
+      0.9239,
+      0.0,
+      0.0,
+      -0.3827
+    ],
+    "closing_targets": "ik_mug",
+    "closing_targets_source": "results/m1_grasp_fix/v3/l2_targets.json",
+    "right_hand_closed_pose_rad": {
+      "thumb_0": -1.8900699564274753e-09,
+      "thumb_1": 0.40640453785762337,
+      "thumb_2": -1.1900825215189528,
+      "index_0": 0.21794381993844808,
+      "index_1": 1.2947705302946848,
+      "middle_0": 0.21731573343849736,
+      "middle_1": 1.2935655223191085
+    }
+  },
+  "mass_properties": {
+    "mass_kg": 0.4,
+    "com_offset_m": [
+      0.00129,
+      0.0,
+      0.0
+    ],
+    "inertia_diag_kgm2": [
+      0.0005155,
+      0.0005551,
+      0.0005212
+    ]
+  },
+  "cup_height_m": 0.091,
+  "summary": {
+    "successes": 0,
+    "trials": 20,
+    "rate": 0.0,
+    "wilson95": [
+      0.0,
+      0.161
+    ],
+    "failures_by_category": {
+      "dropped while moving": 1,
+      "slip during lift": 19
+    },
+    "lift_slip_in_hand_mm": {
+      "n": 20,
+      "mean": 47.06,
+      "median": 30.3,
+      "min": 19.8,
+      "max": 89.6,
+      "over_lift_slip_limit": 19
+    },
+    "lift_cup_rise_cm": {
+      "n": 20,
+      "mean": 3.21,
+      "median": 4.34,
+      "min": -0.04,
+      "max": 5.67
+    },
+    "lift_frame": {
+      "reached": 20,
+      "grasp_contact": 14,
+      "fraction_of_all": 0.7,
+      "fraction_of_reached": 0.7,
+      "part_touching_counts": {
+        "thumb": 20,
+        "index": 5,
+        "middle": 17,
+        "palm": 16
+      },
+      "substep_sensitivity": {
+        "grasp_contact_last_substep": 14,
+        "grasp_contact_any_substep": 20,
+        "grasp_contact_all_substeps": 9,
+        "part_touching_any_substep": {
+          "thumb": 20,
+          "index": 11,
+          "middle": 20,
+          "palm": 20
+        }
+      }
+    }
+  },
+  "resources": {
+    "wall_s": 19.9,
+    "parent_peak_rss_mb": 63,
+    "per_process": [
+      {
+        "trials": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "wall_s": 18.2,
+        "peak_rss_mb": 1712
+      },
+      {
+        "trials": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "wall_s": 19.9,
+        "peak_rss_mb": 1692
+      },
+      {
+        "trials": [
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "wall_s": 17.9,
+        "peak_rss_mb": 1689
+      },
+      {
+        "trials": [
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "wall_s": 19.0,
+        "peak_rss_mb": 1709
+      }
+    ],
+    "peak_rss_mb_sum_of_processes": 6802,
+    "gpu": "none (CPU only, onnxruntime CPU)"
+  },
+  "runs": [
+    {
+      "trial": 0,
+      "layout_seed": 0,
+      "layout_index": 0,
+      "cup_xy": [
+        0.4977,
+        -0.1485
+      ],
+      "coaster_xy": [
+        0.5249,
+        -0.335
+      ],
+      "cup_yaw_deg": -38.36,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 2.8 cm in the hand, rose 4.5 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 1.0,
+      "lift_slip_in_hand_cm": 2.8,
+      "lift_cup_rise_cm": 4.51,
+      "cup_off_coaster_center_cm": 18.31,
+      "cup_tilt_deg": 6.8,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 15,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 3.2,
+      "detail": {
+        "cup_final": [
+          0.5164,
+          -0.1521,
+          0.8306
+        ],
+        "cup_height_above_resting_cm": 3.91,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.318,
+            "ik_terminal_palm_err_cm": 0.528,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.615,
+            "ik_terminal_palm_err_cm": 0.133,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.115,
+            "ik_terminal_palm_err_cm": 0.116,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 2.44,
+            "palm_err_cm": 1.28,
+            "replans": 4
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.6,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 12.82
+      }
+    },
+    {
+      "trial": 1,
+      "layout_seed": 0,
+      "layout_index": 1,
+      "cup_xy": [
+        0.4517,
+        -0.169
+      ],
+      "coaster_xy": [
+        0.522,
+        -0.2877
+      ],
+      "cup_yaw_deg": 3.13,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 8.1 cm in the hand, rose 0.1 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.976,
+      "lift_slip_in_hand_cm": 8.07,
+      "lift_cup_rise_cm": 0.08,
+      "cup_off_coaster_center_cm": 13.19,
+      "cup_tilt_deg": 0.9,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 2,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 20,
+          "palm": 2
+        }
+      },
+      "wall_s": 2.8,
+      "detail": {
+        "cup_final": [
+          0.4618,
+          -0.1703,
+          0.7863
+        ],
+        "cup_height_above_resting_cm": -0.52,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.29,
+            "ik_terminal_palm_err_cm": 0.564,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.608,
+            "ik_terminal_palm_err_cm": 0.5,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.107,
+            "ik_terminal_palm_err_cm": 0.202,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.24,
+            "palm_err_cm": 1.2,
+            "replans": 2
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.38,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 11.62
+      }
+    },
+    {
+      "trial": 2,
+      "layout_seed": 0,
+      "layout_index": 2,
+      "cup_xy": [
+        0.4884,
+        -0.1763
+      ],
+      "coaster_xy": [
+        0.4664,
+        -0.3252
+      ],
+      "cup_yaw_deg": -12.41,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 3.0 cm in the hand, rose 4.4 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.992,
+      "lift_slip_in_hand_cm": 3.05,
+      "lift_cup_rise_cm": 4.35,
+      "cup_off_coaster_center_cm": 15.24,
+      "cup_tilt_deg": 7.5,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 13,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 3.1,
+      "detail": {
+        "cup_final": [
+          0.5067,
+          -0.1782,
+          0.829
+        ],
+        "cup_height_above_resting_cm": 3.75,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.318,
+            "ik_terminal_palm_err_cm": 0.442,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.584,
+            "ik_terminal_palm_err_cm": 0.154,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.109,
+            "ik_terminal_palm_err_cm": 0.121,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 2.44,
+            "palm_err_cm": 1.39,
+            "replans": 4
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.42,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 12.82
+      }
+    },
+    {
+      "trial": 3,
+      "layout_seed": 0,
+      "layout_index": 3,
+      "cup_xy": [
+        0.4798,
+        -0.3145
+      ],
+      "coaster_xy": [
+        0.5062,
+        -0.1501
+      ],
+      "cup_yaw_deg": -21.12,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 2.4 cm in the hand, rose 5.1 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.992,
+      "lift_slip_in_hand_cm": 2.39,
+      "lift_cup_rise_cm": 5.08,
+      "cup_off_coaster_center_cm": 16.84,
+      "cup_tilt_deg": 12.1,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 3.8,
+      "detail": {
+        "cup_final": [
+          0.4963,
+          -0.3182,
+          0.8363
+        ],
+        "cup_height_above_resting_cm": 4.48,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.372,
+            "ik_terminal_palm_err_cm": 0.26,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.626,
+            "ik_terminal_palm_err_cm": 0.426,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.175,
+            "ik_terminal_palm_err_cm": 0.154,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 4.24,
+            "palm_err_cm": 1.48,
+            "replans": 7
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.87,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 14.62
+      }
+    },
+    {
+      "trial": 4,
+      "layout_seed": 0,
+      "layout_index": 4,
+      "cup_xy": [
+        0.4913,
+        -0.2891
+      ],
+      "coaster_xy": [
+        0.5235,
+        -0.1509
+      ],
+      "cup_yaw_deg": -22.52,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 2.0 cm in the hand, rose 5.7 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.992,
+      "lift_slip_in_hand_cm": 2.01,
+      "lift_cup_rise_cm": 5.67,
+      "cup_off_coaster_center_cm": 14.92,
+      "cup_tilt_deg": 10.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 3.6,
+      "detail": {
+        "cup_final": [
+          0.5047,
+          -0.2988,
+          0.8422
+        ],
+        "cup_height_above_resting_cm": 5.07,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.372,
+            "ik_terminal_palm_err_cm": 0.342,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.465,
+            "ik_terminal_palm_err_cm": 0.299,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.178,
+            "ik_terminal_palm_err_cm": 0.16,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 0.52,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.99,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 14.02
+      }
+    },
+    {
+      "trial": 5,
+      "layout_seed": 0,
+      "layout_index": 5,
+      "cup_xy": [
+        0.4474,
+        -0.1892
+      ],
+      "coaster_xy": [
+        0.5048,
+        -0.3299
+      ],
+      "cup_yaw_deg": 16.68,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 2.6 cm in the hand, rose 5.0 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.992,
+      "lift_slip_in_hand_cm": 2.61,
+      "lift_cup_rise_cm": 4.96,
+      "cup_off_coaster_center_cm": 15.63,
+      "cup_tilt_deg": 7.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 10,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 20,
+          "palm": 10
+        }
+      },
+      "wall_s": 3.0,
+      "detail": {
+        "cup_final": [
+          0.4614,
+          -0.1797,
+          0.8351
+        ],
+        "cup_height_above_resting_cm": 4.36,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.29,
+            "ik_terminal_palm_err_cm": 0.564,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.609,
+            "ik_terminal_palm_err_cm": 0.527,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.114,
+            "ik_terminal_palm_err_cm": 0.201,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.24,
+            "palm_err_cm": 1.33,
+            "replans": 2
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 1.08,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 12.22
+      }
+    },
+    {
+      "trial": 6,
+      "layout_seed": 0,
+      "layout_index": 6,
+      "cup_xy": [
+        0.4749,
+        -0.299
+      ],
+      "coaster_xy": [
+        0.5313,
+        -0.1731
+      ],
+      "cup_yaw_deg": 27.0,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 9.0 cm in the hand, rose -0.0 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.992,
+      "lift_slip_in_hand_cm": 8.96,
+      "lift_cup_rise_cm": -0.04,
+      "cup_off_coaster_center_cm": 14.17,
+      "cup_tilt_deg": 0.3,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": false,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 8,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 8,
+          "palm": 20
+        }
+      },
+      "wall_s": 3.7,
+      "detail": {
+        "cup_final": [
+          0.4766,
+          -0.3038,
+          0.7853
+        ],
+        "cup_height_above_resting_cm": -0.62,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.372,
+            "ik_terminal_palm_err_cm": 0.527,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.616,
+            "ik_terminal_palm_err_cm": 0.357,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.128,
+            "ik_terminal_palm_err_cm": 0.175,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 1.49,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.39,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 14.02
+      }
+    },
+    {
+      "trial": 7,
+      "layout_seed": 0,
+      "layout_index": 7,
+      "cup_xy": [
+        0.5148,
+        -0.3021
+      ],
+      "coaster_xy": [
+        0.4829,
+        -0.1535
+      ],
+      "cup_yaw_deg": -38.5,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 3.2 cm in the hand, rose 4.3 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.944,
+      "lift_slip_in_hand_cm": 3.23,
+      "lift_cup_rise_cm": 4.29,
+      "cup_off_coaster_center_cm": 15.54,
+      "cup_tilt_deg": 9.4,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 3.9,
+      "detail": {
+        "cup_final": [
+          0.52,
+          -0.3044,
+          0.8284
+        ],
+        "cup_height_above_resting_cm": 3.69,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.398,
+            "ik_terminal_palm_err_cm": 0.332,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.603,
+            "ik_terminal_palm_err_cm": 0.385,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.278,
+            "ik_terminal_palm_err_cm": 0.307,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 0.91,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.54,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 14.02
+      }
+    },
+    {
+      "trial": 8,
+      "layout_seed": 0,
+      "layout_index": 8,
+      "cup_xy": [
+        0.5311,
+        -0.3182
+      ],
+      "coaster_xy": [
+        0.5142,
+        -0.1777
+      ],
+      "cup_yaw_deg": 4.29,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 7.9 cm in the hand, rose 1.0 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.992,
+      "lift_slip_in_hand_cm": 7.9,
+      "lift_cup_rise_cm": 1.01,
+      "cup_off_coaster_center_cm": 13.38,
+      "cup_tilt_deg": 17.5,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 3.9,
+      "detail": {
+        "cup_final": [
+          0.5349,
+          -0.3099,
+          0.7956
+        ],
+        "cup_height_above_resting_cm": 0.41,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.424,
+            "ik_terminal_palm_err_cm": 0.264,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.654,
+            "ik_terminal_palm_err_cm": 0.465,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.343,
+            "ik_terminal_palm_err_cm": 0.362,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.04,
+            "palm_err_cm": 0.95,
+            "replans": 5
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 1.21,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 14.02
+      }
+    },
+    {
+      "trial": 9,
+      "layout_seed": 0,
+      "layout_index": 9,
+      "cup_xy": [
+        0.484,
+        -0.3355
+      ],
+      "coaster_xy": [
+        0.5178,
+        -0.1652
+      ],
+      "cup_yaw_deg": -27.62,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "transport",
+      "reason": "dropped / slipped while moving (cup moved 14.3 cm in the hand)",
+      "category": "dropped while moving",
+      "contact_closure": 0.976,
+      "lift_slip_in_hand_cm": 1.98,
+      "lift_cup_rise_cm": 5.45,
+      "cup_off_coaster_center_cm": 11.63,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 3.9,
+      "detail": {
+        "cup_final": [
+          0.5092,
+          -0.2811,
+          0.7855
+        ],
+        "cup_height_above_resting_cm": -0.6,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.398,
+            "ik_terminal_palm_err_cm": 0.268,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.65,
+            "ik_terminal_palm_err_cm": 0.456,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.277,
+            "ik_terminal_palm_err_cm": 0.286,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 709,
+            "path_frames": 109,
+            "ik_max_path_err_cm": 0.183,
+            "ik_terminal_palm_err_cm": 0.095,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 4.24,
+            "palm_err_cm": 0.89,
+            "replans": 7
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.82,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 16.8
+      }
+    },
+    {
+      "trial": 10,
+      "layout_seed": 1,
+      "layout_index": 0,
+      "cup_xy": [
+        0.5184,
+        -0.2795
+      ],
+      "coaster_xy": [
+        0.4919,
+        -0.1394
+      ],
+      "cup_yaw_deg": 32.56,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 2.7 cm in the hand, rose 5.1 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.96,
+      "lift_slip_in_hand_cm": 2.66,
+      "lift_cup_rise_cm": 5.06,
+      "cup_off_coaster_center_cm": 14.84,
+      "cup_tilt_deg": 11.4,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 3.8,
+      "detail": {
+        "cup_final": [
+          0.529,
+          -0.2831,
+          0.8361
+        ],
+        "cup_height_above_resting_cm": 4.46,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.372,
+            "ik_terminal_palm_err_cm": 0.418,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.633,
+            "ik_terminal_palm_err_cm": 0.337,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.251,
+            "ik_terminal_palm_err_cm": 0.25,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 0.32,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.7,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 14.02
+      }
+    },
+    {
+      "trial": 11,
+      "layout_seed": 1,
+      "layout_index": 1,
+      "cup_xy": [
+        0.4594,
+        -0.1416
+      ],
+      "coaster_xy": [
+        0.4949,
+        -0.3124
+      ],
+      "cup_yaw_deg": 28.32,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 8.4 cm in the hand, rose -0.0 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.944,
+      "lift_slip_in_hand_cm": 8.36,
+      "lift_cup_rise_cm": -0.0,
+      "cup_off_coaster_center_cm": 17.36,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 11,
+        "parts": {
+          "thumb": 19,
+          "index": 0,
+          "middle": 12,
+          "palm": 20
+        }
+      },
+      "wall_s": 2.8,
+      "detail": {
+        "cup_final": [
+          0.4765,
+          -0.1398,
+          0.7855
+        ],
+        "cup_height_above_resting_cm": -0.6,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.29,
+            "ik_terminal_palm_err_cm": 0.572,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.603,
+            "ik_terminal_palm_err_cm": 0.471,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.113,
+            "ik_terminal_palm_err_cm": 0.202,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.24,
+            "palm_err_cm": 1.21,
+            "replans": 2
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.31,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 11.62
+      }
+    },
+    {
+      "trial": 12,
+      "layout_seed": 1,
+      "layout_index": 2,
+      "cup_xy": [
+        0.4625,
+        -0.1751
+      ],
+      "coaster_xy": [
+        0.4625,
+        -0.3192
+      ],
+      "cup_yaw_deg": 2.77,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 7.1 cm in the hand, rose 0.7 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.976,
+      "lift_slip_in_hand_cm": 7.09,
+      "lift_cup_rise_cm": 0.69,
+      "cup_off_coaster_center_cm": 15.71,
+      "cup_tilt_deg": 10.8,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": false,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 4,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 19,
+          "palm": 4
+        }
+      },
+      "wall_s": 3.0,
+      "detail": {
+        "cup_final": [
+          0.4742,
+          -0.1626,
+          0.7924
+        ],
+        "cup_height_above_resting_cm": 0.09,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.318,
+            "ik_terminal_palm_err_cm": 0.558,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.598,
+            "ik_terminal_palm_err_cm": 0.416,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.108,
+            "ik_terminal_palm_err_cm": 0.227,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.84,
+            "palm_err_cm": 1.04,
+            "replans": 3
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.22,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 12.22
+      }
+    },
+    {
+      "trial": 13,
+      "layout_seed": 1,
+      "layout_index": 3,
+      "cup_xy": [
+        0.4707,
+        -0.3341
+      ],
+      "coaster_xy": [
+        0.5079,
+        -0.1916
+      ],
+      "cup_yaw_deg": 13.28,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 3.0 cm in the hand, rose 5.6 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.96,
+      "lift_slip_in_hand_cm": 3.0,
+      "lift_cup_rise_cm": 5.61,
+      "cup_off_coaster_center_cm": 13.44,
+      "cup_tilt_deg": 7.3,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 1,
+        "parts": {
+          "thumb": 20,
+          "index": 13,
+          "middle": 20,
+          "palm": 1
+        }
+      },
+      "wall_s": 3.7,
+      "detail": {
+        "cup_final": [
+          0.4823,
+          -0.3235,
+          0.8416
+        ],
+        "cup_height_above_resting_cm": 5.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.372,
+            "ik_terminal_palm_err_cm": 0.59,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.63,
+            "ik_terminal_palm_err_cm": 0.436,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.135,
+            "ik_terminal_palm_err_cm": 0.219,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 1.21,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 1.06,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 14.62
+      }
+    },
+    {
+      "trial": 14,
+      "layout_seed": 1,
+      "layout_index": 4,
+      "cup_xy": [
+        0.4691,
+        -0.1829
+      ],
+      "coaster_xy": [
+        0.5131,
+        -0.3098
+      ],
+      "cup_yaw_deg": -8.1,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 8.5 cm in the hand, rose -0.0 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.976,
+      "lift_slip_in_hand_cm": 8.51,
+      "lift_cup_rise_cm": -0.0,
+      "cup_off_coaster_center_cm": 12.46,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 18,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 18,
+          "palm": 20
+        }
+      },
+      "wall_s": 2.9,
+      "detail": {
+        "cup_final": [
+          0.4752,
+          -0.1911,
+          0.7855
+        ],
+        "cup_height_above_resting_cm": -0.6,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.318,
+            "ik_terminal_palm_err_cm": 0.567,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.612,
+            "ik_terminal_palm_err_cm": 0.441,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.106,
+            "ik_terminal_palm_err_cm": 0.217,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.84,
+            "palm_err_cm": 1.21,
+            "replans": 3
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.45,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 12.22
+      }
+    },
+    {
+      "trial": 15,
+      "layout_seed": 1,
+      "layout_index": 5,
+      "cup_xy": [
+        0.4635,
+        -0.1379
+      ],
+      "coaster_xy": [
+        0.5192,
+        -0.2636
+      ],
+      "cup_yaw_deg": 19.87,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 8.4 cm in the hand, rose -0.0 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.96,
+      "lift_slip_in_hand_cm": 8.36,
+      "lift_cup_rise_cm": -0.0,
+      "cup_off_coaster_center_cm": 13.01,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 4,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 20,
+          "palm": 4
+        }
+      },
+      "wall_s": 3.0,
+      "detail": {
+        "cup_final": [
+          0.4795,
+          -0.1397,
+          0.7855
+        ],
+        "cup_height_above_resting_cm": -0.6,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.29,
+            "ik_terminal_palm_err_cm": 0.576,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.588,
+            "ik_terminal_palm_err_cm": 0.476,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.114,
+            "ik_terminal_palm_err_cm": 0.194,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.24,
+            "palm_err_cm": 1.21,
+            "replans": 2
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.38,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 11.62
+      }
+    },
+    {
+      "trial": 16,
+      "layout_seed": 1,
+      "layout_index": 6,
+      "cup_xy": [
+        0.5216,
+        -0.2853
+      ],
+      "coaster_xy": [
+        0.4509,
+        -0.143
+      ],
+      "cup_yaw_deg": -14.11,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 2.7 cm in the hand, rose 5.0 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.96,
+      "lift_slip_in_hand_cm": 2.66,
+      "lift_cup_rise_cm": 4.95,
+      "cup_off_coaster_center_cm": 16.49,
+      "cup_tilt_deg": 8.1,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 7,
+        "parts": {
+          "thumb": 20,
+          "index": 14,
+          "middle": 20,
+          "palm": 7
+        }
+      },
+      "wall_s": 3.9,
+      "detail": {
+        "cup_final": [
+          0.5304,
+          -0.2875,
+          0.835
+        ],
+        "cup_height_above_resting_cm": 4.35,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.398,
+            "ik_terminal_palm_err_cm": 0.305,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.605,
+            "ik_terminal_palm_err_cm": 0.347,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.26,
+            "ik_terminal_palm_err_cm": 0.255,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 0.58,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.59,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 14.02
+      }
+    },
+    {
+      "trial": 17,
+      "layout_seed": 1,
+      "layout_index": 7,
+      "cup_xy": [
+        0.5105,
+        -0.1666
+      ],
+      "coaster_xy": [
+        0.5372,
+        -0.331
+      ],
+      "cup_yaw_deg": -23.97,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 2.9 cm in the hand, rose 4.6 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.976,
+      "lift_slip_in_hand_cm": 2.92,
+      "lift_cup_rise_cm": 4.62,
+      "cup_off_coaster_center_cm": 15.67,
+      "cup_tilt_deg": 8.6,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 18,
+        "parts": {
+          "thumb": 18,
+          "index": 15,
+          "middle": 7,
+          "palm": 20
+        }
+      },
+      "wall_s": 3.5,
+      "detail": {
+        "cup_final": [
+          0.5309,
+          -0.1745,
+          0.8317
+        ],
+        "cup_height_above_resting_cm": 4.02,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.345,
+            "ik_terminal_palm_err_cm": 0.511,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.611,
+            "ik_terminal_palm_err_cm": 0.146,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.13,
+            "ik_terminal_palm_err_cm": 0.096,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.04,
+            "palm_err_cm": 1.19,
+            "replans": 5
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.94,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 13.42
+      }
+    },
+    {
+      "trial": 18,
+      "layout_seed": 1,
+      "layout_index": 8,
+      "cup_xy": [
+        0.4897,
+        -0.1587
+      ],
+      "coaster_xy": [
+        0.475,
+        -0.3313
+      ],
+      "cup_yaw_deg": -29.45,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 3.0 cm in the hand, rose 4.3 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.992,
+      "lift_slip_in_hand_cm": 3.01,
+      "lift_cup_rise_cm": 4.34,
+      "cup_off_coaster_center_cm": 17.39,
+      "cup_tilt_deg": 7.2,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": false,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 18,
+        "parts": {
+          "thumb": 20,
+          "index": 15,
+          "middle": 18,
+          "palm": 20
+        }
+      },
+      "wall_s": 3.3,
+      "detail": {
+        "cup_final": [
+          0.5079,
+          -0.1605,
+          0.8289
+        ],
+        "cup_height_above_resting_cm": 3.74,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.318,
+            "ik_terminal_palm_err_cm": 0.432,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.594,
+            "ik_terminal_palm_err_cm": 0.128,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.112,
+            "ik_terminal_palm_err_cm": 0.132,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 2.44,
+            "palm_err_cm": 1.12,
+            "replans": 4
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.53,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 12.82
+      }
+    },
+    {
+      "trial": 19,
+      "layout_seed": 1,
+      "layout_index": 9,
+      "cup_xy": [
+        0.526,
+        -0.3232
+      ],
+      "coaster_xy": [
+        0.4526,
+        -0.1429
+      ],
+      "cup_yaw_deg": -34.09,
+      "mass_kg": 0.4,
+      "success": false,
+      "failed_phase": "lift",
+      "reason": "cup slipped 4.5 cm in the hand, rose 3.5 of 10 cm",
+      "category": "slip during lift",
+      "contact_closure": 0.992,
+      "lift_slip_in_hand_cm": 4.55,
+      "lift_cup_rise_cm": 3.53,
+      "cup_off_coaster_center_cm": 19.29,
+      "cup_tilt_deg": 5.1,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 3.7,
+      "detail": {
+        "cup_final": [
+          0.529,
+          -0.32,
+          0.8208
+        ],
+        "cup_height_above_resting_cm": 2.93,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.398,
+            "ik_terminal_palm_err_cm": 0.323,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.626,
+            "ik_terminal_palm_err_cm": 0.483,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.36,
+            "ik_terminal_palm_err_cm": 0.41,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.04,
+            "palm_err_cm": 0.91,
+            "replans": 5
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.84,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 14.02
+      }
+    }
+  ]
+}

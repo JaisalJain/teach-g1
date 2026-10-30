@@ -18,7 +18,13 @@ Choices (see docs/log.md, 2026-10-28):
   handle of 3 capsules on the body's +x side; "cylinder" = the plain 8 x 10 cm M1 cup, kept so the M1 results reproduce;
   "mug_body" = the mug's body cylinder alone (config diameter and height, no handle), so size, mass and handle can be
   changed one at a time (Track B, B3). All are one free body named "cup" whose frame origin is the centre of the (body)
-  cylinder, so "cup centre" means the same thing for all; every cup geom gets the same contact parameters and pairs.
+  cylinder, so "cup centre" means the same thing for all; every cup geom gets the same contact parameters and pairs;
+- contact model (``contact_model``; Track B v3 fix ladder, rung L3): "legacy" (default) = what M1 ran, MuJoCo's defaults
+  (pyramidal friction cones, impratio 1, no NoSlip pass; hand geoms condim 3). "grasp" = the MuJoCo docs' advice against
+  slip: elliptic cones, impratio > 1 and a few NoSlip iterations (GRASP_OPTIONS), plus condim 4 (torsional friction) on
+  the right fingertips and palm. The cup's geoms and the explicit cup pairs are condim 4 already. Friction coefficients,
+  solref / solimp, gains and torque limits are untouched. Cone, impratio and NoSlip are GLOBAL options: they change every
+  contact in the model, the feet's included, which is why L3 must re-pass the reach test and R0.
 
 Units: metres, radians, seconds. World frame: z up, x forward from the robot. Public quaternions are xyzw (HERO's sim2sim
 convention); MuJoCo's own qpos / xquat are wxyz.
@@ -67,6 +73,15 @@ SIDES = ("left", "right")
 GRIP_KP_SCALE, GRIP_SQUEEZE_FRACTION, GRIP_BLOCKED_ERROR_RAD = 3.0, 0.6, 0.05
 FLEXION_JOINT = np.array([f not in ("thumb_0", "thumb_1") for f in FINGER_SUFFIXES] * 2)
 
+CONTACT_MODELS = ("legacy", "grasp")
+# "grasp" (rung L3). MuJoCo 3.13.0 docs, Modeling > Preventing slip > Slow slippage: "Use elliptic cones and increase impratio"
+# and, "for stronger suppression", NoSlip: "A small number (1, 2 or 3) is usually sufficient." The docs give no impratio value:
+# 10 is the one DeepMind's MuJoCo Menagerie grippers and hands pair with elliptic cones (Robotiq 2F-85, ALOHA, Allegro, Shadow);
+# 3 is the top of the docs' NoSlip range. Both were fixed before any L3 run and never tuned (quotes + URLs: ladder.json).
+GRASP_OPTIONS = dict(cone=mujoco.mjtCone.mjCONE_ELLIPTIC, impratio=10.0, noslip_iterations=3)
+GRASP_CONDIM = 4                                         # tangential + torsional friction
+GRASP_CONDIM_BODIES = tuple(f"right_hand_{link}_link" for link in (*FINGERTIP_LINKS, "palm"))
+
 
 def mug_config() -> dict[str, float]:
     """The mug entries of config/objects.yaml as plain numbers (the ``value`` fields; source tags dropped).
@@ -82,15 +97,20 @@ class TableScene:
 
     ``cup_model`` = "mug" (config/objects.yaml), "mug_body" (the mug without its handle) or "cylinder" (M1 cup); ``cup_mass``
     overrides its mass (None = the model's own: config mass_kg for the mug and the mug body, 0.15 kg for the cylinder).
+    ``contact_model`` = "legacy" (M1) or "grasp" (rung L3; module docstring).
     """
 
-    def __init__(self, table_height: float, kp, kd, effort_limit, default_dof_pos, cup_model: str = "mug", cup_mass: float | None = None):
+    def __init__(self, table_height: float, kp, kd, effort_limit, default_dof_pos, cup_model: str = "mug", cup_mass: float | None = None,
+                 contact_model: str = "legacy"):
         if not any(abs(float(table_height) - h) < 1e-6 for h in TABLE_HEIGHTS):
             raise ValueError(f"table_height must be one of {TABLE_HEIGHTS}")
         if cup_model not in CUP_MODELS:
             raise ValueError(f"cup_model must be one of {CUP_MODELS}")
+        if contact_model not in CONTACT_MODELS:
+            raise ValueError(f"contact_model must be one of {CONTACT_MODELS}")
         self.table_height = float(table_height)
         self.cup_model = cup_model
+        self.contact_model = contact_model
         self.mug = mug_config() if cup_model in ("mug", "mug_body") else None
         self.cup_height = self.mug["height_m"] if self.mug else CUP_HEIGHT
         self.cup_mass = float(cup_mass) if cup_mass is not None else (self.mug["mass_kg"] if self.mug else CUP_MASS)
@@ -109,7 +129,9 @@ class TableScene:
         self.finger_goal = np.concatenate([HAND_OPEN[s] for s in SIDES])
         self.finger_target = self.finger_goal.copy()
         self.hand_closure = {s: 0.0 for s in SIDES}
-        self.closing_direction = np.sign(np.concatenate([HAND_CLOSED[s] - HAND_OPEN[s] for s in SIDES]))
+        # closed Dex3 pose per hand: HERO's demo grip, unless set_closed_pose replaces it (Track B v3 fix ladder, rung L2)
+        self.hand_closed = {s: HAND_CLOSED[s].copy() for s in SIDES}
+        self.closing_direction = np.sign(np.concatenate([self.hand_closed[s] - HAND_OPEN[s] for s in SIDES]))
         self.coaster_geom = mujoco.mj_name2id(m, mujoco.mjtObj.mjOBJ_GEOM, "coaster")
         self.cup_xy, self.coaster_xy = np.array(CUP_XY), np.array(COASTER_XY)
         self.on_substep = None      # optional observer called after every 1 ms substep (it must only read data; B3 contact log)
@@ -213,6 +235,8 @@ class TableScene:
                 spec.add_pair(name=f"{prefix}__{surface.name}", geomname1=cup_geom.name, geomname2=surface.name, condim=4,
                               friction=[mu, mu, mu * arm, CONTACT_ROLLING_M, CONTACT_ROLLING_M], solref=solref, solimp=solimp,
                               margin=max(cup_geom.margin, surface.margin), gap=max(cup_geom.gap, surface.gap))
+        if self.contact_model == "grasp":
+            self._grasp_contact_model(spec, hands, cup_geoms)
 
         # Fingertip touch sensors: a box site covering each distal link's collision geometry (+2 mm).
         for side in SIDES:
@@ -223,6 +247,19 @@ class TableScene:
                     rgba=[0.9, 0.2, 0.2, 0.0])
                 spec.add_sensor(name=f"touch_{side}_{finger}", type=mujoco.mjtSensor.mjSENS_TOUCH,
                                 objtype=mujoco.mjtObj.mjOBJ_SITE, objname=site.name)
+
+    def _grasp_contact_model(self, spec, hands, cup_geoms) -> None:
+        """Rung L3, applied to the spec before it compiles: GRASP_OPTIONS (global) and condim 4 on the right fingertip and palm
+        geoms. The cup geoms and every cup pair are condim 4 already (asserted, not changed), so the cup-hand contacts, which
+        all go through those pairs, change only through the global options; the new geom condim acts on the contacts MuJoCo
+        generates itself (fingertips / palm against the table or the coaster: condim = the larger of the two geoms')."""
+        o = spec.option
+        o.cone, o.impratio, o.noslip_iterations = GRASP_OPTIONS["cone"], GRASP_OPTIONS["impratio"], GRASP_OPTIONS["noslip_iterations"]
+        tips_palm = [g for g in hands if g.parent.name in GRASP_CONDIM_BODIES]
+        assert sorted(g.parent.name for g in tips_palm) == sorted(GRASP_CONDIM_BODIES), "expected one collision geom per link"
+        for g in tips_palm:
+            g.condim = GRASP_CONDIM
+        assert all(g.condim == GRASP_CONDIM for g in cup_geoms) and all(p.condim == GRASP_CONDIM for p in spec.pairs)
 
     def _sole_bottom(self) -> float:
         """Lowest world z of the feet's collision geometry in the current pose (same rule as HERO's demo)."""
@@ -259,11 +296,24 @@ class TableScene:
         self.plant.forward()
 
     def set_hand_closure(self, side: str, fraction: float) -> None:
-        """Finger goal = blend of HERO's open and closed Dex3 poses (0 = open, 1 = closed)."""
+        """Finger goal = blend of HERO's open Dex3 pose and the hand's closed pose (0 = open, 1 = closed)."""
         self.hand_closure[side] = float(np.clip(fraction, 0.0, 1.0))
         ids = slice(0, 7) if side == "left" else slice(7, 14)
-        goal = HAND_OPEN[side] * (1 - self.hand_closure[side]) + HAND_CLOSED[side] * self.hand_closure[side]
+        goal = HAND_OPEN[side] * (1 - self.hand_closure[side]) + self.hand_closed[side] * self.hand_closure[side]
         self.finger_goal[ids] = np.clip(goal, self.finger_limits[ids, 0], self.finger_limits[ids, 1])
+
+    def set_closed_pose(self, side: str, q) -> None:
+        """Replace one hand's closed pose (7 finger joint angles, FINGER_SUFFIXES order); the open pose stays HERO's.
+
+        Used by the fix ladder's rung L2 (object-specific closing targets). Gains, torque limits and the squeeze rule are
+        unchanged; the squeeze's "closing direction" (sign of closed - open per joint) follows the new pose, since "short of
+        its target" must point toward the target the joint is actually driven to.
+        """
+        q = np.asarray(q, dtype=float)
+        assert q.shape == (len(FINGER_SUFFIXES),), q.shape
+        self.hand_closed[side] = q.copy()
+        ids = slice(0, 7) if side == "left" else slice(7, 14)
+        self.closing_direction[ids] = np.sign(q - HAND_OPEN[side])
 
     def step(self, body_qtarget) -> None:
         """Advance one 20 ms control step: HERO's body PD + our finger PD, both recomputed every 1 ms substep."""

@@ -22,6 +22,9 @@ or pelvis tilt > 60 deg, or a body part other than feet / hands touching the flo
 
 Run:  env -u PYTHONPATH conda run -n hoi-sim python -m sim.m1_reach_test
 Writes results/m1_reach/reach_results.json, results/m1_reach/series_h*.npz and results/m1_reach/reach_h074.mp4.
+Options: --heights (default all three), --out, --video-height (a height not in --heights = no video), and --contact-model
+(sim/scene.py; default "legacy" = M1). The Track B v3 fix ladder's rung L3 changes global contact options, which also act on the
+feet, so it re-runs this test: --contact-model grasp --heights 0.74 --out results/m1_grasp_fix/v3/reach_l3.
 """
 
 from __future__ import annotations
@@ -31,6 +34,7 @@ import dataclasses
 import json
 import math
 import os
+import resource
 import time
 from pathlib import Path
 
@@ -49,7 +53,7 @@ from sim2sim.policy_hero_export import HeroExportPolicy
 from sim2sim.reference import ClipReference
 from sim2sim.state import read_state
 
-from sim.scene import TABLE_HEIGHTS, TableScene
+from sim.scene import CONTACT_MODELS, TABLE_HEIGHTS, TableScene
 
 FPS = 50
 STAND_S = 10.0
@@ -156,9 +160,10 @@ class VideoWriter:
         self.renderer.close()
 
 
-def run_height(height: float, policy: HeroExportPolicy, video_path: Path | None) -> tuple[dict, dict]:
+def run_height(height: float, policy: HeroExportPolicy, video_path: Path | None, contact_model: str = "legacy") -> tuple[dict, dict]:
     # the M1 cylinder cup (not the mug), so the documented M1 numbers reproduce
-    scene = TableScene(height, policy.kp, policy.kd, policy.effort_limit, policy.default_dof_pos, cup_model="cylinder")
+    scene = TableScene(height, policy.kp, policy.kd, policy.effort_limit, policy.default_dof_pos, cup_model="cylinder",
+                       contact_model=contact_model)
     goals = make_goals(scene)
     stand_ref = standing_reference(scene, int(STAND_S * FPS) + 30)
     # inactive (left) arm prior: the spawn pose for new reaches; the initial plan's reach-end joints for corrections (HERO run.py)
@@ -278,6 +283,7 @@ def main():
     ap.add_argument("--heights", type=float, nargs="+", default=list(TABLE_HEIGHTS))
     ap.add_argument("--video-height", type=float, default=0.74)
     ap.add_argument("--out", type=Path, default=OUT_DIR)
+    ap.add_argument("--contact-model", choices=CONTACT_MODELS, default="legacy")
     args = ap.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
     policy = HeroExportPolicy(CHECKPOINTS_ROOT / "example", stand_flag=0.0)
@@ -285,18 +291,21 @@ def main():
                                  goal_z_above_table_m=GOAL_Z_ABOVE_TABLE, goal_order="goal 0 from the stand, goals 1-5 from the previous goal's hold",
                                  reach_cfg=REACH_CFG.as_dict(), correction_cfg=CORRECTION_CFG.as_dict(), odom="truth (HERO's published runs: so)",
                                  fall_rule=f"pelvis z < {FALL_PELVIS_Z} m, or pelvis tilt > {FALL_TILT_DEG} deg, or a non-foot/hand body part touching floor/table",
-                                 policy=str(policy.onnx_path), mujoco=mujoco.__version__),
+                                 policy=str(policy.onnx_path), mujoco=mujoco.__version__, contact_model=args.contact_model),
                    heights=[])
     for h in args.heights:
         t0 = time.perf_counter()
         video = args.out / f"reach_h{round(h * 100):03d}.mp4" if abs(h - args.video_height) < 1e-6 else None
-        summary, ser = run_height(h, policy, video)
+        summary, ser = run_height(h, policy, video, args.contact_model)
         summary["wall_time_s"] = round(time.perf_counter() - t0, 1)
         results["heights"].append(summary)
         np.savez_compressed(args.out / f"series_h{round(h * 100):03d}.npz", **ser)
         print(f"h={h:.2f}  fell={summary['fell']}  palm err over goals: {summary['palm_err_cm_over_goals']}  ({summary['wall_time_s']} s)")
+    # physics and policy on the CPU (onnxruntime CPU); only the video renders through EGL. ru_maxrss is in kB on Linux.
+    results["resources"] = dict(peak_rss_mb=round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024),
+                                egl_vendor=os.environ.get("__EGL_VENDOR_LIBRARY_FILENAMES"))
     (args.out / "reach_results.json").write_text(json.dumps(results, indent=2))
-    print(f"wrote {args.out / 'reach_results.json'}")
+    print(f"wrote {args.out / 'reach_results.json'} (peak RSS {results['resources']['peak_rss_mb']} MB)")
 
 
 if __name__ == "__main__":

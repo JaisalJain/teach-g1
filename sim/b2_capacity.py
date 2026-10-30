@@ -1,4 +1,4 @@
-"""B2 (Track B v2): can the Dex3 reach around a cylinder of diameter D? Kinematics only, nothing is simulated.
+"""B2 (Track B v2) and B2v3 (M2 v3): can the Dex3 reach around a cylinder of diameter D? Kinematics only, nothing is simulated.
 
 Question: with the right palm against an upright cylinder of diameter D, can the thumb and the fingers reach far enough around
 it to oppose the palm's push? Per D: put the cylinder against the palm, sweep each digit's joints on a grid, and record how far
@@ -49,11 +49,26 @@ configuration. Because this choice can decide the verdict, ``anchor_sensitivity`
 the mug with the normal drawn every 5 mm along the palm and at the oracle's own grasp position (``GRASP_OFFSET`` x). It is
 information for that question only; it does not change the verdict.
 
-Run:  env -u PYTHONPATH conda run -n hoi-sim python -m sim.b2_capacity   -> results/m1_grasp_fix/b2_capacity.json + .png
+B2v3 (``--version v3``, M2 v3): v2's palm-centre anchor failed its own positive control (it rated the 80 mm cylinder infeasible,
+which the oracle grasps 20/20), so v3 repeats the check with ONE change: the cylinder sits where the grasp itself would put it.
+- cylinder axis at the radius-consistent grasp pose, palm-frame (0.077, r + 0.015) = ``radius_consistent_offset(r)`` from
+  sim/pick_place.py (the same function L1 uses; at r = 0.040 it is exactly the oracle's GRASP_OFFSET). Nothing slides: the palm
+  may touch or overlap the cylinder; ``palm_geom_distance_mm`` reports it (information only -- as in v2 the touching rule looks
+  at the swept digit's geoms only). Base on the table 6.5 cm below the palm origin, height config height_m, as in v2.
+- phi 0 = the cylinder point facing the palm: the surface point straight back from the axis along the palm normal (palm -y).
+  (In v2 it was the palm contact point, which only exists when the cylinder is slid against the palm.)
+- everything else as in v2: model, grid, touching rule, WRAP_SIGN, mu, thresholds, diameters, 99 mm contact check.
+  v2's anchor_sensitivity is not repeated.
+- 80 mm is the positive control (there the pose is exactly the oracle's): it must not be infeasible. 99 mm is the gate for the
+  fix ladder: comfortable or marginal.
+
+Run:  env -u PYTHONPATH conda run -n hoi-sim python -m sim.b2_capacity [--version v2]  -> results/m1_grasp_fix/b2_capacity.json + .png
+      env -u PYTHONPATH conda run -n hoi-sim python -m sim.b2_capacity --version v3    -> results/m1_grasp_fix/v3/b2v3_capacity.json + .png
 """
 
 from __future__ import annotations
 
+import argparse
 import itertools
 import json
 import math
@@ -70,10 +85,13 @@ import numpy as np
 from hero_isaacsim.paths import CHECKPOINTS_ROOT
 from sim2sim.policy_hero_export import HeroExportPolicy
 
-from sim.pick_place import GRASP_OFFSET, GRASP_Z_ABOVE_TABLE, TABLE_HEIGHT
+from sim.pick_place import GRASP_OFFSET, GRASP_Z_ABOVE_TABLE, PALM_SURFACE_GAP, TABLE_HEIGHT, radius_consistent_offset
 from sim.scene import CUP_RADIUS, FINGERTIP_LINKS, TableScene, mug_config
 
 OUT_DIR = Path("results/m1_grasp_fix")
+V3_DIR = OUT_DIR / "v3"
+# Where the cylinder goes: v2 slides it against the palm centre, v3 puts its axis at the radius-consistent grasp pose
+ANCHORS = ("palm_centre", "radius_consistent")
 OLD_CYLINDER_D = 2 * CUP_RADIUS                 # the M1 cylinder: 0.080 m
 MUG_D = 0.099                                   # the spec's 99 mm (= the label, config body_outer_diameter_m)
 DIAMETERS = sorted({round(0.060 + 0.005 * k, 3) for k in range(11)} | {OLD_CYLINDER_D, MUG_D})
@@ -103,9 +121,14 @@ def collision_geom(m, body: str) -> int:
 
 
 class Capacity:
-    """The scene, the ids we need, and the palm frame (fixed: only finger joints move)."""
+    """The scene, the ids we need, and the palm frame (fixed: only finger joints move).
 
-    def __init__(self):
+    ``anchor`` = where ``place_cylinder`` puts the cylinder: "palm_centre" (v2) or "radius_consistent" (v3)."""
+
+    def __init__(self, anchor: str = "palm_centre"):
+        if anchor not in ANCHORS:
+            raise ValueError(f"anchor must be one of {ANCHORS}")
+        self.anchor = anchor
         policy = HeroExportPolicy(CHECKPOINTS_ROOT / "example", stand_flag=0.0)
         self.scene = TableScene(TABLE_HEIGHT, policy.kp, policy.kd, policy.effort_limit, policy.default_dof_pos, cup_model="mug")
         m, d = self.model, self.data = self.scene.model, self.scene.data
@@ -165,7 +188,11 @@ class Capacity:
 
     def place_cylinder(self, diameter: float, anchor_x: float | None = None) -> dict:
         """Resize to D and slide the axis along the palm normal until the palm geom just touches the cylinder (distance 0).
-        The normal is drawn through the palm centre, or at palm-frame x = ``anchor_x`` (anchor_sensitivity only)."""
+        The normal is drawn through the palm centre, or at palm-frame x = ``anchor_x`` (anchor_sensitivity only).
+        With anchor "radius_consistent" (v3) the cylinder goes to the radius-consistent grasp pose instead."""
+        if self.anchor == "radius_consistent":
+            assert anchor_x is None, "anchor_x belongs to v2's anchor_sensitivity"
+            return self.place_cylinder_radius_consistent(diameter)
         r = diameter / 2
         self.resize(r)
         x0 = self.palm_centre[0] if anchor_x is None else anchor_x
@@ -190,6 +217,31 @@ class Capacity:
         return dict(radius_m=r, height_m=self.height, axis_palm_frame_m=self.axis.round(5).tolist(),
                     palm_gap_mm=round(palm_gap * 1e3, 6), palm_contact_point_palm_frame_m=contact.round(5).tolist(),
                     palm_contact_off_normal_deg=round(math.degrees(self.a0) + 90.0, 3),
+                    table_plane_z_palm_frame_m=-GRASP_Z_ABOVE_TABLE,
+                    wrist_yaw_geom_distance_mm=round(self.dist(wrist) * 1e3, 3))
+
+    def place_cylinder_radius_consistent(self, diameter: float) -> dict:
+        """v3: resize to D and put the axis where the grasp puts it, palm-frame radius_consistent_offset(r) = (0.077, r + 0.015);
+        the centre goes half the height above the table, which is GRASP_Z_ABOVE_TABLE below the palm origin (as in v2).
+        Nothing slides, so the palm may touch or overlap the cylinder: its signed distance is reported, not used.
+        phi 0 = the cylinder point facing the palm: from the axis straight back along the palm normal, i.e. toward palm -y."""
+        r = diameter / 2
+        self.resize(r)
+        self.axis = radius_consistent_offset(r) + np.array([0.0, 0.0, -GRASP_Z_ABOVE_TABLE + self.height / 2])
+        self.set_cylinder(self.axis)
+        self.a0 = -math.pi / 2                                   # direction palm -y
+        facing = self.axis + np.array([0.0, -r, 0.0])            # the phi-0 point on the cylinder's side
+        # check in the posed cylinder geom's own frame: that point is on its side at mid-height, so the cylinder sits where we
+        # put it, at the size we set
+        d, g = self.data, self.cyl
+        local = d.geom_xmat[g].reshape(3, 3).T @ (self.p_palm + self.R_palm @ facing - d.geom_xpos[g])
+        assert abs(math.hypot(local[0], local[1]) - r) < 1e-9 and abs(local[2]) < 1e-9 and self.model.geom_size[g, 0] == r, local
+        wrist = collision_geom(self.model, f"{SIDE}_wrist_yaw_link")
+        return dict(radius_m=r, height_m=self.height, axis_palm_frame_m=self.axis.round(5).tolist(),
+                    axis_source=f"sim/pick_place.py radius_consistent_offset(r) = (GRASP_OFFSET x, r + {PALM_SURFACE_GAP}, "
+                                "GRASP_OFFSET z) + the centre's height",
+                    phi_zero_point_palm_frame_m=facing.round(5).tolist(),
+                    palm_geom_distance_mm=round(self.dist(self.palm) * 1e3, 3),
                     table_plane_z_palm_frame_m=-GRASP_Z_ABOVE_TABLE,
                     wrist_yaw_geom_distance_mm=round(self.dist(wrist) * 1e3, 3))
 
@@ -284,7 +336,13 @@ def verdict(phi_thumb, phi_finger, marginal_deg: float) -> str:
     return "marginal" if min(phi_thumb, phi_finger) >= marginal_deg else "infeasible"
 
 
-def plot(rows: list[dict], mu: float, marginal_deg: float, path: Path):
+V2_PLOT_TEXT = dict(subtitle="B2, kinematics; palm normal through the palm centre", phi_zero="the palm contact")
+V3_PLOT_TEXT = dict(subtitle=f"B2v3, kinematics; axis at the radius-consistent grasp pose, palm-frame "
+                             f"({GRASP_OFFSET[0]:g}, r + {PALM_SURFACE_GAP:g})",
+                    phi_zero="the palm-facing point")
+
+
+def plot(rows: list[dict], mu: float, marginal_deg: float, path: Path, text: dict = V2_PLOT_TEXT):
     """The two maxima against D with the two thresholds (validated reference palette: series 1 blue, series 2 orange)."""
     D = [r["D_mm"] for r in rows]
     nan = lambda v: np.nan if v is None else v
@@ -300,14 +358,15 @@ def plot(rows: list[dict], mu: float, marginal_deg: float, path: Path):
     ax.axhline(marginal_deg, color=muted, lw=1.2, ls="--")
     ax.text(D[-1], 90.0 + 1.5, "comfortable: 90°", ha="right", va="bottom", color=muted, fontsize=8)
     ax.text(D[-1], marginal_deg + 1.5, f"marginal: 90° − atan(μ = {mu:g}) = {marginal_deg:.1f}°", ha="right", va="bottom", color=muted, fontsize=8)
-    ax.set_ylim(0, 125)                     # room under the marginal line for the D labels
+    values = [v for r in rows for v in (r["phi_thumb_max_deg"], r["phi_finger_max_deg"]) if v is not None]
+    # room under the marginal line for the D labels; widened only if a maximum would fall outside 0-125 deg (v2's never did)
+    ax.set_ylim(min([0.0] + [v - 5 for v in values]), max([125.0] + [v + 5 for v in values]))
     for x, name in ((OLD_CYLINDER_D * 1e3, "M1 cylinder"), (MUG_D * 1e3, "mug")):
         ax.axvline(x, color="#c3c2b7", lw=1, ls=":")
         ax.text(x, 2, f"{name} ", rotation=90, va="bottom", ha="right", color=muted, fontsize=8)
     ax.set_xlabel("cylinder diameter D (mm)", color=ink)
-    ax.set_ylabel("max wrap angle φ from the palm contact (deg)", color=ink)
-    ax.set_title("Dex3 right hand: how far around a cylinder each side reaches\n(B2, kinematics; palm normal through the palm centre)",
-                 color=ink, fontsize=10)
+    ax.set_ylabel(f"max wrap angle φ from {text['phi_zero']} (deg)", color=ink)
+    ax.set_title(f"Dex3 right hand: how far around a cylinder each side reaches\n({text['subtitle']})", color=ink, fontsize=10)
     ax.grid(color="#e4e3df", lw=0.6)
     for s in ("top", "right"):
         ax.spines[s].set_visible(False)
@@ -319,7 +378,7 @@ def plot(rows: list[dict], mu: float, marginal_deg: float, path: Path):
 
 
 def check_diameter(c: Capacity, D: float, marginal_deg: float, anchor_x: float | None = None) -> dict:
-    """Place the cylinder of diameter D against the palm, sweep every digit and rate it."""
+    """Place the cylinder of diameter D (where the Capacity's anchor puts it), sweep every digit and rate it."""
     cyl = c.place_cylinder(D, anchor_x)
     digits = {dg: c.sweep_digit(dg) for dg in DIGITS}
     fingers = {dg: digits[dg]["phi_max_deg"] for dg in ("index", "middle") if digits[dg]["phi_max_deg"] is not None}
@@ -362,76 +421,73 @@ def anchor_sensitivity(c: Capacity, marginal_deg: float) -> dict:
                 anchors_x_m=[round(x, 5) for x in anchors], verdict_runs=runs, rows=rows)
 
 
-def main():
-    t0 = time.perf_counter()
-    c = Capacity()
+def friction(c: Capacity) -> tuple[float, float, dict]:
+    """mu of the cup x fingertip pairs (one value for all three) and the marginal threshold 90 - atan(mu)."""
     pairs = c.pair_mu()
     mus = {p["friction"][0] for p in pairs.values()}
     assert len(mus) == 1, pairs
     mu = mus.pop()
-    marginal_deg = 90.0 - math.degrees(math.atan(mu))
+    return mu, 90.0 - math.degrees(math.atan(mu)), pairs
+
+
+def rate_diameters(c: Capacity, marginal_deg: float) -> list[dict]:
     rows = []
     for D in DIAMETERS:
         rows.append(check_diameter(c, D, marginal_deg))
         r = rows[-1]
         print(f"D {D * 1e3:5.1f} mm  thumb {r['phi_thumb_max_deg']}  finger {r['phi_finger_max_deg']} ({r['best_finger']})  -> "
               f"{r['verdict']}   touching: " + ", ".join(f"{k} {v['n_touching']}/{v['n_configs']}" for k, v in r["digits"].items()), flush=True)
+    return rows
+
+
+def mug_contact_check(c: Capacity, rows: list[dict]) -> tuple[dict, dict]:
+    """The 99 mm row and the mu cross-check at its argmax configurations."""
     mug_row = next(r for r in rows if r["is_mug"])
     have = {dg: v["argmax"] for dg, v in mug_row["digits"].items() if v["argmax"]}
-    check = c.contact_check(MUG_D, have)
-    sens = anchor_sensitivity(c, marginal_deg)
-    for r in sens["rows"]:          # the palm-centre rows must repeat the main result
-        if r["anchor"].startswith("palm centre"):
-            main_row = next(m for m in rows if m["D_mm"] == r["D_mm"])
-            assert (r["verdict"], r["phi_thumb_max_deg"], r["phi_finger_max_deg"]) == \
-                   (main_row["verdict"], main_row["phi_thumb_max_deg"], main_row["phi_finger_max_deg"]), r
-    print("anchor sensitivity:", json.dumps(sens["verdict_runs"]), flush=True)
-    at = lambda D, anchor: next(r["verdict"] for r in sens["rows"] if r["D_mm"] == round(D * 1e3, 3) and r["anchor"].startswith(anchor))
+    return mug_row, c.contact_check(MUG_D, have)
+
+
+def shared_method(c: Capacity) -> dict:
+    """The method fields v2 and v3 share: everything except where the cylinder sits and where phi starts."""
     m = c.model
-    result = dict(
-        question="With the palm against an upright cylinder of diameter D, can the thumb and the fingers reach far enough around it "
-                 "to oppose the palm's push? (kinematics only)",
-        method=dict(
-            model="TableScene(0.74, cup_model='mug') from sim/scene.py: the sim's compiled model (URDF g1_29dof_with_hand_rev_1_0, "
-                  "same collision geoms and pairs); its body cylinder 'cup_geom' is resized per D, the handle geoms are never queried; "
-                  "only finger joints are set; mj_kinematics + mj_geomDistance (signed, convex hulls); no time stepping",
-            hand=SIDE, palm_frame=f"{SIDE}_hand_palm_link (origin = HERO palm point = wrist_yaw_link + (0.0415, -0.003, 0)); x along the "
-                                  "fingers, z = finger hinge axis (index +z, middle -z), +y = palm side",
-            palm_contact_geom=mujoco.mj_id2name(m, mujoco.mjtObj.mjOBJ_GEOM, c.palm),
-            palm_normal="+y of the palm frame: the side the fingers flex toward; the palm mesh's thinnest principal axis is "
-                        f"{c.palm_thin_axis_angle_deg:.2f} deg from it",
-            palm_normal_anchor_palm_frame_m=c.palm_centre.round(5).tolist(),
-            palm_normal_anchor="centre of the palm collision geom (MuJoCo puts a mesh geom's frame at the mesh centroid); "
-                               "not fixed by the spec: see open_questions[0] and anchor_sensitivity",
-            palm_side_max_y_m={k: round(v, 5) for k, v in c.palm_side_max_y.items()},
-            palm_side_max_y_note="largest palm-frame y of the palm geom and of the thumb's base link geom (all joints 0): the thumb "
-                                 "base stands out above the palm face, next to the palm normal",
-            cylinder_axis="parallel to palm z (= world up in the oracle's side grasp), crossing the palm normal line; slid along the "
-                          "normal until mj_geomDistance(palm, cylinder) = 0 (bisection, < 1e-7 m)",
-            grasp_height=f"palm origin {GRASP_Z_ABOVE_TABLE} m above the table (sim/pick_place.py GRASP_Z_ABOVE_TABLE); cylinder base on "
-                         f"the table; cylinder height = config height_m = {c.height} m for every D",
-            diameters_mm=[round(D * 1e3, 3) for D in DIAMETERS],
-            diameters_note=f"60-110 mm in 5 mm steps + the M1 cylinder's {OLD_CYLINDER_D * 1e3:g} mm (sim/scene.py CUP_RADIUS x 2; "
-                           f"already on the grid; height {c.height} m like every D, not the M1 cylinder's 0.10 m: this row "
-                           f"varies the diameter only) + 99 mm (mug label)",
-            grid=f"{GRID_N} values per joint, np.linspace over the joint range (ends included); other digits at 0. phi_max is a "
-                 "lower bound of the continuous maximum (a finer grid containing this one can only raise it); joint steps "
-                 "are range / 20 (4.5-6 deg)",
-            digits={dg: dict(joints=[f"{SIDE}_hand_{j}_joint" for j in DIGITS[dg]], ranges_rad=c.ranges[dg].round(6).tolist(),
-                             fingertip_geom=mujoco.mj_id2name(m, mujoco.mjtObj.mjOBJ_GEOM, c.tip[dg]),
-                             digit_geoms=[mujoco.mj_id2name(m, mujoco.mjtObj.mjOBJ_GEOM, g) for g in c.digit_geoms[dg]],
-                             base_x_palm_frame_m=round(c.digit_base_x[dg], 5),
-                             positive_phi="counter-clockwise about palm +z (fingers flex from +x toward +y)" if WRAP_SIGN[dg] > 0
-                             else "clockwise about palm +z (thumb curls from +y toward +x)") for dg in DIGITS},
-            touch=f"fingertip geom distance in [0, {TOUCH_MAX_M * 1e3:g}] mm AND every collision geom of the digit >= -{PENETRATION_MAX_M * 1e3:g} mm",
-            phi="angle about the cylinder axis of the fingertip's closest point on the cylinder (mj_geomDistance fromto), from the palm "
-                "contact point (0 deg), positive toward the digit's own side (fixed per digit by the hand, WRAP_SIGN), wrapped to [-180, 180]",
-            closest_point_surface="side / top cap / bottom cap, or 'top rim edge' / 'bottom rim edge' when the point is at radius r "
-                                  "AND at a cap height (within 0.1 mm)",
-            phi_finger_max="max over index and middle",
-            verdict="comfortable if both maxima >= 90 deg; marginal if both >= 90 - atan(mu); infeasible otherwise "
-                    "(a digit with no touching configuration counts as infeasible)"),
-        mu=dict(value=mu, source="model.pair_friction[0] of the explicit pairs cup_geom x fingertip geom in the compiled scene "
+    return dict(
+        model="TableScene(0.74, cup_model='mug') from sim/scene.py: the sim's compiled model (URDF g1_29dof_with_hand_rev_1_0, "
+              "same collision geoms and pairs); its body cylinder 'cup_geom' is resized per D, the handle geoms are never queried; "
+              "only finger joints are set; mj_kinematics + mj_geomDistance (signed, convex hulls); no time stepping",
+        hand=SIDE, palm_frame=f"{SIDE}_hand_palm_link (origin = HERO palm point = wrist_yaw_link + (0.0415, -0.003, 0)); x along the "
+                              "fingers, z = finger hinge axis (index +z, middle -z), +y = palm side",
+        palm_contact_geom=mujoco.mj_id2name(m, mujoco.mjtObj.mjOBJ_GEOM, c.palm),
+        palm_normal="+y of the palm frame: the side the fingers flex toward; the palm mesh's thinnest principal axis is "
+                    f"{c.palm_thin_axis_angle_deg:.2f} deg from it",
+        palm_side_max_y_m={k: round(v, 5) for k, v in c.palm_side_max_y.items()},
+        palm_side_max_y_note="largest palm-frame y of the palm geom and of the thumb's base link geom (all joints 0): the thumb "
+                             "base stands out above the palm face, next to the palm normal",
+        grasp_height=f"palm origin {GRASP_Z_ABOVE_TABLE} m above the table (sim/pick_place.py GRASP_Z_ABOVE_TABLE); cylinder base on "
+                     f"the table; cylinder height = config height_m = {c.height} m for every D",
+        diameters_mm=[round(D * 1e3, 3) for D in DIAMETERS],
+        diameters_note=f"60-110 mm in 5 mm steps + the M1 cylinder's {OLD_CYLINDER_D * 1e3:g} mm (sim/scene.py CUP_RADIUS x 2; "
+                       f"already on the grid; height {c.height} m like every D, not the M1 cylinder's 0.10 m: this row "
+                       f"varies the diameter only) + 99 mm (mug label)",
+        grid=f"{GRID_N} values per joint, np.linspace over the joint range (ends included); other digits at 0. phi_max is a "
+             "lower bound of the continuous maximum (a finer grid containing this one can only raise it); joint steps "
+             "are range / 20 (4.5-6 deg)",
+        digits={dg: dict(joints=[f"{SIDE}_hand_{j}_joint" for j in DIGITS[dg]], ranges_rad=c.ranges[dg].round(6).tolist(),
+                         fingertip_geom=mujoco.mj_id2name(m, mujoco.mjtObj.mjOBJ_GEOM, c.tip[dg]),
+                         digit_geoms=[mujoco.mj_id2name(m, mujoco.mjtObj.mjOBJ_GEOM, g) for g in c.digit_geoms[dg]],
+                         base_x_palm_frame_m=round(c.digit_base_x[dg], 5),
+                         positive_phi="counter-clockwise about palm +z (fingers flex from +x toward +y)" if WRAP_SIGN[dg] > 0
+                         else "clockwise about palm +z (thumb curls from +y toward +x)") for dg in DIGITS},
+        touch=f"fingertip geom distance in [0, {TOUCH_MAX_M * 1e3:g}] mm AND every collision geom of the digit >= -{PENETRATION_MAX_M * 1e3:g} mm",
+        closest_point_surface="side / top cap / bottom cap, or 'top rim edge' / 'bottom rim edge' when the point is at radius r "
+                              "AND at a cap height (within 0.1 mm)",
+        phi_finger_max="max over index and middle",
+        verdict="comfortable if both maxima >= 90 deg; marginal if both >= 90 - atan(mu); infeasible otherwise "
+                "(a digit with no touching configuration counts as infeasible)")
+
+
+def mu_info(c: Capacity, mu: float, pairs: dict, check: dict) -> dict:
+    m = c.model
+    return dict(value=mu, source="model.pair_friction[0] of the explicit pairs cup_geom x fingertip geom in the compiled scene "
                                  "(sim/scene.py: CUP_FRICTION['hand'] = HERO's glazed-ceramic prior); explicit pairs replace the "
                                  "geoms' max-friction mixing (hand geoms 1.5, cup 0.35)",
                 pairs=pairs, contact_check_at_99mm=check,
@@ -442,7 +498,46 @@ def main():
                                          note="information only, not used: MuJoCo's pyramidal cone is inscribed in the friction "
                                               "cone, so between its edges the tangential limit drops to mu/sqrt(2)"),
                 solver=dict(cone="pyramidal" if m.opt.cone == mujoco.mjtCone.mjCONE_PYRAMIDAL else "elliptic",
-                            impratio=float(m.opt.impratio), noslip_iterations=int(m.opt.noslip_iterations))),
+                            impratio=float(m.opt.impratio), noslip_iterations=int(m.opt.noslip_iterations)))
+
+
+def run_info(t0: float) -> dict:
+    return dict(mujoco=mujoco.__version__, runtime_s=round(time.perf_counter() - t0, 1),
+                peak_rss_mb=round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024),       # ru_maxrss is in kB on Linux
+                gpu="none (CPU only)")
+
+
+QUESTION = ("With the palm against an upright cylinder of diameter D, can the thumb and the fingers reach far enough around it "
+            "to oppose the palm's push? (kinematics only)")
+
+
+def main_v2():
+    """B2 v2: palm-centre anchor -> results/m1_grasp_fix/b2_capacity.json + .png (kept so the v2 result reproduces)."""
+    t0 = time.perf_counter()
+    c = Capacity(anchor="palm_centre")
+    mu, marginal_deg, pairs = friction(c)
+    rows = rate_diameters(c, marginal_deg)
+    mug_row, check = mug_contact_check(c, rows)
+    sens = anchor_sensitivity(c, marginal_deg)
+    for r in sens["rows"]:          # the palm-centre rows must repeat the main result
+        if r["anchor"].startswith("palm centre"):
+            main_row = next(m for m in rows if m["D_mm"] == r["D_mm"])
+            assert (r["verdict"], r["phi_thumb_max_deg"], r["phi_finger_max_deg"]) == \
+                   (main_row["verdict"], main_row["phi_thumb_max_deg"], main_row["phi_finger_max_deg"]), r
+    print("anchor sensitivity:", json.dumps(sens["verdict_runs"]), flush=True)
+    at = lambda D, anchor: next(r["verdict"] for r in sens["rows"] if r["D_mm"] == round(D * 1e3, 3) and r["anchor"].startswith(anchor))
+    result = dict(
+        question=QUESTION,
+        method=dict(
+            shared_method(c),
+            palm_normal_anchor_palm_frame_m=c.palm_centre.round(5).tolist(),
+            palm_normal_anchor="centre of the palm collision geom (MuJoCo puts a mesh geom's frame at the mesh centroid); "
+                               "not fixed by the spec: see open_questions[0] and anchor_sensitivity",
+            cylinder_axis="parallel to palm z (= world up in the oracle's side grasp), crossing the palm normal line; slid along the "
+                          "normal until mj_geomDistance(palm, cylinder) = 0 (bisection, < 1e-7 m)",
+            phi="angle about the cylinder axis of the fingertip's closest point on the cylinder (mj_geomDistance fromto), from the palm "
+                "contact point (0 deg), positive toward the digit's own side (fixed per digit by the hand, WRAP_SIGN), wrapped to [-180, 180]"),
+        mu=mu_info(c, mu, pairs, check),
         thresholds_deg=dict(comfortable=90.0, marginal=round(marginal_deg, 4)),
         rows=rows,
         verdict_99mm=mug_row["verdict"],
@@ -463,14 +558,75 @@ def main():
             b4_gate="B4 (STOP Track B if 99 mm is infeasible) follows from verdict_99mm, so it inherits this choice: confirm the "
                     "anchor with the user before treating B5 as ruled out")],
         anchor_sensitivity=sens,
-        mujoco=mujoco.__version__, runtime_s=round(time.perf_counter() - t0, 1),
-        peak_rss_mb=round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024),       # ru_maxrss is in kB on Linux
-        gpu="none (CPU only)")
+        **run_info(t0))
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "b2_capacity.json").write_text(json.dumps(result, indent=2))
     plot(rows, mu, marginal_deg, OUT_DIR / "b2_capacity.png")
     print(f"mu {mu}  marginal threshold {marginal_deg:.2f} deg  -> 99 mm: {mug_row['verdict']} (palm-centre anchor)   contact check: {check}")
     print(f"wrote {OUT_DIR / 'b2_capacity.json'} and {OUT_DIR / 'b2_capacity.png'} ({result['runtime_s']} s, peak RSS {result['peak_rss_mb']} MB)")
+
+
+def main_v3():
+    """B2v3: the cylinder axis at the radius-consistent grasp pose -> results/m1_grasp_fix/v3/b2v3_capacity.json + .png.
+    The 80 mm row is the positive control (must not be infeasible); 99 mm decides whether the fix ladder runs."""
+    t0 = time.perf_counter()
+    # at the M1 cylinder's radius the v3 pose is exactly the oracle's: that is what makes 80 mm a positive control
+    assert np.array_equal(radius_consistent_offset(OLD_CYLINDER_D / 2), GRASP_OFFSET)
+    c = Capacity(anchor="radius_consistent")
+    mu, marginal_deg, pairs = friction(c)
+    rows = rate_diameters(c, marginal_deg)
+    mug_row, check = mug_contact_check(c, rows)
+    old_row = next(r for r in rows if r["is_old_cylinder"])
+    control_ok = old_row["verdict"] != "infeasible"
+    gate_ok = mug_row["verdict"] in ("comfortable", "marginal")
+    decision = ("continue to the fix ladder (L1-L3)" if control_ok and gate_ok else
+                "STOP Track B: the positive control failed (80 mm rated infeasible)" if not control_ok else
+                "STOP Track B: 99 mm is infeasible")
+    result = dict(
+        question=QUESTION,
+        version="B2v3 (M2 v3)",
+        change_from_v2="the cylinder axis sits at the radius-consistent grasp pose, palm-frame (0.077, r + 0.015), instead of being "
+                       "slid along the palm normal through the palm centre until it touches the palm; phi 0 is therefore the "
+                       "cylinder point facing the palm (there is no palm contact point to start from). Everything else as in v2; "
+                       "v2's anchor_sensitivity is not repeated.",
+        method=dict(
+            shared_method(c),
+            cylinder_axis=f"parallel to palm z (= world up in the oracle's side grasp), at palm-frame (x, y) = "
+                          f"radius_consistent_offset(r)[:2] = ({GRASP_OFFSET[0]:g}, r + {PALM_SURFACE_GAP:g}) "
+                          "(sim/pick_place.py; the oracle's GRASP_OFFSET with its palm-normal component made r + 0.015, exactly "
+                          "GRASP_OFFSET at r = 0.040); nothing slides, the palm may touch or overlap the cylinder "
+                          "(palm_geom_distance_mm per row, information only)",
+            phi="angle about the cylinder axis of the fingertip's closest point on the cylinder (mj_geomDistance fromto), from the "
+                "cylinder point facing the palm (0 deg: the surface point straight back from the axis along the palm normal, palm -y), "
+                "positive toward the digit's own side (fixed per digit by the hand, WRAP_SIGN), wrapped to [-180, 180]"),
+        mu=mu_info(c, mu, pairs, check),
+        thresholds_deg=dict(comfortable=90.0, marginal=round(marginal_deg, 4)),
+        rows=rows,
+        positive_control_80mm=dict(verdict=old_row["verdict"], required="not infeasible", passed=control_ok,
+                                   why="at 80 mm (r 0.040) the radius-consistent pose is exactly the oracle's GRASP_OFFSET, and the "
+                                       "oracle grasps the M1 cylinder 20/20 (B3 R0); this row uses h 0.091 m like every D"),
+        verdict_99mm=mug_row["verdict"],
+        gate_99mm=dict(verdict=mug_row["verdict"], rule="continue to the ladder only if 99 mm is comfortable or marginal",
+                       continue_to_ladder=gate_ok),
+        decision=decision,
+        **run_info(t0))
+    V3_DIR.mkdir(parents=True, exist_ok=True)
+    (V3_DIR / "b2v3_capacity.json").write_text(json.dumps(result, indent=2))
+    plot(rows, mu, marginal_deg, V3_DIR / "b2v3_capacity.png", V3_PLOT_TEXT)
+    print(f"mu {mu}  marginal threshold {marginal_deg:.2f} deg  -> positive control 80 mm: {old_row['verdict']}, 99 mm: "
+          f"{mug_row['verdict']} -> {decision}   contact check: {check}")
+    print(f"wrote {V3_DIR / 'b2v3_capacity.json'} and {V3_DIR / 'b2v3_capacity.png'} ({result['runtime_s']} s, peak RSS {result['peak_rss_mb']} MB)")
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--version", choices=("v2", "v3"), required=True,
+                    help="v2: palm-centre anchor (results/m1_grasp_fix/); v3: radius-consistent grasp pose (results/m1_grasp_fix/v3/)")
+    args = ap.parse_args()
+    if args.version == "v2":
+        main_v2()
+    else:
+        main_v3()
 
 
 if __name__ == "__main__":

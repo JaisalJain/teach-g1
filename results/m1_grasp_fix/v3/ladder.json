@@ -1,0 +1,718 @@
+{
+  "question": "Track B v3 fix ladder: which cumulative change first gets my mug (B3's R3: full mug from config, 0.40 kg) to >= 18/20 on B3's 20 trials?",
+  "protocol": {
+    "object": "B3's R3: full mug (config), handle 0.06 x 0.010 m, 0.4 kg; each trial's handle yaw (= B3 R3)",
+    "trials": "trials 0-19 of sim.m1_pick_mug.trials() built with the legacy grasp (B3's layouts and handle yaws, asserted per trial), the same for every rung",
+    "cumulative": "each rung = the previous rung's named PickPlace parameters + its own change; every parameter defaults to its legacy (M1) value",
+    "spec_order": [
+      "L1",
+      "L2",
+      "L3"
+    ],
+    "stop_rule": "stop at the first rung with >= 18/20",
+    "constraints": "no friction coefficient, PD gain, torque limit, mug geometry or mass is changed: a rung only sets named PickPlace parameters (effective_params)",
+    "success": "cup tilt < 10 deg, cup centre within coaster radius (5 cm), resting on the coaster (|dz| < 4 mm), robot never fell (sim/pick_place.py, unchanged); Wilson score interval, z = 1.96",
+    "lift_slip": "PickPlace lift_slip_in_hand_cm x 10, over the trials that reached the end of the lift (n); over_lift_slip_limit = trials above 20 mm",
+    "lift_cup_rise": "PickPlace lift_cup_rise_cm (cup rise over the 10 cm palm lift), over the trials that reached the end of the lift",
+    "contact_fraction_at_lift": "B3's definition: lift frame = first control step of the oracle's 'lift' phase (hand fully closed after the 0.5 s close hold, lift reference just started, palm not yet risen); contacts = data.contact after that step (its last 1 ms substep); by geom pair in data.contact: right-hand geom -> its body (thumb_0/1/2 = thumb, index_0/1 = index, middle_0/1 = middle, palm_link = palm); object = any geom of the cup body; grasp contact = thumb AND (index OR middle) AND palm; denominator 20 (a trial that never reached the lift counts as no contact)",
+    "accepted": "only rungs with guards in the spec (L3) can be accepted or rejected; null = no guard defined for that rung, or a guard not run yet; the final evaluation needs a rung that meets the stop rule and was not rejected"
+  },
+  "legacy_r0": {
+    "run_file": "results/m1_grasp_fix/v3/runs/R0.json",
+    "tag": null,
+    "params": {},
+    "effective_params": {
+      "grasp_offset": "legacy"
+    },
+    "success": "20/20",
+    "successes": 20,
+    "trials": 20,
+    "wilson95": [
+      0.839,
+      1.0
+    ],
+    "failures_by_category": {},
+    "lift_slip_in_hand_mm": {
+      "mean": 7.8,
+      "median": 6.85,
+      "n": 20,
+      "over_lift_slip_limit": 0
+    },
+    "lift_cup_rise_cm": {
+      "mean": 7.28,
+      "median": 7.16,
+      "n": 20
+    },
+    "contact_fraction_at_lift": {
+      "grasp_contact": 12,
+      "of": 20,
+      "fraction": 0.6,
+      "part_touching_counts": {
+        "thumb": 20,
+        "index": 15,
+        "middle": 20,
+        "palm": 12
+      },
+      "reached_lift": 20
+    },
+    "trials_identical_to_b3_r0": "20/20",
+    "trials_identical_to_m1": "20/20",
+    "required": "20/20, every trial identical to M1",
+    "passed": true
+  },
+  "legacy_r0_rechecks": [
+    {
+      "run_file": "results/m1_grasp_fix/v3/runs/R0_after_l2.json",
+      "tag": "after_l2",
+      "params": {},
+      "effective_params": {
+        "grasp_offset": "legacy",
+        "closing_targets": "hero"
+      },
+      "success": "20/20",
+      "successes": 20,
+      "trials": 20,
+      "wilson95": [
+        0.839,
+        1.0
+      ],
+      "failures_by_category": {},
+      "lift_slip_in_hand_mm": {
+        "mean": 7.8,
+        "median": 6.85,
+        "n": 20,
+        "over_lift_slip_limit": 0
+      },
+      "lift_cup_rise_cm": {
+        "mean": 7.28,
+        "median": 7.16,
+        "n": 20
+      },
+      "contact_fraction_at_lift": {
+        "grasp_contact": 12,
+        "of": 20,
+        "fraction": 0.6,
+        "part_touching_counts": {
+          "thumb": 20,
+          "index": 15,
+          "middle": 20,
+          "palm": 12
+        },
+        "reached_lift": 20
+      },
+      "trials_identical_to_b3_r0": "20/20",
+      "trials_identical_to_m1": "20/20",
+      "required": "20/20, every trial identical to M1",
+      "passed": true
+    },
+    {
+      "run_file": "results/m1_grasp_fix/v3/runs/R0_after_l3.json",
+      "tag": "after_l3",
+      "params": {},
+      "effective_params": {
+        "grasp_offset": "legacy",
+        "closing_targets": "hero",
+        "contact_model": "legacy"
+      },
+      "success": "20/20",
+      "successes": 20,
+      "trials": 20,
+      "wilson95": [
+        0.839,
+        1.0
+      ],
+      "failures_by_category": {},
+      "lift_slip_in_hand_mm": {
+        "mean": 7.8,
+        "median": 6.85,
+        "n": 20,
+        "over_lift_slip_limit": 0
+      },
+      "lift_cup_rise_cm": {
+        "mean": 7.28,
+        "median": 7.16,
+        "n": 20
+      },
+      "contact_fraction_at_lift": {
+        "grasp_contact": 12,
+        "of": 20,
+        "fraction": 0.6,
+        "part_touching_counts": {
+          "thumb": 20,
+          "index": 15,
+          "middle": 20,
+          "palm": 12
+        },
+        "reached_lift": 20
+      },
+      "trials_identical_to_b3_r0": "20/20",
+      "trials_identical_to_m1": "20/20",
+      "required": "20/20, every trial identical to M1",
+      "passed": true
+    }
+  ],
+  "before_ladder": {
+    "rung": "B3 R3 (mug, no change)",
+    "source": "results/m1_grasp_fix/b3_causes.json summary.R3",
+    "params": {},
+    "success": "0/20",
+    "successes": 0,
+    "trials": 20,
+    "wilson95": [
+      0.0,
+      0.161
+    ],
+    "failures_by_category": {
+      "dropped while moving": 8,
+      "slip during lift": 12
+    },
+    "lift_slip_in_hand_mm": {
+      "mean": 20.75,
+      "median": 20.1,
+      "n": 20,
+      "over_lift_slip_limit": 10
+    },
+    "lift_cup_rise_cm": {
+      "mean": 5.11,
+      "median": 4.98,
+      "n": 20
+    },
+    "contact_fraction_at_lift": {
+      "grasp_contact": 13,
+      "of": 20,
+      "fraction": 0.65,
+      "part_touching_counts": {
+        "thumb": 20,
+        "index": 6,
+        "middle": 20,
+        "palm": 13
+      },
+      "reached_lift": 20
+    }
+  },
+  "rungs": [
+    {
+      "rung": "L1",
+      "change": "radius-consistent palm target: object axis at palm-frame (0.077, r + 0.015, 0) with r from the object (mug body cylinder, 0.0495 m) instead of the fixed (0.077, 0.055, 0); 8 cm pre-grasp backoff unchanged",
+      "own_params": {
+        "grasp_offset": "radius"
+      },
+      "params": {
+        "grasp_offset": "radius"
+      },
+      "effective_params": {
+        "grasp_offset": "radius"
+      },
+      "base_run": "R3",
+      "object": "full mug (config), handle 0.06 x 0.010 m",
+      "mass_kg": 0.4,
+      "success": "0/20",
+      "successes": 0,
+      "trials": 20,
+      "wilson95": [
+        0.0,
+        0.161
+      ],
+      "failures_by_category": {
+        "dropped while moving": 5,
+        "slip during lift": 15
+      },
+      "lift_slip_in_hand_mm": {
+        "mean": 21.96,
+        "median": 22.7,
+        "n": 20,
+        "over_lift_slip_limit": 12
+      },
+      "lift_cup_rise_cm": {
+        "mean": 4.99,
+        "median": 4.96,
+        "n": 20
+      },
+      "contact_fraction_at_lift": {
+        "grasp_contact": 14,
+        "of": 20,
+        "fraction": 0.7,
+        "part_touching_counts": {
+          "thumb": 20,
+          "index": 10,
+          "middle": 20,
+          "palm": 14
+        },
+        "reached_lift": 20
+      },
+      "meets_stop_rule": false,
+      "guards": null,
+      "accepted": null,
+      "grasp": {
+        "grasp_offset": "radius",
+        "cup_radius_m": 0.0495,
+        "cup_in_palm_frame_m": [
+          0.077,
+          0.0645,
+          0.0
+        ],
+        "palm_point_to_surface_along_normal_m": 0.015,
+        "approach_dir_in_palm_frame_deg": 39.95,
+        "palm_offset_m": [
+          -0.1001,
+          0.0088,
+          0.0195
+        ],
+        "approach_dir_world": [
+          0.9961,
+          -0.088,
+          -0.0
+        ],
+        "palm_quat_wxyz": [
+          0.9239,
+          0.0,
+          0.0,
+          -0.3827
+        ]
+      },
+      "contact": null,
+      "run_file": "results/m1_grasp_fix/v3/runs/L1.json",
+      "resources": {
+        "wall_s": 28.1,
+        "peak_rss_mb_sum_of_processes": 6636,
+        "peak_rss_mb_max_process": 1796,
+        "gpu": "none (CPU only, onnxruntime CPU)"
+      }
+    },
+    {
+      "rung": "L2",
+      "change": "finger closing targets for this radius: the right hand's closed pose = per-digit fingertip IK (5 mm radially inside the 99 mm mug, from each digit's B2v3 max-wrap configuration; results/m1_grasp_fix/v3/l2_targets.json) instead of HERO's closed pose; open pose, ramp, gains, torque limits and squeeze rule unchanged",
+      "own_params": {
+        "closing_targets": "ik_mug"
+      },
+      "params": {
+        "grasp_offset": "radius",
+        "closing_targets": "ik_mug"
+      },
+      "effective_params": {
+        "grasp_offset": "radius",
+        "closing_targets": "ik_mug"
+      },
+      "base_run": "R3",
+      "object": "full mug (config), handle 0.06 x 0.010 m",
+      "mass_kg": 0.4,
+      "success": "0/20",
+      "successes": 0,
+      "trials": 20,
+      "wilson95": [
+        0.0,
+        0.161
+      ],
+      "failures_by_category": {
+        "dropped while moving": 1,
+        "slip during lift": 19
+      },
+      "lift_slip_in_hand_mm": {
+        "mean": 47.06,
+        "median": 30.3,
+        "n": 20,
+        "over_lift_slip_limit": 19
+      },
+      "lift_cup_rise_cm": {
+        "mean": 3.21,
+        "median": 4.34,
+        "n": 20
+      },
+      "contact_fraction_at_lift": {
+        "grasp_contact": 14,
+        "of": 20,
+        "fraction": 0.7,
+        "part_touching_counts": {
+          "thumb": 20,
+          "index": 5,
+          "middle": 17,
+          "palm": 16
+        },
+        "reached_lift": 20
+      },
+      "meets_stop_rule": false,
+      "guards": null,
+      "accepted": null,
+      "grasp": {
+        "grasp_offset": "radius",
+        "cup_radius_m": 0.0495,
+        "cup_in_palm_frame_m": [
+          0.077,
+          0.0645,
+          0.0
+        ],
+        "palm_point_to_surface_along_normal_m": 0.015,
+        "approach_dir_in_palm_frame_deg": 39.95,
+        "palm_offset_m": [
+          -0.1001,
+          0.0088,
+          0.0195
+        ],
+        "approach_dir_world": [
+          0.9961,
+          -0.088,
+          -0.0
+        ],
+        "palm_quat_wxyz": [
+          0.9239,
+          0.0,
+          0.0,
+          -0.3827
+        ],
+        "closing_targets": "ik_mug",
+        "closing_targets_source": "results/m1_grasp_fix/v3/l2_targets.json",
+        "right_hand_closed_pose_rad": {
+          "thumb_0": -1.8900699564274753e-09,
+          "thumb_1": 0.40640453785762337,
+          "thumb_2": -1.1900825215189528,
+          "index_0": 0.21794381993844808,
+          "index_1": 1.2947705302946848,
+          "middle_0": 0.21731573343849736,
+          "middle_1": 1.2935655223191085
+        }
+      },
+      "contact": null,
+      "run_file": "results/m1_grasp_fix/v3/runs/L2.json",
+      "resources": {
+        "wall_s": 19.9,
+        "peak_rss_mb_sum_of_processes": 6802,
+        "peak_rss_mb_max_process": 1712,
+        "gpu": "none (CPU only, onnxruntime CPU)"
+      }
+    },
+    {
+      "rung": "L3",
+      "change": "contact model: elliptic friction cones, impratio 10 and 3 NoSlip iterations (global solver options, MuJoCo docs' advice against slip), condim 4 on the right fingertip (thumb_2, index_1, middle_1) and palm geoms (the mug geoms and the cup pairs are condim 4 already); friction coefficients, solref / solimp, gains, torque limits, mug geometry and mass unchanged (sim/scene.py GRASP_OPTIONS)",
+      "own_params": {
+        "contact_model": "grasp"
+      },
+      "params": {
+        "grasp_offset": "radius",
+        "closing_targets": "ik_mug",
+        "contact_model": "grasp"
+      },
+      "effective_params": {
+        "grasp_offset": "radius",
+        "closing_targets": "ik_mug",
+        "contact_model": "grasp"
+      },
+      "base_run": "R3",
+      "object": "full mug (config), handle 0.06 x 0.010 m",
+      "mass_kg": 0.4,
+      "success": "11/20",
+      "successes": 11,
+      "trials": 20,
+      "wilson95": [
+        0.342,
+        0.742
+      ],
+      "failures_by_category": {
+        "missed/knocked cup": 9
+      },
+      "lift_slip_in_hand_mm": {
+        "mean": 6.8,
+        "median": 6.6,
+        "n": 11,
+        "over_lift_slip_limit": 0
+      },
+      "lift_cup_rise_cm": {
+        "mean": 6.87,
+        "median": 6.86,
+        "n": 11
+      },
+      "contact_fraction_at_lift": {
+        "grasp_contact": 5,
+        "of": 20,
+        "fraction": 0.25,
+        "part_touching_counts": {
+          "thumb": 11,
+          "index": 4,
+          "middle": 10,
+          "palm": 5
+        },
+        "reached_lift": 11
+      },
+      "meets_stop_rule": false,
+      "guards": {
+        "rule": "spec: with L3's contact model, m1_reach_test at 0.74 m must show no fall and R0 must stay 20/20; otherwise L3 is rejected (its R3 numbers are still recorded)",
+        "reach_test": {
+          "results_file": "results/m1_grasp_fix/v3/reach_l3/reach_results.json",
+          "table_height_m": 0.74,
+          "contact_model": "grasp",
+          "fall_rule": "pelvis z < 0.3 m, or pelvis tilt > 60.0 deg, or a non-foot/hand body part touching floor/table",
+          "required": "no fall",
+          "passed": true,
+          "fell": false,
+          "pelvis_z_min_m": 0.686,
+          "pelvis_tilt_max_deg": 12.8,
+          "body_part_touched_floor_or_table": false,
+          "root_xy_drift_max_m": 0.086,
+          "palm_err_cm_over_goals": {
+            "mean": {
+              "mean": 1.73,
+              "max": 2.0
+            },
+            "max": {
+              "mean": 4.67,
+              "max": 6.45
+            },
+            "final": {
+              "mean": 1.51,
+              "max": 1.89
+            }
+          },
+          "cup_displacement_max_cm": 0.04,
+          "m1_same_height": {
+            "fell": false,
+            "pelvis_z_min_m": 0.689,
+            "pelvis_tilt_max_deg": 12.9,
+            "body_part_touched_floor_or_table": false,
+            "root_xy_drift_max_m": 0.088,
+            "palm_err_cm_over_goals": {
+              "mean": {
+                "mean": 1.7,
+                "max": 2.03
+              },
+              "max": {
+                "mean": 4.64,
+                "max": 6.22
+              },
+              "final": {
+                "mean": 1.43,
+                "max": 1.93
+              }
+            },
+            "cup_displacement_max_cm": 0.05
+          },
+          "wall_time_s": 49.3,
+          "peak_rss_mb": 1648,
+          "legacy_check": {
+            "results_file": "results/m1_grasp_fix/v3/reach_legacy/reach_results.json",
+            "reference": "results/m1_reach/reach_results.json",
+            "compared": "every field of the 0.74 m summary except the wall-clock times (wall_time_s, goals[*].initial_plan.ik_s), and every array of series_h074.npz",
+            "fields_differing": [],
+            "series_arrays_differing": [],
+            "identical": true,
+            "peak_rss_mb": 1712
+          }
+        },
+        "r0": {
+          "run": "L3_R0",
+          "change": "L3 guard: R0 (M1 cylinder, 0.15 kg, B3's R0 trials) with L3's own change {'contact_model': 'grasp'} only",
+          "run_file": "results/m1_grasp_fix/v3/runs/L3_R0.json",
+          "params": {
+            "contact_model": "grasp"
+          },
+          "effective_params": {
+            "grasp_offset": "legacy",
+            "closing_targets": "hero",
+            "contact_model": "grasp"
+          },
+          "contact": {
+            "contact_model": "grasp",
+            "cone": "mjCONE_ELLIPTIC",
+            "impratio": 10.0,
+            "noslip_iterations": 3,
+            "solver": "mjSOL_NEWTON",
+            "solver_tolerance": 1e-08,
+            "condim_right_hand_geoms": {
+              "right_hand_palm_link": 4,
+              "right_hand_thumb_0_link": 3,
+              "right_hand_thumb_1_link": 3,
+              "right_hand_thumb_2_link": 4,
+              "right_hand_middle_0_link": 3,
+              "right_hand_middle_1_link": 4,
+              "right_hand_index_0_link": 3,
+              "right_hand_index_1_link": 4
+            },
+            "condim_cup_geoms": [
+              4
+            ],
+            "condim_explicit_pairs": [
+              4
+            ]
+          },
+          "success": "20/20",
+          "successes": 20,
+          "trials": 20,
+          "wilson95": [
+            0.839,
+            1.0
+          ],
+          "failures_by_category": {},
+          "lift_slip_in_hand_mm": {
+            "mean": 3.86,
+            "median": 3.25,
+            "n": 20,
+            "over_lift_slip_limit": 0
+          },
+          "lift_cup_rise_cm": {
+            "mean": 7.79,
+            "median": 7.94,
+            "n": 20
+          },
+          "contact_fraction_at_lift": {
+            "grasp_contact": 10,
+            "of": 20,
+            "fraction": 0.5,
+            "part_touching_counts": {
+              "thumb": 20,
+              "index": 20,
+              "middle": 20,
+              "palm": 10
+            },
+            "reached_lift": 20
+          },
+          "required": "20/20",
+          "passed": true,
+          "resources": {
+            "wall_s": 37.8,
+            "peak_rss_mb_sum_of_processes": 6570,
+            "peak_rss_mb_max_process": 1719,
+            "gpu": "none (CPU only, onnxruntime CPU)"
+          }
+        },
+        "accepted": true
+      },
+      "accepted": true,
+      "grasp": {
+        "grasp_offset": "radius",
+        "cup_radius_m": 0.0495,
+        "cup_in_palm_frame_m": [
+          0.077,
+          0.0645,
+          0.0
+        ],
+        "palm_point_to_surface_along_normal_m": 0.015,
+        "approach_dir_in_palm_frame_deg": 39.95,
+        "palm_offset_m": [
+          -0.1001,
+          0.0088,
+          0.0195
+        ],
+        "approach_dir_world": [
+          0.9961,
+          -0.088,
+          -0.0
+        ],
+        "palm_quat_wxyz": [
+          0.9239,
+          0.0,
+          0.0,
+          -0.3827
+        ],
+        "closing_targets": "ik_mug",
+        "closing_targets_source": "results/m1_grasp_fix/v3/l2_targets.json",
+        "right_hand_closed_pose_rad": {
+          "thumb_0": -1.8900699564274753e-09,
+          "thumb_1": 0.40640453785762337,
+          "thumb_2": -1.1900825215189528,
+          "index_0": 0.21794381993844808,
+          "index_1": 1.2947705302946848,
+          "middle_0": 0.21731573343849736,
+          "middle_1": 1.2935655223191085
+        }
+      },
+      "contact": {
+        "contact_model": "grasp",
+        "cone": "mjCONE_ELLIPTIC",
+        "impratio": 10.0,
+        "noslip_iterations": 3,
+        "solver": "mjSOL_NEWTON",
+        "solver_tolerance": 1e-08,
+        "condim_right_hand_geoms": {
+          "right_hand_palm_link": 4,
+          "right_hand_thumb_0_link": 3,
+          "right_hand_thumb_1_link": 3,
+          "right_hand_thumb_2_link": 4,
+          "right_hand_middle_0_link": 3,
+          "right_hand_middle_1_link": 4,
+          "right_hand_index_0_link": 3,
+          "right_hand_index_1_link": 4
+        },
+        "condim_cup_geoms": [
+          4
+        ],
+        "condim_explicit_pairs": [
+          4
+        ]
+      },
+      "contact_model_sources": [
+        {
+          "url": "https://mujoco.readthedocs.io/en/stable/modeling.html#cslowslippage",
+          "source": "https://github.com/google-deepmind/mujoco/blob/3.13.0/doc/modeling.rst",
+          "section": "Modeling > Tips and tricks > Preventing slip > Slow slippage",
+          "used_for": "cone, impratio, noslip_iterations",
+          "quote": "After ruling out the faster failure modes above, slow slippage can be reduced in two ways. a. Use elliptic cones and increase impratio. This makes the friction dimensions harder relative to the normal dimension without increasing the friction coefficient. It reduces slow slippage but does not guarantee exact sticking. The slip rate also depends on contact parameters, loading, geometry and dynamics, so impratio alone does not define a universal rate. b. For stronger suppression, enable the NoSlip solver by setting noslip_iterations to a positive integer. A small number (1, 2 or 3) is usually sufficient. [...] Exact zero slip is not guaranteed. NoSlip also adds computational cost, makes inverse dynamics ill-defined and can occasionally cause instabilities in complex multi-contact systems."
+        },
+        {
+          "url": "https://mujoco.readthedocs.io/en/stable/modeling.html#calgorithms",
+          "source": "https://github.com/google-deepmind/mujoco/blob/3.13.0/doc/modeling.rst",
+          "section": "Modeling > Introduction > Solver settings",
+          "used_for": "cone, impratio, noslip_iterations",
+          "quote": "When contact slip is a problem, the best way to suppress it is to use elliptic cones, large impratio, and the Newton algorithm with very small tolerance. If that is not sufficient, enable the Noslip solver."
+        },
+        {
+          "url": "https://mujoco.readthedocs.io/en/stable/overview.html#soft",
+          "source": "https://github.com/google-deepmind/mujoco/blob/3.13.0/doc/overview.rst",
+          "section": "Overview > Softness and slip",
+          "used_for": "cone, impratio",
+          "quote": "Thus using the Newton solver with elliptic friction cones and large value of impratio is the recommended way of reducing slip."
+        },
+        {
+          "url": "https://mujoco.readthedocs.io/en/stable/XMLreference.html#option-impratio",
+          "source": "https://github.com/google-deepmind/mujoco/blob/3.13.0/doc/XMLreference.rst",
+          "section": "XML Reference > option > impratio",
+          "used_for": "impratio (only with elliptic cones)",
+          "quote": "Settings larger than 1 cause friction forces to be \"harder\" than normal forces, having the general effect of reducing slow slippage without increasing the actual friction coefficient or guaranteeing exact sticking. For pyramidal friction cones the situation is more complex because the pyramidal approximation mixes normal and frictional dimensions within each basis vector; it is not recommended to use high impratio values with pyramidal cones."
+        },
+        {
+          "url": "https://mujoco.readthedocs.io/en/stable/XMLreference.html#option-noslip-iterations",
+          "source": "https://github.com/google-deepmind/mujoco/blob/3.13.0/doc/XMLreference.rst",
+          "section": "XML Reference > option > noslip_iterations",
+          "used_for": "noslip_iterations",
+          "quote": "Maximum number of iterations of the NoSlip solver. This is a post-processing step executed after the main solver. It uses a modified PGS method to suppress slip/drift in friction dimensions resulting from the soft-constraint model. The default setting 0 disables this post-processing step."
+        },
+        {
+          "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html#sonoslip",
+          "source": "https://github.com/google-deepmind/mujoco/blob/3.13.0/doc/computation/index.rst",
+          "section": "Computation > Constraint solver > Algorithms > NoSlip",
+          "used_for": "noslip_iterations (its caveat)",
+          "quote": "This suppresses the contact slip that is inherent to soft-constraint models. However, this cascade of optimization steps no longer solves a single well-defined optimization problem; it is an ad-hoc correction that can occasionally cause instabilities in models with complex multi-contact interactions."
+        },
+        {
+          "url": "https://mujoco.readthedocs.io/en/stable/XMLreference.html#option-cone",
+          "source": "https://github.com/google-deepmind/mujoco/blob/3.13.0/doc/XMLreference.rst",
+          "section": "XML Reference > option > cone",
+          "used_for": "cone",
+          "quote": "Elliptic cones are a better model of the physical reality, but pyramidal cones sometimes make the solver faster and more robust."
+        },
+        {
+          "url": "https://mujoco.readthedocs.io/en/stable/modeling.html#cslippage",
+          "source": "https://github.com/google-deepmind/mujoco/blob/3.13.0/doc/modeling.rst",
+          "section": "Modeling > Tips and tricks > Preventing slip",
+          "used_for": "condim 4",
+          "quote": "Torsional friction is insufficient to apply the required torques. Increase condim to 4 or 6 and choose appropriate friction coefficients. condim 4 enables torsional friction, preventing rotation around the normal."
+        }
+      ],
+      "contact_model_values": {
+        "impratio": 10.0,
+        "noslip_iterations": 3,
+        "note": "The docs say 'increase' / 'large' impratio but give no number anywhere (searched every doc page at tag 3.13.0). 10 is the value DeepMind's MuJoCo Menagerie pairs with cone=\"elliptic\" in its grippers and hands (main branch, read 2026-10-30: robotiq_2f85/2f85.xml, aloha/aloha.xml, wonik_allegro/right_hand.xml, shadow_hand/right_hand.xml: <option cone=\"elliptic\" impratio=\"10\"/>; leap_hand/right_hand.xml uses 100; unitree_g1/g1_with_hands.xml sets neither). noslip_iterations 3 = the top of the docs' '1, 2 or 3'. Both fixed before any L3 run; no other value was tried.",
+        "not_changed": "The docs' solver advice also says 'Newton algorithm with very small tolerance' (Solver settings: 'say 1e-10'); the solver is already Newton, and its tolerance stays 1e-8 because the spec names only cone, condim, impratio and noslip_iterations."
+      },
+      "run_file": "results/m1_grasp_fix/v3/runs/L3.json",
+      "resources": {
+        "wall_s": 26.8,
+        "peak_rss_mb_sum_of_processes": 6573,
+        "peak_rss_mb_max_process": 1676,
+        "gpu": "none (CPU only, onnxruntime CPU)"
+      }
+    }
+  ],
+  "stopped_at": null,
+  "rejected": [],
+  "next": "no accepted rung reached >= 18/20",
+  "runtime_s": 0.0,
+  "peak_rss_mb": 63
+}
