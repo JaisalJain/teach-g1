@@ -1,0 +1,187 @@
+{
+  "rule": "the module docstring's: 4 runs (90 deg recorded b_level, one b_level approach knock, one naive, one oracle mug_v1 success) + the b_level success the GIF is made from; each re-run alone with video and its row compared with the saved row field by field, except wall_s and worker_peak_rss_mb",
+  "picks": {
+    "recorded_90deg": "4e103843db__b_level__recorded_v2",
+    "b_level_failure": "e8825dea53__b_level__trial07",
+    "naive": "4e103843db__naive__trial00",
+    "oracle": "oracle_mug_v1__trial00",
+    "gif_success": "e8825dea53__b_level__recorded_v2"
+  },
+  "renderer": "Intel / Mesa Intel(R) Graphics (ARL) (EGL)",
+  "env": {
+    "MUJOCO_GL": "egl",
+    "__EGL_VENDOR_LIBRARY_FILENAMES": "/usr/share/glvnd/egl_vendor.d/50_mesa.json"
+  },
+  "camera": "grasp_right",
+  "resolution": "1280x720",
+  "fps": "25 (one frame per 2 control steps of 50 Hz)",
+  "video_dir": "results/m4_execute/videos",
+  "videos": [
+    {
+      "roles": [
+        "recorded_90deg"
+      ],
+      "run": "4e103843db__b_level__recorded_v2",
+      "video": "results/m4_execute/videos/4e103843db__b_level__recorded_v2.mp4",
+      "saved_row": "results/m4_execute/runs/4e103843db__b_level__recorded_v2.json",
+      "saved_success": false,
+      "saved_category": "palm could not reach the target",
+      "saved_reason": "settle_grasp: palm 6.6 cm from the target after 3.0 s (not reachable)",
+      "rerun_success": false,
+      "rerun_category": "palm could not reach the target",
+      "same_outcome": true,
+      "identical": true,
+      "fields_differing": [],
+      "compared": "every field of the row, recursively, except wall_s and worker_peak_rss_mb",
+      "control_steps": 710,
+      "frames_written": 355,
+      "frames_in_file": 355,
+      "width": 1280,
+      "height": 720,
+      "fps": "25/1",
+      "size_bytes": 3420341,
+      "wall_s": 17.3
+    },
+    {
+      "roles": [
+        "b_level_failure"
+      ],
+      "run": "e8825dea53__b_level__trial07",
+      "video": "results/m4_execute/videos/e8825dea53__b_level__trial07.mp4",
+      "saved_row": "results/m4_execute/runs/e8825dea53__b_level__trial07.json",
+      "saved_success": false,
+      "saved_category": "missed/knocked cup",
+      "saved_reason": "knocked the cup before grasping (moved 2.2 cm, tilt 0 deg)",
+      "rerun_success": false,
+      "rerun_category": "missed/knocked cup",
+      "same_outcome": true,
+      "identical": true,
+      "fields_differing": [],
+      "compared": "every field of the row, recursively, except wall_s and worker_peak_rss_mb",
+      "control_steps": 570,
+      "frames_written": 285,
+      "frames_in_file": 285,
+      "width": 1280,
+      "height": 720,
+      "fps": "25/1",
+      "size_bytes": 2779657,
+      "wall_s": 13.4
+    },
+    {
+      "roles": [
+        "naive"
+      ],
+      "run": "4e103843db__naive__trial00",
+      "video": "results/m4_execute/videos/4e103843db__naive__trial00.mp4",
+      "saved_row": "results/m4_execute/runs/4e103843db__naive__trial00.json",
+      "saved_success": false,
+      "saved_category": "released but not on the coaster",
+      "saved_reason": "cup not on the coaster, cup not resting on the coaster",
+      "rerun_success": false,
+      "rerun_category": "released but not on the coaster",
+      "same_outcome": true,
+      "identical": true,
+      "fields_differing": [],
+      "compared": "every field of the row, recursively, except wall_s and worker_peak_rss_mb",
+      "control_steps": 683,
+      "frames_written": 341,
+      "frames_in_file": 341,
+      "width": 1280,
+      "height": 720,
+      "fps": "25/1",
+      "size_bytes": 3255664,
+      "wall_s": 12.3
+    },
+    {
+      "roles": [
+        "oracle"
+      ],
+      "run": "oracle_mug_v1__trial00",
+      "video": "results/m4_execute/videos/oracle_mug_v1__trial00.mp4",
+      "saved_row": "results/m1_grasp_fix/v3_final/runs/fifty.json runs[0]",
+      "saved_success": true,
+      "saved_category": null,
+      "saved_reason": null,
+      "rerun_success": true,
+      "rerun_category": null,
+      "same_outcome": true,
+      "identical": true,
+      "fields_differing": [],
+      "compared": "every field of the row, recursively, except wall_s and worker_peak_rss_mb",
+      "control_steps": 1055,
+      "frames_written": 527,
+      "frames_in_file": 527,
+      "width": 1280,
+      "height": 720,
+      "fps": "25/1",
+      "size_bytes": 4942135,
+      "wall_s": 18.8
+    },
+    {
+      "roles": [
+        "gif_success"
+      ],
+      "run": "e8825dea53__b_level__recorded_v2",
+      "video": "results/m4_execute/videos/e8825dea53__b_level__recorded_v2.mp4",
+      "saved_row": "results/m4_execute/runs/e8825dea53__b_level__recorded_v2.json",
+      "saved_success": true,
+      "saved_category": null,
+      "saved_reason": null,
+      "rerun_success": true,
+      "rerun_category": null,
+      "same_outcome": true,
+      "identical": true,
+      "fields_differing": [],
+      "compared": "every field of the row, recursively, except wall_s and worker_peak_rss_mb",
+      "control_steps": 1015,
+      "frames_written": 507,
+      "frames_in_file": 507,
+      "width": 1280,
+      "height": 720,
+      "fps": "25/1",
+      "size_bytes": 4921629,
+      "wall_s": 18.6
+    }
+  ],
+  "gif": {
+    "run": "e8825dea53__b_level__recorded_v2",
+    "file": "results/m4_execute/b_level_success.gif",
+    "source": "results/m4_execute/videos/e8825dea53__b_level__recorded_v2.mp4",
+    "chosen": {
+      "width": 576,
+      "fps": 10.0,
+      "size_bytes": 4918895
+    },
+    "tried": [
+      {
+        "width": 960,
+        "fps": 12.5,
+        "size_bytes": 14679890
+      },
+      {
+        "width": 800,
+        "fps": 10.0,
+        "size_bytes": 8784767
+      },
+      {
+        "width": 640,
+        "fps": 10.0,
+        "size_bytes": 5821519
+      },
+      {
+        "width": 576,
+        "fps": 10.0,
+        "size_bytes": 4918895
+      }
+    ],
+    "max_bytes": 5000000,
+    "real_time": true,
+    "frames": 203,
+    "tool": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+  },
+  "resources": {
+    "wall_s": 86.0,
+    "peak_rss_mb": 2392,
+    "gpu": "none for physics (CPU); rendering: Intel / Mesa Intel(R) Graphics (ARL) (EGL)"
+  }
+}

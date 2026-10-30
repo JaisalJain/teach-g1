@@ -58,7 +58,21 @@ Run from the repo root (env -u PYTHONPATH conda run --no-capture-output -n hoi-s
   check-oracle the determinism check through the UNCHANGED oracle: Track B final's mug_v1 trials 0-4 (ForcePickPlace via the
                ladder's worker) against results/m1_grasp_fix/v3_final/runs/fifty.json, every field; plus Execute's setup vs
                PickPlace.run's own (run_m3.SetupOnly), byte for byte -> results/m4_execute/determinism_checks.json
-Rendering: none (no video is written by any of these commands).
+  videos       after the batch: re-renders 4 runs with video (+ the GIF's run) and checks each re-run row against the saved one
+               (see "videos" below). The only command that renders.
+Rendering: only ``videos`` writes video. It needs MUJOCO_GL=egl and __EGL_VENDOR_LIBRARY_FILENAMES (Mesa's, so rendering stays off the
+NVIDIA GPU), both set on the command line, as for sim/m1_pick_mug.py videos.
+
+videos (``cmd_videos``): the runs are chosen from the saved rows by fixed rules (``video_picks``), each is run again from scratch with
+video through the same code as ``rerun`` (run_one(..., video_path=...)), and the new row is compared with the saved one field by
+field (``row_differences``: every field except wall_s and worker_peak_rss_mb). The video is the run in the saved row only if they are
+identical. Roles: recorded_90deg = the 90 deg clip's b_level recorded_v2 run (shown whatever its outcome); b_level_failure = the b_level
+approach knock ("missed/knocked cup") with the lowest trial index; naive = 4e103843db naive trial00; oracle = Track B final's mug_v1
+trial 0 (results/m1_grasp_fix/v3_final/runs/fifty.json), re-run through the unchanged oracle exactly as sim/m1_grasp_final.py videos
+renders it (ForcePickPlace, sim/m1_pick_mug.py run_trial) and compared field by field after putting the row into the form fifty.json
+stores; gif_success = the first b_level success among the 90 deg recorded_v2 run, GIF_CLIP's recorded_v2 run, GIF_CLIP's b_level
+trials in index order. The GIF (<out>/b_level_success.gif) is made from that run's mp4 with ffmpeg (palette GIF, the first of
+GIF_SETTINGS under GIF_MAX_BYTES). <out>/videos/videos.json records the renderer, the comparisons, frame counts and file sizes.
 """
 
 from __future__ import annotations
@@ -71,6 +85,7 @@ import math
 import multiprocessing
 import os
 import re
+import subprocess
 import time
 import traceback
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -424,13 +439,17 @@ def collision_diagnostic(task: Execute, ctx: dict) -> dict:
     return dict(collision_min=collision_min(task, ctx["layout"], ctx["path"]))
 
 
-def run_one(clip: str, variant: str, layout: str, *, paths: str = "v2", diagnostics: tuple[str, ...] = (COLLISION_DIAGNOSTIC,)) -> dict:
+def run_one(clip: str, variant: str, layout: str, *, paths: str = "v2", diagnostics: tuple[str, ...] = (COLLISION_DIAGNOSTIC,),
+            video_path: Path | None = None, video_info: dict | None = None) -> dict:
     """One run: (clip, variant, layout name) -> its row. Row = sim/m1_pick_mug.py's row fields (trial, layout_seed,
     layout_index, cup_xy, coaster_xy, handle_yaw_deg, mass_kg, RESULT_KEYS, wall_s, detail) + run, clip, variant, layout,
     paths, settles (top level) and the diagnostics' fields. ``diagnostics`` = "module:function" names (default: the Step 3
     collision minimum, as the CLI); each is called AFTER
     the physics run as f(task, ctx) with ctx = dict(clip, variant, layout (dict), path, p_s, q_now, demo, human, oracle,
-    layouts) and returns a dict merged into the row (it may change the simulator state: the run is over)."""
+    layouts) and returns a dict merged into the row (it may change the simulator state: the run is over).
+    ``video_path`` (default None = no video; only ``videos`` sets it) renders the run; ``video_info``, if given, receives
+    ``control_steps`` = the number of control steps the video's log saw (one frame is written per 2 of them). Neither
+    touches the row."""
     t0 = time.perf_counter()
     task, ctx = worker_task(), clip_context(clip)
     lay = ctx["layouts"][layout]
@@ -440,7 +459,9 @@ def run_one(clip: str, variant: str, layout: str, *, paths: str = "v2", diagnost
         made.update(p_s=p_s, q_now=q_now, path=build_path(paths, clip, variant, ctx, lay, p_s, q_now))
         return made["path"]
 
-    r = task.run_variant(variant, lay, make_path)
+    r = task.run_variant(variant, lay, make_path, video_path)
+    if video_info is not None and video_path is not None:
+        video_info["control_steps"] = task.log.video.n          # read now: the diagnostics below replace task.log
     path = made.get("path")
     row = dict(run=run_name(clip, variant, layout), clip=clip, variant=variant, layout=layout, paths=paths, profile=PROFILE,
                trial=lay.get("trial"), layout_seed=lay.get("layout_seed"), layout_index=lay.get("layout_index"),
@@ -601,6 +622,149 @@ def cmd_check_oracle(args):
         raise SystemExit(1)
 
 
+# ---------------------------------------------------------------------------------------------------------------- videos
+CLIP_90DEG = "4e103843db"           # the 90 deg clip
+GIF_CLIP = "e8825dea53"             # the GIF's fallback clip when the 90 deg recorded run is not a success (one of the two 45 deg clips)
+GIF_NAME = "b_level_success.gif"
+GIF_MAX_BYTES = 5_000_000           # spec: under 5 MB
+GIF_SETTINGS = ((960, 12.5), (800, 10.0), (640, 10.0), (576, 10.0), (480, 10.0), (480, 6.25))   # (width px, fps), best first; the video is
+                                                                                                # 25 fps, GIF delays are whole 1/100 s: all exact
+VIDEO_ROLES = ("recorded_90deg", "b_level_failure", "naive", "oracle", "gif_success")
+ORACLE_TRIAL = 0
+
+
+def video_picks(runs_dir: Path) -> dict[str, str]:
+    """role -> the saved row's run name, for the rules in the module docstring. Only rows that ran to the end count (error rows
+    have success None). Raises if a rule finds nothing."""
+    rows = {r["run"]: r for r in (json.loads(p.read_text()) for p in sorted(runs_dir.glob("*.json"))) if r.get("success") is not None}
+    by_trial = lambda r: (r["trial"], CLIPS.index(r["clip"]))
+    rec90 = run_name(CLIP_90DEG, "b_level", "recorded_v2")
+    knocks = sorted((r for r in rows.values() if r["variant"] == "b_level" and r["trial"] is not None and not r["success"]
+                     and r["failed_phase"] == "approach" and r["category"] == CATEGORY["approach"]), key=by_trial)
+    gif_candidates = [rec90, run_name(GIF_CLIP, "b_level", "recorded_v2")] + \
+        [r["run"] for r in sorted((r for r in rows.values() if r["clip"] == GIF_CLIP and r["variant"] == "b_level" and r["trial"] is not None), key=by_trial)]
+    gif_run = next((n for n in gif_candidates if n in rows and rows[n]["success"]), None)
+    picks = dict(recorded_90deg=rec90, b_level_failure=knocks[0]["run"] if knocks else None,
+                 naive=run_name(CLIP_90DEG, "naive", f"trial{ORACLE_TRIAL:02d}"), oracle=f"oracle_mug_v1__trial{ORACLE_TRIAL:02d}", gif_success=gif_run)
+    missing = [k for k, v in picks.items() if v is None or (k != "oracle" and v not in rows)]
+    if missing:
+        raise SystemExit(f"videos: no saved row for {missing} in {runs_dir}")
+    return picks
+
+
+def oracle_row_as_stored(again: dict) -> dict:
+    """sim/m1_pick_mug.py run_trial's row in the form fifty.json stores it (sim/m1_grasp_ladder.py trial_row, then m1_grasp_final
+    cmd_run): handle_yaw_deg is called cup_yaw_deg, and lift_frame_contacts, lift_frame_substeps and grasp_forces are top-level
+    fields instead of entries of detail. Nothing is changed or dropped."""
+    row, detail = dict(again), dict(again["detail"])
+    row["cup_yaw_deg"] = row.pop("handle_yaw_deg")
+    for k in ("lift_frame_contacts", "lift_frame_substeps", "grasp_forces"):
+        row[k] = detail.pop(k)
+    row["detail"] = detail
+    return row
+
+
+def mp4_info(path: Path) -> dict:
+    """What the file itself says (ffprobe, frames counted by decoding): frames, size in pixels, frame rate, bytes."""
+    out = subprocess.run(["ffprobe", "-v", "error", "-count_frames", "-select_streams", "v:0", "-show_entries",
+                          "stream=nb_read_frames,width,height,r_frame_rate", "-of", "json", str(path)],
+                         check=True, capture_output=True, text=True).stdout
+    s = json.loads(out)["streams"][0]
+    return dict(frames_in_file=int(s["nb_read_frames"]), width=int(s["width"]), height=int(s["height"]), fps=s["r_frame_rate"],
+                size_bytes=path.stat().st_size)
+
+
+def make_gif(mp4: Path, gif: Path) -> dict:
+    """Palette GIF of the whole mp4 at real time, at the first of GIF_SETTINGS whose file is under GIF_MAX_BYTES."""
+    tried = []
+    for width, fps in GIF_SETTINGS:
+        vf = (f"fps={fps},scale={width}:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];"
+              "[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle")
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(mp4), "-vf", vf, "-loop", "0", str(gif)], check=True)
+        tried.append(dict(width=width, fps=fps, size_bytes=gif.stat().st_size))
+        if tried[-1]["size_bytes"] < GIF_MAX_BYTES:
+            return dict(file=str(gif), source=str(mp4), chosen=tried[-1], tried=tried, max_bytes=GIF_MAX_BYTES, real_time=True,
+                        frames=mp4_info(gif)["frames_in_file"], tool=subprocess.run(["ffmpeg", "-version"], capture_output=True, text=True).stdout.splitlines()[0])
+    gif.unlink()
+    raise SystemExit(f"videos: no GIF setting fits under {GIF_MAX_BYTES} bytes: {tried}")
+
+
+def cmd_videos(args):
+    if os.environ.get("MUJOCO_GL") != "egl" or not os.environ.get("__EGL_VENDOR_LIBRARY_FILENAMES"):
+        raise SystemExit("videos: set MUJOCO_GL=egl and __EGL_VENDOR_LIBRARY_FILENAMES (here: /usr/share/glvnd/egl_vendor.d/50_mesa.json) "
+                         "on the command line, so rendering does not land on the NVIDIA GPU")
+    from sim.m1_grasp_final import N_FIFTY, PROFILE as FINAL_PROFILE, ForcePickPlace, gl_renderer
+    from sim.m1_grasp_ladder import fixed_trials, make_task
+    from sim.m1_pick_mug import run_trial
+    from sim.visuals import CAMERA_NAME, VIDEO_HEIGHT, VIDEO_WIDTH
+
+    t0 = time.perf_counter()
+    picks = video_picks(args.runs)
+    roles = list(args.only or VIDEO_ROLES)
+    if "gif_success" in roles and picks["gif_success"] in [picks[r] for r in roles if r != "gif_success"]:
+        roles.remove("gif_success")                    # the GIF's run is rendered anyway under its other role (no second render)
+    videos_dir = args.out / "videos"
+    videos_dir.mkdir(parents=True, exist_ok=True)
+    report = dict(
+        rule="the module docstring's: 4 runs (90 deg recorded b_level, one b_level approach knock, one naive, one oracle mug_v1 success) "
+             "+ the b_level success the GIF is made from; each re-run alone with video and its row compared with the saved row field by "
+             "field, except wall_s and worker_peak_rss_mb",
+        picks=picks, renderer=gl_renderer(), env=dict(MUJOCO_GL=os.environ["MUJOCO_GL"],
+                                                      __EGL_VENDOR_LIBRARY_FILENAMES=os.environ["__EGL_VENDOR_LIBRARY_FILENAMES"]),
+        camera=CAMERA_NAME, resolution=f"{VIDEO_WIDTH}x{VIDEO_HEIGHT}", fps="25 (one frame per 2 control steps of 50 Hz)",
+        video_dir=str(videos_dir), videos=[], gif=None)
+    save = lambda: (videos_dir / "videos.json").write_text(json.dumps(report, indent=2))
+    oracle_task = None
+    for role in roles:
+        run, video = picks[role], videos_dir / f"{picks[role]}.mp4"
+        t1 = time.perf_counter()
+        info = {}
+        if role == "oracle":
+            fifty = json.loads(FIFTY.read_text())["runs"]
+            saved = fifty[ORACLE_TRIAL]
+            assert saved["trial"] == ORACLE_TRIAL and saved["success"], f"{FIFTY} trial {ORACLE_TRIAL} is not an oracle success"
+            oracle_task = make_task("R3", FINAL_PROFILE, ForcePickPlace)          # sim/m1_grasp_final.py cmd_videos, line for line
+            trial = fixed_trials(oracle_task, N_FIFTY)[ORACLE_TRIAL]
+            again = run_trial(oracle_task, trial, video)
+            info["control_steps"] = oracle_task.log.video.n
+            assert (again["cup_xy"], again["coaster_xy"], again["handle_yaw_deg"]) == (saved["cup_xy"], saved["coaster_xy"], saved["cup_yaw_deg"])
+            again = oracle_row_as_stored(again)
+            src = f"{FIFTY} runs[{ORACLE_TRIAL}]"
+        else:
+            src = args.runs / f"{run}.json"
+            saved = json.loads(src.read_text())
+            again = run_one(saved["clip"], saved["variant"], saved["layout"], paths=saved["paths"],
+                            diagnostics=tuple(saved.get("diagnostics_run", ())), video_path=video, video_info=info)
+        differing = row_differences(json.loads(json.dumps(again)), saved)
+        same_outcome = all(again[k] == saved[k] for k in ("success", "failed_phase", "category"))
+        entry = dict(roles=[r for r in (args.only or VIDEO_ROLES) if picks[r] == run], run=run, video=str(video), saved_row=str(src), saved_success=saved["success"], saved_category=saved["category"],
+                     saved_reason=saved["reason"], rerun_success=again["success"], rerun_category=again["category"],
+                     same_outcome=same_outcome, identical=not differing, fields_differing=differing,
+                     compared="every field of the row, recursively, except wall_s and worker_peak_rss_mb",
+                     control_steps=info["control_steps"], frames_written=info["control_steps"] // 2, **mp4_info(video),
+                     wall_s=round(time.perf_counter() - t1, 1))
+        report["videos"].append(entry)
+        report["resources"] = dict(wall_s=round(time.perf_counter() - t0, 1), peak_rss_mb=peak_rss_mb(),
+                                   gpu=f"none for physics (CPU); rendering: {report['renderer']}")
+        save()                                                  # after every video, so a mismatch is on record
+        print(f"{role}: {run}: saved {'SUCCESS' if saved['success'] else 'FAIL ' + str(saved['category'])}, rerun "
+              f"{'SUCCESS' if again['success'] else 'FAIL ' + str(again['category'])}, identical {not differing}"
+              + (f", differs in {differing}" if differing else "") + f", {entry['frames_in_file']} frames, {entry['size_bytes'] / 1e6:.1f} MB", flush=True)
+    gif_entry = next((v for v in report["videos"] if v["run"] == picks["gif_success"]), None)
+    if "gif_success" in (args.only or VIDEO_ROLES) and gif_entry is not None:
+        if not (gif_entry["identical"] and gif_entry["rerun_success"]):
+            print(f"no GIF: the re-run of {picks['gif_success']} is not an identical success")
+        else:
+            report["gif"] = dict(run=picks["gif_success"], **make_gif(Path(gif_entry["video"]), args.out / GIF_NAME))
+            report["resources"]["wall_s"] = round(time.perf_counter() - t0, 1)
+            save()
+            print(f"GIF: {report['gif']['file']} {report['gif']['chosen']['size_bytes'] / 1e6:.2f} MB at {report['gif']['chosen']}")
+    bad = [v["run"] for v in report["videos"] if not v["identical"]]
+    print(f"wrote {videos_dir / 'videos.json'}: {len(report['videos'])} videos, {len(bad)} not identical{': ' + str(bad) if bad else ''}")
+    if bad:
+        raise SystemExit(1)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -619,11 +783,15 @@ def main():
     rerun = sub.add_parser("rerun", help="re-run one saved row and compare it field by field")
     rerun.add_argument("--row", type=Path, required=True)
     rerun.add_argument("--report", type=Path, default=None)
+    vid = sub.add_parser("videos", help="re-run 4 chosen runs + the GIF's run with video and compare each with its saved row")
+    vid.add_argument("--out", type=Path, default=OUT_DIR, help="videos/ and videos/videos.json go here, and the GIF")
+    vid.add_argument("--runs", type=Path, default=OUT_DIR / "runs", help="the saved rows the runs are chosen from and compared with")
+    vid.add_argument("--only", nargs="+", choices=VIDEO_ROLES, default=None, help="smoke tests: only these roles (default: all)")
     chk = sub.add_parser("check-oracle", help="Track B mug_v1 trials through the unchanged oracle + Execute setup identity")
     chk.add_argument("--trials", type=int, default=5)
     chk.add_argument("--out", type=Path, default=OUT_DIR)
     args = ap.parse_args()
-    dict(run=cmd_run, rerun=cmd_rerun, **{"check-oracle": cmd_check_oracle})[args.cmd](args)
+    dict(run=cmd_run, rerun=cmd_rerun, videos=cmd_videos, **{"check-oracle": cmd_check_oracle})[args.cmd](args)
 
 
 if __name__ == "__main__":

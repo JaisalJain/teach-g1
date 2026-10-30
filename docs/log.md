@@ -1540,3 +1540,18 @@ So with the layout built from my own recorded coaster offset, 1 of 4 clips compl
 | checker: check-oracle | 25.7 s | 2732 MB |
 
 All far below the 16 GB per-process cap.
+
+### M4 — merge step and videos step
+- **Track V** (worktree `../hoi-visual`, branch `visual-polish`, commit dae8217): visual-only polish in the new `sim/visuals.py`
+  (dark-green glossy mug + 3 handle capsules, white interior as a MuJoCo *site* — a zero-mass non-colliding *geom* still changed the cup
+  free joint's compiled `dof_length`, which the check caught; cream coaster; procedural wood table; neutral floor with haze; key + fill
+  lights; named render camera `grasp_right`; video 1280×720). Proof `sim/check_visual_only.py`: 1656/1656 element-for-element comparisons
+  identical (6 cup × contact models; spec fields + extras + 1 s of dynamics). R0 `visual` = M1 (20/20 identical).
+  Before/after image: `results/visual_polish/before_after.png`; 5 s test video `results/visual_polish/r0_trial00_5s.mp4` (gitignored).
+- **Merge** (`5f3bfd5`): no file changed by both tracks, no conflict. On the merged code: `check_visual_only --base 6fb6537` (pre-merge
+  main) PASS 1656/1656; R0 `after_merge` 20/20 identical to M1 and B3; the 5 M4 reruns (first b_level run of each clip + 4e103843db naive
+  trial00) identical to their saved rows (`results/visual_polish/merge/`). Worktree removed.
+- **Videos** (`python -m sim.m4_execute videos`, new visuals, each re-run identical to its saved row; mp4 gitignored, in
+  `results/m4_execute/videos/`): 4e103843db b_level recorded_v2 (fails at reach, palm 6.6 cm short), e8825dea53 b_level trial07 (approach
+  knock), 4e103843db naive trial00, oracle mug_v1 trial00 (success), and e8825dea53 b_level recorded_v2 (success). GIF of that b_level
+  success: `results/m4_execute/b_level_success.gif` (4.92 MB) — the 90° recorded-layout run could not be used because it failed.
