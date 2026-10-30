@@ -242,3 +242,23 @@ max 1.20 / 1.74 cm; no falls; ~21 s of sim per attempt, ~5–8 s wall incl. IK a
 `results/m1_pick/pick_results.json` (fixed + 10), `results/m1_pick_extended/pick_results.json` (40), `results/m1_pick_stress/pick_results.json`
 (20, outside the box). Videos (gitignored): success `results/m1_pick/videos/fixed.mp4`; failures `results/m1_pick_stress/videos/random_13.mp4`
 (dropped while lowering), `random_05.mp4` (knocked cup), `random_12.mp4` (out of reach).
+
+---
+
+## 2026-10-30 (Fri) — M2 prep: perception install plan (research only, nothing installed)
+
+Cloned (source only, gitignored): WiLoR `fcb911312a38fa8badd30d9656a167485d61b8f9`, sam2 `2b90b9f5ceec907a1c18123530e92e794ad901a4`,
+stray-scanner `ec3e1dc9d33f8df2289ede6a5c59f7991d1a6bbb`. Findings from reading their code/docs (a background research agent; to be verified on
+real clips):
+- **hoi-perception today:** Python 3.10.22, torch 2.11.0+cu128, torchvision 0.26.0+cu128, numpy 2.2.6 — none of WiLoR's / SAM 2's other deps installed.
+  `pip --dry-run` with a constraints file: 64 packages (~173 MB), no torch / numpy / nvidia change, nothing to compile. No nvcc on the machine.
+- **WiLoR:** YOLO hand detector (53.6 MB) + ViT-H reconstruction checkpoint (**2.56 GB**). Needs `MANO_RIGHT.pkl` — manual registration at
+  mano.is.tue.mpg.de (user step). Weights licence CC-BY-NC-ND, MANO licence non-commercial → never commit them (`*.pkl` added to .gitignore).
+  Its 3D hand is not metric in depth: translation comes from a weak-perspective camera with a fixed fake focal length (5000/256·max(H,W)) →
+  plan: keep the hand shape/articulation, re-solve translation with the real intrinsics against its 2D keypoints, check against LiDAR depth.
+  torch 2.11 loading quirks: needs `TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1`; ultralytics must not auto-install (`YOLO_AUTOINSTALL=false`).
+- **SAM 2.1:** no conflicts; CUDA extension optional (skip). base_plus checkpoint 324 MB. Video predictor wants a folder of JPEG frames.
+- **Stray Scanner (docs/format.md + app source):** depth = 16-bit PNG, 256×192, millimetres; confidence 0/1/2; `camera_matrix.csv` = K of the
+  RGB resolution; `odometry.csv` = timestamp, frame, x y z, qx qy qz qw (scalar-last), camera-to-world. **The app already rotates the camera to
+  OpenCV axes (x right, y down, z forward)**, world = ARKit (gravity y-up). This contradicts CLAUDE.md's "ARKit y-up −z-forward" — to be
+  verified on a real clip before CLAUDE.md is changed. Possible off-by-one between rgb.mp4 frames and depth/odometry rows (check counts).

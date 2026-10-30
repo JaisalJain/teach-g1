@@ -41,3 +41,6 @@ wandb/
 outputs/
 .vscode/
 .DS_Store
+
+# Third-party model files (MANO is licensed, never redistribute)
+*.pkl
