@@ -12,6 +12,8 @@ Choices (see docs/log.md, 2026-10-28):
 - table: HERO benchmark layout -- robot stance centre at the world origin, near table edge 0.18 m in front of the toes
   (toes are 0.12 m ahead of the ankles), 0.60 m deep;
 - contact: explicit cup pairs with HERO's "glazed ceramic mug" friction priors (not measured values);
+- visuals (colours, wood / floor / sky, lights, the render camera and video size): sim/visuals.py, visual only;
+  sim/check_visual_only.py compiles this scene before and after that change and asserts every physics array is identical;
 - touch sensors: one MuJoCo ``touch`` sensor per distal finger link (thumb_2, index_1, middle_1), sized to the link's
   collision geometry;
 - cup model (``cup_model``): "mug" (default) = my real mug from config/objects.yaml -- a solid cylinder body plus a D-shaped
@@ -45,6 +47,8 @@ from sim2sim.interactive_scene import (CONTACT_ROLLING_M, CONTACT_TORSIONAL_ARM_
                                        FINGER_SUFFIXES, HAND, HAND_CLOSED, HAND_OPEN, OBJECT_CONTACT_MATERIALS)
 from sim2sim.mathutil import wxyz_to_xyzw
 from sim2sim.plant import MujocoPlant, body_subtree_ids
+
+from sim.visuals import add_visuals
 
 ROBOT_URDF = G1_ASSET_ROOT / "g1_29dof_with_hand_rev_1_0.urdf"
 FOOT_COLLISION = "sonic_train"
@@ -172,37 +176,27 @@ class TableScene:
                 j.armature = float(HAND["finger_armature"])
                 j.damping = np.full(3, float(HAND["finger_damping"])) if np.ndim(j.damping) else float(HAND["finger_damping"])
 
-        # Visual only (no effect on physics): checker floor, sky gradient and a key light; the URDF brings no lights.
-        spec.add_texture(name="grid", type=mujoco.mjtTexture.mjTEXTURE_2D, builtin=mujoco.mjtBuiltin.mjBUILTIN_CHECKER,
-                         rgb1=[0.82, 0.82, 0.80], rgb2=[0.70, 0.70, 0.68], width=512, height=512)
-        spec.add_texture(name="sky", type=mujoco.mjtTexture.mjTEXTURE_SKYBOX, builtin=mujoco.mjtBuiltin.mjBUILTIN_GRADIENT,
-                         rgb1=[0.55, 0.62, 0.70], rgb2=[0.90, 0.90, 0.88], width=128, height=768)
-        floor_mat = spec.add_material(name="floor_mat", texrepeat=[4, 4], texuniform=True)
-        floor_mat.textures = ["grid" if i == int(mujoco.mjtTextureRole.mjTEXROLE_RGB) else t for i, t in enumerate(floor_mat.textures)]
-        next(g for g in spec.geoms if g.name == "floor").material = "floor_mat"
-        spec.worldbody.add_light(name="key", pos=[1.5, -1.0, 3.0], dir=[-0.4, 0.3, -0.85], diffuse=[0.7, 0.7, 0.7], castshadow=True)
-
         # Table top + four legs (static, collides with robot and cup), like HERO's "workbench".
         top = self.table_height
         cx, hx, hy = TABLE_EDGE_X + TABLE_DEPTH / 2, TABLE_DEPTH / 2, TABLE_WIDTH / 2
-        spec.worldbody.add_geom(name="table_top", type=mujoco.mjtGeom.mjGEOM_BOX, size=[hx, hy, TABLE_THICKNESS / 2],
-                                pos=[cx, 0, top - TABLE_THICKNESS / 2], rgba=[0.67, 0.57, 0.43, 1], contype=1, conaffinity=1,
-                                friction=[0.8, 0.01, 0.001])
+        table_top = spec.worldbody.add_geom(name="table_top", type=mujoco.mjtGeom.mjGEOM_BOX, size=[hx, hy, TABLE_THICKNESS / 2],
+                                            pos=[cx, 0, top - TABLE_THICKNESS / 2], contype=1, conaffinity=1, friction=[0.8, 0.01, 0.001])
         leg_half_z = (top - TABLE_THICKNESS) / 2
+        legs = []
         for dx in (-hx + 0.045, hx - 0.045):
             for dy in (-hy + 0.045, hy - 0.045):
-                spec.worldbody.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, size=[0.025, 0.025, leg_half_z], pos=[cx + dx, dy, leg_half_z],
-                                        rgba=[0.17, 0.20, 0.21, 1], contype=1, conaffinity=1, friction=[0.8, 0.01, 0.001])
+                legs.append(spec.worldbody.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, size=[0.025, 0.025, leg_half_z], pos=[cx + dx, dy, leg_half_z],
+                                                    contype=1, conaffinity=1, friction=[0.8, 0.01, 0.001]))
 
         # Coaster: a static disc lying on the table (move it later through model.geom_pos).
-        spec.worldbody.add_geom(name="coaster", type=mujoco.mjtGeom.mjGEOM_CYLINDER, size=[COASTER_RADIUS, COASTER_THICKNESS / 2, 0],
-                                pos=[*COASTER_XY, top + COASTER_THICKNESS / 2], rgba=[0.55, 0.38, 0.22, 1], contype=1, conaffinity=1)
+        coaster = spec.worldbody.add_geom(name="coaster", type=mujoco.mjtGeom.mjGEOM_CYLINDER, size=[COASTER_RADIUS, COASTER_THICKNESS / 2, 0],
+                                          pos=[*COASTER_XY, top + COASTER_THICKNESS / 2], contype=1, conaffinity=1)
 
         # Cup: free body; every cup geom gets condim 4 (torsional friction) and the demo's stiffer-than-default contact
         # (solref 0.008 s) for small props.
         cup = spec.worldbody.add_body(name="cup", pos=[*CUP_XY, top + self.cup_height / 2 + 0.001])
         cup.add_freejoint(name="cup_free")
-        contact = dict(rgba=[0.85, 0.85, 0.80, 1], contype=1, conaffinity=1, condim=4, solref=[0.008, 1.0],
+        contact = dict(contype=1, conaffinity=1, condim=4, solref=[0.008, 1.0],
                        friction=[CUP_FRICTION["tabletop"], CUP_FRICTION["tabletop"] * CONTACT_TORSIONAL_ARM_M["tabletop"], CONTACT_ROLLING_M])
         if self.cup_model == "cylinder":
             cup_geoms = [cup.add_geom(name="cup_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, size=[CUP_RADIUS, CUP_HEIGHT / 2, 0],
@@ -248,6 +242,9 @@ class TableScene:
                     rgba=[0.9, 0.2, 0.2, 0.0])
                 spec.add_sensor(name=f"touch_{side}_{finger}", type=mujoco.mjtSensor.mjSENS_TOUCH,
                                 objtype=mujoco.mjtObj.mjOBJ_SITE, objname=site.name)
+
+        # Colours, textures, lights, sky, the render camera and the video framebuffer: sim/visuals.py (visual only).
+        add_visuals(spec, cup_geoms, table_geoms=[table_top], leg_geoms=legs, coaster_geom=coaster)
 
     def _grasp_contact_model(self, spec, hands, cup_geoms) -> None:
         """Rung L3, applied to the spec before it compiles: GRASP_OPTIONS (global) and condim 4 on the right fingertip and palm

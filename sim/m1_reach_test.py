@@ -54,6 +54,7 @@ from sim2sim.reference import ClipReference
 from sim2sim.state import read_state
 
 from sim.scene import CONTACT_MODELS, TABLE_HEIGHTS, TableScene
+from sim.visuals import CAMERA_NAME, VIDEO_HEIGHT, VIDEO_WIDTH
 
 FPS = 50
 STAND_S = 10.0
@@ -133,13 +134,15 @@ class Recorder:
 
 
 class VideoWriter:
-    """Offscreen MuJoCo render every 2nd control step (25 fps), with the current goal drawn as a green sphere."""
+    """Offscreen MuJoCo render every 2nd control step (25 fps), with the current goal drawn as a green sphere.
+
+    Camera and resolution are visual only (sim/visuals.py): the scene's named camera on the robot's right side, 1280 x 720."""
 
     def __init__(self, scene: TableScene, path: Path):
-        self.renderer = mujoco.Renderer(scene.model, height=480, width=640)
-        self.cam = mujoco.MjvCamera()
-        self.cam.lookat[:] = [0.25, -0.15, 0.75]
-        self.cam.distance, self.cam.azimuth, self.cam.elevation = 2.2, 140.0, -25.0   # in front of the robot, on its right side
+        self.renderer = mujoco.Renderer(scene.model, height=VIDEO_HEIGHT, width=VIDEO_WIDTH)
+        self.cam = CAMERA_NAME
+        self.renderer.update_scene(scene.data, camera=self.cam)
+        self.renderer.render()          # a renderer's first frame differs slightly from the rest (shadows): draw one and discard it
         self.writer = imageio.get_writer(path, fps=25, quality=7, macro_block_size=8)
         self.scene, self.n = scene, 0
 

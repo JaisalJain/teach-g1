@@ -1,0 +1,236 @@
+{
+  "question": "After the visual polish, is R0 (M1's cylinder oracle, 20 trials) still identical to M1?",
+  "run_file": "results/visual_polish/runs/R0_visual.json",
+  "processes": "2 parallel CPU processes of consecutive trials: [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]]",
+  "successes": "20/20",
+  "wilson95": [
+    0.839,
+    1.0
+  ],
+  "m1_successes": 20,
+  "trials_identical_to_m1": 20,
+  "m1_fields_compared": [
+    "success",
+    "contact_closure",
+    "lift_slip_in_hand_cm",
+    "lift_cup_rise_cm",
+    "cup_off_coaster_center_cm",
+    "cup_tilt_deg",
+    "cup_final",
+    "sim_seconds"
+  ],
+  "vs_m1_differences": [],
+  "full_row_comparisons": {
+    "results/m1_grasp_fix/b3_runs/R0.json": {
+      "reference": "results/m1_grasp_fix/b3_runs/R0.json",
+      "fields_compared": "every row field except wall_s, including all of detail",
+      "trials": 20,
+      "trials_identical": 20,
+      "successes": 20,
+      "b3_successes": 20,
+      "differences": []
+    },
+    "results/m1_grasp_fix/v3/runs/R0.json": {
+      "reference": "results/m1_grasp_fix/v3/runs/R0.json",
+      "fields_compared": "every row field except wall_s, including all of detail",
+      "trials": 20,
+      "trials_identical": 20,
+      "successes": 20,
+      "ref_successes": 20,
+      "differences": []
+    },
+    "results/m1_grasp_fix/v3/runs/R0_after_l3.json": {
+      "reference": "results/m1_grasp_fix/v3/runs/R0_after_l3.json",
+      "fields_compared": "every row field except wall_s, including all of detail",
+      "trials": 20,
+      "trials_identical": 20,
+      "successes": 20,
+      "ref_successes": 20,
+      "differences": []
+    }
+  },
+  "per_trial": [
+    {
+      "trial": 0,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 1,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 2,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 3,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 4,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 5,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 6,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 7,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 8,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 9,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 10,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 11,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 12,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 13,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 14,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 15,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 16,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 17,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 18,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    },
+    {
+      "trial": 19,
+      "m1_success": true,
+      "visual_success": true,
+      "identical_to_m1": true,
+      "identical_to_b3_r0_all_fields": true
+    }
+  ],
+  "all_identical": true,
+  "resources": {
+    "wall_s": 52.4,
+    "parent_peak_rss_mb": 148,
+    "per_process": [
+      {
+        "trials": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "wall_s": 52.3,
+        "peak_rss_mb": 1602
+      },
+      {
+        "trials": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "wall_s": 49.6,
+        "peak_rss_mb": 1735
+      }
+    ],
+    "peak_rss_mb_sum_of_processes": 3337,
+    "gpu": "none (CPU only, onnxruntime CPU)"
+  },
+  "runtime_s": 52.4
+}
