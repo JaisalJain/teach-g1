@@ -45,6 +45,8 @@ Mean departure from my heading 3.4 deg (max 36.7); my own heading chosen in 35/5
 | e8825dea53 55 | 5 |
 | e8825dea53 phih | 33 |
 
+Layouts per chosen clip: R1: 26d4118b0c 24, e8825dea53 11, 4e103843db 8, 49aff04f7a 7; R2: e8825dea53 41, 26d4118b0c 5, 49aff04f7a 4; F: 4e103843db 50
+
 ## Cross-validation (5 folds by layout, 120 training layouts, noisy held-out inputs)
 
 AUC 0.916, Brier 0.102 (base rate 0.712). Held-out selection success: R1 115/120, R2 109/120, F 115/120, CEIL 120/120.

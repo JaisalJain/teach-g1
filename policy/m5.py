@@ -463,7 +463,9 @@ def cmd_summarize(args):
         what_failed[k] = {name: dict(cnt) for name, cnt in counts.items()}
     r2_succ = [r["run"] for r in groups["R2_clean"] if r["success"]]
     r2_fail = [r["run"] for r in groups["R2_clean"] if not r["success"]]
+    choice_clips = {rule: dict(Counter(c[rule]["clip"] for c in ch["choices"]).most_common()) for rule in ("R1", "R2", "F")}
     summary = dict(what="M5 Step 5 summary (policy/m5.py summarize)", ablation=abl, per_clip=per_clip, paired=paired, r2_choices=r2_choice,
+                   choice_clips=choice_clips,
                    cv=dict(auc=cv["auc"], brier=cv["brier"], base_rate=cv["base_rate"], selection=cv["selection"], n_layouts=cv["n_layouts"]),
                    candidates=dict(rows=[{k: x[k] for k in ("clip", "candidate", "phi_deg", "departure_deg", "text", "rate")} for x in cj["candidates"]],
                                    ceiling=cj["ceiling"], fixed_best=cj["fixed_best"]),
@@ -504,7 +506,8 @@ def render_summary(s: dict) -> str:
     c = s["r2_choices"]
     L += ["", "## R2's choices (from noisy inputs)", "", f"Mean departure from my heading {c['mean_departure_deg']:.1f} deg (max {c['max_departure_deg']:.1f}); "
           f"my own heading chosen in {c['chose_my_heading']}/50 trials; no candidate with p >= 0.8 (fell back to R1) in {c['fell_back_to_R1']}/50.", "",
-          "| clip candidate | trials |", "|---|---|"] + [f"| {k} | {v} |" for k, v in c["histogram"].items()]
+          "| clip candidate | trials |", "|---|---|"] + [f"| {k} | {v} |" for k, v in c["histogram"].items()] + \
+         ["", "Layouts per chosen clip: " + "; ".join(f"{rule}: " + ", ".join(f"{k} {v}" for k, v in d.items()) for rule, d in s["choice_clips"].items())]
     cv = s["cv"]
     L += ["", f"## Cross-validation (5 folds by layout, {cv['n_layouts']} training layouts, noisy held-out inputs)", "",
           f"AUC {cv['auc']:.3f}, Brier {cv['brier']:.3f} (base rate {cv['base_rate']:.3f}). Held-out selection success: " +
