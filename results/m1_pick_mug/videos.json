@@ -1,0 +1,24 @@
+[
+  {
+    "label": "failure_trial00",
+    "video": "results/m1_pick_mug/videos/failure_trial00.mp4",
+    "trial": 0,
+    "batch_success": false,
+    "rerun_success": false,
+    "same_outcome": true,
+    "identical_numbers": true,
+    "batch_category": "slip during lift",
+    "rerun_category": "slip during lift"
+  },
+  {
+    "label": "failure_trial05",
+    "video": "results/m1_pick_mug/videos/failure_trial05.mp4",
+    "trial": 5,
+    "batch_success": false,
+    "rerun_success": false,
+    "same_outcome": true,
+    "identical_numbers": true,
+    "batch_category": "dropped while moving",
+    "rerun_category": "dropped while moving"
+  }
+]

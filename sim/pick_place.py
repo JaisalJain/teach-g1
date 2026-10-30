@@ -12,12 +12,17 @@ Every phase plans a fresh HERO reference from the live robot state with our refe
 Grasp = HERO's Dex3 side grasp (sim2sim/interactive_client/controller.js computeGraspPreview), written in the CUP frame
 (origin at the cup centre, z up; the cup is round, so its x axis is taken along world x): palm yaw -45 deg (HERO's default
 outward wrist yaw), palm = cup centre - R (0.077, 0.055, 0), at 6.5 cm above the table like HERO's mug / can grasps.
+For the mug the cup centre is the centre of its body cylinder and the grasp ignores the handle (same palm pose for any yaw);
+the cup's height comes from the scene, so "6.5 cm above the table", the resting height and the place clearance keep their meaning.
 
 Success = cup upright (< 10 deg), centred on the coaster (centre within the coaster radius) and resting on it, and the robot
 never fell. A failed run reports the phase it failed in.
 
-Run:  env -u PYTHONPATH conda run -n hoi-sim python -m sim.pick_place [--trials 10] [--seed 0]
-Writes results/m1_pick/pick_results.json and one video per run under results/m1_pick/videos/.
+Run:  env -u PYTHONPATH conda run -n hoi-sim python -m sim.pick_place [--cup-model mug|cylinder] [--trials 10] [--seed 0]
+Writes <out>/pick_results.json and one video per run under <out>/videos/; <out> defaults to results/m1_pick for the cylinder
+(the M1 results: add --cup-model cylinder to reproduce them) and results/m1_pick_mug_yaw0 for the mug, which this script
+always places with its handle along world +x (the mug protocol with varied handle yaws is sim/m1_pick_mug.py). It refuses to
+overwrite a pick_results.json written for the other cup model.
 """
 
 from __future__ import annotations
@@ -45,7 +50,7 @@ from sim2sim.state import read_state
 
 from sim.m1_reach_test import FALL_PELVIS_Z, FALL_TILT_DEG, VideoWriter, standing_reference
 from sim.reference_builder import PathPlanner, min_jerk_path
-from sim.scene import COASTER_RADIUS, CUP_HEIGHT, TableScene
+from sim.scene import COASTER_RADIUS, CUP_MODELS, TableScene
 
 FPS = 50
 TABLE_HEIGHT = 0.74
@@ -70,6 +75,7 @@ TOUCH_WINDOW_S = 0.2            # contacts chatter at 1 ms: a fingertip counts a
 PALM_BOX = dict(x=(0.35, 0.45), y=(-0.32, -0.12))
 MIN_CUP_COASTER_DIST = 0.13
 OUT_DIR = Path("results/m1_pick")
+MUG_OUT_DIR = Path("results/m1_pick_mug_yaw0")
 
 SETTLE_CFG = ReplanConfig(first_event="start", period_s=0.6, base_mode="current", goal_adjust=True, handover_blend_s=0.3,
                           stay_threshold_m=SETTLE_STAY_M, skip_below_m=SETTLE_STAY_M, hold_s=6.0)
@@ -83,9 +89,9 @@ class Grasp:
     approach_dir: np.ndarray      # horizontal unit vector, palm -> cup
 
     @classmethod
-    def hero_side_grasp(cls) -> "Grasp":
+    def hero_side_grasp(cls, cup_height: float) -> "Grasp":
         R = rs.palm_rotation(WRIST_YAW, 0.0, 0.0)
-        offset = -R @ GRASP_OFFSET + np.array([0.0, 0.0, GRASP_Z_ABOVE_TABLE - CUP_HEIGHT / 2])
+        offset = -R @ GRASP_OFFSET + np.array([0.0, 0.0, GRASP_Z_ABOVE_TABLE - cup_height / 2])   # cup centre is cup_height / 2 up
         approach = -offset * np.array([1, 1, 0])
         return cls(offset, rs.mat_to_quat_wxyz(R), approach / np.linalg.norm(approach))
 
@@ -105,12 +111,16 @@ class Failure(Exception):
 
 
 class PickPlace:
-    """One scene + HERO policy + planners; ``run(cup_xy, coaster_xy)`` performs one pick-and-place attempt."""
+    """One scene + HERO policy + planners; ``run(cup_xy, coaster_xy)`` performs one pick-and-place attempt.
 
-    def __init__(self, policy: HeroExportPolicy):
+    ``cup_model`` / ``cup_mass`` go to ``TableScene`` ("mug" or "cylinder"; None = the model's own mass).
+    """
+
+    def __init__(self, policy: HeroExportPolicy, cup_model: str = "mug", cup_mass: float | None = None):
         self.policy = policy
-        self.scene = TableScene(TABLE_HEIGHT, policy.kp, policy.kd, policy.effort_limit, policy.default_dof_pos)
-        self.grasp = Grasp.hero_side_grasp()
+        self.scene = TableScene(TABLE_HEIGHT, policy.kp, policy.kd, policy.effort_limit, policy.default_dof_pos,
+                                cup_model=cup_model, cup_mass=cup_mass)
+        self.grasp = Grasp.hero_side_grasp(self.scene.cup_height)
         self.goal_template = BenchGoal(clip_name="pick", hand="right", pos_w=np.zeros(3), quat_wxyz=self.grasp.quat_wxyz,
                                        table=self.scene.ik_table(), reach_end_frame=1, pelvis_drop=0.0, pelvis_pitch=0.0,
                                        waist_pitch=0.0, base_family="stand", height_label="h074")
@@ -182,9 +192,10 @@ class PickPlace:
             self._tick(phase)
 
     # ------------------------------------------------------------------ the task
-    def run(self, cup_xy, coaster_xy, video_path: Path | None = None) -> dict:
+    def run(self, cup_xy, coaster_xy, video_path: Path | None = None, cup_yaw: float = 0.0) -> dict:
+        """One attempt; ``cup_yaw`` [rad] turns the cup about z (for the mug: the handle points along (cos, sin) of it)."""
         s, g = self.scene, self.grasp
-        s.reset(cup_xy, coaster_xy)
+        s.reset(cup_xy, coaster_xy, cup_yaw)
         self.log = Log(s, video_path)
         self.plans, self.settles, self.k, self.t, self.corrector_active = [], [], 0, 0, False
         self.ref = standing_reference(s, 200)
@@ -223,7 +234,7 @@ class PickPlace:
             # place: keep the palm orientation, so the measured palm->cup offset after the lift stays valid
             palm = read_state(s.plant).palm_pos_w[1]
             cup_in_hand = s.cup_pose()[0] - palm
-            cup_place = s.coaster_top_center() + [0, 0, CUP_HEIGHT / 2 + PLACE_CLEARANCE]
+            cup_place = s.coaster_top_center() + [0, 0, s.cup_height / 2 + PLACE_CLEARANCE]
             place_p = cup_place - cup_in_hand
             above_p = place_p + [0, 0, palm[2] - place_p[2]]
             dist = float(np.linalg.norm(above_p - palm))
@@ -293,7 +304,7 @@ class PickPlace:
         s = self.scene
         cup = s.cup_pose()[0]
         off = float(np.linalg.norm(cup[:2] - s.coaster_xy))
-        dz = float(cup[2] - (s.coaster_top_center()[2] + CUP_HEIGHT / 2))
+        dz = float(cup[2] - (s.coaster_top_center()[2] + s.cup_height / 2))
         tilt = s.cup_tilt_deg()
         out = dict(cup_final=[round(float(v), 4) for v in cup], cup_off_coaster_center_cm=round(off * 100, 2),
                    cup_height_above_resting_cm=round(dz * 100, 2), cup_tilt_deg=round(tilt, 1), fell=self.log.fell)
@@ -351,16 +362,24 @@ def sample_layouts(grasp: Grasp, n: int, seed: int, box: dict = PALM_BOX) -> lis
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--cup-model", choices=CUP_MODELS, default="mug")
     ap.add_argument("--trials", type=int, default=10)
     ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--out", type=Path, default=OUT_DIR)
+    ap.add_argument("--out", type=Path, default=None, help=f"default: {OUT_DIR} (cylinder), {MUG_OUT_DIR} (mug)")
     ap.add_argument("--palm-box", type=float, nargs=4, metavar=("X0", "X1", "Y0", "Y1"), default=None,
                     help="sample palm positions from this box instead of the measured workspace (stress test)")
     args = ap.parse_args()
     box = dict(x=tuple(args.palm_box[:2]), y=tuple(args.palm_box[2:])) if args.palm_box else PALM_BOX
+    args.out = args.out or (OUT_DIR if args.cup_model == "cylinder" else MUG_OUT_DIR)
+    # M1's command lines predate --cup-model (now default "mug"): never let one model's run overwrite the other's results
+    old = args.out / "pick_results.json"
+    if old.exists():
+        old_model = json.loads(old.read_text())["protocol"].get("cup_model", "cylinder")    # M1's files have no cup_model: cylinder
+        if old_model != args.cup_model:
+            raise SystemExit(f"{old} holds {old_model} results; pass --cup-model {old_model} to re-run them, or another --out")
     (args.out / "videos").mkdir(parents=True, exist_ok=True)
     policy = HeroExportPolicy(CHECKPOINTS_ROOT / "example", stand_flag=0.0)
-    task = PickPlace(policy)
+    task = PickPlace(policy, cup_model=args.cup_model)
     g = task.grasp
     fixed = (np.array([0.38, -0.15]) - g.palm_offset[:2], np.array([0.42, -0.29]) - g.palm_offset[:2])
     layouts = [("fixed", *fixed)] + [(f"random_{i:02d}", *l) for i, l in enumerate(sample_layouts(g, args.trials, args.seed, box))]
@@ -374,7 +393,9 @@ def main():
               f"  (cup {r['cup_off_coaster_center_cm']} cm off centre, tilt {r['cup_tilt_deg']} deg, {r['wall_s']} s)")
     rand = [r for r in runs if r["name"].startswith("random")]
     results = dict(
-        protocol=dict(table_height_m=TABLE_HEIGHT, grasp=dict(frame="cup centre, world-aligned axes", palm_offset_m=g.palm_offset.round(4).tolist(),
+        protocol=dict(table_height_m=TABLE_HEIGHT, cup_model=args.cup_model, cup_mass_kg=task.scene.cup_mass, cup_height_m=task.scene.cup_height,
+                      cup_yaw_deg=0.0, cup_yaw="cup frame = world axes (mug: handle along world +x) in every run",
+                      grasp=dict(frame="cup centre, world-aligned axes", palm_offset_m=g.palm_offset.round(4).tolist(),
                       palm_quat_wxyz=g.quat_wxyz.round(4).tolist(), approach_dir=g.approach_dir.round(4).tolist(),
                       source="HERO Dex3 side grasp: offset (0.077, 0.055, 0), wrist yaw 45 deg outward, 6.5 cm above table"),
                       pregrasp_backoff_m=PREGRASP_BACKOFF, lift_m=LIFT_HEIGHT, place_clearance_m=PLACE_CLEARANCE, settle_stay_m=SETTLE_STAY_M,

@@ -1,0 +1,188 @@
+{
+  "protocol": {
+    "table_height_m": 0.74,
+    "cup_model": "cylinder",
+    "cup_mass_kg": 0.15,
+    "cup_height_m": 0.1,
+    "cup_yaw_deg": 0.0,
+    "cup_yaw": "cup frame = world axes (mug: handle along world +x) in every run",
+    "grasp": {
+      "frame": "cup centre, world-aligned axes",
+      "palm_offset_m": [
+        -0.0933,
+        0.0156,
+        0.015
+      ],
+      "palm_quat_wxyz": [
+        0.9239,
+        0.0,
+        0.0,
+        -0.3827
+      ],
+      "approach_dir": [
+        0.9864,
+        -0.1644,
+        -0.0
+      ],
+      "source": "HERO Dex3 side grasp: offset (0.077, 0.055, 0), wrist yaw 45 deg outward, 6.5 cm above table"
+    },
+    "pregrasp_backoff_m": 0.08,
+    "lift_m": 0.1,
+    "place_clearance_m": 0.01,
+    "settle_stay_m": 0.015,
+    "touch_threshold_N": 0.3,
+    "touch_window_s": 0.2,
+    "palm_box": {
+      "x": [
+        0.35,
+        0.45
+      ],
+      "y": [
+        -0.32,
+        -0.12
+      ]
+    },
+    "min_cup_coaster_dist_m": 0.13,
+    "seed": 0,
+    "settle_cfg": {
+      "period_s": 0.6,
+      "first_event": "start",
+      "first_delay_s": 0.0,
+      "base_mode": "current",
+      "hold_s": 6.0,
+      "reach_min_s": 0.5,
+      "reach_max_s": 3.0,
+      "hold_solved_frames": 5,
+      "stay_threshold_m": 0.015,
+      "skip_below_m": 0.015,
+      "max_replans": 20,
+      "goal_adjust": true,
+      "adjust_gain": 0.6,
+      "adjust_max_step_m": 0.01,
+      "adjust_gate_m": 0.15,
+      "adjust_after_replans": 2,
+      "adjust_mode": "accumulate",
+      "handover_blend_s": 0.3,
+      "start_velocity": "zero",
+      "start_pose": "robot",
+      "stop_frame": null
+    },
+    "odom": "truth",
+    "reach_fail_m": 0.03,
+    "lift_slip_fail_m": 0.02,
+    "palm_box_constrains": "grasp palm xy and nominal place palm xy (pregrasp / lift / transport waypoints are not constrained)",
+    "close_mode": "ramp closure until thumb + index/middle touch, then HERO-demo full closure with squeeze; touch also gates the lift",
+    "place_target": "cup's true in-hand offset measured after the lift (privileged sim state), palm orientation kept",
+    "cup_and_robot_state": "exact simulator state (no perception, no odometry noise)",
+    "success": "cup tilt < 10 deg, cup centre within coaster radius (5 cm), resting on the coaster (|dz| < 4 mm), robot never fell",
+    "fall_rule": "pelvis z < 0.3 m, pelvis tilt > 60.0 deg, or a non-foot/hand body part on floor/table"
+  },
+  "fixed_layout_success": true,
+  "random_success_rate": {
+    "successes": 0,
+    "trials": 0
+  },
+  "failures_by_phase": {},
+  "failures_by_category": {},
+  "runs": [
+    {
+      "cup_xy": [
+        0.4733,
+        -0.1656
+      ],
+      "coaster_xy": [
+        0.5133,
+        -0.3056
+      ],
+      "contact_closure": 0.56,
+      "lift_cup_rise_cm": 6.52,
+      "lift_slip_in_hand_cm": 0.69,
+      "cup_final": [
+        0.5165,
+        -0.299,
+        0.796
+      ],
+      "cup_off_coaster_center_cm": 0.73,
+      "cup_height_above_resting_cm": -0.0,
+      "cup_tilt_deg": 0.0,
+      "fell": false,
+      "success": true,
+      "plans": [
+        {
+          "phase": "pregrasp",
+          "frames": 751,
+          "path_frames": 151,
+          "ik_max_path_err_cm": 1.318,
+          "ik_terminal_palm_err_cm": 0.293,
+          "qp_failures": 0
+        },
+        {
+          "phase": "approach",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.613,
+          "ik_terminal_palm_err_cm": 0.317,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lift",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.111,
+          "ik_terminal_palm_err_cm": 0.152,
+          "qp_failures": 0
+        },
+        {
+          "phase": "transport",
+          "frames": 701,
+          "path_frames": 101,
+          "ik_max_path_err_cm": 0.195,
+          "ik_terminal_palm_err_cm": 0.238,
+          "qp_failures": 0
+        },
+        {
+          "phase": "lower",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.28,
+          "ik_terminal_palm_err_cm": 0.313,
+          "qp_failures": 0
+        },
+        {
+          "phase": "retreat",
+          "frames": 676,
+          "path_frames": 76,
+          "ik_max_path_err_cm": 0.21,
+          "ik_terminal_palm_err_cm": 0.189,
+          "qp_failures": 0
+        }
+      ],
+      "settles": [
+        {
+          "phase": "settle_pregrasp",
+          "converged": true,
+          "seconds": 1.84,
+          "palm_err_cm": 1.14,
+          "replans": 3
+        },
+        {
+          "phase": "settle_grasp",
+          "converged": true,
+          "seconds": 0.04,
+          "palm_err_cm": 0.7,
+          "replans": 0
+        },
+        {
+          "phase": "settle_place",
+          "converged": true,
+          "seconds": 0.64,
+          "palm_err_cm": 1.15,
+          "replans": 1
+        }
+      ],
+      "sim_seconds": 20.12,
+      "name": "fixed",
+      "wall_s": 12.3
+    }
+  ]
+}

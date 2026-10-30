@@ -1,0 +1,1194 @@
+{
+  "protocol": {
+    "cup_model": "mug",
+    "mug": {
+      "body_outer_diameter_m": 0.099,
+      "height_m": 0.091,
+      "overall_width_with_handle_m": 0.143,
+      "handle_protrusion_m": 0.044,
+      "handle_height_m": 0.06,
+      "handle_thickness_m": 0.012,
+      "mass_kg": 0.37
+    },
+    "mass_kg": 0.37,
+    "mass_properties": {
+      "mass_kg": 0.37,
+      "com_offset_m": [
+        0.00184,
+        0.0,
+        0.0
+      ],
+      "inertia_diag_kgm2": [
+        0.0004743,
+        0.0005253,
+        0.0004931
+      ]
+    },
+    "table_height_m": 0.74,
+    "oracle": "sim/pick_place.py PickPlace, unchanged: HERO Dex3 side grasp on the body (handle ignored), phases, touch logic and success criterion as in M1; the cup's own height replaces the cylinder's",
+    "grasp": {
+      "palm_offset_m": [
+        -0.0933,
+        0.0156,
+        0.0195
+      ],
+      "palm_quat_wxyz": [
+        0.9239,
+        0.0,
+        0.0,
+        -0.3827
+      ],
+      "approach_dir": [
+        0.9864,
+        -0.1644,
+        -0.0
+      ]
+    },
+    "layouts": "sample_layouts(grasp, 10, seed=0) + sample_layouts(grasp, 40, seed=1) = M1's 50 (results/m1_pick + results/m1_pick_extended); trial k = 0..49 in that order",
+    "palm_box": {
+      "x": [
+        0.35,
+        0.45
+      ],
+      "y": [
+        -0.32,
+        -0.12
+      ]
+    },
+    "handle_yaw": "atan2(approach_dir) + U(-45, +45) deg, np.random.default_rng(2026), drawn once for all 50 trials; handle = mug body +x",
+    "approach_yaw_deg": -9.46,
+    "rerun_source": "trials() in sim/m1_pick_mug.py regenerates every trial at full precision; this file rounds cup / coaster xy to 0.1 mm and the handle yaw to 0.01 deg, so re-run from trials(), not from these numbers",
+    "success": "cup tilt < 10 deg, body centre within coaster radius (5 cm), resting on the coaster (|dz| < 4 mm), robot never fell",
+    "mujoco": "3.13.0"
+  },
+  "success": {
+    "mug 0.37 kg, 50 layouts": {
+      "successes": 0,
+      "trials": 50,
+      "rate": 0.0,
+      "wilson95": [
+        0.0,
+        0.071
+      ],
+      "failures_by_category": {
+        "dropped while moving": 21,
+        "missed/knocked cup": 1,
+        "slip during lift": 28
+      }
+    },
+    "cylinder 0.15 kg (M1), same 50 layouts": {
+      "successes": 50,
+      "trials": 50,
+      "rate": 1.0,
+      "wilson95": [
+        0.929,
+        1.0
+      ],
+      "failures_by_category": {}
+    },
+    "mug 0.25 kg, trials 0-19": {
+      "successes": 0,
+      "trials": 20,
+      "rate": 0.0,
+      "wilson95": [
+        0.0,
+        0.161
+      ],
+      "failures_by_category": {
+        "dropped while moving": 9,
+        "slip during lift": 11
+      }
+    },
+    "mug 0.37 kg, trials 0-19 (= main run)": {
+      "successes": 0,
+      "trials": 20,
+      "rate": 0.0,
+      "wilson95": [
+        0.0,
+        0.161
+      ],
+      "failures_by_category": {
+        "dropped while moving": 8,
+        "slip during lift": 12
+      }
+    },
+    "mug 0.45 kg, trials 0-19": {
+      "successes": 0,
+      "trials": 20,
+      "rate": 0.0,
+      "wilson95": [
+        0.0,
+        0.161
+      ],
+      "failures_by_category": {
+        "dropped while moving": 6,
+        "slip during lift": 14
+      }
+    }
+  },
+  "comparison_with_cylinder": {
+    "cylinder": "50/50",
+    "mug": "0/50",
+    "both_succeeded": 0,
+    "both_failed": 0,
+    "cylinder_only_succeeded": 50,
+    "mug_only_succeeded": 0,
+    "confounds": "the cylinder differs from the mug in more than shape: mass 0.15 vs 0.37 kg, body radius 4.00 vs 4.95 cm, height 10.0 vs 9.1 cm, no handle; the palm is at the same 6.5 cm above the table, i.e. 1.50 vs 1.95 cm above the cup centre",
+    "flipped": [
+      {
+        "trial": 0,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 3.0 cm in the hand, rose 4.4 of 10 cm",
+        "handle_yaw_deg": -38.36,
+        "cup_xy": [
+          0.4977,
+          -0.1485
+        ],
+        "coaster_xy": [
+          0.5249,
+          -0.335
+        ]
+      },
+      {
+        "trial": 1,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.5 cm in the hand, rose 4.8 of 10 cm",
+        "handle_yaw_deg": 3.13,
+        "cup_xy": [
+          0.4517,
+          -0.169
+        ],
+        "coaster_xy": [
+          0.522,
+          -0.2877
+        ]
+      },
+      {
+        "trial": 2,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 1.9 cm in the hand, rose 4.9 of 10 cm",
+        "handle_yaw_deg": -12.41,
+        "cup_xy": [
+          0.4884,
+          -0.1763
+        ],
+        "coaster_xy": [
+          0.4664,
+          -0.3252
+        ]
+      },
+      {
+        "trial": 3,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 3.3 cm in the hand, rose 4.2 of 10 cm",
+        "handle_yaw_deg": -21.12,
+        "cup_xy": [
+          0.4798,
+          -0.3145
+        ],
+        "coaster_xy": [
+          0.5062,
+          -0.1501
+        ]
+      },
+      {
+        "trial": 4,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.9 cm in the hand, rose 5.3 of 10 cm",
+        "handle_yaw_deg": -22.52,
+        "cup_xy": [
+          0.4913,
+          -0.2891
+        ],
+        "coaster_xy": [
+          0.5235,
+          -0.1509
+        ]
+      },
+      {
+        "trial": 5,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 13.8 cm in the hand)",
+        "handle_yaw_deg": 16.68,
+        "cup_xy": [
+          0.4474,
+          -0.1892
+        ],
+        "coaster_xy": [
+          0.5048,
+          -0.3299
+        ]
+      },
+      {
+        "trial": 6,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.3 cm in the hand, rose 4.5 of 10 cm",
+        "handle_yaw_deg": 27.0,
+        "cup_xy": [
+          0.4749,
+          -0.299
+        ],
+        "coaster_xy": [
+          0.5313,
+          -0.1731
+        ]
+      },
+      {
+        "trial": 7,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 14.5 cm in the hand)",
+        "handle_yaw_deg": -38.5,
+        "cup_xy": [
+          0.5148,
+          -0.3021
+        ],
+        "coaster_xy": [
+          0.4829,
+          -0.1535
+        ]
+      },
+      {
+        "trial": 8,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 4.1 cm in the hand, rose 4.2 of 10 cm",
+        "handle_yaw_deg": 4.29,
+        "cup_xy": [
+          0.5311,
+          -0.3182
+        ],
+        "coaster_xy": [
+          0.5142,
+          -0.1777
+        ]
+      },
+      {
+        "trial": 9,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 12.9 cm in the hand)",
+        "handle_yaw_deg": -27.62,
+        "cup_xy": [
+          0.484,
+          -0.3355
+        ],
+        "coaster_xy": [
+          0.5178,
+          -0.1652
+        ]
+      },
+      {
+        "trial": 10,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 12.1 cm in the hand)",
+        "handle_yaw_deg": 32.56,
+        "cup_xy": [
+          0.5184,
+          -0.2795
+        ],
+        "coaster_xy": [
+          0.4919,
+          -0.1394
+        ]
+      },
+      {
+        "trial": 11,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 15.9 cm in the hand)",
+        "handle_yaw_deg": 28.32,
+        "cup_xy": [
+          0.4594,
+          -0.1416
+        ],
+        "coaster_xy": [
+          0.4949,
+          -0.3124
+        ]
+      },
+      {
+        "trial": 12,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 12.3 cm in the hand)",
+        "handle_yaw_deg": 2.77,
+        "cup_xy": [
+          0.4625,
+          -0.1751
+        ],
+        "coaster_xy": [
+          0.4625,
+          -0.3192
+        ]
+      },
+      {
+        "trial": 13,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.6 cm in the hand, rose 4.8 of 10 cm",
+        "handle_yaw_deg": 13.28,
+        "cup_xy": [
+          0.4707,
+          -0.3341
+        ],
+        "coaster_xy": [
+          0.5079,
+          -0.1916
+        ]
+      },
+      {
+        "trial": 14,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.6 cm in the hand, rose 4.6 of 10 cm",
+        "handle_yaw_deg": -8.1,
+        "cup_xy": [
+          0.4691,
+          -0.1829
+        ],
+        "coaster_xy": [
+          0.5131,
+          -0.3098
+        ]
+      },
+      {
+        "trial": 15,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 17.0 cm in the hand)",
+        "handle_yaw_deg": 19.87,
+        "cup_xy": [
+          0.4635,
+          -0.1379
+        ],
+        "coaster_xy": [
+          0.5192,
+          -0.2636
+        ]
+      },
+      {
+        "trial": 16,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 3.6 cm in the hand, rose 3.9 of 10 cm",
+        "handle_yaw_deg": -14.11,
+        "cup_xy": [
+          0.5216,
+          -0.2853
+        ],
+        "coaster_xy": [
+          0.4509,
+          -0.143
+        ]
+      },
+      {
+        "trial": 17,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.1 cm in the hand, rose 5.0 of 10 cm",
+        "handle_yaw_deg": -23.97,
+        "cup_xy": [
+          0.5105,
+          -0.1666
+        ],
+        "coaster_xy": [
+          0.5372,
+          -0.331
+        ]
+      },
+      {
+        "trial": 18,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 1.9 cm in the hand, rose 4.8 of 10 cm",
+        "handle_yaw_deg": -29.45,
+        "cup_xy": [
+          0.4897,
+          -0.1587
+        ],
+        "coaster_xy": [
+          0.475,
+          -0.3313
+        ]
+      },
+      {
+        "trial": 19,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 8.5 cm in the hand)",
+        "handle_yaw_deg": -34.09,
+        "cup_xy": [
+          0.526,
+          -0.3232
+        ],
+        "coaster_xy": [
+          0.4526,
+          -0.1429
+        ]
+      },
+      {
+        "trial": 20,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 6.4 cm in the hand, rose 1.4 of 10 cm",
+        "handle_yaw_deg": -7.14,
+        "cup_xy": [
+          0.4773,
+          -0.1607
+        ],
+        "coaster_xy": [
+          0.4852,
+          -0.3191
+        ]
+      },
+      {
+        "trial": 21,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 7.7 cm in the hand, rose 1.8 of 10 cm",
+        "handle_yaw_deg": -15.68,
+        "cup_xy": [
+          0.536,
+          -0.2111
+        ],
+        "coaster_xy": [
+          0.455,
+          -0.3129
+        ]
+      },
+      {
+        "trial": 22,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 7.7 cm in the hand)",
+        "handle_yaw_deg": 5.22,
+        "cup_xy": [
+          0.5104,
+          -0.197
+        ],
+        "coaster_xy": [
+          0.4597,
+          -0.3308
+        ]
+      },
+      {
+        "trial": 23,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 8.4 cm in the hand)",
+        "handle_yaw_deg": -53.31,
+        "cup_xy": [
+          0.5054,
+          -0.2856
+        ],
+        "coaster_xy": [
+          0.4833,
+          -0.1462
+        ]
+      },
+      {
+        "trial": 24,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 8.2 cm in the hand)",
+        "handle_yaw_deg": -14.17,
+        "cup_xy": [
+          0.5179,
+          -0.3102
+        ],
+        "coaster_xy": [
+          0.524,
+          -0.1693
+        ]
+      },
+      {
+        "trial": 25,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 5.8 cm in the hand)",
+        "handle_yaw_deg": -21.6,
+        "cup_xy": [
+          0.5266,
+          -0.3252
+        ],
+        "coaster_xy": [
+          0.5261,
+          -0.173
+        ]
+      },
+      {
+        "trial": 26,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.2 cm in the hand, rose 4.3 of 10 cm",
+        "handle_yaw_deg": -36.88,
+        "cup_xy": [
+          0.4817,
+          -0.1381
+        ],
+        "coaster_xy": [
+          0.4839,
+          -0.2756
+        ]
+      },
+      {
+        "trial": 27,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.1 cm in the hand, rose 5.8 of 10 cm",
+        "handle_yaw_deg": -0.92,
+        "cup_xy": [
+          0.5381,
+          -0.1432
+        ],
+        "coaster_xy": [
+          0.508,
+          -0.2798
+        ]
+      },
+      {
+        "trial": 28,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.2 cm in the hand, rose 5.9 of 10 cm",
+        "handle_yaw_deg": -15.28,
+        "cup_xy": [
+          0.5425,
+          -0.1903
+        ],
+        "coaster_xy": [
+          0.5301,
+          -0.3257
+        ]
+      },
+      {
+        "trial": 29,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 9.3 cm in the hand)",
+        "handle_yaw_deg": -27.46,
+        "cup_xy": [
+          0.5289,
+          -0.2914
+        ],
+        "coaster_xy": [
+          0.46,
+          -0.1524
+        ]
+      },
+      {
+        "trial": 30,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 3.0 cm in the hand, rose 4.4 of 10 cm",
+        "handle_yaw_deg": -35.61,
+        "cup_xy": [
+          0.4987,
+          -0.1504
+        ],
+        "coaster_xy": [
+          0.4435,
+          -0.3031
+        ]
+      },
+      {
+        "trial": 31,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 10.9 cm in the hand)",
+        "handle_yaw_deg": 24.25,
+        "cup_xy": [
+          0.4855,
+          -0.3304
+        ],
+        "coaster_xy": [
+          0.4601,
+          -0.1857
+        ]
+      },
+      {
+        "trial": 32,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 8.1 cm in the hand)",
+        "handle_yaw_deg": 17.31,
+        "cup_xy": [
+          0.5162,
+          -0.3094
+        ],
+        "coaster_xy": [
+          0.476,
+          -0.1466
+        ]
+      },
+      {
+        "trial": 33,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 9.2 cm in the hand)",
+        "handle_yaw_deg": 0.14,
+        "cup_xy": [
+          0.4659,
+          -0.3167
+        ],
+        "coaster_xy": [
+          0.5342,
+          -0.1846
+        ]
+      },
+      {
+        "trial": 34,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.2 cm in the hand, rose 6.0 of 10 cm",
+        "handle_yaw_deg": -23.4,
+        "cup_xy": [
+          0.4508,
+          -0.3217
+        ],
+        "coaster_xy": [
+          0.4523,
+          -0.1688
+        ]
+      },
+      {
+        "trial": 35,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.9 cm in the hand, rose 5.1 of 10 cm",
+        "handle_yaw_deg": 30.75,
+        "cup_xy": [
+          0.493,
+          -0.2943
+        ],
+        "coaster_xy": [
+          0.4868,
+          -0.1614
+        ]
+      },
+      {
+        "trial": 36,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.1 cm in the hand, rose 5.4 of 10 cm",
+        "handle_yaw_deg": -3.76,
+        "cup_xy": [
+          0.467,
+          -0.3285
+        ],
+        "coaster_xy": [
+          0.5204,
+          -0.1455
+        ]
+      },
+      {
+        "trial": 37,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 6.8 cm in the hand, rose 1.5 of 10 cm",
+        "handle_yaw_deg": -15.51,
+        "cup_xy": [
+          0.5224,
+          -0.1358
+        ],
+        "coaster_xy": [
+          0.4909,
+          -0.2762
+        ]
+      },
+      {
+        "trial": 38,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 1.8 cm in the hand, rose 4.9 of 10 cm",
+        "handle_yaw_deg": 26.58,
+        "cup_xy": [
+          0.4685,
+          -0.3134
+        ],
+        "coaster_xy": [
+          0.487,
+          -0.1742
+        ]
+      },
+      {
+        "trial": 39,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.0 cm in the hand, rose 5.0 of 10 cm",
+        "handle_yaw_deg": -25.72,
+        "cup_xy": [
+          0.4668,
+          -0.1656
+        ],
+        "coaster_xy": [
+          0.5145,
+          -0.2954
+        ]
+      },
+      {
+        "trial": 40,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 7.7 cm in the hand)",
+        "handle_yaw_deg": 8.18,
+        "cup_xy": [
+          0.5065,
+          -0.1716
+        ],
+        "coaster_xy": [
+          0.5366,
+          -0.3031
+        ]
+      },
+      {
+        "trial": 41,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 6.8 cm in the hand)",
+        "handle_yaw_deg": -26.22,
+        "cup_xy": [
+          0.4864,
+          -0.2798
+        ],
+        "coaster_xy": [
+          0.5085,
+          -0.1464
+        ]
+      },
+      {
+        "trial": 42,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 6.3 cm in the hand)",
+        "handle_yaw_deg": -30.92,
+        "cup_xy": [
+          0.4866,
+          -0.2809
+        ],
+        "coaster_xy": [
+          0.4777,
+          -0.1369
+        ]
+      },
+      {
+        "trial": 43,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 14.4 cm in the hand)",
+        "handle_yaw_deg": 8.61,
+        "cup_xy": [
+          0.5389,
+          -0.3188
+        ],
+        "coaster_xy": [
+          0.4749,
+          -0.1916
+        ]
+      },
+      {
+        "trial": 44,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.3 cm in the hand, rose 5.8 of 10 cm",
+        "handle_yaw_deg": -33.95,
+        "cup_xy": [
+          0.4469,
+          -0.3284
+        ],
+        "coaster_xy": [
+          0.4478,
+          -0.1619
+        ]
+      },
+      {
+        "trial": 45,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "dropped while moving",
+        "mug_reason": "dropped / slipped while moving (cup moved 9.6 cm in the hand)",
+        "handle_yaw_deg": -10.08,
+        "cup_xy": [
+          0.4601,
+          -0.3206
+        ],
+        "coaster_xy": [
+          0.5305,
+          -0.1619
+        ]
+      },
+      {
+        "trial": 46,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.5 cm in the hand, rose 4.7 of 10 cm",
+        "handle_yaw_deg": -2.26,
+        "cup_xy": [
+          0.5145,
+          -0.1846
+        ],
+        "coaster_xy": [
+          0.4511,
+          -0.3079
+        ]
+      },
+      {
+        "trial": 47,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 1.8 cm in the hand, rose 5.0 of 10 cm",
+        "handle_yaw_deg": -37.46,
+        "cup_xy": [
+          0.5015,
+          -0.3212
+        ],
+        "coaster_xy": [
+          0.5055,
+          -0.1851
+        ]
+      },
+      {
+        "trial": 48,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "slip during lift",
+        "mug_reason": "cup slipped 2.6 cm in the hand, rose 4.4 of 10 cm",
+        "handle_yaw_deg": 11.35,
+        "cup_xy": [
+          0.4705,
+          -0.2026
+        ],
+        "coaster_xy": [
+          0.536,
+          -0.3266
+        ]
+      },
+      {
+        "trial": 49,
+        "cylinder": true,
+        "mug": false,
+        "mug_category": "missed/knocked cup",
+        "mug_reason": "knocked the cup before grasping (moved 2.7 cm, tilt 0 deg)",
+        "handle_yaw_deg": -5.1,
+        "cup_xy": [
+          0.4505,
+          -0.3043
+        ],
+        "coaster_xy": [
+          0.5406,
+          -0.1529
+        ]
+      }
+    ]
+  },
+  "mass_sweep": [
+    {
+      "trial": 0,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 1,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 2,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 3,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 4,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 5,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 6,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 7,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 8,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 9,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 10,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 11,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 12,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 13,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 14,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 15,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 16,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 17,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 18,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    },
+    {
+      "trial": 19,
+      "0.25 kg": false,
+      "0.37 kg": false,
+      "0.45 kg": false
+    }
+  ],
+  "grasp_stats": {
+    "mug 0.37 kg, 50 layouts": {
+      "contact_closure": {
+        "n": 49,
+        "mean": 0.514,
+        "min": 0.464,
+        "max": 0.576
+      },
+      "lift_slip_in_hand_cm": {
+        "n": 49,
+        "mean": 2.438,
+        "min": 0.91,
+        "max": 7.73
+      },
+      "lift_cup_rise_cm": {
+        "n": 49,
+        "mean": 5.088,
+        "min": 1.43,
+        "max": 6.83
+      },
+      "cup_off_coaster_center_cm": {
+        "n": 50,
+        "mean": 11.958,
+        "min": 1.82,
+        "max": 19.63
+      }
+    },
+    "cylinder 0.15 kg (M1)": {
+      "contact_closure": {
+        "n": 50,
+        "mean": 0.57,
+        "min": 0.56,
+        "max": 0.656
+      },
+      "lift_slip_in_hand_cm": {
+        "n": 50,
+        "mean": 0.833,
+        "min": 0.28,
+        "max": 1.74
+      },
+      "lift_cup_rise_cm": {
+        "n": 50,
+        "mean": 7.382,
+        "min": 6.08,
+        "max": 9.76
+      },
+      "cup_off_coaster_center_cm": {
+        "n": 50,
+        "mean": 1.126,
+        "min": 0.08,
+        "max": 2.8
+      }
+    },
+    "mug 0.25 kg, trials 0-19": {
+      "contact_closure": {
+        "n": 20,
+        "mean": 0.515,
+        "min": 0.48,
+        "max": 0.56
+      },
+      "lift_slip_in_hand_cm": {
+        "n": 20,
+        "mean": 2.116,
+        "min": 1.1,
+        "max": 3.12
+      },
+      "lift_cup_rise_cm": {
+        "n": 20,
+        "mean": 5.647,
+        "min": 4.32,
+        "max": 6.94
+      },
+      "cup_off_coaster_center_cm": {
+        "n": 20,
+        "mean": 12.104,
+        "min": 6.26,
+        "max": 19.66
+      }
+    },
+    "mug 0.37 kg, trials 0-19": {
+      "contact_closure": {
+        "n": 20,
+        "mean": 0.518,
+        "min": 0.48,
+        "max": 0.56
+      },
+      "lift_slip_in_hand_cm": {
+        "n": 20,
+        "mean": 2.343,
+        "min": 0.91,
+        "max": 4.15
+      },
+      "lift_cup_rise_cm": {
+        "n": 20,
+        "mean": 5.012,
+        "min": 3.94,
+        "max": 6.58
+      },
+      "cup_off_coaster_center_cm": {
+        "n": 20,
+        "mean": 13.53,
+        "min": 6.2,
+        "max": 19.63
+      }
+    },
+    "mug 0.45 kg, trials 0-19": {
+      "contact_closure": {
+        "n": 20,
+        "mean": 0.522,
+        "min": 0.48,
+        "max": 0.576
+      },
+      "lift_slip_in_hand_cm": {
+        "n": 20,
+        "mean": 2.337,
+        "min": 1.12,
+        "max": 6.94
+      },
+      "lift_cup_rise_cm": {
+        "n": 20,
+        "mean": 4.771,
+        "min": 2.13,
+        "max": 6.15
+      },
+      "cup_off_coaster_center_cm": {
+        "n": 20,
+        "mean": 12.803,
+        "min": 2.87,
+        "max": 19.74
+      }
+    }
+  }
+}

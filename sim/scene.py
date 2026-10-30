@@ -13,7 +13,11 @@ Choices (see docs/log.md, 2026-10-28):
   (toes are 0.12 m ahead of the ankles), 0.60 m deep;
 - contact: explicit cup pairs with HERO's "glazed ceramic mug" friction priors (not measured values);
 - touch sensors: one MuJoCo ``touch`` sensor per distal finger link (thumb_2, index_1, middle_1), sized to the link's
-  collision geometry.
+  collision geometry;
+- cup model (``cup_model``): "mug" (default) = my real mug from config/objects.yaml -- a solid cylinder body plus a D-shaped
+  handle of 3 capsules on the body's +x side; "cylinder" = the plain 8 x 10 cm M1 cup, kept so the M1 results reproduce.
+  Both are one free body named "cup" whose frame origin is the centre of the (body) cylinder, so "cup centre" means the
+  same thing for both; every cup geom gets the same contact parameters and pairs.
 
 Units: metres, radians, seconds. World frame: z up, x forward from the robot. Public quaternions are xyzw (HERO's sim2sim
 convention); MuJoCo's own qpos / xquat are wxyz.
@@ -21,8 +25,12 @@ convention); MuJoCo's own qpos / xquat are wxyz.
 
 from __future__ import annotations
 
+import math
+from pathlib import Path
+
 import mujoco
 import numpy as np
+import yaml
 
 from hero_isaacsim.paths import G1_ASSET_ROOT
 from sim2sim.geometry import _geom_points_local
@@ -41,8 +49,10 @@ TABLE_DEPTH = 0.60
 TABLE_WIDTH = 1.00
 TABLE_THICKNESS = 0.035
 
-# Cup: solid cylinder, 8 cm diameter, 10 cm tall, 150 g. Coaster: thin static disc on the table.
+# "cylinder" cup (M1): solid cylinder, 8 cm diameter, 10 cm tall, 150 g. Coaster: thin static disc on the table.
 CUP_RADIUS, CUP_HEIGHT, CUP_MASS = 0.04, 0.10, 0.15
+CUP_MODELS = ("cylinder", "mug")
+OBJECTS_YAML = Path(__file__).resolve().parents[1] / "config" / "objects.yaml"
 COASTER_RADIUS, COASTER_THICKNESS = 0.05, 0.006
 CUP_XY = (0.45, 0.18)        # left half of the table, out of the way of the right hand in M1
 COASTER_XY = (0.45, 0.32)
@@ -57,13 +67,30 @@ GRIP_KP_SCALE, GRIP_SQUEEZE_FRACTION, GRIP_BLOCKED_ERROR_RAD = 3.0, 0.6, 0.05
 FLEXION_JOINT = np.array([f not in ("thumb_0", "thumb_1") for f in FINGER_SUFFIXES] * 2)
 
 
-class TableScene:
-    """A standing G1 in front of a table with a cup and a coaster. Use ``step(q_body)`` so the fingers are controlled."""
+def mug_config() -> dict[str, float]:
+    """The mug entries of config/objects.yaml as plain numbers (the ``value`` fields; source tags dropped)."""
+    mug = yaml.safe_load(OBJECTS_YAML.read_text())["mug"]
+    return {k: float(v["value"]) for k, v in mug.items() if isinstance(v, dict)}
 
-    def __init__(self, table_height: float, kp, kd, effort_limit, default_dof_pos):
+
+class TableScene:
+    """A standing G1 in front of a table with a cup and a coaster. Use ``step(q_body)`` so the fingers are controlled.
+
+    ``cup_model`` = "mug" (config/objects.yaml) or "cylinder" (M1 cup); ``cup_mass`` overrides its mass (None = the model's own:
+    config mass_kg for the mug, 0.15 kg for the cylinder).
+    """
+
+    def __init__(self, table_height: float, kp, kd, effort_limit, default_dof_pos, cup_model: str = "mug", cup_mass: float | None = None):
         if not any(abs(float(table_height) - h) < 1e-6 for h in TABLE_HEIGHTS):
             raise ValueError(f"table_height must be one of {TABLE_HEIGHTS}")
+        if cup_model not in CUP_MODELS:
+            raise ValueError(f"cup_model must be one of {CUP_MODELS}")
         self.table_height = float(table_height)
+        self.cup_model = cup_model
+        self.mug = mug_config() if cup_model == "mug" else None
+        self.cup_height = self.mug["height_m"] if self.mug else CUP_HEIGHT
+        self.cup_mass = float(cup_mass) if cup_mass is not None else (self.mug["mass_kg"] if self.mug else CUP_MASS)
+        self.cup_yaw = 0.0
         self._tip_boxes = _fingertip_boxes(ROBOT_URDF)
         self.plant = MujocoPlant(ROBOT_URDF, foot_collision=FOOT_COLLISION, spec_callback=self._add_scene,
                                  extra_free_joint_names=("cup_free",), kp=kp, kd=kd, effort_limit=effort_limit)
@@ -143,16 +170,21 @@ class TableScene:
         spec.worldbody.add_geom(name="coaster", type=mujoco.mjtGeom.mjGEOM_CYLINDER, size=[COASTER_RADIUS, COASTER_THICKNESS / 2, 0],
                                 pos=[*COASTER_XY, top + COASTER_THICKNESS / 2], rgba=[0.55, 0.38, 0.22, 1], contype=1, conaffinity=1)
 
-        # Cup: free body, condim 4 (torsional friction) and the demo's stiffer-than-default contact (solref 0.008 s) for small props.
-        cup = spec.worldbody.add_body(name="cup", pos=[*CUP_XY, top + CUP_HEIGHT / 2 + 0.001])
+        # Cup: free body; every cup geom gets condim 4 (torsional friction) and the demo's stiffer-than-default contact
+        # (solref 0.008 s) for small props.
+        cup = spec.worldbody.add_body(name="cup", pos=[*CUP_XY, top + self.cup_height / 2 + 0.001])
         cup.add_freejoint(name="cup_free")
-        cup_geom = cup.add_geom(name="cup_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, size=[CUP_RADIUS, CUP_HEIGHT / 2, 0], mass=CUP_MASS,
-                                rgba=[0.85, 0.85, 0.80, 1], contype=1, conaffinity=1, condim=4, solref=[0.008, 1.0],
-                                friction=[CUP_FRICTION["tabletop"], CUP_FRICTION["tabletop"] * CONTACT_TORSIONAL_ARM_M["tabletop"], CONTACT_ROLLING_M])
+        contact = dict(rgba=[0.85, 0.85, 0.80, 1], contype=1, conaffinity=1, condim=4, solref=[0.008, 1.0],
+                       friction=[CUP_FRICTION["tabletop"], CUP_FRICTION["tabletop"] * CONTACT_TORSIONAL_ARM_M["tabletop"], CONTACT_ROLLING_M])
+        if self.cup_model == "cylinder":
+            cup_geoms = [cup.add_geom(name="cup_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, size=[CUP_RADIUS, CUP_HEIGHT / 2, 0],
+                                      mass=self.cup_mass, **contact)]
+        else:
+            cup_geoms = _add_mug_geoms(cup, self.mug, self.cup_mass, contact)
 
-        # Hand geoms get the Dex3 sliding friction; the cup gets explicit pairs with hand, table top and coaster (HERO's approach:
-        # explicit pairs stop MuJoCo's max-per-geom rule from overriding the pair estimates; normal-contact softness is the
-        # solmix-weighted mix of the two geoms, as in HERO's _add_object_contact_pairs).
+        # Hand geoms get the Dex3 sliding friction; each cup geom gets explicit pairs with hand, table top and coaster (HERO's
+        # approach: explicit pairs stop MuJoCo's max-per-geom rule from overriding the pair estimates; normal-contact softness
+        # is the solmix-weighted mix of the two geoms, as in HERO's _add_object_contact_pairs).
         hands = [g for g in spec.geoms if (g.contype or g.conaffinity) and g.parent.name.startswith(("left_hand_", "right_hand_"))]
         for i, g in enumerate(hands):
             if not g.name:
@@ -162,15 +194,17 @@ class TableScene:
             g.friction = friction
         by_name = {g.name: g for g in spec.geoms if g.name}
         surfaces = [(g, "hand") for g in hands] + [(by_name["table_top"], "tabletop"), (by_name["coaster"], "coaster")]
-        for surface, role in surfaces:
-            w = cup_geom.solmix / (cup_geom.solmix + surface.solmix)
-            solref = w * np.asarray(cup_geom.solref) + (1 - w) * np.asarray(surface.solref)
-            solimp = w * np.asarray(cup_geom.solimp) + (1 - w) * np.asarray(surface.solimp)
-            mu = CUP_FRICTION[role]
-            arm = CONTACT_TORSIONAL_ARM_M["hand" if role == "hand" else "tabletop"]
-            spec.add_pair(name=f"cup__{surface.name}", geomname1="cup_geom", geomname2=surface.name, condim=4,
-                          friction=[mu, mu, mu * arm, CONTACT_ROLLING_M, CONTACT_ROLLING_M], solref=solref, solimp=solimp,
-                          margin=max(cup_geom.margin, surface.margin), gap=max(cup_geom.gap, surface.gap))
+        for cup_geom in cup_geoms:
+            prefix = cup_geom.name.removesuffix("_geom")      # pair names: cup__<surface> for the body (M1's names), cup_handle_*__<surface>
+            for surface, role in surfaces:
+                w = cup_geom.solmix / (cup_geom.solmix + surface.solmix)
+                solref = w * np.asarray(cup_geom.solref) + (1 - w) * np.asarray(surface.solref)
+                solimp = w * np.asarray(cup_geom.solimp) + (1 - w) * np.asarray(surface.solimp)
+                mu = CUP_FRICTION[role]
+                arm = CONTACT_TORSIONAL_ARM_M["hand" if role == "hand" else "tabletop"]
+                spec.add_pair(name=f"{prefix}__{surface.name}", geomname1=cup_geom.name, geomname2=surface.name, condim=4,
+                              friction=[mu, mu, mu * arm, CONTACT_ROLLING_M, CONTACT_ROLLING_M], solref=solref, solimp=solimp,
+                              margin=max(cup_geom.margin, surface.margin), gap=max(cup_geom.gap, surface.gap))
 
         # Fingertip touch sensors: a box site covering each distal link's collision geometry (+2 mm).
         for side in SIDES:
@@ -195,19 +229,25 @@ class TableScene:
         return min(heights)
 
     # ------------------------------------------------------------------ state
-    def reset(self, cup_xy=None, coaster_xy=None) -> None:
-        """Robot back to the spawn pose, hands open; cup (upright, at rest) and coaster at the given table positions."""
+    def reset(self, cup_xy=None, coaster_xy=None, cup_yaw: float | None = None) -> None:
+        """Robot back to the spawn pose, hands open; cup (upright, at rest) and coaster at the given table positions.
+
+        ``cup_yaw`` [rad] turns the cup about world z; the mug's handle then points along (cos yaw, sin yaw). None = keep.
+        """
         if cup_xy is not None:
             self.cup_xy = np.asarray(cup_xy, dtype=float)
         if coaster_xy is not None:
             self.coaster_xy = np.asarray(coaster_xy, dtype=float)
+        if cup_yaw is not None:
+            self.cup_yaw = float(cup_yaw)
         self.model.geom_pos[self.coaster_geom, :2] = self.coaster_xy
         self.plant.reset(self.initial_root_pos, np.array([0, 0, 0, 1.0]), self.initial_dof_pos)
         for side in SIDES:
             self.set_hand_closure(side, 0.0)
         self.finger_target = self.finger_goal.copy()
         self.data.qpos[self.finger_qadr] = self.finger_goal
-        self.data.qpos[self.cup_qadr:self.cup_qadr + 7] = [*self.cup_xy, self.table_height + CUP_HEIGHT / 2 + 0.001, 1, 0, 0, 0]
+        self.data.qpos[self.cup_qadr:self.cup_qadr + 7] = [*self.cup_xy, self.table_height + self.cup_height / 2 + 0.001,
+                                                           math.cos(self.cup_yaw / 2), 0, 0, math.sin(self.cup_yaw / 2)]
         self.plant.forward()
 
     def set_hand_closure(self, side: str, fraction: float) -> None:
@@ -267,6 +307,32 @@ class TableScene:
         """The table top as HERO's IK ``TableBox`` dict (world frame), so the planner keeps the hand above the real slab."""
         return {"center": [TABLE_EDGE_X + TABLE_DEPTH / 2, 0.0, self.table_height - TABLE_THICKNESS / 2],
                 "half_size": [TABLE_DEPTH / 2, TABLE_WIDTH / 2, TABLE_THICKNESS / 2], "surface_z": self.table_height}
+
+
+def _add_mug_geoms(body, mug: dict[str, float], mass: float, contact: dict) -> list:
+    """Mug on ``body``: a solid cylinder (frame origin at its centre) + a D-shaped handle of 3 capsules on the +x side.
+
+    Handle (config values): the protrusion is measured from the body wall to the handle's OUTER surface and the vertical span
+    is its OUTER extent, so the outer (vertical) capsule's axis sits one capsule radius inside both; the two arms start one
+    capsule radius inside the body wall (so the loop is attached, with no gap at the wall) and end on that axis. The handle is
+    centred at the body's mid-height. Returns the 4 geoms; the first is the body cylinder.
+    """
+    r, half_h, rc = mug["body_outer_diameter_m"] / 2, mug["height_m"] / 2, mug["handle_thickness_m"] / 2
+    x_in, x_out = r - rc, r + mug["handle_protrusion_m"] - rc
+    z_arm = mug["handle_height_m"] / 2 - rc
+    handle = {"cup_handle_lower": [x_in, 0, -z_arm, x_out, 0, -z_arm],
+              "cup_handle_upper": [x_in, 0, z_arm, x_out, 0, z_arm],
+              "cup_handle_outer": [x_out, 0, -z_arm, x_out, 0, z_arm]}
+    # One density on all geoms, so MuJoCo derives the total mass and the inertia (and the COM shift toward the handle) from
+    # the shapes. The handle's overlaps with the wall and at its two corners are counted twice (< 1 % of the volume).
+    # Caveat: a solid body leaves the handle only ~2.5 % of the mass (COM ~2 mm off the axis); a real ceramic mug is a shell
+    # with a heavier handle share and more inertia, so this model is likely optimistic about in-hand rotation and slip.
+    capsule_volume = lambda f: math.pi * rc ** 2 * math.dist(f[:3], f[3:]) + 4 / 3 * math.pi * rc ** 3
+    density = mass / (math.pi * r ** 2 * 2 * half_h + sum(capsule_volume(f) for f in handle.values()))
+    geoms = [body.add_geom(name="cup_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, size=[r, half_h, 0], density=density, **contact)]
+    for name, fromto in handle.items():
+        geoms.append(body.add_geom(name=name, type=mujoco.mjtGeom.mjGEOM_CAPSULE, size=[rc, 0, 0], fromto=fromto, density=density, **contact))
+    return geoms
 
 
 def _fingertip_boxes(urdf) -> dict[str, tuple[np.ndarray, np.ndarray, np.ndarray]]:

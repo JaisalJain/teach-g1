@@ -157,7 +157,8 @@ class VideoWriter:
 
 
 def run_height(height: float, policy: HeroExportPolicy, video_path: Path | None) -> tuple[dict, dict]:
-    scene = TableScene(height, policy.kp, policy.kd, policy.effort_limit, policy.default_dof_pos)
+    # the M1 cylinder cup (not the mug), so the documented M1 numbers reproduce
+    scene = TableScene(height, policy.kp, policy.kd, policy.effort_limit, policy.default_dof_pos, cup_model="cylinder")
     goals = make_goals(scene)
     stand_ref = standing_reference(scene, int(STAND_S * FPS) + 30)
     # inactive (left) arm prior: the spawn pose for new reaches; the initial plan's reach-end joints for corrections (HERO run.py)

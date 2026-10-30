@@ -490,3 +490,70 @@ is expected without camera motion. Hand/forearm visibility is a judgement by eye
   e8825dea53: the coaster mask is lost at t ≈ 3.8 s while the hand carries the mug over it and stays empty — at the end the mug stands
   on the coaster and hides almost all of it from this 45° view (checked on frame i = 470). Only the initial-window coaster mask is used
   downstream (S4 exclusion, S6 circle fit), so this does not feed any gate. Its handle (no prompt) appears at the back of the mug later.
+
+### Track B — mug model and oracle re-run (CPU, hoi-sim)
+Workflow: 1 implementer → 3 adversarial reviewers (geometry/physics, protocol, statistics) → fixer → runner → independent checker that
+re-derived every number from the runs files (all match). Then reviewed by me: removed an unrequested McNemar p-value (it was also stored
+rounded to 0.0), saved the grasp statistics in `summary.json` (so every number below comes from a results file), and made the
+all-fail video pair show both failure modes.
+
+**Mug model** (`sim/scene.py`, `cup_model` = "mug" default | "cylinder"; all values read from `config/objects.yaml` via `mug_config()`):
+- **Body:** solid cylinder r 0.0495 m, h 0.091 m (label values); its centre is the cup body's frame origin, so "cup centre" (cup_pose,
+  grasp offset, success test) keeps meaning the body centre, exactly as for the M1 cylinder. The oracle only touches the outside.
+- **Handle:** D-loop of 3 capsules, radius 6 mm (= thickness / 2), on the body's +x side, centred at mid-height. The 0.044 m protrusion
+  is measured to the handle's OUTER surface (overall width 0.143 m = label) and the 0.06 m span is its OUTER vertical extent; the two
+  arms start one capsule radius inside the wall so the loop is attached. Handle size is `estimated` in the config.
+- **Mass / inertia:** one density on all 4 geoms (mass / summed geom volume), so MuJoCo derives mass, COM and inertia from the shapes:
+  0.37 kg, COM 1.84 mm toward the handle, inertia diagonal (4.74, 5.25, 4.93)·10⁻⁴ kg·m² (`protocol.mass_properties` in the runs files).
+  Overlap volume (arms in the wall, corners) is counted twice — under 1 %. Caveat: a real mug is a shell with a heavier handle share.
+- **Friction "identical to the current cup":** every mug geom has the cup's geom settings (condim 4, solref 0.008 s, same friction
+  tuple) and the same explicit pairs with every hand geom, the table top and the coaster (HERO's glazed-ceramic priors, solmix-mixed).
+- **Model switch:** "cylinder" builds the M1 cup byte-identically (same geom name, params and pair names). `m1_reach_test` passes
+  "cylinder"; `pick_place` has `--cup-model` (default mug) and refuses to overwrite a results file of the other model.
+- **Cup height plumbing:** where the oracle used the cylinder's constant height (grasp z offset, place target, resting check) it now uses
+  `scene.cup_height`, so "palm 6.5 cm above the table", "1 cm place clearance" and "|dz| < 4 mm" keep their meaning. Grasp, phases,
+  touch logic and success rule are unchanged.
+- **Cylinder reproducibility:** `python -m sim.pick_place --cup-model cylinder --trials 0 --out results/m1_pick_mug/cylinder_repro` on the
+  final code equals `results/m1_pick` "fixed" in every field except wall time (success, cup_final (0.5165, −0.299, 0.796), 0.73 cm off
+  centre, contact closure 0.56, lift rise 6.52 cm, slip 0.69 cm, 20.12 s sim, every plan / settle).
+
+**Protocol** (`sim/m1_pick_mug.py`): M1's 50 in-workspace layouts in M1's order — `sample_layouts(grasp, 10, seed=0)` +
+`sample_layouts(grasp, 40, seed=1)`, default palm box — so trial k is paired with the cylinder's run k (asserted). Handle yaw =
+approach direction (`Grasp.approach_dir`, palm → cup, −9.46°) + U(−45°, +45°) from `np.random.default_rng(2026)`, drawn once; trial k has
+the same yaw at every mass (asserted). Mass 0.37 kg (config, estimated) on 50 trials; sweep: trials 0–19 at 0.25 and 0.45 kg, 0.37 kg
+column = trials 0–19 of the main run (not rerun). Wilson 95 % CI, z = 1.96.
+
+**Results** (`results/m1_pick_mug/summary.json`, `table.md`):
+
+| run | success | Wilson 95 % CI | failures by category |
+|---|---|---|---|
+| mug 0.37 kg, 50 layouts | **0/50** | 0–7 % | slip during lift 28, dropped while moving 21, missed/knocked cup 1 |
+| cylinder 0.15 kg (M1), same 50 layouts | 50/50 | 93–100 % | – |
+| mug 0.25 kg, trials 0–19 | 0/20 | 0–16 % | slip during lift 11, dropped while moving 9 |
+| mug 0.37 kg, trials 0–19 (= main run) | 0/20 | 0–16 % | slip during lift 12, dropped while moving 8 |
+| mug 0.45 kg, trials 0–19 | 0/20 | 0–16 % | slip during lift 14, dropped while moving 6 |
+
+Paired with the cylinder: all 50 layouts flipped (cylinder success → mug failure). No fall, no unreachable target, every touch check at
+closing passed. Grasp statistics, mean (min–max) over the trials that reached the measurement (`summary.json` → `grasp_stats`):
+
+| | mug 0.37 kg (n = 49) | cylinder 0.15 kg (n = 50) | mug 0.25 / 0.37 / 0.45 kg, trials 0–19 |
+|---|---|---|---|
+| lift slip in the hand | 2.44 cm (0.91–7.73) | 0.83 cm (0.28–1.74) | 2.12 / 2.34 / 2.34 cm |
+| cup rise for a 10 cm palm lift | 5.09 cm (1.43–6.83) | 7.38 cm (6.08–9.76) | 5.65 / 5.01 / 4.77 cm |
+| closure fraction at first thumb + finger touch | 0.51 (0.46–0.58) | 0.57 (0.56–0.66) | 0.52 / 0.52 / 0.52 |
+
+- The hand closes on the mug (49/50) but the mug does not stay put: lift failures exceed the existing slip (> 2 cm) or rise (< 5 cm)
+  limit; the "dropped while moving" trials passed the lift and then drifted > 3 cm in the hand during transport / lowering.
+- Mass in 0.25–0.45 kg does not change the outcome (0/20 each). The lower closure fraction is expected geometrically (the 9.9 cm body is
+  touched earlier in the closing ramp), not a sign of a weaker grasp by itself.
+- **Not separated:** the mug differs from the cylinder in mass (0.37 vs 0.15 kg), radius (4.95 vs 4.00 cm at the same palm-frame offset →
+  surface ~1 cm closer to the palm), height (palm 1.95 vs 1.50 cm above the centre) and the handle. No run isolates these (outside this
+  task; would need approval). The unchanged M1 oracle grasp is not a working baseline for the real mug.
+- Trial 49 failed in the approach: the hand pushed the mug 2.7 cm before grasping (M1's 2 cm limit).
+
+**Files:** `runs_mass0.37.json` (trials 0–49), `runs_mass0.25.json`, `runs_mass0.45.json` (0–19) — protocol + one row per trial (layout
+seed/index, cup/coaster xy, handle yaw, mass, outcome, phase, reason, category, numbers, wall time, detail); `summary.json`, `table.md`;
+`videos.json` + `videos/failure_trial00.mp4` (slip during lift) and `videos/failure_trial05.mp4` (dropped while moving), gitignored,
+both re-runs identical to the batch (nothing succeeded, so two failures of different categories); `cylinder_repro/pick_results.json`.
+Runtime: three parallel CPU processes; summed per-trial wall time 156 s (50 trials), 73 s and 70 s (20 each); videos via Mesa EGL on the
+Intel iGPU (`__EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json MUJOCO_GL=egl`) while Track A held the NVIDIA GPU.
