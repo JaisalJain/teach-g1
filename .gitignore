@@ -48,3 +48,6 @@ outputs/
 # Archives (e.g. the MANO zip: licensed, never redistribute) and cached pipeline work files
 *.zip
 data/work/
+
+# Agent scratch space (never committed)
+tmp/
