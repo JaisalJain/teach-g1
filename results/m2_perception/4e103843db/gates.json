@@ -1,0 +1,114 @@
+{
+ "clip": "4e103843db",
+ "view": "90deg",
+ "gates": {
+  "G1": {
+   "value": {
+    "coverage": 1.0,
+    "longest_invalid_run_s": 0.0,
+    "longest_invalid_run_frames": 0,
+    "grasp_valid": true,
+    "lift_valid": true
+   },
+   "text": "coverage 100.0%, longest invalid run 0.000 s (0 frames), g valid True, lift valid True",
+   "result": "pass",
+   "reason": null
+  },
+  "G2": {
+   "value": {
+    "median": 0.005524176931790456,
+    "n_frames": 366
+   },
+   "text": "median 0.55 cm over 366 metric_valid frames",
+   "result": "pass",
+   "reason": null
+  },
+  "G3": {
+   "value": {
+    "median": 61.22586099767692,
+    "n_frames": 366
+   },
+   "text": "median 61.23 px over 366 metric_valid frames",
+   "result": "fail",
+   "reason": null
+  },
+  "G4": {
+   "value": {
+    "holds": [
+     {
+      "frames": [
+       358,
+       380
+      ],
+      "start_s": 6.28591670806054,
+      "duration_s": 0.36681754200253636,
+      "std_raw_m": 0.0005462429762652256,
+      "std_smoothed_m": 0.00038234258560869644,
+      "n_raw": 23
+     }
+    ],
+    "max_std_raw_m": 0.0005462429762652256,
+    "max_std_smoothed_m": 0.00038234258560869644
+   },
+   "text": "1 hold(s), max raw std 0.05 cm (smoothed 0.04 cm)",
+   "result": "pass",
+   "reason": null
+  },
+  "G5": {
+   "value": {
+    "d_axis_m": 0.09939673129295491,
+    "d_range_m": [
+     0.059500000000000004,
+     0.0995
+    ],
+    "z_grasp_m": 0.04751962025975057,
+    "z_range_m": [
+     0.02275,
+     0.07735
+    ]
+   },
+   "text": "d 99.4 mm (pass 59.5-99.5), z_grasp 47.5 mm (pass 22.8-77.4)",
+   "result": "pass",
+   "reason": null
+  },
+  "G6": {
+   "value": {
+    "init_iou": 0.942652329749104,
+    "free_fit_diameter_m": 0.10571260023508347,
+    "free_fit_height_m": 0.08687408353469453,
+    "height_check": true
+   },
+   "text": "IoU 0.943, diameter 105.7 mm (label 99), height 86.9 mm (label 91)",
+   "result": "fail",
+   "reason": null
+  },
+  "G7": {
+   "value": {
+    "distance_m": 0.02154680298290465
+   },
+   "text": "2.15 cm",
+   "result": "pass",
+   "reason": null
+  },
+  "G8": {
+   "value": {
+    "plane_rms_m": 0.004479729481860118,
+    "drift_offset_m": -0.00043466429894079006,
+    "drift_normal_diff_deg": 2.427586032684361,
+    "drift_check": false,
+    "x_axis_method": "largest_total_extent",
+    "x_vs_reference_deg": -1.6977720371441165,
+    "expected_deg": 0.0,
+    "x_abs_err_deg": 1.6977720371441165
+   },
+   "text": "plane RMS 4.48 mm, drift offset -0.4 mm, normal 2.43 deg (fail), x (largest_total_extent) error 1.7 deg",
+   "result": "fail",
+   "reason": null
+  }
+ },
+ "palm_normal_flip": {
+  "flipped": false,
+  "decided": true,
+  "normal_dot_at_grasp": 0.8246876650628889
+ }
+}
