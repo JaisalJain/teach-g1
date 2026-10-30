@@ -1,0 +1,8 @@
+{
+  "rows": 1000,
+  "max_abs_diff": 1.1920928955078125e-07,
+  "tolerance": 1e-05,
+  "passed": true,
+  "onnxruntime": "1.31.1",
+  "numpy": "1.26.4"
+}

@@ -3,3 +3,6 @@ torchvision==0.26.0+cu128
 triton==3.6.0
 numpy==2.2.6
 opencv-python==4.12.0.88
+ml_dtypes==0.6.0
+onnx==1.23.2
+protobuf==7.36.2

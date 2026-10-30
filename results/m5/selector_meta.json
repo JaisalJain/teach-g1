@@ -1,0 +1,138 @@
+{
+  "what": "M5 Step 3 selector (policy/train_selector.py)",
+  "features": [
+    "cup_x",
+    "cup_y",
+    "coaster_x",
+    "coaster_y",
+    "dx",
+    "dy",
+    "sin_yaw",
+    "cos_yaw",
+    "clip_26d4118b0c",
+    "clip_4e103843db",
+    "clip_49aff04f7a",
+    "clip_e8825dea53",
+    "phi",
+    "phi_h_minus_phi"
+  ],
+  "candidates": [
+    {
+      "clip": "26d4118b0c",
+      "candidate": "phih"
+    },
+    {
+      "clip": "26d4118b0c",
+      "candidate": "75"
+    },
+    {
+      "clip": "26d4118b0c",
+      "candidate": "65"
+    },
+    {
+      "clip": "26d4118b0c",
+      "candidate": "55"
+    },
+    {
+      "clip": "26d4118b0c",
+      "candidate": "45"
+    },
+    {
+      "clip": "4e103843db",
+      "candidate": "phih"
+    },
+    {
+      "clip": "4e103843db",
+      "candidate": "75"
+    },
+    {
+      "clip": "4e103843db",
+      "candidate": "65"
+    },
+    {
+      "clip": "4e103843db",
+      "candidate": "55"
+    },
+    {
+      "clip": "4e103843db",
+      "candidate": "45"
+    },
+    {
+      "clip": "49aff04f7a",
+      "candidate": "phih"
+    },
+    {
+      "clip": "49aff04f7a",
+      "candidate": "75"
+    },
+    {
+      "clip": "49aff04f7a",
+      "candidate": "65"
+    },
+    {
+      "clip": "49aff04f7a",
+      "candidate": "55"
+    },
+    {
+      "clip": "49aff04f7a",
+      "candidate": "45"
+    },
+    {
+      "clip": "e8825dea53",
+      "candidate": "phih"
+    },
+    {
+      "clip": "e8825dea53",
+      "candidate": "55"
+    },
+    {
+      "clip": "e8825dea53",
+      "candidate": "45"
+    }
+  ],
+  "model": "MLP 14-64-64-1 ReLU, BCEWithLogits, Adam lr 0.001, weight decay 0.0001, 300 epochs full batch, torch seed 0",
+  "noise": "training: 5 noisy copies per row, default_rng(0); held-out CV: one draw per layout, default_rng(1)",
+  "standardisation": {
+    "mean": [
+      0.496938019990921,
+      -0.2392580211162567,
+      0.49167904257774353,
+      -0.23835939168930054,
+      -0.005258969031274319,
+      0.0008986380998976529,
+      -0.2567506432533264,
+      0.8582983613014221,
+      0.2777777910232544,
+      0.2777777910232544,
+      0.2777777910232544,
+      0.1666666716337204,
+      1.096799612045288,
+      0.2920886278152466
+    ],
+    "std": [
+      0.030486173927783966,
+      0.07531614601612091,
+      0.033163201063871384,
+      0.07674851268529892,
+      0.04927000775933266,
+      0.14827780425548553,
+      0.41910630464553833,
+      0.1474888026714325,
+      0.44790321588516235,
+      0.44790321588516235,
+      0.44790321588516235,
+      0.3726779818534851,
+      0.2336815595626831,
+      0.23485305905342102
+    ]
+  },
+  "final": {
+    "rows": 2160,
+    "train_rows_with_noise": 10800,
+    "final_loss": 0.25525304675102234
+  },
+  "onnx": "results/m5/selector.onnx",
+  "opset": 17,
+  "torch": "2.11.0+cu128",
+  "numpy": "2.2.6"
+}
