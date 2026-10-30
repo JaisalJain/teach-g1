@@ -1,0 +1,42 @@
+{
+ "contact": {
+  "index": 107,
+  "t": 534784.977662708
+ },
+ "lift": {
+  "index": 143,
+  "t": 534785.577909458
+ },
+ "grasp": {
+  "index": 140,
+  "t": 534785.527888833
+ },
+ "place": {
+  "index": 267,
+  "t": 534787.64542625
+ },
+ "release": {
+  "index": 333,
+  "t": 534788.74587875
+ },
+ "peak": {
+  "index": 171,
+  "t": 534786.044768125
+ },
+ "t_rise": {
+  "index": 145,
+  "t": 534785.611256541
+ },
+ "lift_confirm": {
+  "iou_below_0p7_within_0p3s": true,
+  "min_iou_in_window": 0.0
+ },
+ "z_grasp_m": 0.06268265181618349,
+ "contact_rule": "pre_rise_min_plus_1cm",
+ "d_axis_min_m": 0.09449441152271618,
+ "d_axis_min_index": 144,
+ "z_at_d_axis_min_m": 0.073322821312901,
+ "z_min_near_at_rise_m": 0.04348599537672507,
+ "table_x_known": true,
+ "reasons": {}
+}

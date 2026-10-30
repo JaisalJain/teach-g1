@@ -1,0 +1,20 @@
+{
+ "stage": "demo",
+ "clip": "e8825dea53",
+ "seconds": 0.07,
+ "peak_rss_gb": 0.038,
+ "path": "data/demos/e8825dea53.npz",
+ "schema_version": 4,
+ "n_fields": 54,
+ "n_frames": 474,
+ "missing": [],
+ "n_hand_valid": 318,
+ "n_metric_valid": 316,
+ "grasp_index": 140,
+ "x_axis_method": "largest_total_extent",
+ "palm_placement": "palm_centroid_ray",
+ "t_rise": 534785.611256541,
+ "contact_rule": "pre_rise_min_plus_1cm",
+ "d_axis_min_m": 0.09449441152271618,
+ "mug_mask_source": "video"
+}

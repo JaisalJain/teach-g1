@@ -1,10 +1,10 @@
 """S5 -- metric hand: move the WiLoR hand along its viewing ray so that its depth agrees with the iPhone LiDAR.
-S5b -- hand scale and sideways fit to WiLoR's own 2D palm keypoints (two passes, see the end of this docstring).
+A1v3 -- palm placement: slide the S5 hand parallel to the image onto WiLoR's 2D palm centroid (see the end of this
+docstring). No scale is fitted anywhere: the hand keeps MANO's size with WiLoR's shape (betas).
 
     env -u PYTHONPATH conda run --no-capture-output -n hoi-perception python -m perception.hand_metric --clip <id> \
-        [--stage lidar | scale | fit]
-    lidar (default) = S5 -> data/work/<clip>/hand_metric/; scale = S5b pass 1 -> hand_scale/; fit = S5b pass 2 -> hand_fit/
-    (fit needs `--stage scale` done on all 4 clips: the hand scale is pooled over them).
+        [--stage lidar | place]
+    lidar (default) = S5 -> data/work/<clip>/hand_metric/; place = A1v3 -> data/work/<clip>/hand_place/ (needs S5)
 
 WiLoR only sees a crop around the hand, so its distance from the camera is the weakest part of its 3D hand. This stage
 corrects that distance with the LiDAR and nothing else: the direction to the hand (its centroid's viewing ray) stays as
@@ -36,50 +36,47 @@ draws the whole hand toward the principal point by about (joint depth - tz) / jo
 from it: a sideways error of the metric hand of ~1 cm, plus a smaller shape term from the hand's own depth span.
 Projecting S2's kp3d with weak perspective about tz instead matches kp2d to ~1 px, so the transforms are consistent with
 each other. S5 keeps the centroid's ray, so it keeps the sideways error (the shift itself adds only about
-|D| / (z_c + D) x each keypoint's pixel distance from the centroid). Per-clip numbers go to docs/log.md. S5b below
-fits the sideways error (and a hand scale) instead of changing S2.
+|D| / (z_c + D) x each keypoint's pixel distance from the centroid). Per-clip numbers go to docs/log.md. The place stage
+below (A1v3) removes the sideways error of the palm centroid instead of changing S2.
 
 Writes data/work/<clip>/hand_metric/hand_metric.npz (all arrays over canonical index i, NaN / False when undefined).
 
-S5b -- hand scale and sideways fit (after S5, metric_valid frames only; S5's metric_valid is kept unchanged).
-The S5 hand can be off in the image for two reasons: the sideways error above, and a hand size that does not match the
-real hand at the LiDAR depth (MANO with WiLoR's betas, never checked against anything metric). Both are fitted to WiLoR's
-own 2D keypoints kp2d of the PALM set P = {0 wrist, 5, 9, 13, 17} (index, middle, ring and pinky MCPs): these five points
-are close to rigid, so they fix the hand's size and position without depending on the finger pose, which WiLoR has to
-guess when the mug hides the fingers.
-    model:  X' = s (X - c) + c + t,   t = (tx, ty, 0)
-X = S5-corrected 3D keypoints (camera frame), c = S5 mesh centroid (mean of the S5-shifted vertices). Scaling about c with
-tz = 0 keeps the centroid's depth where the LiDAR put it; s changes the hand's size, t slides it parallel to the image.
-Residual = project(K[i], X'_P) - kp2d[i, P] in ORIGINAL full-res pixels with the real intrinsics (10 numbers), minimised
-by scipy least_squares with loss soft_l1 and f_scale 5 px: residuals past ~5 px grow only linearly in the cost, so one
-badly placed keypoint cannot drag the whole fit.
-- Pass 1 (--stage scale), per frame: s, tx, ty from x0 = (1, 0, 0). Saves s per frame (hand_scale.npz).
-- s_hand = median of s over ALL metric_valid frames of all 4 clips pooled: it is the same hand in every clip, and a
-  real hand does not change size, so one number replaces the per-frame scale (which also absorbs WiLoR's per-frame
-  noise). Each clip's own median s against s_hand is a consistency check (gate G9 in report.py).
-- Pass 2 (--stage fit), per frame: s fixed to s_hand, tx, ty from x0 = (0, 0) with the same residual. The result is
-  applied to every hand quantity: verts, all 21 kp3d, and cam_t (transformed as a point, so kp3d = s_hand * MANO joints
-  + cam_t still holds).
-- The LiDAR residual is measured again on the pass-2 hand: render its mesh into the depth grid (same rasteriser and hand
-  pixels as S5), residual = median |lidar - mesh| over the hand pixels with |lidar - mesh| < 3 cm (S5's pass-2
-  tolerance). There is NO new depth shift: the centroid depth stays S5's, so the residual shows whether the rescaled
-  hand still agrees with the LiDAR (scaling about c moves the near and far parts of the hand by (s - 1) x their depth
-  offset from c).
-- Reprojection errors after pass 2: per frame, the median over the 5 palm keypoints and over all 21 of
-  |project(K[i], X') - kp2d|. The palm one is the gated number (G3); the all-21 one also includes the fingers.
-Writes data/work/<clip>/hand_scale/hand_scale.npz and data/work/<clip>/hand_fit/hand_fit.npz. hand_fit.npz has the same
-keys as hand_metric.npz (so a reader only changes the path) with reproj_err_px = the all-21 error after pass 2, plus
-reproj_err_palm_px, reproj_err_all_px, hand_scale_per_frame (= pass-1 s), s_hand and t_xy (pass 2).
+A1v3 -- palm placement (--stage place; after S5, on S5's metric_valid frames, which stay unchanged).
+Per frame, one translation t = (tx, ty, 0) of the S5 hand, chosen so that the 3D mean P of the PALM keypoints
+{0 wrist, 5, 9, 13, 17} (index, middle, ring and pinky MCPs) projects exactly onto u = the mean of WiLoR's 2D
+keypoints kp2d of the same five points (true K[i], ORIGINAL full-res pixels). The palm set is close to rigid, so it does
+not depend on the finger pose, which WiLoR has to guess when the mug hides the fingers. With P' = P + t, P'_z = P_z:
+    fx (P_x + tx) / P_z + cx = u_x    ->    tx = (u_x - cx) P_z / fx - P_x
+    fy (P_y + ty) / P_z + cy = u_y    ->    ty = (u_y - cy) P_z / fy - P_y
+Two equations in two unknowns, solved exactly (asserted: the placed P reprojects onto u within 1e-6 px). tz = 0, so no
+depth changes: the mesh centroid stays at the depth the LiDAR gave it in S5. t is applied to every hand quantity (verts,
+all 21 kp3d, cam_t; cam_t is a translation, so kp3d = MANO joints + cam_t still holds).
+Why only the mean: WiLoR's kp2d come from its near-orthographic crop camera, so its 3D palm seen through the real
+perspective camera does not have the 2D shape of kp2d. A sideways shift cannot change that shape, but it can put the
+palm's centre exactly on its observed ray. (v2 also fitted a hand scale here; the scale absorbed this mismatch and came
+out 0.85-1.15 depending on the view, so v3 fixes it at 1: docs/log.md, "M2 v3".)
+After placement, per frame:
+- reproj_err_palm_px = median over the 5 palm keypoints of |project(K[i], kp3d) - kp2d|; reproj_err_all_px = the same
+  over all 21 keypoints. The palm centre is exact, so this is what a translation cannot fix: the palm's 2D shape, size
+  and in-plane rotation disagree (information only, gate G3).
+- reproj_err_palm_mm = reproj_err_palm_px x z_c / fx x 1000: one pixel at depth z_c spans z_c / fx metres sideways
+  (z_c = S5 mesh-centroid depth, unchanged by t; fx = K[i][0, 0]). Millimetres, as its name says.
+- The LiDAR residual is measured again: render the placed mesh (S5's rasteriser and S5's hand pixels), residual = median
+  |lidar - mesh| over the hand pixels with |lidar - mesh| < 3 cm (S5's pass-2 tolerance), NaN if none. There is NO new
+  depth shift; the residual can still change, because the hand now covers other LiDAR pixels.
+Writes data/work/<clip>/hand_place/hand_place.npz with the same keys as hand_metric.npz, so a reader only changes the
+path: metric_valid, depth_shift_m and n_pixels_pass1 are S5's; kp3d, verts and cam_t are placed; lidar_residual_m and
+n_pixels (pixels within 3 cm) are re-measured; reproj_err_px = the all-21 error after placement. Plus
+reproj_err_palm_px, reproj_err_palm_mm, reproj_err_all_px and t_xy (N, 2) [m].
 """
 
 from __future__ import annotations
 
 import cv2
 import numpy as np
-from scipy.optimize import least_squares
 
 from perception import stray
-from perception.common import CLIPS, RAW, WORK, is_done, stage_cli, stage_dir
+from perception.common import RAW, stage_cli, stage_dir
 from perception.geometry import project
 from perception.masks_sam2 import BODY, HANDLE, load_masks
 
@@ -88,8 +85,8 @@ MIN_PIXELS = 30        # pass-2 pixels needed for metric_valid
 CONF_MIN = 1           # ARKit confidence: 0 low, 1 medium, 2 high
 MUG_DILATE_PX = 2
 
-PALM = [0, 5, 9, 13, 17]   # S5b fit set: wrist + index, middle, ring and pinky MCPs (OpenPose hand order)
-F_SCALE_PX = 5.0           # S5b soft_l1 scale: residuals beyond ~5 px count linearly, not quadratically
+PALM = [0, 5, 9, 13, 17]   # A1v3 palm set: wrist + index, middle, ring and pinky MCPs (OpenPose hand order)
+CENTROID_TOL_PX = 1e-6     # the palm placement is exact; anything larger is a bug
 
 
 def render_depth(verts: np.ndarray, faces: np.ndarray, K: np.ndarray, size_wh) -> np.ndarray:
@@ -220,30 +217,15 @@ def run(clip: str) -> dict:
     return stats
 
 
-# ---------------------------------------------------------------- S5b: hand scale + sideways fit
+# ---------------------------------------------------------------- A1v3: palm placement
 
-def scale_shift(X: np.ndarray, c: np.ndarray, s: float, t_xy) -> np.ndarray:
-    """X' = s (X - c) + c + (tx, ty, 0) for (..., 3) camera-frame points."""
-    return s * (X - c) + c + np.array([t_xy[0], t_xy[1], 0.0])
-
-
-def palm_residual(X_palm, c, K, uv_palm, s, t_xy) -> np.ndarray:
-    """(10,) pixel residuals of the scaled + shifted palm keypoints against WiLoR's 2D palm keypoints."""
-    return (project(K, scale_shift(X_palm, c, s, t_xy)) - uv_palm).ravel()
-
-
-def fit_scale_shift(X_palm, c, K, uv_palm):
-    """Pass 1: solve s, tx, ty. -> (s, t_xy (2,), least_squares success)."""
-    r = least_squares(lambda x: palm_residual(X_palm, c, K, uv_palm, x[0], x[1:]), [1.0, 0.0, 0.0],
-                      loss="soft_l1", f_scale=F_SCALE_PX)
-    return r.x[0], r.x[1:], r.success
-
-
-def fit_shift(X_palm, c, K, uv_palm, s: float):
-    """Pass 2: s fixed, solve tx, ty. -> (t_xy (2,), least_squares success)."""
-    r = least_squares(lambda x: palm_residual(X_palm, c, K, uv_palm, s, x), [0.0, 0.0],
-                      loss="soft_l1", f_scale=F_SCALE_PX)
-    return r.x, r.success
+def palm_centroid_shift(X_palm: np.ndarray, K: np.ndarray, uv_palm: np.ndarray) -> np.ndarray:
+    """(3,) t = (tx, ty, 0) that moves the 3D mean P of X_palm (5, 3) onto the viewing ray of the 2D mean u of
+    uv_palm (5, 2), keeping P's depth: the closed-form solution of project(K, P + t) = u."""
+    P, u = X_palm.mean(0), uv_palm.mean(0)
+    return np.array([(u[0] - K[0, 2]) * P[2] / K[0, 0] - P[0],
+                     (u[1] - K[1, 2]) * P[2] / K[1, 1] - P[1],
+                     0.0])
 
 
 def reproj_median(X: np.ndarray, K: np.ndarray, uv: np.ndarray) -> float:
@@ -251,66 +233,22 @@ def reproj_median(X: np.ndarray, K: np.ndarray, uv: np.ndarray) -> float:
     return float(np.median(np.linalg.norm(project(K, X) - uv, axis=1)))
 
 
-def run_scale(clip: str) -> dict:
-    """S5b pass 1: per metric_valid frame, s and t fitted to the 5 palm keypoints."""
-    out = stage_dir(clip, "hand_scale")
-    K = np.load(stage_dir(clip, "frames") / "meta.npz")["K"]
-    hm = dict(np.load(stage_dir(clip, "hand_metric") / "hand_metric.npz"))
-    with np.load(stage_dir(clip, "hand") / "hand.npz") as f:
-        kp2d = f["kp2d"].astype(np.float64)
-    mv = hm["metric_valid"]
-    n = len(mv)
-
-    s = np.full(n, np.nan)
-    t_xy = np.full((n, 2), np.nan)
-    err_palm = np.full(n, np.nan)
-    err_palm_s5 = np.full(n, np.nan)            # the same error on the S5 hand, before the fit (for the log)
-    ok = np.zeros(n, bool)
-    for i in np.flatnonzero(mv):
-        X = hm["kp3d"][i, PALM].astype(np.float64)
-        c = hm["verts"][i].astype(np.float64).mean(0)
-        s[i], t_xy[i], ok[i] = fit_scale_shift(X, c, K[i], kp2d[i, PALM])
-        err_palm[i] = reproj_median(scale_shift(X, c, s[i], t_xy[i]), K[i], kp2d[i, PALM])
-        err_palm_s5[i] = reproj_median(X, K[i], kp2d[i, PALM])
-
-    np.savez_compressed(out / "hand_scale.npz", s=s, t_xy=t_xy, reproj_err_palm_px=err_palm, ok=ok)
-    stats = {"n_metric_valid": int(mv.sum()), "n_fit_failed": int((mv & ~ok).sum())}
-    if mv.any():
-        stats.update({"median_s": float(np.median(s[mv])),
-                      "s_iqr": [float(np.percentile(s[mv], 25)), float(np.percentile(s[mv], 75))],
-                      "s_range": [float(s[mv].min()), float(s[mv].max())],
-                      "t_xy_mm_median_norm": float(np.median(np.linalg.norm(t_xy[mv], axis=1)) * 1000),
-                      "reproj_err_palm_px_median_s5": float(np.median(err_palm_s5[mv])),
-                      "reproj_err_palm_px_median_pass1": float(np.median(err_palm[mv]))})
-    return stats
+def residual_no_shift(lidar: np.ndarray, mesh: np.ndarray):
+    """Median |lidar - mesh| over the hand pixels within PASS2_TOL_M, with no depth shift (1D arrays, metres).
+    -> (residual, n_pixels kept); residual is NaN when no pixel is within the tolerance."""
+    diff = np.abs(np.asarray(lidar, dtype=np.float64) - mesh)
+    keep = diff < PASS2_TOL_M
+    return (float(np.median(diff[keep])) if keep.any() else np.nan), int(keep.sum())
 
 
-def pooled_hand_scale() -> tuple[float, dict]:
-    """s_hand = median of the pass-1 s over the metric_valid frames of all 4 clips pooled. -> (s_hand, per-clip counts)."""
-    missing = [c for c in CLIPS if not is_done(c, "hand_scale")]
-    if missing:
-        raise RuntimeError(f"hand_fit pools the hand scale over all {len(CLIPS)} clips, but hand_scale is not done for "
-                           f"{missing}: run `python -m perception.hand_metric --stage scale --clip <id>` on them first")
-    pooled, counts = [], {}
-    for c in CLIPS:
-        s = np.load(WORK / c / "hand_scale" / "hand_scale.npz")["s"]
-        mv = np.load(WORK / c / "hand_metric" / "hand_metric.npz")["metric_valid"]
-        # s exists exactly on S5's metric_valid frames; anything else means hand_metric was rerun after hand_scale
-        assert np.array_equal(np.isfinite(s), mv), f"{c}: hand_scale is older than hand_metric, rerun --stage scale"
-        pooled.append(s[mv])
-        counts[c] = int(mv.sum())
-    return float(np.median(np.concatenate(pooled))), counts
-
-
-def run_fit(clip: str) -> dict:
-    """S5b pass 2: s = s_hand, per-frame t; the fitted hand (same keys as hand_metric.npz) + re-measured LiDAR residual."""
-    s_hand, counts = pooled_hand_scale()
-    out = stage_dir(clip, "hand_fit")
+def run_place(clip: str) -> dict:
+    """A1v3: per metric_valid frame, slide the S5 hand onto WiLoR's 2D palm centroid; reprojection errors and the
+    re-measured LiDAR residual. hand_place.npz has hand_metric.npz's keys plus the placement fields."""
+    out = stage_dir(clip, "hand_place")
     meta = np.load(stage_dir(clip, "frames") / "meta.npz")
     hm = dict(np.load(stage_dir(clip, "hand_metric") / "hand_metric.npz"))
     with np.load(stage_dir(clip, "hand") / "hand.npz") as f:
         kp2d, faces = f["kp2d"].astype(np.float64), f["faces"]
-    s_pass1 = np.load(stage_dir(clip, "hand_scale") / "hand_scale.npz")["s"]
     masks = load_masks(clip)
     rec = stray.load(RAW / clip)
     K, K_depth, depth_size = meta["K"], meta["K_depth"], tuple(int(x) for x in meta["depth_size"])
@@ -322,44 +260,49 @@ def run_fit(clip: str) -> dict:
     verts = np.full((n, 778, 3), np.nan, np.float16)
     cam_t = np.full((n, 3), np.nan, np.float32)
     err_palm = np.full(n, np.nan)
+    err_palm_mm = np.full(n, np.nan)
     err_all = np.full(n, np.nan)
+    err_palm_s5 = np.full(n, np.nan)            # the palm error of the S5 hand, before placement (for the log)
     resid = np.full(n, np.nan)
     n_pix = np.zeros(n, np.int32)
-    ok = np.zeros(n, bool)
+    centroid_err_max = 0.0
     for i in np.flatnonzero(mv):
         X = hm["kp3d"][i].astype(np.float64)
         v = hm["verts"][i].astype(np.float64)
-        c = v.mean(0)
-        t_xy[i], ok[i] = fit_shift(X[PALM], c, K[i], kp2d[i, PALM], s_hand)
-        X, v = scale_shift(X, c, s_hand, t_xy[i]), scale_shift(v, c, s_hand, t_xy[i])
-        kp3d[i], verts[i] = X, v
-        cam_t[i] = scale_shift(hm["cam_t"][i].astype(np.float64), c, s_hand, t_xy[i])
+        z_c = v.mean(0)[2]                      # S5 mesh-centroid depth; t has no z part, so it stays
+        err_palm_s5[i] = reproj_median(X[PALM], K[i], kp2d[i, PALM])
+        t = palm_centroid_shift(X[PALM], K[i], kp2d[i, PALM])
+        X, v = X + t, v + t
+        # 2 equations, 2 unknowns: the placed palm mean must land on the 2D palm mean (checked on what we store)
+        e = float(np.abs(project(K[i], X[PALM].mean(0)) - kp2d[i, PALM].mean(0)).max())
+        assert e <= CENTROID_TOL_PX, f"{clip} frame {i}: placed palm centroid is {e} px off its 2D target"
+        centroid_err_max = max(centroid_err_max, e)
+        t_xy[i], kp3d[i], verts[i], cam_t[i] = t[:2], X, v, hm["cam_t"][i] + t
         err_palm[i] = reproj_median(X[PALM], K[i], kp2d[i, PALM])
+        err_palm_mm[i] = err_palm[i] * z_c / K[i][0, 0] * 1000
         err_all[i] = reproj_median(X, K[i], kp2d[i])
 
-        # LiDAR residual of the fitted hand: S5's rasteriser and hand pixels, no new depth shift
+        # LiDAR residual of the placed hand: S5's rasteriser and hand pixels, no new depth shift
         zbuf = render_depth(v, faces, K_depth[i], depth_size)
         depth = rec.depth(i)
         mug = masks.get(BODY, i, "depth") | masks.get(HANDLE, i, "depth")
         pix = hand_pixels(zbuf, depth, rec.confidence(i), mug)
-        diff = np.abs(depth[pix].astype(np.float64) - zbuf[pix])
-        keep = diff < PASS2_TOL_M
-        n_pix[i] = keep.sum()
-        if n_pix[i]:
-            resid[i] = np.median(diff[keep])
+        resid[i], n_pix[i] = residual_no_shift(depth[pix], zbuf[pix])
 
-    np.savez_compressed(out / "hand_fit.npz", metric_valid=mv, kp3d=kp3d, verts=verts, cam_t=cam_t,
+    np.savez_compressed(out / "hand_place.npz", metric_valid=mv, kp3d=kp3d, verts=verts, cam_t=cam_t,
                         depth_shift_m=hm["depth_shift_m"], lidar_residual_m=resid, n_pixels=n_pix,
                         n_pixels_pass1=hm["n_pixels_pass1"], reproj_err_px=err_all,
-                        reproj_err_palm_px=err_palm, reproj_err_all_px=err_all, hand_scale_per_frame=s_pass1,
-                        s_hand=np.float64(s_hand), t_xy=t_xy)
+                        reproj_err_palm_px=err_palm, reproj_err_palm_mm=err_palm_mm, reproj_err_all_px=err_all,
+                        t_xy=t_xy)
 
-    stats = {"s_hand": s_hand, "s_hand_frames_per_clip": counts, "n_metric_valid": int(mv.sum()),
-             "n_fit_failed": int((mv & ~ok).sum()), "n_residual_undefined": int((mv & ~np.isfinite(resid)).sum())}
+    stats = {"n_metric_valid": int(mv.sum()), "palm_centroid_reproj_max_px": centroid_err_max,
+             "n_residual_undefined": int((mv & ~np.isfinite(resid)).sum()),
+             "residual_undefined_frames": np.flatnonzero(mv & ~np.isfinite(resid)).tolist()}
     if mv.any():
-        stats.update({"clip_median_s": float(np.median(s_pass1[mv])),
-                      "t_xy_mm_median_norm": float(np.median(np.linalg.norm(t_xy[mv], axis=1)) * 1000),
+        stats.update({"t_xy_mm_median_norm": float(np.median(np.linalg.norm(t_xy[mv], axis=1)) * 1000),
+                      "reproj_err_palm_px_median_s5": float(np.median(err_palm_s5[mv])),
                       "reproj_err_palm_px_median": float(np.median(err_palm[mv])),
+                      "reproj_err_palm_mm_median": float(np.median(err_palm_mm[mv])),
                       "reproj_err_all_px_median": float(np.median(err_all[mv])),
                       "lidar_residual_m_median": float(np.nanmedian(resid[mv])),
                       "lidar_residual_m_median_s5": float(np.median(hm["lidar_residual_m"][mv])),
@@ -369,5 +312,4 @@ def run_fit(clip: str) -> dict:
 
 if __name__ == "__main__":
     stage_cli({"lidar": ("hand_metric", run, False),
-               "scale": ("hand_scale", run_scale, False),
-               "fit": ("hand_fit", run_fit, False)})
+               "place": ("hand_place", run_place, False)})

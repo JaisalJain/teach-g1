@@ -1,0 +1,141 @@
+{
+ "windows": {
+  "init": [
+   1,
+   22
+  ],
+  "final": [
+   215,
+   249
+  ],
+  "final_flag": null
+ },
+ "init": {
+  "frames_used": [
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16
+  ],
+  "mid_frame": 11,
+  "base_centre_world": [
+   -0.08317264743454046,
+   -0.3984071087286622,
+   -0.03790229322849995
+  ],
+  "iou": 0.9181960978835979,
+  "init_guess_world": [
+   -0.1478468663786135,
+   -0.4021455472254394,
+   -0.038065659371654646
+  ],
+  "n_depth_points": 3222,
+  "fit_minus_guess_m": 0.064782383461222,
+  "grid_best_cell": [
+   60,
+   30
+  ],
+  "grid_best_on_edge": true,
+  "free_fit": {
+   "r_m": 0.05256767498216915,
+   "h_m": 0.08834022226098188,
+   "diameter_m": 0.1051353499643383,
+   "iou": 0.9771789318841172,
+   "optical_axis_vs_normal_deg": 0.6657924795576919,
+   "h_observable": false
+  },
+  "handle": {
+   "P_world": [
+    -0.09296174883690685,
+    -0.3472676195321392,
+    -0.11084213930411689
+   ],
+   "area_ratio": 0.09439070767195767,
+   "valid": true
+  }
+ },
+ "coaster": {
+  "centre_world": [
+   0.060751121337341854,
+   -0.38950982082925417,
+   -0.04458923847960173
+  ],
+  "diameter_m": 0.10337801828516148,
+  "n_contour_px": 530,
+  "inlier_frac": 1.0,
+  "config_diameter_m": 0.104
+ },
+ "final": {
+  "frames_used": [
+   227,
+   228,
+   229,
+   230,
+   231,
+   232,
+   233,
+   234,
+   235,
+   236,
+   237
+  ],
+  "mid_frame": 232,
+  "base_centre_world": [
+   0.06885539570959631,
+   -0.38909882533598544,
+   -0.04386767544840941
+  ],
+  "iou": 0.8720160766482624,
+  "init_guess_world": [
+   0.12048835982891987,
+   -0.38459581511622465,
+   -0.06226228020562699
+  ],
+  "n_depth_points": 3453,
+  "fit_minus_guess_m": 0.05499637778036728,
+  "grid_best_cell": [
+   4,
+   21
+  ],
+  "grid_best_on_edge": false,
+  "free_fit": {
+   "r_m": 0.052314279585152924,
+   "h_m": 0.09304756681980673,
+   "diameter_m": 0.10462855917030585,
+   "iou": 0.9797893884163629,
+   "optical_axis_vs_normal_deg": 2.212790378531745,
+   "h_observable": false
+  },
+  "handle": {
+   "P_world": [
+    0.06698739489573464,
+    -0.33756233591855433,
+    -0.11604485402594067
+   ],
+   "area_ratio": 0.07295388113023708,
+   "valid": true
+  }
+ },
+ "mug_mask_source": "video",
+ "mask_decision": {
+  "rule": "full_res_image for all clips if |full-res init free-fit diameter - label| <= 5 mm on >= 3 of 4 clips, else video",
+  "label_diameter_m": 0.099,
+  "full_res_init_diameter_m": {
+   "26d4118b0c": 0.11427698629969728,
+   "4e103843db": 0.10579052430714118,
+   "49aff04f7a": 0.10604738652466236,
+   "e8825dea53": 0.10565698277105268
+  },
+  "clips_within_5mm": [],
+  "n_within_5mm": 0,
+  "chosen": "video",
+  "reason": "0 of 4 clips within 5 mm of the 99.0 mm label (none); the rule needs 3 -> keep the video masks"
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "stage": "hand",
+ "clip": "e8825dea53",
+ "seconds": 63.37,
+ "peak_rss_gb": 6.058,
+ "peak_vram_gb": 2.818,
+ "n_frames": 474,
+ "n_hand_valid": 318,
+ "first_hand_valid": 39,
+ "last_hand_valid": 356,
+ "n_frames_multiple_right_boxes": 0,
+ "n_iou_tiebreaks": 0,
+ "score_median": 0.7766512632369995,
+ "upright_fx_median": 1406.3025499999999,
+ "upright_fy_median": 1406.3025499999999,
+ "fx_fy_rel_diff_max": 0.0,
+ "cam_crop_to_full_K_vs_wilor_max_rel_diff": 1.382027297424917e-13,
+ "seconds_per_frame_median": 0.16357470200000535,
+ "keypoint_order": "OpenPose: wrist 0, thumb 1-4, index 5-8, middle 9-12, ring 13-16, pinky 17-20"
+}

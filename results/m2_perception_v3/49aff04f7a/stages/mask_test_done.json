@@ -1,0 +1,30 @@
+{
+ "stage": "mask_test",
+ "clip": "49aff04f7a",
+ "seconds": 118.83,
+ "peak_rss_gb": 0.33,
+ "init_iou": {
+  "video": 0.9469808237314081,
+  "full_res_image": 0.9495444516547696
+ },
+ "init_free_diameter_m": {
+  "video": 0.10605167979611735,
+  "full_res_image": 0.10604738652466236
+ },
+ "init_free_h_m": {
+  "video": 0.08575238260489937,
+  "full_res_image": 0.08529789118396164
+ },
+ "final_iou": {
+  "video": 0.8819552782111284,
+  "full_res_image": 0.608580830290379
+ },
+ "final_free_diameter_m": {
+  "video": 0.10424846332530034,
+  "full_res_image": 0.10545284838704758
+ },
+ "final_free_h_m": {
+  "video": 0.09708374132959685,
+  "full_res_image": 0.050003442715226734
+ }
+}

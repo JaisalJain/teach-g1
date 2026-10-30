@@ -1,0 +1,40 @@
+{
+ "stage": "masks_full",
+ "clip": "e8825dea53",
+ "seconds": 4.77,
+ "peak_rss_gb": 2.087,
+ "peak_vram_gb": 0.715,
+ "windows": {
+  "init": [
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "final": [
+   417,
+   418,
+   419,
+   420,
+   421,
+   422,
+   423,
+   424,
+   425,
+   426,
+   427
+  ]
+ },
+ "median_area_px_full": {
+  "init": 121467.0,
+  "final": 156827.0
+ },
+ "n_final_frames_with_handle_point": 0
+}

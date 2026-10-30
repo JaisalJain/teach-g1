@@ -2,7 +2,7 @@
 
     env -u PYTHONPATH conda run --no-capture-output -n hoi-perception python -m perception.palm --clip <id>
 
-Inputs: the fitted hand keypoints (S5b, hand_fit.npz, read by events.hand_kp_table) in the table frame (S7), the
+Inputs: the placed hand keypoints (A1v3, hand_place.npz, read by events.hand_kp_table) in the table frame (S7), the
 events (S8) and the initial cup (S6).
 
 Position   palm_pos = 0.5 (kp[0] + kp[9]), wrist + middle-finger base (the same point the events use).

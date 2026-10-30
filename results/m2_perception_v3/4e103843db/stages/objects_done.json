@@ -1,0 +1,28 @@
+{
+ "stage": "objects",
+ "clip": "4e103843db",
+ "seconds": 0.22,
+ "peak_rss_gb": 0.271,
+ "mug_mask_source": "video",
+ "n_within_5mm": 0,
+ "init_iou": 0.942652329749104,
+ "final_iou": 0.9013217078402879,
+ "final_flag": null,
+ "grid_best_on_edge": [
+  true,
+  false
+ ],
+ "fit_minus_guess_m": [
+  0.06280125409106842,
+  0.04716934215948412
+ ],
+ "init_free_r_m": 0.052856300117541735,
+ "init_free_h_m": 0.08687408353469453,
+ "h_observable": true,
+ "handle_valid": [
+  true,
+  true
+ ],
+ "coaster_diameter_m": 0.10367669422739804,
+ "coaster_config_diameter_m": 0.104
+}

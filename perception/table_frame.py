@@ -34,7 +34,8 @@ perpendicular to the long edges.
    line is that long, the group with the largest total extent (sum of the members' extents) is used and the rule is
    recorded as not applied. (The near long edge is slightly curved and may break into short or slanted lines; the far
    one is straight.)
-4. x = the in-plane perpendicular to the long edges, signed so that my first metric_valid palm position has x < 0
+4. x = the in-plane perpendicular to the long edges, signed so that my first metric_valid palm position (placed hand,
+   hand_place.npz) has x < 0
    (I sit at the near edge, so my hand starts on the -x side). y = z x x.
 5. Cross-check at frame m against a reference direction: the optical axis projected on the plane (90 deg and 45 deg
    clips, expected angle 0 and |angle| 45; left / right is not confirmed for the 45 deg clips) or the upright image's
@@ -175,7 +176,7 @@ def run(clip: str) -> dict:
     meta = np.load(WORK / clip / "frames" / "meta.npz")
     table = json.loads((WORK / clip / "table" / "table.json").read_text())
     objects = json.loads((WORK / clip / "objects" / "objects.json").read_text())
-    hf = np.load(WORK / clip / "hand_fit" / "hand_fit.npz")        # the hand after S5b (scale + lateral fit)
+    hp = np.load(WORK / clip / "hand_place" / "hand_place.npz")    # the hand after A1v3 (S5 depth + palm placement)
     rec = stray.load(RAW / clip)
     T_wc, K_depth, rot_k = meta["T_world_cam"], meta["K_depth"], int(meta["rot_k"])
 
@@ -244,10 +245,10 @@ def run(clip: str) -> dict:
     else:
         x, method = None, "failed"
 
-    valid = np.flatnonzero(hf["metric_valid"])
+    valid = np.flatnonzero(hp["metric_valid"])
     palm_first = None
     if len(valid):
-        kp = hf["kp3d"][valid[0]].astype(np.float64)
+        kp = hp["kp3d"][valid[0]].astype(np.float64)
         palm_first = transform(T_wc[valid[0]], 0.5 * (kp[0] + kp[9]))
     flipped = None                                       # null = sign undetermined (no metric_valid frame)
     if x is not None and palm_first is not None:

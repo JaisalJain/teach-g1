@@ -1,0 +1,21 @@
+{
+ "stage": "hand_place",
+ "clip": "49aff04f7a",
+ "seconds": 1.01,
+ "peak_rss_gb": 0.191,
+ "n_metric_valid": 260,
+ "palm_centroid_reproj_max_px": 2.4868995751603507e-13,
+ "n_residual_undefined": 2,
+ "residual_undefined_frames": [
+  366,
+  367
+ ],
+ "t_xy_mm_median_norm": 14.845661751368928,
+ "reproj_err_palm_px_median_s5": 58.943648989802455,
+ "reproj_err_palm_px_median": 51.71995833487694,
+ "reproj_err_palm_mm_median": 13.475255932100337,
+ "reproj_err_all_px_median": 51.21012671532119,
+ "lidar_residual_m_median": 0.004736476913897669,
+ "lidar_residual_m_median_s5": 0.0038115493132058753,
+ "n_pixels_median": 714.5
+}

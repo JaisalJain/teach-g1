@@ -1,0 +1,35 @@
+{
+ "stage": "palm",
+ "clip": "26d4118b0c",
+ "seconds": 0.0,
+ "peak_rss_gb": 0.149,
+ "grasp_index": 84,
+ "normal_flipped": false,
+ "flip_decided": true,
+ "normal_dot_to_cup_at_grasp": 0.7203834605623017,
+ "table_x_known": true,
+ "n_valid_raw": 161,
+ "n_valid": 164,
+ "n_gaps_filled": 1,
+ "n_gaps_unfilled": 0,
+ "gaps": [
+  {
+   "a": 196,
+   "b": 200,
+   "span_s": 0.1333,
+   "filled": true,
+   "events_inside": []
+  }
+ ],
+ "median_dt_s": 0.0333340410143137,
+ "sg_window": 5,
+ "n_runs": 1,
+ "n_runs_smoothed": 1,
+ "cup_frame_x_from_yaw": true,
+ "cup_yaw_init_deg": 4.1,
+ "palm_in_cup_at_grasp_m": [
+  -0.0849251081992665,
+  -0.07290428002910039,
+  0.05041725230527919
+ ]
+}

@@ -1,0 +1,108 @@
+{
+ "clip": "e8825dea53",
+ "view": "45deg",
+ "gates": {
+  "G1": {
+   "value": {
+    "coverage": 0.9966101694915255,
+    "longest_invalid_run_s": 0.0,
+    "longest_invalid_run_frames": 0,
+    "grasp_valid": true,
+    "lift_valid": true
+   },
+   "text": "coverage 99.7%, longest invalid run 0.000 s (0 frames), g valid True, lift valid True",
+   "result": "pass",
+   "reason": null
+  },
+  "G2": {
+   "value": {
+    "median": 0.0075974832219821015,
+    "n_frames": 316,
+    "n_undefined": 0,
+    "undefined_frames": []
+   },
+   "text": "median 0.76 cm over 316 metric_valid frames",
+   "result": "pass",
+   "reason": null
+  },
+  "G3": {
+   "value": {
+    "label": "monocular hand-model limitation (orthographic model vs a 35\u201345 cm perspective camera)",
+    "median_px": 14.174556274677101,
+    "median_mm": 3.517555503221631,
+    "n_frames": 316,
+    "n_undefined": 0,
+    "undefined_frames": []
+   },
+   "text": "palm reprojection median 14.17 px; median at the hand 3.52 mm (px * z_c / fx per frame, then the median), over 316 metric_valid frames; monocular hand-model limitation (orthographic model vs a 35\u201345 cm perspective camera)",
+   "result": "information",
+   "reason": null
+  },
+  "G4": {
+   "value": {
+    "holds": []
+   },
+   "text": "no static hold",
+   "result": "N/A",
+   "reason": "N/A: no run with smoothed palm speed < 2 cm/s for >= 0.3 s"
+  },
+  "G5": {
+   "value": {
+    "z_grasp_m": 0.06268265181618349,
+    "z_range_m": [
+     0.02275,
+     0.07735
+    ],
+    "d_axis_m": 0.09617965993793702,
+    "d_minus_r_m": 0.04667965993793702,
+    "grasp_index": 140,
+    "contact_index": 107,
+    "lift_index": 143,
+    "grasp_before_contact": false
+   },
+   "text": "z_grasp 62.7 mm (pass 22.8-77.4); information: palm-to-axis distance 96.2 mm, distance - r 46.7 mm",
+   "result": "pass",
+   "reason": null
+  },
+  "G6": {
+   "value": {
+    "mask_source": "video",
+    "init_iou": 0.9383108373738698,
+    "free_fit_diameter_m": 0.10578626433686311,
+    "free_fit_height_m": 0.08812156167896579,
+    "height_check": true
+   },
+   "text": "video masks: IoU 0.938, diameter 105.8 mm (label 99), height 88.1 mm (label 91); known bias +6\u20137 mm, cause unresolved",
+   "result": "fail",
+   "reason": null
+  },
+  "G7": {
+   "value": {
+    "distance_m": 0.005425647100748376
+   },
+   "text": "0.54 cm",
+   "result": "pass",
+   "reason": null
+  },
+  "G8": {
+   "value": {
+    "plane_rms_m": 0.004599556150951679,
+    "drift_offset_m": 0.001796445859793827,
+    "drift_offset_check": true,
+    "drift_normal_diff_deg": 0.69855953265115,
+    "x_axis_method": "largest_total_extent",
+    "x_vs_reference_deg": -37.44220609118214,
+    "expected_deg": 45.0,
+    "x_abs_err_deg": 7.557793908817857
+   },
+   "text": "plane RMS 4.60 mm, drift offset 1.8 mm (pass), normal 0.70 deg (information), x (largest_total_extent) error 7.6 deg",
+   "result": "pass",
+   "reason": null
+  }
+ },
+ "palm_normal_flip": {
+  "flipped": false,
+  "decided": true,
+  "normal_dot_at_grasp": 0.8405080703758578
+ }
+}

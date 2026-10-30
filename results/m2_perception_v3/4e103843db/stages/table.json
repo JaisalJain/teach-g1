@@ -1,0 +1,41 @@
+{
+ "plane_world": [
+  -0.0311806282911442,
+  0.9976680845740062,
+  0.060713766493298404,
+  0.36959915794780923
+ ],
+ "init_window": [
+  1,
+  75
+ ],
+ "init_n_frames": 75,
+ "init_short_flag": false,
+ "first_hand_valid": 90,
+ "last_hand_valid": 455,
+ "n_points": 2385041,
+ "inlier_frac": 0.6770198080452285,
+ "rms_m": 0.004479729481860118,
+ "normal_vs_y_deg": 3.9136182346316892,
+ "end_window": [
+  470,
+  513
+ ],
+ "end_n_frames": 44,
+ "end_plane_world": [
+  -0.06555034884043473,
+  0.994201723386395,
+  0.08524133376724807,
+  0.3716531978811556
+ ],
+ "end_n_points": 1439536,
+ "end_inlier_frac": 0.7181619632992853,
+ "end_rms_m": 0.0042620574134168,
+ "end_normal_vs_y_deg": 6.1730126269089265,
+ "normal_diff_deg": 2.427586032684361,
+ "ransac": {
+  "threshold_m": 0.01,
+  "seed": 0,
+  "iterations": 1000
+ }
+}

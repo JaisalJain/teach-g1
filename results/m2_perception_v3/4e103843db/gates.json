@@ -1,0 +1,122 @@
+{
+ "clip": "4e103843db",
+ "view": "90deg",
+ "gates": {
+  "G1": {
+   "value": {
+    "coverage": 1.0,
+    "longest_invalid_run_s": 0.0,
+    "longest_invalid_run_frames": 0,
+    "grasp_valid": true,
+    "lift_valid": true
+   },
+   "text": "coverage 100.0%, longest invalid run 0.000 s (0 frames), g valid True, lift valid True",
+   "result": "pass",
+   "reason": null
+  },
+  "G2": {
+   "value": {
+    "median": 0.005710964301830053,
+    "n_frames": 366,
+    "n_undefined": 0,
+    "undefined_frames": []
+   },
+   "text": "median 0.57 cm over 366 metric_valid frames",
+   "result": "pass",
+   "reason": null
+  },
+  "G3": {
+   "value": {
+    "label": "monocular hand-model limitation (orthographic model vs a 35\u201345 cm perspective camera)",
+    "median_px": 43.093903523434705,
+    "median_mm": 10.938111898655727,
+    "n_frames": 366,
+    "n_undefined": 0,
+    "undefined_frames": []
+   },
+   "text": "palm reprojection median 43.09 px; median at the hand 10.94 mm (px * z_c / fx per frame, then the median), over 366 metric_valid frames; monocular hand-model limitation (orthographic model vs a 35\u201345 cm perspective camera)",
+   "result": "information",
+   "reason": null
+  },
+  "G4": {
+   "value": {
+    "holds": [
+     {
+      "frames": [
+       358,
+       379
+      ],
+      "start_s": 6.28591670806054,
+      "duration_s": 0.3501439579995349,
+      "std_raw_m": 0.0006653265516665429,
+      "std_smoothed_m": 0.0004958629024507688,
+      "n_raw": 22
+     }
+    ],
+    "max_std_raw_m": 0.0006653265516665429,
+    "max_std_smoothed_m": 0.0004958629024507688
+   },
+   "text": "1 hold(s), max raw std 0.07 cm (smoothed 0.05 cm)",
+   "result": "pass",
+   "reason": null
+  },
+  "G5": {
+   "value": {
+    "z_grasp_m": 0.0445850619449778,
+    "z_range_m": [
+     0.02275,
+     0.07735
+    ],
+    "d_axis_m": 0.10212363243046546,
+    "d_minus_r_m": 0.05262363243046546,
+    "grasp_index": 211,
+    "contact_index": 162,
+    "lift_index": 214,
+    "grasp_before_contact": false
+   },
+   "text": "z_grasp 44.6 mm (pass 22.8-77.4); information: palm-to-axis distance 102.1 mm, distance - r 52.6 mm",
+   "result": "pass",
+   "reason": null
+  },
+  "G6": {
+   "value": {
+    "mask_source": "video",
+    "init_iou": 0.942652329749104,
+    "free_fit_diameter_m": 0.10571260023508347,
+    "free_fit_height_m": 0.08687408353469453,
+    "height_check": true
+   },
+   "text": "video masks: IoU 0.943, diameter 105.7 mm (label 99), height 86.9 mm (label 91); known bias +6\u20137 mm, cause unresolved",
+   "result": "fail",
+   "reason": null
+  },
+  "G7": {
+   "value": {
+    "distance_m": 0.02154680298290465
+   },
+   "text": "2.15 cm",
+   "result": "pass",
+   "reason": null
+  },
+  "G8": {
+   "value": {
+    "plane_rms_m": 0.004479729481860118,
+    "drift_offset_m": -0.00043466429894079006,
+    "drift_offset_check": true,
+    "drift_normal_diff_deg": 2.427586032684361,
+    "x_axis_method": "largest_total_extent",
+    "x_vs_reference_deg": -1.5039711601943928,
+    "expected_deg": 0.0,
+    "x_abs_err_deg": 1.5039711601943928
+   },
+   "text": "plane RMS 4.48 mm, drift offset -0.4 mm (pass), normal 2.43 deg (information), x (largest_total_extent) error 1.5 deg",
+   "result": "pass",
+   "reason": null
+  }
+ },
+ "palm_normal_flip": {
+  "flipped": false,
+  "decided": true,
+  "normal_dot_at_grasp": 0.8105695200699864
+ }
+}

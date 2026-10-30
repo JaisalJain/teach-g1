@@ -1,47 +1,51 @@
-"""S11 -- per-clip report and the M2 v2 gates; --summary builds the cross-clip tables.
+"""S11 -- per-clip report and the M2 v3 gates; --summary builds the cross-clip tables.
 
     env -u PYTHONPATH conda run --no-capture-output -n hoi-perception python -m perception.report --clip <id>
     env -u PYTHONPATH conda run --no-capture-output -n hoi-perception python -m perception.report --summary
 
-Per clip, into results/m2_perception_v2/<clip>/ (v1 in results/m2_perception/ is only read, for the v1 -> v2 table).
-Inputs: data/demos/<clip>.npz (S10, schema 3) plus the stage files that hold numbers the demo file does not (event
-indices, S8 d_axis / z, object-fit windows and free fit, S7 drift and reference, the fitted mesh of S5b, the MANO faces
-of S2).
-- overlay.mp4 (gitignored): the upright half-res frames of S1 (720x960) with, drawn by OpenCV: the S5b MANO mesh
-  (depth-corrected, scaled by s_hand, shifted; translucent, flat-shaded, painter's order) and the 21-keypoint skeleton;
-  the fitted mug cylinder (config r, h at the 2-DOF base centre, wireframe) during the initial and the final window;
-  the coaster circle; the table axes at the origin (x red, y green, z blue, 10 cm); the smoothed palm frame (x_f red,
-  y green, n blue, 5 cm); frame index, time and phase. Every 3D point goes through the true K of its frame into the
-  ORIGINAL half-res image and is then mapped to the upright view with geometry.pix_orig_to_upright. ffmpeg encodes at
-  the capture rate (1 / median dt); frames are not resampled, so a dropped frame just shortens the video by one frame.
+Per clip, into results/m2_perception_v3/<clip>/ (v2 in results/m2_perception_v2/ is only read, for the v2 -> v3 table).
+Inputs: data/demos/<clip>.npz (S10, schema 4) plus the stage files that hold numbers the demo file does not (event
+indices, S8 d_axis / z, object-fit windows and free fit, S7 drift and reference, the placed hand mesh of
+hand_place.npz, the MANO faces of S2).
+- overlay.mp4 (gitignored): the upright half-res frames of S1 (720x960) with, drawn by OpenCV: the placed MANO mesh
+  (S5 depth-corrected, then the A1v3 sideways placement; translucent, flat-shaded, painter's order) and the 21-keypoint
+  skeleton; the fitted mug cylinder (config r, h at the 2-DOF base centre, wireframe) during the initial and the final
+  window; the coaster circle; the table axes at the origin (x red, y green, z blue, 10 cm); the smoothed palm frame
+  (x_f red, y green, n blue, 5 cm); frame index, time and phase. Every 3D point goes through the true K of its frame
+  into the ORIGINAL half-res image and is then mapped to the upright view with geometry.pix_orig_to_upright. ffmpeg
+  encodes at the capture rate (1 / median dt); frames are not resampled, so a dropped frame just shortens the video by
+  one frame.
 - overlay.gif (the 90deg clip only, committed): the same drawings, 10 fps (first frame of every 0.1 s), 360 px wide,
   with the largest palette of 256 / 128 / 64 colours that keeps it under 5 MB (gif_colors, gif_under_5mb in done.json;
   a WARNING is printed if even 64 colours are over the limit).
 - topdown.png, palm_height.png, depth_shift.png, and copies of the stage plots: mask_areas.png (S3), lines.png (S7),
   events.png (S8).
-- gates.json: G1-G9 (the v2 table), each {"value", "text", "result": "pass" | "fail" | "N/A", "reason"}. A gate whose
-  inputs are undefined (an event not detected, a stage output missing, no smoothed palm path for G4) fails and says
-  why; N/A is used only where the spec allows it (G4 without a static hold, G6 height unobservable, G8 drift with a
-  short end window), always with a reason. G1 reports every sub-check whose events exist, also when another one is
-  undefined. G2 / G3 take the median over the metric_valid frames where the value exists: S5b's re-measured LiDAR
-  residual is NaN on a frame where no hand pixel is left within 3 cm of the fitted mesh; those frames are counted in
-  the text and listed by index in gates.json (n_undefined, undefined_frames). G5 also records g, contact and lift and
-  says so in its text when g comes before contact (information). G7 and the cross-view coaster distance are horizontal
-  distances between S6's world points (normal component along the S4 plane normal removed), so they do not need table
-  x and stay defined when S7 found none; only dx, dy do. Also palm_normal_flip = S9's flip of the palm normal
+- gates.json: G1-G8 (the v3 table; G9, the hand-scale gate, is removed), each {"value", "text", "result": "pass" |
+  "fail" | "N/A" | "information", "reason"}. A gate whose inputs are undefined (an event not detected, a stage output
+  missing, no smoothed palm path for G4) fails and says why; N/A is used only where the spec allows it (G4 without a
+  static hold, G6 height unobservable, G8 drift with a short end window), always with a reason. G3 is information
+  only: the palm reprojection median in px and in mm at the hand, labelled "monocular hand-model limitation
+  (orthographic model vs a 35-45 cm perspective camera)". G6 keeps its thresholds and is marked "known bias +6-7 mm,
+  cause unresolved". G1 reports every sub-check whose events exist, also when another one is undefined. G2 / G3 take
+  the median over the metric_valid frames where the value exists: the re-measured LiDAR residual is NaN on a frame
+  where no hand pixel is left within 3 cm of the placed mesh; those frames are counted in the text and listed by index
+  in gates.json (n_undefined, undefined_frames). G5 also records g, contact and lift and says so in its text when g
+  comes before contact (information). G7 and the cross-view coaster distance are horizontal distances between S6's
+  world points (normal component along the S4 plane normal removed), so they do not need table x and stay defined
+  when S7 found none; only dx, dy do. Also palm_normal_flip = S9's flip of the palm normal
   {flipped (null = not decided), decided, normal_dot_at_grasp}.
 - crossview.json: this clip's row of the cross-view table.
 - resources.json: seconds / peak RSS / peak VRAM of every earlier stage, from their done.json (the report's own numbers
   are in data/work/<clip>/report/done.json, written after run() returns).
 - stages/: every stage's done.json and <stage>.json (e.g. mask_test.json, objects.json), so that every reported number
   is under results/.
---summary reads every clip's gates.json, crossview.json and stages/ (plus the v1 gates.json) and writes
-results/m2_perception_v2/summary.json and summary.md: the v2 gate table; the hand scale (s_hand, each clip's median s
-and IQR); a v1 -> v2 table of every gate per clip; the A4 mask test (both mask sources in both static windows, and the
-decision S6 recorded, which uses the initial window only); the cross-view table (v1 columns + D_min, median s, mug mask
-source) with the spread (min, max, max - min) of each column, and notes on S8's closest approach (D_min flagged above
-the mug top, D_min after the lift, g before contact); the S9 palm-normal flip per clip with an explicit ERROR line when
-the decided clips disagree (the spec requires the same flip in all clips); and the confound statement.
+--summary reads every clip's gates.json, crossview.json (plus the v2 gates.json) and writes
+results/m2_perception_v3/summary.json and summary.md: the v3 gate table; a v2 -> v3 table of every gate value per clip
+(G9 shown as "removed in v3"); the cross-view table (v2 columns minus the hand scale, plus t_rise; D_min now follows the
+A2v3 rule) with the spread (min, max, max - min) of each column and a note on g before contact; the S9 palm-normal
+flip per clip with an explicit ERROR line when the decided clips disagree (the spec requires the same flip in all
+clips); and the confound statement. The A4 mask test is unchanged and stays in the v2 summary: S6 uses the video masks
+(the v2 A4 decision); the summary only checks that every clip says so.
 """
 
 from __future__ import annotations
@@ -60,25 +64,25 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 from perception.build_demo import arr, get, load_stage  # noqa: E402
-from perception.common import CLIPS, DEMOS, RESULTS, RESULTS_V1, WORK, cfg, load_config, stage_cli  # noqa: E402
+from perception.common import CLIPS, DEMOS, RESULTS, RESULTS_V2, WORK, cfg, load_config, stage_cli  # noqa: E402
 from perception.geometry import invert, pix_orig_to_upright, project, scale_K, transform  # noqa: E402
-from perception.objects import H_BOUNDS, R_BOUNDS  # noqa: E402  (free-fit bounds, for the A4 table)
 
-# M2 v2 gate thresholds (the spec's A6 table)
+# M2 v3 gate thresholds (v2's A6 table; G3 is information only now and G9 is removed)
 G1_COVERAGE, G1_MAX_RUN_S, G1_MARGIN_S = 0.90, 0.10, 0.5
 G2_RESIDUAL_M = 0.015
-G3_REPROJ_PX = 8.0
 G4_SPEED_MPS, G4_HOLD_S, G4_STD_M = 0.02, 0.3, 0.01
 G5_Z_FRAC = (0.25, 0.85)
 G6_IOU, G6_TOL_M = 0.80, 0.005
 G7_DIST_M = 0.025
 G8_RMS_M, G8_OFFSET_M, G8_X_DEG = 0.006, 0.01, 20.0
-G9_SCALE_TOL = 0.10
+G3_LABEL = "monocular hand-model limitation (orthographic model vs a 35–45 cm perspective camera)"
+G6_LABEL = "known bias +6–7 mm, cause unresolved"
 GATES = {
     "G1": "hand coverage: metric_valid >= 90 % from first hand_valid to release, no invalid run > 0.1 s in "
           "[contact - 0.5 s, place + 0.5 s], g and lift valid",
-    "G2": "LiDAR residual, re-measured on the S5b hand: median over metric_valid < 1.5 cm",
-    "G3": "palm-keypoint reprojection after S5b pass 2: median over metric_valid < 8 px (all-21 median = information)",
+    "G2": "LiDAR residual, re-measured on the placed hand: median over metric_valid < 1.5 cm",
+    "G3": "information only (no threshold): palm-keypoint reprojection median over metric_valid, in px and in mm at "
+          "the hand (px * z_c / fx)",
     "G4": "static jitter: in every hold (smoothed speed < 2 cm/s for >= 0.3 s) raw palm std < 1 cm (N/A if no hold)",
     "G5": "grasp height: z_grasp in [0.25 h, 0.85 h] (palm-to-axis distance at g and distance - r = information)",
     "G6": "mug fit on the A4-chosen mask source: initial IoU >= 0.80, free-fit diameter and height within 5 mm of the "
@@ -86,21 +90,18 @@ GATES = {
     "G7": "placement: horizontal distance final mug base centre to coaster centre < 2.5 cm",
     "G8": "table frame: plane RMS < 6 mm, drift plane offset at the initial mug position < 1 cm (N/A if the end window "
           "< 10 frames; normal-angle drift = information), x within 20 deg of the expected reference angle",
-    "G9": "hand-scale consistency: this clip's median s within +-10 % of s_hand",
 }
-# what changed from v1, per gate (for the v1 -> v2 table); "inputs" = upstream stages that changed in v2
+# what changed from v2, per gate (for the v2 -> v3 table); "inputs" = upstream stages that changed in v3
 GATE_CHANGES = {
-    "G1": "same rule; inputs changed (S5b hand, contact = D_min + 1 cm)",
-    "G2": "residual re-measured on the S5b hand (v1: the S5 hand)",
-    "G3": "5 palm keypoints after S5b pass 2 (v1: all 21 keypoints of the S5 hand, plumbing check)",
-    "G4": "same rule; input = the palm path of the S5b hand",
-    "G5": "z_grasp only (v1 also required the palm-to-axis distance in [r + 1, r + 5] cm); its input g moves with the "
-          "relative contact rule (lift is searched after contact; g = last valid frame <= lift - 3)",
-    "G6": "same thresholds, on the A4-chosen mask source (v1: video masks)",
-    "G7": "same rule; S6 input follows the A4 mask source",
-    "G8": "drift = plane offset at the initial mug < 1 cm (v1: failed if offset > 1 cm OR normal angle > 2 deg); "
-          "desk-edge fix A3",
-    "G9": "new in v2",
+    "G1": "same rule; inputs changed (A1v3 palm placement, A2v3 contact rule)",
+    "G2": "same rule; residual re-measured after the A1v3 placement (v2: after the scale + shift fit)",
+    "G3": "information only (v2: pass if the palm median < 8 px); no scale fit; also reported in mm at the hand",
+    "G4": "same rule; input = the palm path of the A1v3 hand",
+    "G5": "same rule; g moves with the A2v3 contact rule (lift is searched after contact; g = last valid frame <= lift - 3)",
+    "G6": "same thresholds and inputs; now labelled \"" + G6_LABEL + "\"",
+    "G7": "same rule, same inputs",
+    "G8": "same rule; table-frame input (S7) reads the A1v3 hand",
+    "G9": "removed in v3 (the hand scale is fixed at 1)",
 }
 # cross-view columns: key, label, display scale, format
 CROSSVIEW = [
@@ -117,14 +118,14 @@ CROSSVIEW = [
     ("init_handle_yaw_deg", "initial handle yaw from table x [deg]", 1, ".0f"),
     ("coaster_diameter_m", "fitted coaster diameter [mm]", 1000, ".1f"),
     ("long_edge_rule", "desk long-edge rule (S7 x_axis_method)", None, None),
-    ("d_axis_min_m", "D_min: closest horizontal palm-to-initial-cup-axis distance [mm]", 1000, ".1f"),
-    ("median_s", "hand scale: median pass-1 s over metric_valid frames", 1, ".3f"),
+    ("t_rise_s", "t_rise: palm rises 3 cm above its lowest point near the cup (clip time) [s]", 1, ".2f"),
+    ("d_axis_min_m", "D_min: closest horizontal palm-to-initial-cup-axis distance before t_rise [mm]", 1000, ".1f"),
     ("mug_mask_source", "mug mask source (S6, A4 decision)", None, None),
 ]
 CONFOUND = "Viewpoint and execution vary together across these clips (views: {views}); n = {n}."
 
-STAGES = ["frames", "hand", "masks", "table", "hand_metric", "hand_scale", "masks_full", "mask_test", "hand_fit",
-          "objects", "table_frame", "events", "palm", "demo"]
+STAGES = ["frames", "hand", "masks", "table", "hand_metric", "masks_full", "mask_test", "hand_place", "objects",
+          "table_frame", "events", "palm", "demo"]
 COPIED_PLOTS = {"masks": "mask_areas.png", "table_frame": "lines.png", "events": "events.png"}
 EVENTS = ("contact", "grasp", "lift", "place", "release")
 PHASES = {-1: "undefined", 0: "approach", 1: "grasp", 2: "transport", 3: "place", 4: "release/retreat"}
@@ -168,9 +169,9 @@ def rms_dev(p: np.ndarray) -> float:
 
 
 def gate(value: dict, text: str, ok, reason: str | None = None) -> dict:
-    """ok: True / False, or None for N/A (then reason says why)."""
-    return {"value": value, "text": text, "result": {True: "pass", False: "fail", None: "N/A"}[ok],
-            "reason": None if ok else reason}
+    """ok: True / False, None for N/A (then reason says why), or "info" for a gate that has no threshold."""
+    return {"value": value, "text": text, "result": {True: "pass", False: "fail", None: "N/A", "info": "information"}[ok],
+            "reason": None if ok is True or ok == "info" else reason}
 
 
 def undefined(**inputs) -> str | None:
@@ -183,15 +184,6 @@ def median_defined(x: np.ndarray, mv: np.ndarray) -> tuple[float, list[int]]:
     """Median of x over the metric_valid frames where x is finite, and the metric_valid frames that have no value."""
     ok = mv & np.isfinite(x)
     return (float(np.median(x[ok])) if ok.any() else np.nan), np.flatnonzero(mv & ~ok).tolist()
-
-
-def clip_scale(demo) -> dict:
-    """This clip's pass-1 hand scale s (S5b) over its metric_valid frames: median, IQR [q25, q75], frame count."""
-    s = demo["hand_scale_per_frame"][demo["metric_valid"]]
-    s = s[np.isfinite(s)]
-    if not len(s):
-        return {"median_s": np.nan, "s_iqr": [np.nan, np.nan], "n_frames": 0}
-    return {"median_s": float(np.median(s)), "s_iqr": np.percentile(s, [25, 75]).tolist(), "n_frames": len(s)}
 
 
 def horizontal_dist(a_world, b_world, plane) -> float:
@@ -227,7 +219,7 @@ def gates(demo, idx, evz, ev, objs, tf, c) -> dict:
                      bool(not not_found and cov >= G1_COVERAGE and longest <= G1_MAX_RUN_S and g_ok and lift_ok),
                      "undefined: " + ", ".join(not_found) if not_found else None)
 
-    # G2 / G3: medians over the metric_valid frames that have a value (module doc)
+    # G2 / G3: medians over the metric_valid frames that have a value (module doc). G3 has no threshold.
     no_frames = "no metric_valid frame" if not mv.any() else None
     res, res_nan = median_defined(demo["lidar_residual_m"], mv)
     out["G2"] = gate({"median": res, "n_frames": int(mv.sum()), "n_undefined": len(res_nan),
@@ -236,13 +228,13 @@ def gates(demo, idx, evz, ev, objs, tf, c) -> dict:
                      + (f" ({len(res_nan)} more without a residual: frames {res_nan})" if res_nan else ""),
                      bool(res < G2_RESIDUAL_M), no_frames or undefined(median=res))
     palm_px, palm_nan = median_defined(demo["reproj_err_palm_px"], mv)
-    all21_px, _ = median_defined(demo["reproj_err_all_px"], mv)
-    out["G3"] = gate({"median": palm_px, "median_all21_px": all21_px, "n_frames": int(mv.sum()),
+    palm_mm, _ = median_defined(demo["reproj_err_palm_mm"], mv)
+    out["G3"] = gate({"label": G3_LABEL, "median_px": palm_px, "median_mm": palm_mm, "n_frames": int(mv.sum()),
                       "n_undefined": len(palm_nan), "undefined_frames": palm_nan},
-                     f"palm median {palm_px:.2f} px over {mv.sum() - len(palm_nan)} metric_valid frames"
+                     f"palm reprojection median {palm_px:.2f} px; median at the hand {palm_mm:.2f} mm (px * z_c / fx per "
+                     f"frame, then the median), over {mv.sum() - len(palm_nan)} metric_valid frames"
                      + (f" ({len(palm_nan)} more without a value: frames {palm_nan})" if palm_nan else "")
-                     + f"; all 21 keypoints {all21_px:.2f} px (information)",
-                     bool(palm_px < G3_REPROJ_PX), no_frames or undefined(median=palm_px))
+                     + f"; {G3_LABEL}", "info")
 
     # G4 static jitter: holds in the smoothed palm path (adjacent valid frames only)
     p, p_raw = demo["palm_pos_table"], demo["palm_pos_table_raw"]
@@ -300,7 +292,7 @@ def gates(demo, idx, evz, ev, objs, tf, c) -> dict:
     out["G6"] = gate({"mask_source": src, "init_iou": iou, "free_fit_diameter_m": diam, "free_fit_height_m": h_free,
                       "height_check": h_ok},
                      f"{src} masks: IoU {iou:.3f}, diameter {diam * 1000:.1f} mm (label {diam_label * 1000:.0f}), "
-                     f"height {h_text}",
+                     f"height {h_text}; {G6_LABEL}",
                      iou_ok and diam_ok and h_ok is not False, undefined(init_iou=iou, free_fit_diameter=diam))
 
     # G7 placement (world points, horizontal part: needs no table x)
@@ -332,14 +324,6 @@ def gates(demo, idx, evz, ev, objs, tf, c) -> dict:
                      f"x_axis_method = {method}" if method in ("failed", "missing") else
                      undefined(plane_rms=rms, x_abs_err_deg=err))
 
-    # G9 hand-scale consistency: this clip's median pass-1 s against s_hand (pooled over the 4 clips)
-    sc, s_hand = clip_scale(demo), float(demo["s_hand"])
-    ratio = sc["median_s"] / s_hand
-    q25, q75 = sc["s_iqr"]
-    out["G9"] = gate({**sc, "s_hand": s_hand, "ratio_to_s_hand": ratio},
-                     f"median s {sc['median_s']:.3f} (IQR {q25:.3f}-{q75:.3f}, {sc['n_frames']} frames) vs s_hand "
-                     f"{s_hand:.3f}: {(ratio - 1) * 100:+.1f} %",
-                     bool(abs(ratio - 1) <= G9_SCALE_TOL), undefined(median_s=sc["median_s"], s_hand=s_hand))
     return out
 
 
@@ -356,7 +340,6 @@ def crossview(demo, idx, evz, ev, objs, c) -> dict:
         z = evz["z"][idx["lift"]: idx["place"] + 1]          # S8 raw palm z, NaN where not metric_valid
         lift_z = np.nanmax(z) if np.isfinite(z).any() else np.nan
     first_hand = t[np.argmax(demo["hand_valid"])] if demo["hand_valid"].any() else np.nan
-    scale = clip_scale(demo)
     return {
         "coaster_dx_m": off[0], "coaster_dy_m": off[1],
         "coaster_dist_m": horizontal_dist(get(objs, "coaster", "centre_world"), get(objs, "init", "base_centre_world"),
@@ -371,15 +354,14 @@ def crossview(demo, idx, evz, ev, objs, c) -> dict:
         "init_handle_yaw_deg": np.degrees(demo["cup_init_yaw"]) if yaw_ok else np.nan,
         "coaster_diameter_m": float(demo["coaster_diameter_fit_m"]),
         "long_edge_rule": str(demo["x_axis_method"]),
+        "t_rise_s": float(demo["t_rise"] - t[0]),
         "d_axis_min_m": float(demo["d_axis_min_m"]),
-        "median_s": scale["median_s"],
         "mug_mask_source": str(demo["mug_mask_source"]),
         # not columns: kept with the row for the notes under the table
         "handle_yaw_valid": yaw_ok,
-        "d_axis_min_index": int(demo["d_axis_min_index"]),
-        "d_min_z_flag": get(ev, "d_min_z_flag"),
-        "event_index": {e: idx[e] for e in ("contact", "grasp", "lift")},
-        "s_iqr": scale["s_iqr"],
+        "event_index": {**{e: idx[e] for e in ("contact", "grasp", "lift")},
+                        "d_axis_min_index": int(demo["d_axis_min_index"]),
+                        "t_rise_index": -1 if get(ev, "t_rise", "index") is None else int(get(ev, "t_rise", "index"))},
     }
 
 
@@ -561,14 +543,14 @@ def plots(clip, demo, idx, c, out):
     mv = demo["metric_valid"]
     fig, axs = plt.subplots(2, 1, figsize=(9, 5), sharex=True)
     for ax, key, name in zip(axs, ("depth_shift_m", "lidar_residual_m"),
-                             ("S5 depth shift D", "LiDAR residual\n(S5b hand)")):
+                             ("S5 depth shift D", "LiDAR residual\n(placed hand)")):
         y = demo[key] * 100
         ax.plot(t[~mv], y[~mv], ".", ms=3, color="0.6", label="not metric_valid")
         ax.plot(t[mv], y[mv], ".", ms=3, color="C0", label="metric_valid")
         ax.set_ylabel(f"{name} [cm]")
         ax.legend(fontsize=7)
     axs[1].set_xlabel("time [s]")
-    axs[0].set_title(f"{clip}: S5 LiDAR depth correction; residual re-measured on the S5b hand")
+    axs[0].set_title(f"{clip}: S5 LiDAR depth correction; residual re-measured on the placed hand")
     fig.tight_layout()
     fig.savefig(out / "depth_shift.png", dpi=110)
     plt.close(fig)
@@ -584,7 +566,7 @@ def run(clip: str) -> dict:
     k = int(load_stage(clip, "frames", "meta.npz")["rot_k"])
     ev, evz = load_stage(clip, "events", "events.json"), load_stage(clip, "events", "events.npz")
     objs, tf = load_stage(clip, "objects", "objects.json"), load_stage(clip, "table_frame", "table_frame.json")
-    hf, hand = load_stage(clip, "hand_fit", "hand_fit.npz"), load_stage(clip, "hand", "hand.npz")   # S5b mesh
+    hp, hand = load_stage(clip, "hand_place", "hand_place.npz"), load_stage(clip, "hand", "hand.npz")   # placed mesh
     palm = load_stage(clip, "palm", "palm.npz")
     idx = {e: -1 if get(ev, e, "index") is None else int(get(ev, e, "index")) for e in EVENTS}
 
@@ -620,7 +602,7 @@ def run(clip: str) -> dict:
     plots(clip, demo, idx, c, out)
     windows = get(objs, "windows") or {}
     dims = (cfg(c, "mug", "body_outer_diameter_m") / 2, cfg(c, "mug", "height_m"), cfg(c, "coaster", "thickness_m"))
-    video = overlay_video(clip, demo, get(hf, "verts"), get(hand, "faces"), windows, dims, k, out)
+    video = overlay_video(clip, demo, get(hp, "verts"), get(hand, "faces"), windows, dims, k, out)
     return {"out_dir": str(out), "gates": {name: x["result"] for name, x in g.items()},
             "copied_plots": copied, "missing_plots": [n for n in COPIED_PLOTS.values() if n not in copied], **video}
 
@@ -634,11 +616,6 @@ def fmt(v, scale, spec) -> str:
 
 def read_json(path):
     return json.loads(path.read_text()) if path.exists() else None
-
-
-def at_bound(v, bounds) -> str:
-    """' (fit bound)' when a free-fit value sits on a bound of objects.py's validation fit (within 0.1 mm), else ''."""
-    return " (fit bound)" if v is not None and min(abs(v - b) for b in bounds) < 1e-4 else ""
 
 
 def gate_cell(x) -> str:
@@ -658,8 +635,6 @@ def summary():
                           "crossview": json.loads((d / "crossview.json").read_text())}
     missing = [clip for clip in CLIPS if clip not in rows]
     confound = CONFOUND.format(views=", ".join(r["view"] for r in rows.values()), n=len(rows))
-    c = load_config()
-    diam_label, h_label = cfg(c, "mug", "body_outer_diameter_m"), cfg(c, "mug", "height_m")
 
     # S9: the palm-normal flip must be the same in every clip (spec); compare the clips where it was decided
     flips = {clip: (r["palm_normal_flip"] or {}).get("flipped") for clip, r in rows.items()}
@@ -673,35 +648,14 @@ def summary():
     flip_line = (flip_error or "The palm-normal flip is the same in every clip where it was decided") + \
         f". Not decided (grasp frame undefined or no S9 output): {', '.join(undecided) or 'none'}."
 
-    # hand scale (S5b): s_hand is one number for all clips (pooled in hand_fit); each clip's median s is G9's value
-    scale = {clip: {key: r["gates"]["G9"]["value"].get(key) for key in ("median_s", "s_iqr", "n_frames", "s_hand",
-                                                                       "ratio_to_s_hand")} for clip, r in rows.items()}
-    s_hands = sorted({x["s_hand"] for x in scale.values() if x["s_hand"] is not None})
-    if len(s_hands) == 1:
-        s_hand_line = f"s_hand = {s_hands[0]:.4f}"
-    elif s_hands:
-        s_hand_line = "**ERROR: the demo files disagree on s_hand (" + ", ".join(f"{v:.4f}" for v in s_hands) + ")**"
-    else:
-        s_hand_line = "s_hand undefined (no hand_fit output)"
-
-    # v1 -> v2: every gate per clip (v1 from results/m2_perception/<clip>/gates.json; G9 is new in v2)
+    # v2 -> v3: every gate per clip (v2 from results/m2_perception_v2/<clip>/gates.json; G9 does not exist in v3)
     keep = lambda x: None if x is None else {k: x[k] for k in ("result", "text", "value", "reason")}
-    v1_to_v2 = {}
+    v2_to_v3 = {}
     for clip, r in rows.items():
-        v1 = (read_json(RESULTS_V1 / clip / "gates.json") or {}).get("gates", {})
-        v1_to_v2[clip] = {name: {"v1": keep(v1.get(name)), "v2": keep(r["gates"][name])} for name in GATES}
+        v2 = (read_json(RESULTS_V2 / clip / "gates.json") or {}).get("gates", {})
+        v2_to_v3[clip] = {name: {"v2": keep(v2.get(name)), "v3": keep(r["gates"].get(name))} for name in GATE_CHANGES}
 
-    # A4: both mask sources in both static windows (stages/mask_test.json) and the decision S6 recorded (objects.json),
-    # which uses the initial window only
-    mask_test, decision = {}, None
-    for clip in rows:
-        mt = read_json(RESULTS / clip / "stages" / "mask_test.json")
-        mask_test[clip] = None if mt is None else {
-            src: {w: {"iou": get(mt, src, w, "iou"), "diameter_m": get(mt, src, w, "free_fit", "diameter_m"),
-                      "height_m": get(mt, src, w, "free_fit", "h_m"),
-                      "h_observable": get(mt, src, w, "free_fit", "h_observable")} for w in ("init", "final")}
-            for src in mt}
-        decision = decision or get(read_json(RESULTS / clip / "stages" / "objects.json"), "mask_decision")
+    # S6 uses the v2 A4 decision (video masks) in every clip
     sources = {clip: r["crossview"]["mug_mask_source"] for clip, r in rows.items()}
     source_error = None
     if len(set(sources.values())) > 1:          # the rule picks ONE source for all clips
@@ -717,81 +671,44 @@ def summary():
         else:
             x = [v for v in vals if v is not None]
             spreads[key] = {"min": min(x), "max": max(x), "range": max(x) - min(x), "n": len(x)} if x else {"n": 0}
-    # S8's closest approach and event order, as information for the notes under the cross-view table
-    d_min_flagged = [clip for clip, r in rows.items() if r["crossview"].get("d_min_z_flag") is True]
+    # event order, as information for the note under the cross-view table
     ev_idx = {clip: r["crossview"].get("event_index") or {} for clip, r in rows.items()}
-    d_min_after_lift = {clip: {"d_axis_min_index": r["crossview"]["d_axis_min_index"], "lift": ev_idx[clip]["lift"]}
-                        for clip, r in rows.items()
-                        if ev_idx[clip].get("lift", -1) >= 0 and r["crossview"]["d_axis_min_index"] > ev_idx[clip]["lift"]}
     grasp_early = {clip: e for clip, e in ev_idx.items()
                    if e.get("grasp", -1) >= 0 and e.get("contact", -1) >= 0 and e["grasp"] < e["contact"]}
+    # D_min is searched BEFORE t_rise (a 3 cm rise), not before the lift (a 1.5 cm rise, S8), so its frame can still
+    # fall after the lift by a few frames; information only, no rule changed
+    dmin_late = {clip: e for clip, e in ev_idx.items()
+                 if e.get("lift", -1) >= 0 and e.get("d_axis_min_index", -1) > e["lift"]}
     (RESULTS / "summary.json").write_text(json.dumps(clean(
-        {"clips": rows, "clips_missing": missing, "hand_scale": {"s_hand": s_hands[0] if len(s_hands) == 1 else s_hands, "per_clip": scale},   # a list = the demos disagree
-         "v1_to_v2": v1_to_v2,
-         "mask_test": {"by_window": mask_test, "decision": decision, "source_per_clip": sources,
-                       "error": source_error},
-         "spreads": spreads, "d_min_z_flagged": d_min_flagged, "d_min_after_lift": d_min_after_lift,
-         "grasp_before_contact": grasp_early,
+        {"clips": rows, "clips_missing": missing, "v2_to_v3": v2_to_v3,
+         "mug_mask_source": {"per_clip": sources, "error": source_error},
+         "spreads": spreads, "grasp_before_contact": grasp_early, "d_min_after_lift": dmin_late,
          "palm_normal_flip": {"flipped": flips, "undecided": undecided, "error": flip_error}, "confound": confound}),
         indent=1))
 
     head = [f"{clip} ({r['view']})" for clip, r in rows.items()]
-    md = ["# M2 perception v2: gates, hand scale, v1 -> v2, mug mask test, cross-view table", "",
-          "Made by `python -m perception.report --summary` from results/m2_perception_v2/<clip>/gates.json, "
-          "crossview.json and stages/; v1 values from results/m2_perception/<clip>/gates.json.",
+    md = ["# M2 perception v3: gates, v2 -> v3, cross-view table", "",
+          "Made by `python -m perception.report --summary` from results/m2_perception_v3/<clip>/gates.json and "
+          "crossview.json; v2 values from results/m2_perception_v2/<clip>/gates.json.",
           f"Clips without a report: {', '.join(missing) or 'none'}.", "",
-          "## Gates (v2)", "", "| gate | pass if | " + " | ".join(head) + " |", "|---|---|" + "---|" * len(rows)]
+          "## Gates (v3)", "", "G3 is information only (no threshold); G9 (hand-scale consistency) is removed in v3. "
+          "G6 keeps its thresholds and is labelled as a known bias; downstream positions are validated by G7, and "
+          "sim geometry uses the label values. S6 = video masks per the v2 A4 decision (the A4 mask test is "
+          "unchanged and stays in results/m2_perception_v2/summary.md).", "",
+          "| gate | pass if | " + " | ".join(head) + " |", "|---|---|" + "---|" * len(rows)]
     for name, rule in GATES.items():
         md.append(f"| {name} | {rule} | " + " | ".join(gate_cell(r["gates"][name]) for r in rows.values()) + " |")
 
-    md += ["", "## Hand scale (S5b)", "", s_hand_line + ".",
-           f"s_hand is the median of the pass-1 scale s over the metric_valid frames of all {len(CLIPS)} clips pooled; "
-           "the hand is scaled by it in every frame of every clip. Per clip (pass-1 s over its metric_valid frames):",
-           "",
-           "| | " + " | ".join(head) + " |", "|---|" + "---|" * len(rows),
-           "| median s | " + " | ".join(fmt(x["median_s"], 1, ".3f") for x in scale.values()) + " |",
-           "| IQR (25 - 75 %) | " + " | ".join(f"{fmt(x['s_iqr'][0], 1, '.3f')} - {fmt(x['s_iqr'][1], 1, '.3f')}"
-                                               for x in scale.values()) + " |",
-           "| metric_valid frames | " + " | ".join(str(x["n_frames"]) for x in scale.values()) + " |",
-           "| median s / s_hand - 1 [%] (G9: within +-10 %) | "
-           + " | ".join(fmt(None if x["ratio_to_s_hand"] is None else x["ratio_to_s_hand"] - 1, 100, "+.1f")
-                        for x in scale.values()) + " |"]
-
-    md += ["", "## v1 -> v2: every gate per clip", "",
-           "v1 = results/m2_perception (its own gate definitions); v2 = this run. Gates whose rule did not change can "
-           "still move because their inputs changed (S5b hand, relative contact rule, desk-edge fix, mask source).", "",
-           "| gate | what changed in v2 | clip | v1 | v2 |", "|---|---|---|---|---|"]
-    for name in GATES:
+    md += ["", "## v2 -> v3: every gate per clip", "",
+           "v2 = results/m2_perception_v2 (its own gate definitions); v3 = this run. Gates whose rule did not change "
+           "can still move because their inputs changed (palm placement without a scale fit, A2v3 contact rule).", "",
+           "| gate | what changed in v3 | clip | v2 | v3 |", "|---|---|---|---|---|"]
+    for name in GATE_CHANGES:
         for j, (clip, r) in enumerate(rows.items()):
-            x = v1_to_v2[clip][name]
+            x = v2_to_v3[clip][name]
+            v3 = gate_cell(x["v3"]) if x["v3"] is not None else "removed in v3"
             md.append(f"| {name if j == 0 else ''} | {GATE_CHANGES[name] if j == 0 else ''} | {clip} ({r['view']}) | "
-                      f"{gate_cell(x['v1'])} | {gate_cell(x['v2'])} |")
-
-    md += ["", "## Mug mask test (A4, both static windows)", "",
-           f"2-DOF fit IoU and the 4-DOF free fit, on the SAM 2 video masks (half res, as v1) and on the SAM 2 image "
-           f"masks of the full-res frames, in the initial and the final static window. Label: diameter "
-           f"{diam_label * 1000:.0f} mm, height {h_label * 1000:.0f} mm. The decision rule below uses the initial "
-           f"window only; \"(fit bound)\" = the free fit stopped at its bound (r {R_BOUNDS[0] * 1000:.0f}-"
-           f"{R_BOUNDS[1] * 1000:.0f} mm, h {H_BOUNDS[0] * 1000:.0f}-{H_BOUNDS[1] * 1000:.0f} mm).",
-           "", "| clip | window | mask source | IoU (2-DOF) | free-fit diameter [mm] | free-fit height [mm] |",
-           "|---|---|---|---|---|---|"]
-    for clip, r in rows.items():
-        if mask_test[clip] is None:
-            md.append(f"| {clip} ({r['view']}) | | (no mask_test.json) | n/a | n/a | n/a |")
-            continue
-        for w in ("init", "final"):
-            for src, by_window in mask_test[clip].items():
-                x = by_window[w]
-                d_m = x["diameter_m"]
-                height = (fmt(x["height_m"], 1000, ".1f") + at_bound(x["height_m"], H_BOUNDS) if x["h_observable"]
-                          else "N/A (unobservable)")
-                md.append(f"| {clip} ({r['view']}) | {w} | {src} | {fmt(x['iou'], 1, '.3f')} | "
-                          f"{fmt(d_m, 1000, '.1f')}{at_bound(None if d_m is None else d_m / 2, R_BOUNDS)} | {height} |")
-    md += ["", "Decision (pre-set rule, recorded by S6 in objects.json): " + (
-        f"{decision['rule']}. {decision['reason']}. Chosen: **{decision['chosen']}**." if decision else
-        "not available (no objects.json mask_decision).")]
-    md += [f"**{source_error}**" if source_error else
-           f"Mask source used by S6: {', '.join(sorted(set(sources.values())))} in every clip."]
+                      f"{gate_cell(x['v2'])} | {v3} |")
 
     md += ["", "## Cross-view table", "", "| | " + " | ".join(head) + " | min | max | max - min |",
            "|---|" + "---|" * (len(rows) + 3)]
@@ -807,16 +724,19 @@ def summary():
     md += ["", "Angles at g come from T_palm_in_cup_at_grasp (smoothed palm); approach yaw and handle yaw are n/a when "
            "the handle yaw is invalid. Grasp height and lift height use S8's raw palm z. The two yaw columns lie in "
            "(-180, 180] deg; their min, max and max - min are taken linearly, without the wrap at +-180 deg. "
-           "D_min is S8's closest approach (contact = first frame within D_min + 1 cm); clips where the palm was at or "
-           f"above the mug top at that frame (S8 d_min_z_flag): {', '.join(d_min_flagged) or 'none'}. "
-           "Clips where the D_min frame comes after the lift (the closest approach happens while the hand carries the "
-           "mug): " + (", ".join(f"{cl} (D_min frame {x['d_axis_min_index']}, lift {x['lift']})"
-                                 for cl, x in d_min_after_lift.items()) or "none") + ". "
+           "t_rise is the clip time (t - t[0]) of A2v3's rise frame; D_min is the closest approach BEFORE t_rise "
+           "(contact = first frame within D_min + 1 cm). "
+           "Clips where the D_min frame still comes after the lift (D_min is taken before t_rise, a 3 cm rise, and the "
+           "lift is a 1.5 cm rise, so t_rise can follow the lift by a few frames; information, no rule changed; "
+           "contact is not affected): "
+           + (", ".join(f"{cl} (D_min frame {e['d_axis_min_index']}, lift {e['lift']}, t_rise {e['t_rise_index']}, "
+                        f"contact {e['contact']})" for cl, e in dmin_late.items()) or "none") + ". "
            "Clips where the grasp frame g (last valid frame <= lift - 3) comes before contact, so z_grasp, the angles "
-           "at g and phase[g] "
-           "are not taken in the grasp phase (information; no rule changed): "
+           "at g and phase[g] are not taken in the grasp phase (information; no rule changed): "
            + (", ".join(f"{cl} (g {e['grasp']}, contact {e['contact']}, lift {e['lift']})"
                         for cl, e in grasp_early.items()) or "none") + ".", "",
+           f"**{source_error}**" if source_error else
+           f"Mask source used by S6: {', '.join(sorted(set(sources.values())))} in every clip (the v2 A4 decision).", "",
            "## Palm-normal flip (S9)", "",
            "| | " + " | ".join(head) + " |", "|---|" + "---|" * len(rows),
            "| n flipped | " + " | ".join("undecided" if f is None else str(f) for f in flips.values()) + " |", "",
