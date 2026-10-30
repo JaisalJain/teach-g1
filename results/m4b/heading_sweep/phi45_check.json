@@ -1,0 +1,12 @@
+{
+  "reference": "results/m1_grasp_fix/v3_final/runs/fifty.json",
+  "fields_compared": "every row field except wall_s, including all of detail",
+  "trials": 20,
+  "trials_identical": 20,
+  "successes": 20,
+  "track_b_fifty_successes": 20,
+  "differences": [],
+  "what": "phi = 45 deg (delta = 0) vs Track B final's mug_v1 trials 0-19",
+  "passed": true,
+  "wall_s": 27.6
+}
