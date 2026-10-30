@@ -1,0 +1,224 @@
+{
+  "run": "e8825dea53__naive__trial33",
+  "clip": "e8825dea53",
+  "variant": "naive",
+  "layout": "trial33",
+  "paths": "v2",
+  "profile": "mug_v1",
+  "trial": 33,
+  "layout_seed": 1,
+  "layout_index": 23,
+  "cup_xy": [
+    0.4659,
+    -0.3167
+  ],
+  "coaster_xy": [
+    0.5342,
+    -0.1846
+  ],
+  "handle_yaw_deg": 16.83,
+  "trial_handle_yaw_deg": 0.14,
+  "mass_kg": 0.4,
+  "success": false,
+  "failed_phase": "place",
+  "reason": "cup not on the coaster, cup not resting on the coaster",
+  "category": "released but not on the coaster",
+  "cup_off_coaster_center_cm": 11.89,
+  "cup_tilt_deg": 0.0,
+  "contact_closure": null,
+  "lift_slip_in_hand_cm": null,
+  "lift_cup_rise_cm": null,
+  "settles": [],
+  "diagnostics_run": [
+    "sim.m4_execute:collision_diagnostic"
+  ],
+  "detail": {
+    "naive_retreat_u": [
+      0.4869,
+      0.8734,
+      -0.0
+    ],
+    "cup_final": [
+      0.4391,
+      -0.256,
+      0.7854
+    ],
+    "cup_height_above_resting_cm": -0.61,
+    "fell": false,
+    "plans": [
+      {
+        "phase": "replay",
+        "frames": 1130,
+        "path_frames": 530,
+        "ik_max_path_err_cm": 12.311,
+        "ik_terminal_palm_err_cm": 2.466,
+        "qp_failures": 0,
+        "base": "plan",
+        "start_offset_mm": 0.09,
+        "start_offset_deg": 0.0
+      },
+      {
+        "phase": "retreat",
+        "frames": 676,
+        "path_frames": 76,
+        "ik_max_path_err_cm": 1.364,
+        "ik_terminal_palm_err_cm": 1.603,
+        "qp_failures": 0
+      }
+    ],
+    "sim_seconds": 15.14,
+    "path": {
+      "source": "v2",
+      "T": 530,
+      "sha256": "023c5b88dca0f52439bc835f22a6fccfb3eb01c0690c48d75acb19204252af5f",
+      "i_prelude_end": 60,
+      "i_pause": -1,
+      "i_G": 244,
+      "i_close_end": -1,
+      "i_peak": -1,
+      "i_P": 405,
+      "i_release": 499,
+      "info": {
+        "variant": "a_naive",
+        "layout": "recorded",
+        "clip": "e8825dea53",
+        "k": 1.5200686709747955,
+        "time_scale": {
+          "k": 1.5200686709747955,
+          "v_h": 0.3707026956233833,
+          "v_o": 0.2438723346529191,
+          "n_speed_samples": 222,
+          "a0": 42,
+          "oracle_pregrasp_leg": {
+            "dist_m": 0.23411744126680237,
+            "T_s": 1.8,
+            "peak_m_s": 0.2438723346529191,
+            "z_clear": 0.942849242350761
+          },
+          "oracle_transport_leg": {
+            "dist_m": 0.16950107194175976,
+            "T_s": 2.1187633992719968,
+            "peak_m_s": 0.15000000000000002
+          },
+          "recorded_cup_xy": [
+            0.4933380951166243,
+            -0.23555634918610405
+          ],
+          "recorded_coaster_xy": [
+            0.46758121694448496,
+            -0.40308902246576966
+          ]
+        },
+        "a0": 42,
+        "a0_time_s": 0.7002877499908209,
+        "a0_z_m": 0.02328685565198998,
+        "events": {
+          "g": 140,
+          "contact": 107,
+          "lift": 143,
+          "place": 267,
+          "release": 333
+        },
+        "n_clamped": 0,
+        "bump_scale": null,
+        "contact_before_a0": false,
+        "i_contact": 202,
+        "G": [
+          0.4222992838981394,
+          -0.30173133902991894,
+          0.8036953396409989
+        ],
+        "R_G": [
+          [
+            0.8791532191913115,
+            0.4388756547220491,
+            -0.18568192393942448
+          ],
+          [
+            -0.3022889882227119,
+            0.8148244653737192,
+            0.4946538771987142
+          ],
+          [
+            0.36838971861989095,
+            -0.3787469476058182,
+            0.8490228294306534
+          ]
+        ],
+        "quat_G_wxyz": [
+          0.9411429904636816,
+          -0.23200534712961796,
+          -0.1471805156531889,
+          -0.19687886178156752
+        ],
+        "P": [
+          0.3903580328147384,
+          -0.4584425719076457,
+          0.812943869615147
+        ],
+        "p_r0": [
+          0.12437923281181035,
+          -0.2170739616172145,
+          0.942849242350761
+        ],
+        "z_clear": 0.942849242350761,
+        "human_to_sim_offset_xy": [
+          0.4933380951166243,
+          -0.23555634918610405
+        ],
+        "effective_k": 1.521023904661122,
+        "m3_frames": {
+          "prelude": 61,
+          "to_a0": 50,
+          "replay_intervals": 369,
+          "release": 30,
+          "total": 510
+        },
+        "frames": {
+          "prelude": 61,
+          "to_a0": 50,
+          "replay": 389,
+          "release": 30,
+          "total": 530
+        },
+        "v2": {
+          "T_R_s": 0.4,
+          "segments": [
+            {
+              "name": "replay",
+              "m3_intervals": 369,
+              "D0_s": 7.38,
+              "D_s": 7.78,
+              "frames": 390,
+              "first_step_mm": 0.029930838818435775,
+              "last_step_mm": 0.009949230542126451,
+              "end_error_m": 0.0,
+              "m3_first_last_speed_m_s": [
+                0.6139659244809353,
+                0.20408678034768776
+              ],
+              "v2_peak_speed_m_s": 0.2638175422551339,
+              "m3_peak_speed_m_s": 0.6139659244809353,
+              "v2_frames": [
+                110,
+                499
+              ],
+              "m3_frames": [
+                110,
+                479
+              ]
+            }
+          ],
+          "m3_i_contact": 192,
+          "m3_i_G": 234,
+          "m3_i_P": 395,
+          "m3_i_release": 479,
+          "event_mapping": "new frame = the re-timed frame whose M3 time sigma(j / 50) is nearest to the M3 frame's time"
+        }
+      }
+    }
+  },
+  "collision_min": null,
+  "wall_s": 8.1,
+  "worker_peak_rss_mb": 1593
+}

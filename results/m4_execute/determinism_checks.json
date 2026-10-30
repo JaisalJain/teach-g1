@@ -1,0 +1,25 @@
+{
+  "oracle_trials": {
+    "what": "Track B final mug_v1 trials 0-4 re-run through the unchanged oracle (sim/m1_grasp_final.py ForcePickPlace via sim/m1_grasp_ladder.py run_trials, layouts asserted)",
+    "reference": "results/m1_grasp_fix/v3_final/runs/fifty.json",
+    "fields_compared": "every row field except wall_s, including all of detail",
+    "trials": 5,
+    "trials_identical": 5,
+    "successes": 5,
+    "track_b_fifty_successes": 5,
+    "differences": [],
+    "passed": true
+  },
+  "execute_setup_vs_pickplace": {
+    "layout": "trial 0 (legacy-grasp cup / coaster, its handle yaw)",
+    "qpos_identical": true,
+    "qvel_identical": true,
+    "sim_time_identical": true,
+    "identical": true,
+    "passed": true
+  },
+  "wall_s": 32.7,
+  "peak_rss_mb": 2396,
+  "gpu": "none (CPU only)",
+  "passed": true
+}

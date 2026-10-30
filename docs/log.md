@@ -1301,3 +1301,242 @@ Videos (clip 4e103843db, recorded layout): `results/m3_retarget/videos/4e103843d
 9. Cosmetic: `frames.verify_palm_axes` sets the robot with `ref.root_pos_from_joint_pos` / `root_quat_from_joint_pos`, `run_m3` with `ref.root_pos_w` / `root_quat_w` (HERO's `rollout_clip`). Both pass their palm-match checks (0.0003 mm and at most 0.0005 mm).
 
 (Main agent: the review found only minor issues — docstring wording in warp.py / frames.py, a positional `L.insert` in run_m3.summary_md, the unit-test log timing only the test body, and runtime/RSS of palm axes / human values living in their own files. None changes a number; not fixed, to keep M3 lean. Numbers from the integration report that are not in a results file (per-variant FK-error medians, counts of b_level runs under 2 cm after the prelude) are left out of this log.)
+
+
+---
+
+## M4 — physical execution (HERO tracks the retargeted paths)
+
+Date: 2026-10-31. Profile mug_v1 everywhere (mug from config/objects.yaml, 0.40 kg). Perception frozen, M3 outputs untouched. New outputs: `results/m3_retarget/v2/` (Step 0, 1, oracle rows, Step 3 on the oracle) and `results/m4_execute/` (Steps 2-5). CPU only, no GPU, no videos. Code, all new files: `retarget/paths_v2.py`, `retarget/collision.py`, `retarget/run_m3_v2.py`, `retarget/m4_summary.py`, `sim/m4_execute.py`. No existing file was edited, so M3's 8 code files still match the SHA-256 in `results/m3_retarget/run_resources.json`.
+
+Commands (from the repo root, prefix `env -u PYTHONPATH conda run --no-capture-output -n hoi-sim python -m`):
+- `retarget.run_m3_v2 paths | oracle | summarize` (Step 0 and 1; `paths` and `oracle` refuse to overwrite without `--overwrite`)
+- `sim.m4_execute run --workers 8 --out results/m4_execute` (the 600 runs) and `sim.m4_execute run --variants b_level --layouts recorded_v2 --workers 4 --out results/m4_execute` (4 runs)
+- `retarget.m4_summary` (summary.md / summary.json / 3 PNGs; reads the 604 rows and fifty.json; simulates nothing)
+- `sim.m4_execute rerun --row <row.json> --report <file>`, `sim.m4_execute check-oracle --trials 5 --out <dir>`, `sim.m1_grasp_ladder run --rung R0 --tag after_m4 --out <dir>`
+
+### Step 0 — two corrections to M3 (results/m3_retarget/v2/summary.md)
+
+**1. Place-palm sign.** The nominal oracle palm for a cup at xy c is c + the legacy palm_offset[:2] (the mapping `sample_layouts` uses; legacy offset (-0.0933, 0.0156) m). M3's spec wrote c - offset for the place-palm flag. With the correct sign, place palm = coaster + offset, and it is still outside PALM_BOX (x 0.35-0.45, y -0.32..-0.12) for all four recorded layouts. It is outside on y only; x is inside for all four. The grasp palm is at the box centre (0.400, -0.220) by construction. M3's conclusion (all four outside) stands; only the reason changes.
+
+| clip | place palm xy (coaster + offset) | outside PALM_BOX by x / y (cm) | M3's flag (coaster - offset) |
+|---|---|---|---|
+| 26d4118b0c | (0.404, -0.364) | 0.0 / 4.4 | (0.591, -0.395) out |
+| 4e103843db | (0.406, -0.364) | 0.0 / 4.4 | (0.593, -0.395) out |
+| 49aff04f7a | (0.398, -0.357) | 0.0 / 3.7 | (0.584, -0.388) out |
+| e8825dea53 | (0.374, -0.388) | 0.0 / 6.8 | (0.561, -0.419) out |
+
+Side note (checker, scratch `tmp/m4/check/check_m3v2.out`, not in results/): the real mug_v1 oracle's own palm offset is (-0.1001, 0.0088) m, not the legacy one. With it the place palms are still outside on y only, by 5.1 / 5.1 / 4.3 / 7.4 cm. The conclusion does not depend on which offset is used.
+
+**2. The oracle under M3's rule.** `paths_v2.oracle_path` builds the oracle's nominal waypoints through `min_jerk_path` with M3's phase names (prelude 1.2 s, pre-grasp 1.8 s, approach to G 2.0 s, close 1.75 s with a 1.25 s closure ramp, lift +0.10 m in 1.5 s, transport max(1.5, d/0.08) s, lower 1.5 s, release 0.6 + 0.6 s, retreat 1.5 s, hold 1.0 s). It ran through `run_m3.run_one` unchanged (only the module-level `build_path` was swapped, via a context manager) on M3's 10 random layouts (trials 0-9) with each trial's own handle yaw.
+- Reachable 10/10 (at G 10/10, at P 10/10, path max < 2 cm 10/10). Path max is 1.69 cm in every row, always in the prelude. Error at G 0.68-0.84 cm, at P 0.12-0.50 cm, orientation max 0.4 deg. Hand-mug distance at G -2.4 to -3.7 mm (the l1_check reference is -2.4 mm).
+- So the robot-specific prelude does not fail M3's rule on its own. The oracle's prelude stays at 1.69 cm; b_level's reaches 1.90-2.86 cm (it turns the hand toward my heading phi_h, 62-86 deg).
+
+Reachability under M3's rule (at G / at P / path max < 2 cm / all three), with the oracle rows added:
+
+| clip | b_level | b_tilt | a_naive (recorded only) |
+|---|---|---|---|
+| 26d4118b0c | 0 / 8 / 0 / **0/11** | 0 / 3 / 0 / **0/11** | 0/1 |
+| 4e103843db | 1 / 6 / 0 / **0/11** | 0 / 0 / 0 / **0/11** | 0/1 |
+| 49aff04f7a | 5 / 9 / 0 / **0/11** | 0 / 6 / 0 / **0/11** | 0/1 |
+| e8825dea53 | 10 / 11 / 11 / **10/11** | 0 / 0 / 0 / **0/11** | 0/1 |
+| oracle (trials 0-9) | 10/10 at G, 10/10 at P, 10/10 path, **10/10** | | |
+
+Largest FK position error outside the prelude (information only, from each run's `max_by_phase`; min / median / max over runs; "below 2 cm" is a count, not a rule):
+
+| variant | runs | max error after the prelude (cm) | below 2 cm | prelude max (cm) |
+|---|---|---|---|---|
+| a_naive | 4 | 3.60 / 5.97 / 9.86 | 0/4 | 2.67 / 2.83 / 3.26 |
+| b_level | 44 | 1.12 / 1.64 / 2.32 | 37/44 | 1.90 / 2.82 / 2.86 |
+| b_tilt | 44 | 2.78 / 3.48 / 6.32 | 0/44 | 2.67 / 2.83 / 3.26 |
+| oracle | 10 | 0.74 / 0.81 / 0.85 | 10/10 | 1.69 / 1.69 / 1.69 |
+
+b_level per clip below 2 cm after the prelude: 26d4118b0c 10/11, 4e103843db 5/11, 49aff04f7a 11/11, e8825dea53 11/11.
+
+### Step 1 — path timing v2 (retarget/paths_v2.py; npz in results/m3_retarget/v2/paths/, 92 M3 runs + 10 oracle rows)
+
+- **How it is built.** v2 calls M3's own builders (`warp.object_aware_path`, `naive.naive_path`, unchanged) and only cuts and re-times their output, so geometry, warps and k are M3's by construction. M3's 92 paths rebuilt from the saved standing palms are byte-identical to M3's npz (92/92; the checker re-ran this independently, plus the v2 public entry against the saved v2 npz 92/92 and `oracle_path` against the saved oracle npz 10/10).
+- **(b) b_level / b_tilt.** The 0.5 s pause hold is removed; i_pause becomes a split point. The approach is split at i_pause and the transport at its highest palm sample (i_peak). Each of approach 1, approach 2, transport 1 and transport 2 is re-timed rest to rest: D = D0 + 0.4 s, speed factor smoothstep(t/0.4) at both ends, sigma(D) = D0 exactly. Prelude, close, release and retreat are M3's. Each b path is 55 frames longer (+4 x 20 ramp frames, -25 pause frames).
+- **(a) naive.** The replay (a0 .. t_release) is re-timed as one segment (+20 frames). The closure keeps M3's rule, with contact, G and P mapped onto the new timing.
+- **What v2 removes.** M3 approach 1 started at my hand-entry speed of 0.59-0.97 m/s; transport 1 at 0.11-0.26 m/s (from M3's npz, checker recount).
+- **Asserts per segment** (every saved path passed): the first and last 50 Hz step each move < 1 mm (observed max 0.047 mm first, 0.022 mm last); segment end positions equal M3's to 1e-9 (observed 0). The closed-form sigma matches a numeric integral to 1.5e-11 s. The checker's own numeric-integral re-timing of every segment of all 92 runs matches the saved npz to 2.2e-10 m (the limit of its quadrature).
+- **Dry run.** `v2_path` built 600/600 on M4's layouts (trials 0-49 x 4 clips x 3 variants); shortest segment D0 = 0.48 s (4e103843db transport 1), above T_R = 0.4 s.
+
+### Step 2 — executor (sim/m4_execute.py)
+
+`Execute(PickPlace)`, profile mug_v1, mug mass passed explicitly and asserted equal to config (0.40 kg). Setup copies `PickPlace.run`'s lines: reset, standing reference, policy reset, reset step, 2 s stand. The path is built after the stand because it starts at the standing palm.
+
+**follow(phase, pos, quat, base, base_goal).** Plays a dense 50 Hz path slice: one `planner.plan_path`, then one `_tick` per frame. Frame 0 is bent onto the live IK palm (p0, q0) = `planner.palm_start(state)`: pos_j + (1 - w_j)(p0 - pos_0) and quat_j = slerp(q0, quat_j, w_j), with w = 10s^3 - 15s^4 + 6s^5 and s = j/(N-1). The end frame is unchanged (w = 1). Closure is not changed by follow, except in naive. Checked by instrumenting plan_path / palm_start (reviewer probes): frame 0 equals palm_start exactly and the interior equals the formula.
+
+**b_level / b_tilt phases** (every check is the oracle's own inherited method):
+1. follow prelude + approach 1 (base "plan", base_goal = `_goal(G, R_G)`); `settle_or_fail("settle_pregrasp", pause pose, max 5 s)`.
+2. follow approach 2 (base "current"); `settle_or_fail("settle_grasp", G, max 3 s)`; then `check_cup_undisturbed`.
+3. `close_hand()`, then `check_grasp("close")`.
+4. Record in_hand_closed; follow transport 1 (base "plan", base_goal = its last pose). At the peak: rise = cup z rise since the close, slip = |cup - palm - in_hand_closed|; fail as "lift" if slip > LIFT_SLIP_FAIL_M or rise < 0.5 x (peak palm z - G z); `check_grasp("lift")`.
+5. At the peak, measure cup_in_hand and set P' = cup_place - cup_in_hand (cup_place as the oracle defines it). Transport 2's end is re-warped to P': x'(s) = x(s) + s (P' - x_end), with s = sigma(t_j)/D0 of that segment (`paths_v2.sigma`). follow it (base "current"); `check_in_hand("transport")`, `settle_or_fail("settle_place", P', max 3 s)`, `check_in_hand("lower")`.
+6. Open, retreat and `evaluate()`, exactly as the oracle.
+
+**naive:** one follow of the whole path (base "plan", base_goal = the path's info G); `scene.set_hand_closure("right", closure[j])` on every tick; no settles, no grasp checks, no place correction. Then retreat -0.10 u + (0, 0, 0.05) in 1.5 s (u = horizontal unit vector palm to cup at that moment), hold 1.0 s, `evaluate()`.
+
+**Privileged place correction, for the README, for BOTH the oracle and the b variants.** The oracle's place target (sim/pick_place.py) and the b variants' P' both read the cup's true pose in the hand from the simulator at the transport peak. This is simulator state, not something perception provides. Every b row records this in `detail.place_correction.uses`. Checker recount from the rows (scratch): over the 63 successful b runs (62 trial runs + 1 recorded_v2) the correction moved the place pose by 17.7-38.1 mm (median 25.2).
+
+Layouts: trial00-49 use M3's handle-yaw rule: trial yaw + (phi_h - phi_ora) per clip (turn 36.94 / 40.85 / 36.68 / 16.69 deg for 26d4118b0c / 4e103843db / 49aff04f7a / e8825dea53); trials 0-9 are asserted equal to M3's layouts. recorded_v2 layout: cup = PALM_BOX centre - legacy offset - Delta/2, coaster = cup + Delta (Delta = the clip's coaster offset), handle yaw = M3's recorded yaw (4.1 / 81.79 / 72.04 / 61.69 deg). Both nominal palms are then centred on the box (checked by the checker for all four clips).
+
+### Step 3 — collision diagnostic (retarget/collision.py; kinematic, information only, never a gate)
+
+M3's harness single-plan IK clip of the path; frames from the prelude's last frame to the last frame with more than 1 cm of path arc length left to G; per frame the robot is set to the clip frame, both hands open (scene.reset), mug at its layout pose; minimum `mj_geomDistance` from the 8 right-hand geoms to the mug body and its 3 handle capsules. It runs after the physics run, so it cannot change an outcome. IK-to-plant mapping check passed on all 404 b rows and all 10 oracle rows. Negative = overlap.
+
+| variant | outcome group | n | min | p25 | median | p75 | max | overlapping (< 0) |
+|---|---|---|---|---|---|---|---|---|
+| b_level | success | 23 | -21.9 | -16.3 | -2.1 | -0.8 | 0.6 | 21 |
+| b_level | approach knock | 8 | -40.0 | -24.0 | -10.9 | -5.8 | -1.8 | 8 |
+| b_level | reach (a settle gave up) | 169 | -58.4 | -53.7 | -37.4 | -25.2 | -0.2 | 169 |
+| b_tilt | success | 39 | -29.8 | -15.9 | -12.3 | -8.6 | -6.1 | 39 |
+| b_tilt | approach knock | 4 | -28.4 | -28.3 | -27.7 | -27.1 | -26.7 | 4 |
+| b_tilt | reach (a settle gave up) | 155 | -41.1 | -29.8 | -24.2 | -14.4 | 3.4 | 141 |
+| b_tilt | dropped while moving | 2 | -9.0 | -7.0 | -5.0 | -3.0 | -1.0 | 2 |
+| oracle (trials 0-9, all successes) | success | 10 | 5.2 | 5.5 | 5.6 | 6.0 | 6.1 | 0 |
+
+Oracle rows: always the palm link against the body, at the window's last frame (1.006 cm of arc before G); to the handle 58.8-94.5 mm. The oracle's six failed trials (22, 34, 38, 44, 45, 49) were not measured, so the oracle has no knock values. Reading: the b hand is already overlapping the mug body 1 cm before G in 21/23 b_level and 39/39 b_tilt successes, while the oracle never is. The window stops 1 cm before G, so a late overlap can be the intended grasp contact as well as a knock; the number does not separate successes from knocks.
+
+### Step 4/5 — runs and results (results/m4_execute/summary.md, summary.json; 604 rows in runs/)
+
+600 runs = b_level, b_tilt, naive x 4 clips x trials 0-49, plus 4 recorded_v2 b_level runs. All 604 rows present, 0 error rows, every row paths v2, profile mug_v1, 0.40 kg. The oracle is Track B final's 50 mug_v1 trials (`results/m1_grasp_fix/v3_final/runs/fifty.json`), not rerun. The cup and coaster xy of every variant row equal the oracle's trial row.
+
+Success over 50 layouts (Wilson 95 % CI):
+
+| run | view | b_level | b_tilt | naive |
+|---|---|---|---|---|
+| 26d4118b0c | top-down | 0/50 (0.000-0.071) | 4/50 (0.032-0.188) | 0/50 (0.000-0.071) |
+| 4e103843db | 90 deg | 0/50 (0.000-0.071) | 0/50 (0.000-0.071) | 0/50 (0.000-0.071) |
+| 49aff04f7a | 45 deg | 0/50 (0.000-0.071) | 18/50 (0.241-0.499) | 0/50 (0.000-0.071) |
+| e8825dea53 | 45 deg | 23/50 (0.330-0.596) | 17/50 (0.224-0.478) | 0/50 (0.000-0.071) |
+| 4-clip pool | - | 23/200 (0.078-0.167) | 39/200 (0.146-0.255) | 0/200 (0.000-0.019) |
+| oracle (Track B final) | - | 44/50 (0.762-0.944) | | |
+
+Total 62/600 trial-run successes, plus 1/4 on recorded_v2. Pooled CIs treat 200 runs as independent although the 4 clips reuse the same 50 layouts and are 4 separate executions (n = 4); quote the per-clip CIs next to any pooled number. Viewpoint and execution vary together, so no clip difference can be attributed to the viewpoint.
+
+Failure categories (M1's plus **reach** = "palm could not reach the target", a failed settle):
+- oracle: missed/knocked cup 5 (trials 34, 38, 44, 45, 49), slip during lift 1 (trial 22).
+- b_level (pool): reach 169, missed/knocked cup 8. b_tilt (pool): reach 155, missed/knocked cup 4, dropped while moving 2. naive: all 200 "released but not on the coaster".
+- Per clip: 26d4118b0c b_level reach 50; b_tilt reach 45, knocked 1. 4e103843db b_level reach 50; b_tilt reach 50. 49aff04f7a b_level reach 46, knocked 4; b_tilt reach 29, knocked 3. e8825dea53 b_level reach 23, knocked 4; b_tilt reach 31, dropped 2.
+- Across all 604 rows no b run failed at the close, the lift or the lower; the failed phases are reach 327 (incl. 3 recorded_v2), approach 12, transport 2.
+- Every approach knock has failed phase approach.
+
+Which settle gave up (324 reach failures of the b trial runs; the palm was 3.01-8.57 cm from the target at give-up). Total: settle_pregrasp 73, settle_grasp 240, settle_place 11. The 3 recorded_v2 reach failures are all settle_grasp.
+
+| clip | variant | settle_pregrasp | settle_grasp | settle_place | total |
+|---|---|---|---|---|---|
+| 26d4118b0c | b_level | 21 | 29 | 0 | 50 |
+| 26d4118b0c | b_tilt | 2 | 40 | 3 | 45 |
+| 4e103843db | b_level | 29 | 21 | 0 | 50 |
+| 4e103843db | b_tilt | 21 | 28 | 1 | 50 |
+| 49aff04f7a | b_level | 0 | 46 | 0 | 46 |
+| 49aff04f7a | b_tilt | 0 | 22 | 7 | 29 |
+| e8825dea53 | b_level | 0 | 23 | 0 | 23 |
+| e8825dea53 | b_tilt | 0 | 31 | 0 | 31 |
+
+Paired with the oracle (same 50 layouts; both succeed / oracle only / variant only / both fail; trial numbers in summary.json `paired`):
+
+| clip | b_level | b_tilt | naive |
+|---|---|---|---|
+| 26d4118b0c | 0 / 44 / 0 / 6 | 4 / 40 / 0 / 6 | 0 / 44 / 0 / 6 |
+| 4e103843db | 0 / 44 / 0 / 6 | 0 / 44 / 0 / 6 | 0 / 44 / 0 / 6 |
+| 49aff04f7a | 0 / 44 / 0 / 6 | 17 / 27 / 1 / 5 (variant only: trial 22) | 0 / 44 / 0 / 6 |
+| e8825dea53 | 22 / 22 / 1 / 5 (variant only: trial 22) | 14 / 30 / 3 / 3 (variant only: trials 38, 44, 49) | 0 / 44 / 0 / 6 |
+
+**Reading the reach failures (checker, scratch `tmp/m4/check/check_extra.out`, not in results/m4_execute/summary).** The executor runs `settle_grasp` before `check_cup_undisturbed` (the oracle's and the spec's order), so a run where the open hand pushed the mug and the palm then ended more than 3 cm from G is filed as reach, not as a knock. From the rows, `detail.cup_final` against `cup_xy` (2 cm xy is check_cup_undisturbed's own threshold; settle_place failures excluded because the cup is in the hand): the cup had moved more than 2 cm in 124 of the 169 b_level reach failures (settle_pregrasp 6/50, settle_grasp 118/119) and in 88 of the 144 b_tilt settle_pregrasp + settle_grasp reach failures (20/23 and 68/121). So the 12 literal "approach knocks" understate how often the hand hit the mug. Together with the negative collision distances above this points at the approach path sweeping the open hand through the mug. This is a description of the rows; no cause was tested.
+
+Observation (checker reading, two saved tables): M3's reachability rule (G and P < 1 cm, path max < 2 cm) is stricter than the executor's 3 cm settle tolerance. e8825dea53 b_level is the only kinematically reachable group (10/11) and the best b_level group in physics (23/50); but b_tilt has 0/44 kinematically reachable and 39/200 physics successes, so the kinematic table is not a clean predictor of the physics outcome.
+
+**Failure maps** (`failure_map_b_level.png`, `failure_map_b_tilt.png`, `failure_map_naive.png`; cup xy coloured by outcome, one panel per clip plus the oracle for reference; dashed rectangle = the PALM_BOX cup region = PALM_BOX minus the legacy palm offset, x 0.4433-0.5433, y -0.3356..-0.1356). Cluster description, **descriptive, found after looking** (the splits y < -0.25 m "outer" and x >= 0.52 m "far" were chosen after looking at the maps; not a model; every number below was re-derived from the rows):
+- Layout: the 50 cups form two groups in y with an empty band between them (no cup with y between -0.2795 and -0.2111 m): 28 outer, 22 inner, 10 far (x >= 0.52 m). These are properties of the layouts.
+- b_level, 26d4118b0c and 4e103843db: reach failure at all 50 cups; 4e103843db also at all 50 cups for b_tilt.
+- b_level, e8825dea53 (the only clip with b_level successes): the 10 far cups all succeeded (10/10); the near cups (x < 0.52) 13/40, of them 11/18 inner and 2/22 outer.
+- b_level, 49aff04f7a: no success; reach failure at 46/50 cups, and the other 4 runs are approach knocks, all at far cups (4 of the 10 far cups).
+- b_tilt, e8825dea53: its 17 successes are all outer (17/28 outer, 0/22 inner). b_tilt, 49aff04f7a and 26d4118b0c succeed mostly on the inner side (49aff04f7a 15/22 inner vs 3/28 outer; 26d4118b0c 4/22 inner vs 0/28 outer). So the side on which b_tilt succeeds differs between clips. Not tested why.
+- Approach knocks (cup xy): b_level 49aff04f7a x 0.522-0.538, y -0.323..-0.136; b_level e8825dea53 x 0.467-0.518, y -0.302..-0.166; b_tilt 26d4118b0c x 0.510, y -0.197; b_tilt 49aff04f7a x 0.451-0.475, y -0.322..-0.299.
+- The oracle's own 5 approach knocks (trials 34, 38, 44, 45, 49) all lie in the outer group at the low-x edge (cup x 0.447-0.469). In that corner b_tilt 49aff04f7a knocked the cup at trials 6, 34, 49 (34 and 49 are also oracle knock trials). Whether the layout geometry is the shared cause is not tested.
+- b_tilt e8825dea53 also has 2 "dropped while moving" (trials 1, 32).
+- naive: no structure, all 200 fail the same way at every cup position. The cup ended 9.9-21.1 cm (median 13.5) from the coaster centre and had moved 0.0-15.6 cm (median 3.0) from its start in xy. This is expected: naive replays at M3's fixed recorded-layout translation and ignores the trial's cup and coaster by construction.
+
+Outcome counts in four cup regions (S success, r reach, K knocked, D dropped; outer/inner by y, near/far by x = 0.52):
+
+| run | outer, x < 0.52 | outer, x >= 0.52 | inner, x < 0.52 | inner, x >= 0.52 |
+|---|---|---|---|---|
+| 26d4118b0c b_level | r 22 | r 6 | r 18 | r 4 |
+| 4e103843db b_level | r 22 | r 6 | r 18 | r 4 |
+| 49aff04f7a b_level | r 22 | K 2, r 4 | r 18 | K 2, r 2 |
+| e8825dea53 b_level | K 2, r 18, S 2 | S 6 | K 2, r 5, S 11 | S 4 |
+| 26d4118b0c b_tilt | r 22 | r 6 | K 1, r 16, S 1 | r 1, S 3 |
+| 4e103843db b_tilt | r 22 | r 6 | r 18 | r 4 |
+| 49aff04f7a b_tilt | K 3, r 16, S 3 | r 6 | r 6, S 12 | r 1, S 3 |
+| e8825dea53 b_tilt | D 1, r 6, S 15 | r 4, S 2 | D 1, r 17 | r 4 |
+
+### Recorded layout v2 (b_level, one run per clip)
+
+| clip | view | outcome | detail | cup xy | coaster xy | collision min (mm) |
+|---|---|---|---|---|---|---|
+| 26d4118b0c | top-down | fail, reach | settle_grasp: palm 5.9 cm from the target after 3.0 s | (0.491, -0.163) | (0.495, -0.308) | -30.4 |
+| 4e103843db | 90 deg | fail, reach | settle_grasp: palm 6.6 cm | (0.490, -0.164) | (0.496, -0.307) | -30.1 |
+| 49aff04f7a | 45 deg | fail, reach | settle_grasp: palm 4.7 cm | (0.495, -0.167) | (0.492, -0.304) | -12.6 |
+| e8825dea53 | 45 deg | **success** | cup 0.81 cm from the coaster centre, slip 0.7 cm, rise 12.85 cm, place correction 25.21 mm | (0.506, -0.152) | (0.480, -0.319) | -0.4 |
+
+So with the layout built from my own recorded coaster offset, 1 of 4 clips completes the task in physics. This agrees with the per-clip trial results: e8825dea53 is the only clip with b_level successes.
+
+### Determinism checks
+
+- Saved: `results/m4_execute/determinism_checks.json` (passed): Track B mug_v1 trials 0-4 re-run through the unchanged oracle (ForcePickPlace via the ladder's `run_trials`) are 5/5 identical to fifty.json in every field except wall_s (all of `detail` and the grasp forces included); Execute's setup + 2 s stand equals PickPlace.run's own byte for byte (qpos, qvel, sim time). `results/m4_execute/r0_after_m4/runs/R0_after_m4.json`: R0 20/20, identical to B3 R0 and to M1 (20/20 each, by the ladder's own comparator). `results/m1_grasp_fix/v3/` was only read: nothing in it was rewritten.
+- Re-run by the checker on the final code (scratch, `tmp/m4/check/`): R0 after_m4 20/20, identical to the saved file and to `v3/runs/R0.json`, ladder line "R0 vs B3 R0: 20/20 identical; vs M1: 20/20"; check-oracle 5/5 identical with setup identical. Reason for re-running: the saved check was written at 02:00:08, about a minute before the last edit of sim/m4_execute.py (02:01:04); neither it nor run_resources_*.json records a code hash. All 604 rows were made after that edit (02:15-02:37). Hashes of the code that made them (sha256, first 16 hex): sim/m4_execute.py 02f4dadcc28579c9, retarget/paths_v2.py 4e03aa17b2ea1711, retarget/collision.py 3c7de69975b6fa86, retarget/run_m3_v2.py ac8ae4834236c62b; they match the hashes saved in v2/paths.json and v2/oracle.json (retarget/m4_summary.py bb5de19b770e9c69).
+- Four rows re-run in fresh processes with `sim.m4_execute rerun` (e8825dea53 b_level trial00, a success; 49aff04f7a b_tilt trial07; 26d4118b0c naive trial12; 4e103843db b_level recorded_v2): 4/4 identical in every field except wall_s and RSS. The runner and the executor made further reruns (3 and 7, all identical; scratch under tmp/m4/runner and tmp/m4/executor), including rows that ran second in a worker, so reusing a task across runs does not change results.
+- Also re-derived by the checker: M3 outputs and earlier results were not modified. The newest mtime in `results/m3_retarget/` outside `v2/` is 01:10 (the M3 videos step) and in each earlier results directory it predates M4 (m1_grasp_fix 00:34); the only files changed since 01:12 outside `results/m4_execute/`, `results/m3_retarget/v2/` and `tmp/` are the five new code files plus CLAUDE.md, docs/log.md (01:29-01:30) and .gitignore (01:42), all before the M4 workers started (01:53). M3's 8 code files match `run_resources.json`.
+
+### What failed
+
+- **Reach, mostly.** 324 of the 400 b trial runs end as a failed settle: b_level 169, b_tilt 155. b_level succeeds only on e8825dea53 (23/50); b_tilt best on 49aff04f7a (18/50) and e8825dea53 (17/50), 4/50 on 26d4118b0c, 0/50 on 4e103843db. Pooled: b_level 23/200, b_tilt 39/200. Oracle on the same layouts: 44/50.
+- **The hand hits the mug on the way in.** Collision minima are negative for nearly all b runs (see Step 3), and in most reach failures the cup had been pushed more than 2 cm by the time the settle gave up.
+- **naive 0/200** (all "released but not on the coaster"): expected from the fixed-translation design, not informative about the human motion itself.
+- **No b run failed at the close or the lift.** Once the palm reaches G the grasp works: 62 of 62 trial-run b successes passed the close, lift and place checks (lift slip 0.04-1.6 cm, median 0.56; final cup 0.26-3.7 cm from the coaster centre, median 1.32; checker recount from rows over the 63 successful b runs).
+- Tuned nothing to pass: no threshold or parameter was changed; the oracle's own settle tolerances and checks were used as they are.
+
+### Adaptations and implementation choices
+
+- New modules instead of new functions in warp.py / run_m3.py: editing them would change their SHA-256 and `run_m3 summarize` compares those hashes.
+- v2 is derived from M3's builder output by cutting and re-timing, not by recomputing geometry.
+- The oracle path starts at (p_s, q_now), like M3's paths; the real oracle starts at the IK palm_start, at most 0.09 mm away. It uses the nominal cup (at rest) and the nominal in-hand offset as `warp.time_scale` does. Phase mapping: "approach" = pre-grasp leg + leg to G, "transport" = lift + transport + lower, no "pause" phase; i_pause = pre-grasp arrival (8 cm of straight arc before G), i_peak = -1.
+- Naive v2: the replay is re-timed as one rest-to-rest segment, because naive has no pause and no separate transport phase.
+- The Step 3 diagnostic runs after the physics run as a hook, with its own setup and one plan (M3's `set_robot_to_clip_frame`). Arc length is measured along the path targets; "right fingers at HERO's open pose" is `scene.reset` (both hands open), as in M3's step 6.
+- follow phase names reuse the oracle's ('pregrasp', 'approach', 'lift', 'transport', 'replay') so failed_phase and the M1 categories line up.
+- Retreat orientation (not named in the spec): b uses the path's grasp orientation, naive the path's last quaternion.
+- The lift rule uses the planned peak (pos[i_peak].z - G.z), the way the oracle uses its commanded 10 cm; the live palm z is the alternative. `lift_planned_cm` and `lift_cup_rise_cm` are both in the rows.
+- Place-correction progress s = `paths_v2.sigma(j/50, D0)/D0` of transport 2 (the builder's own function, one copy of the formula).
+- The two Step 4 batches were run as two commands (600 runs, then 4 recorded_v2), so each has its own resource record.
+- failure-map PNGs include the oracle as a fifth reference panel; the summary also has two tables not in the spec (which settle gave up; counts in four cup regions), added so the cluster sentences are backed by numbers.
+
+### Open questions
+
+1. **Check order and the knock label.** `settle_grasp` runs before `check_cup_undisturbed` (literal, the oracle's order), so most pushed-mug runs are labelled reach. Cross-tab above: 124/169 b_level and 88/144 b_tilt reach failures had the cup moved more than 2 cm. Should the README count those as knocks, and should summary.md carry this cross-tab? It is not in summary.md now.
+2. **M3's open question 1** (should the path-max rule exclude the prelude?): the data is in. The oracle's prelude is 1.69 cm and passes; b_level's is 1.90-2.86 cm. The rule was left unchanged (literal reading); the after-prelude column is information only.
+3. **Naive v2 timing.** It is re-timed as one segment. The alternative (split like b at an 8 cm-before-g point and at a transport peak) would put the naive hand at rest mid-replay while its closure ramps on time with no hold.
+4. **Place-correction progress s:** time fraction j/N versus path progress sigma(t_j)/D0; they differ only in the first and last 0.4 s. sigma/D0 is implemented.
+5. **Oracle collision distribution** covers only the 10 Step 0 rows (trials 0-9, all successes). The oracle's 5 approach knocks have no value; running `collision_min(oracle_path)` on all 50 layouts (about 3.5 s each) would fill it. Not done, not in the spec.
+6. **The collision diagnostic does not separate knocks from successes** (b_tilt: all 39 successes overlap); the window ends 1 cm before G, so a late overlap can be the intended contact.
+7. **Naive failure category.** `evaluate()` files naive as "released but not on the coaster" even when the mug was never lifted. Literal; the `reason` field has evaluate()'s exact text.
+8. **Pooled CIs** treat 200 runs as independent. The oracle runs the trial's own handle yaw, the variants run trial yaw + (phi_h - phi_ora); the oracle ignores the handle, so this should be immaterial for the paired counts, but it was not tested.
+9. **Follow start offsets.** In the rows, the live palm after settling is not at the path's first frame: the bend applied at the start of each follow slice is 3.6-36.5 mm for approach 2 (median 14.1, n = 331), 10.2-31.6 mm for transport 1 (median 22.2, n = 76), 9.9-49.0 mm for transport 2 (median 18.0, n = 76), 0.1 mm for the first plan (`detail.plans[*].start_offset_mm`; checker recount, scratch). Not examined further.
+10. **Reviewer items left unfixed** (no fix pass was run; none occurred in the data, 0 error rows): a diagnostic exception would turn a physics row into an error row; `--skip-existing` skips error rows instead of re-running them.
+11. **Per-process CPU.** Each worker used about 120 % CPU (multithreaded numerics), so 8 processes kept about 10 cores busy. The spec limited processes, not cores.
+
+### Runtime and peak RSS (CPU only; no GPU; no videos)
+
+| step | wall | peak RSS |
+|---|---|---|
+| `run_m3_v2 paths` | 8.4 s | 170 MB |
+| `run_m3_v2 oracle` (1 process) | 39.7 s | 1815 MB |
+| `run_m3_v2 summarize` | 0.02 s | 153 MB |
+| main batch, 600 runs, 8 workers | 823.6 s (13.7 min) inside the command; per-run wall mean 10.95 s, max 18.3 s | 1531-1593 MB per worker (sum 12.5 GB), parent 65 MB |
+| recorded_v2 batch, 4 runs, 4 workers | 11.8 s | 1603-1656 MB per worker, parent 63 MB |
+| checker: R0 re-check (4 processes) | 28.5 s | max 1665 MB per process |
+| checker: check-oracle | 25.7 s | 2732 MB |
+
+All far below the 16 GB per-process cap.

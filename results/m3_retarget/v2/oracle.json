@@ -1,0 +1,69 @@
+{
+  "step": "oracle",
+  "rows": 10,
+  "task": "run_m3.make_task(): SetupOnly(cup_model='mug', mass from config, mug_v1)",
+  "harness": "run_m3.run_one with build_path swapped for paths_v2.oracle_path (harness_builder)",
+  "collision_min_equals_run_one_clip": {
+    "layout": "trial00",
+    "identical": true,
+    "fresh_plan_info": {
+      "frames": 1392,
+      "path_frames": 792,
+      "ik_max_path_err_cm": 1.63741276807615,
+      "ik_terminal_palm_err_cm": 0.10530419443013758,
+      "qp_failures": 0
+    },
+    "run_one_plan_info": {
+      "base": "plan",
+      "base_goal": {
+        "pos": [
+          0.3976449847252701,
+          -0.13970302966371856,
+          0.8049999999999999
+        ],
+        "quat_wxyz": [
+          0.9238795325112867,
+          0.0,
+          0.0,
+          -0.3826834323650897
+        ],
+        "pelvis_drop": 0.02,
+        "pelvis_pitch": 0.13463968515384828,
+        "waist_pitch": 0.20195952773077241
+      },
+      "frames": 1392,
+      "path_frames": 792,
+      "ik_max_path_err_cm": 1.63741276807615,
+      "ik_terminal_palm_err_cm": 0.10530419443013758,
+      "qp_failures": 0
+    }
+  },
+  "p_s_identical_to_m3_b_rows_same_trial": {
+    "trial00": true,
+    "trial01": true,
+    "trial02": true,
+    "trial03": true,
+    "trial04": true,
+    "trial05": true,
+    "trial06": true,
+    "trial07": true,
+    "trial08": true,
+    "trial09": true
+  },
+  "wall_s": 39.7,
+  "peak_rss_mb": 1815,
+  "gpu": "none (CPU only)",
+  "code_sha256": {
+    "retarget/paths_v2.py": "4e03aa17b2ea1711f5e24aed85f60ce3b7fcca676f9507d178c408183b98cc65",
+    "retarget/collision.py": "3c7de69975b6fa868d0eac3ea1161b40ae35298b5f846a25f91a17fe3488036e",
+    "retarget/run_m3_v2.py": "ac8ae4834236c62b8293dfc167d4280c9f615eee84d9bc5425792d5d2fb1c2f2",
+    "retarget/frames.py": "45f367363cdad5a87c220fab863356b10f27e89f0b9aa682d7aa0448351401db",
+    "retarget/grasp.py": "23d1c45f9be1329e3f4f4a9ce7ef042d163c4eb9ba13d270a0ce659ac2f2e6f2",
+    "retarget/warp.py": "21640b51712410c0266a769dd0909dc9819ead238d8c36a55eb4f1a32f5ba8c8",
+    "retarget/naive.py": "9eb0e7f3d4adfc9cbea199d65823e23105141e9640ca84017d0f71a4402e6c4e",
+    "retarget/run_m3.py": "95649d9b4dedba594fcb2c72e7369b4e7fa6128211ca912b9871d1e4ac7d514d",
+    "sim/reference_builder.py": "c97d7d40f98be21e279648808a34e1d7e1ae97a9484c5a0cc1881ade10b48165",
+    "sim/pick_place.py": "2c4bf6e7f5d53b72efa6877d5f28fb059097260cc463bf629bb27c8f9a116813",
+    "sim/scene.py": "7cbbf28125f8076dccd722cc6fb6f4e2a0165cddb8be9060637f7eca5e03b39c"
+  }
+}
