@@ -1683,3 +1683,91 @@ arm. So each step is tested only as the bundle of changes it makes, and the rank
   - Sweep: 126 s, at most 1658 MB per process.
   - Render: 51 s, 1965 MB.
   - No GPU.
+
+## M5 — learned grasp selector (overnight run, one shot with pre-set branches)
+
+### Plan change
+- M5 is a learned grasp selector, not ACT / Diffusion Policy and not LeRobot. The `hoi-policy` env is not created.
+- The selector is trained with PyTorch in `hoi-perception`, exported to ONNX and run with onnxruntime in `hoi-sim`.
+- Why: M4b showed my heading transfers to this arm only up to about 65 deg (heading sweep). So the thing worth learning is, per layout,
+  which of my clips to use and how far from my heading the robot must move.
+- The two envs exchange plain files: `results/m5/train_data.npz` going in, `results/m5/selector.onnx` coming back.
+- The 50 eval layouts (trials 0-49) are test only.
+
+### Step 0 — `b_hybrid_phi`
+- `b_hybrid_phi` is b_hybrid with the grasp heading set to a given phi: `paths_v2.hybrid_grasp` uses
+  `grasp_pose("b_level", cup_xy, dict(human, phi_h=phi), oracle)`.
+- **Candidate headings** (`sim/m4_execute.py candidate_phi`):
+  - "phih" = my phi_h.
+  - "45" = phi_ora exactly. phi_ora is 0.7853981633974484 rad, which is `math.radians(45)` + 1 ulp, so the "45" candidate has to be
+    phi_ora itself to reproduce b_hybrid_h45's R_ora bit for bit.
+  - "55", "65", "75" = phi_ora + 10 / 20 / 30 deg, as the M4b heading sweep turned the grasp.
+- **One handle yaw per layout** (`variant_layout`): the layout's own, whatever the grasp. `yaw="m4"` exists only for the check against
+  b_hybrid.
+- **Check passed** (`results/m5/step0_check.json`):
+  - Paths are bit-identical on all 4 clips: phi_h vs b_hybrid, and 45 vs b_hybrid_h45.
+  - 4 / 4 re-runs (26d trial00 / 01, each against both references) are identical to the saved M4b rows, every field except the
+    identity fields (run, variant, the candidate fields, and the info fields `variant`, `phi_rad`, `check_against_b_level`).
+- One M4 row and one M4b row re-run identical after the change (`results/m5/checks/`).
+
+### Step 1 — 120 training layouts (`policy/m5.py layouts`, `results/m5/train_layouts.json`)
+- **Sampling:** `sample_layouts(legacy grasp, n, seed=100)`. Handle yaw = the legacy grasp's approach angle + U(-45, 45) deg from
+  `default_rng(2100)`. trials() draws its yaw around its own grasp's approach angle, the legacy one, so this is trials()'s distribution.
+- **Deviation:** the spec's assert (no training cup or coaster within 1 mm of any eval cup or coaster) fails on the first 120 draws.
+  - Draws 29, 74, 98 and 105 come 0.35-0.74 mm from an eval point.
+  - With about 24 000 point pairs in a 10 x 20 cm box, about 4 such near-coincidences are expected by chance.
+  - The breaking draws are dropped and the same seeded sampler stream continues: 125 draws, 5 dropped (draw 120 also breaks it), 120
+    kept. sample_layouts with a larger n returns the same first draws (asserted).
+  - Nothing here depends on any outcome; the training set is disjoint as the spec intends.
+
+### Step 2 — 2160 candidate rollouts
+- **Candidates:** 18 in total. Each of 26d, 4e and 49aff has phi_h, 75, 65, 55 and 45. e88 (phi_h 61.7 deg) has phi_h, 55 and 45.
+- **Runs:** every candidate on every training layout through `sim.m4_execute run --items results/m5/rollout_items.json`, with M4's row
+  format plus the candidate fields and the collision diagnostic.
+- **Rate:** 111 rows after 244 s projected 79 min in total, under the 2.5 h fallback limit, so all 120 layouts ran.
+
+### Environment change
+- The ONNX export (`torch.onnx.export(..., dynamo=False)`) needs the `onnx` package, which `hoi-perception` did not have
+  ("Module onnx is not installed!" on a trial export).
+- `pip install --dry-run onnx -c envs/hoi-perception.constraints.txt` would add only ml_dtypes 0.6.0, onnx 1.23.2 and protobuf 7.36.2;
+  torch and numpy stay unchanged. It was installed into `hoi-perception` only.
+- Afterwards torch is 2.11.0+cu128 and numpy 2.2.6. `envs/hoi-perception.lock.txt` was re-frozen and the three pins added to its
+  constraints. The only `pip check` complaint (pyrender vs PyOpenGL) predates this install.
+
+### Side work done during the rollouts (background agents; nothing simulated except one identical re-run)
+- **Data sample** `data/raw/sample/4e103843db/`: a byte-identical copy of the 90 deg clip (rgb.mp4 10.7 MB, so no re-encode; 23 MB in
+  total).
+  - `perception.stray.load` gives the same rows, timestamps, K, poses and depth / confidence on both copies, and the video decodes to
+    N - 1 = 513 frames in both (`results/m5/data_sample_check.json`).
+  - rgb.mp4 is committed with `git add -f` (the repo ignores *.mp4).
+- **`docs/INSTALL.md`:** from the log, the lock files and the code. The commands it could not verify are marked "(unverified)". No
+  `patches/` directory exists.
+- **Extra visual** (`sim/hand_to_robot_video.py`, `results/extra/hand_to_robot.gif`):
+  - Side by side, my e88 clip (M2 overlay) and the robot's b_hybrid success on trial00.
+  - My clip is piecewise-linearly time-warped onto the robot's real-time run at 6 events (approach start, contact, lift, carry,
+    place, release). My events come from the demo npz; the robot's from a re-run of the saved row, which came out identical.
+
+### Step 2 results — branch D1 (`results/m5/candidates.md` / `.json`)
+- **Runs:** 2160 in 4283 s on 8 workers (peak RSS 1568-1646 MB per worker); 0 exceptions, so **D1 = continue**; 1538 successes.
+- **The heading pattern is the M4b sweep's, now on 120 training layouts per candidate.**
+  - At my own heading: 26d 41/120, 4e 31/120, 49aff 35/120, e88 96/120.
+  - At 65 deg: 112 / 94 / 97 (26d / 4e / 49aff).
+  - At 45 deg: 111 / 115 / 111 / 112 (26d / 4e / 49aff / e88).
+- **Candidate-oracle ceiling:** at least one candidate succeeds on 120/120 training layouts.
+- **Fixed-best F** (highest training success, ties -> larger phi): 4e103843db at 45 deg, 115/120.
+
+### Step 3 results — branch D2 (`results/m5/cv.json`, `selector_meta.json`, `onnx_check.json`)
+- **Cross-validation:** 5 folds by layout, noisy held-out inputs.
+  - AUC 0.916 and Brier 0.102 (base rate 0.712), so the selector predicts success well above chance.
+  - Held-out selection success: R1 115/120, R2 109/120, F 115/120, CEIL 120/120.
+  - **D2: learning does not beat the fixed best choice in CV** (R1 115 <= F 115). Continued as the branch says: no retraining, no
+    other model.
+  - R2 trades 6 layouts for staying closer to my heading.
+- **Final model:** trained on all 120 layouts in 16 s on CPU and exported to ONNX (21.9 KB). onnxruntime matches torch to 1.2e-7 on
+  1000 rows (tolerance 1e-5).
+- **Test choices** (`results/m5/choices.json`, inputs noisy, seed 2026):
+  - R2 picks e88 at my own heading in 33/50 trials.
+  - R1 mostly picks 45 deg candidates.
+  - F is 4e103843db 45 everywhere.
+  - The best training clip at 45 deg is also 4e103843db, so "b_hybrid_h45 noisy" and "F noisy" are the same runs (the noisy items
+    are de-duplicated: 100 noisy runs, not 150).

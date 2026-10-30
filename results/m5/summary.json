@@ -1,0 +1,633 @@
+{
+  "what": "M5 Step 5 summary (policy/m5.py summarize)",
+  "ablation": {
+    "naive_M4": {
+      "successes": 0,
+      "n": 200,
+      "wilson95": [
+        0.0,
+        0.019
+      ],
+      "text": "0/200 (0.00-0.02)",
+      "category_v2": {
+        "released but not on the coaster": 200
+      }
+    },
+    "b_level_M4": {
+      "successes": 23,
+      "n": 200,
+      "wilson95": [
+        0.078,
+        0.167
+      ],
+      "text": "23/200 (0.08-0.17)",
+      "category_v2": {
+        "pushed mug before close": 132,
+        "palm could not reach the target": 45
+      }
+    },
+    "b_hybrid_original_yaw": {
+      "successes": 98,
+      "n": 200,
+      "wilson95": [
+        0.422,
+        0.559
+      ],
+      "text": "98/200 (0.42-0.56)",
+      "category_v2": {
+        "palm could not reach the target": 69,
+        "pushed mug before close": 16,
+        "released but not on the coaster": 14,
+        "slip during lift": 3
+      }
+    },
+    "b_hybrid_h45_M4b": {
+      "successes": 179,
+      "n": 200,
+      "wilson95": [
+        0.845,
+        0.93
+      ],
+      "text": "179/200 (0.84-0.93)",
+      "category_v2": {
+        "pushed mug before close": 20,
+        "slip during lift": 1
+      }
+    },
+    "b_hybrid_h45_M4b_4e103843db": {
+      "successes": 46,
+      "n": 50,
+      "wilson95": [
+        0.812,
+        0.968
+      ],
+      "text": "46/50 (0.81-0.97)",
+      "category_v2": {
+        "pushed mug before close": 4
+      }
+    },
+    "R1_clean": {
+      "successes": 47,
+      "n": 50,
+      "wilson95": [
+        0.838,
+        0.979
+      ],
+      "text": "47/50 (0.84-0.98)",
+      "category_v2": {
+        "pushed mug before close": 2,
+        "slip during lift": 1
+      }
+    },
+    "R2_clean": {
+      "successes": 49,
+      "n": 50,
+      "wilson95": [
+        0.895,
+        0.996
+      ],
+      "text": "49/50 (0.90-1.00)",
+      "category_v2": {
+        "released but not on the coaster": 1
+      }
+    },
+    "F_clean": {
+      "successes": 46,
+      "n": 50,
+      "wilson95": [
+        0.812,
+        0.968
+      ],
+      "text": "46/50 (0.81-0.97)",
+      "category_v2": {
+        "pushed mug before close": 4
+      }
+    },
+    "R2_noisy": {
+      "successes": 44,
+      "n": 50,
+      "wilson95": [
+        0.762,
+        0.944
+      ],
+      "text": "44/50 (0.76-0.94)",
+      "category_v2": {
+        "pushed mug before close": 4,
+        "released but not on the coaster": 1,
+        "slip during lift": 1
+      }
+    },
+    "F_noisy": {
+      "successes": 38,
+      "n": 50,
+      "wilson95": [
+        0.626,
+        0.857
+      ],
+      "text": "38/50 (0.63-0.86)",
+      "category_v2": {
+        "pushed mug before close": 7,
+        "dropped while moving": 3,
+        "slip during lift": 2
+      }
+    },
+    "b_hybrid_h45_4e103843db_noisy": {
+      "successes": 38,
+      "n": 50,
+      "wilson95": [
+        0.626,
+        0.857
+      ],
+      "text": "38/50 (0.63-0.86)",
+      "category_v2": {
+        "pushed mug before close": 7,
+        "dropped while moving": 3,
+        "slip during lift": 2
+      }
+    },
+    "oracle": {
+      "successes": 44,
+      "n": 50,
+      "wilson95": [
+        0.762,
+        0.944
+      ],
+      "text": "44/50 (0.76-0.94)",
+      "category_v2": {
+        "pushed mug before close": 5,
+        "slip during lift": 1
+      }
+    }
+  },
+  "per_clip": {
+    "naive_M4": {
+      "26d4118b0c": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category_v2": {
+          "released but not on the coaster": 50
+        }
+      },
+      "4e103843db": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category_v2": {
+          "released but not on the coaster": 50
+        }
+      },
+      "49aff04f7a": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category_v2": {
+          "released but not on the coaster": 50
+        }
+      },
+      "e8825dea53": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category_v2": {
+          "released but not on the coaster": 50
+        }
+      }
+    },
+    "b_level_M4": {
+      "26d4118b0c": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category_v2": {
+          "pushed mug before close": 31,
+          "palm could not reach the target": 19
+        }
+      },
+      "4e103843db": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category_v2": {
+          "pushed mug before close": 25,
+          "palm could not reach the target": 25
+        }
+      },
+      "49aff04f7a": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category_v2": {
+          "pushed mug before close": 50
+        }
+      },
+      "e8825dea53": {
+        "successes": 23,
+        "n": 50,
+        "wilson95": [
+          0.33,
+          0.596
+        ],
+        "text": "23/50 (0.33-0.60)",
+        "category_v2": {
+          "pushed mug before close": 26,
+          "palm could not reach the target": 1
+        }
+      }
+    },
+    "b_hybrid_original_yaw": {
+      "26d4118b0c": {
+        "successes": 22,
+        "n": 50,
+        "wilson95": [
+          0.312,
+          0.577
+        ],
+        "text": "22/50 (0.31-0.58)",
+        "category_v2": {
+          "palm could not reach the target": 21,
+          "pushed mug before close": 5,
+          "released but not on the coaster": 2
+        }
+      },
+      "4e103843db": {
+        "successes": 11,
+        "n": 50,
+        "wilson95": [
+          0.128,
+          0.352
+        ],
+        "text": "11/50 (0.13-0.35)",
+        "category_v2": {
+          "palm could not reach the target": 35,
+          "pushed mug before close": 3,
+          "released but not on the coaster": 1
+        }
+      },
+      "49aff04f7a": {
+        "successes": 21,
+        "n": 50,
+        "wilson95": [
+          0.294,
+          0.558
+        ],
+        "text": "21/50 (0.29-0.56)",
+        "category_v2": {
+          "palm could not reach the target": 13,
+          "released but not on the coaster": 8,
+          "pushed mug before close": 7,
+          "slip during lift": 1
+        }
+      },
+      "e8825dea53": {
+        "successes": 44,
+        "n": 50,
+        "wilson95": [
+          0.762,
+          0.944
+        ],
+        "text": "44/50 (0.76-0.94)",
+        "category_v2": {
+          "released but not on the coaster": 3,
+          "slip during lift": 2,
+          "pushed mug before close": 1
+        }
+      }
+    },
+    "b_hybrid_h45_M4b": {
+      "26d4118b0c": {
+        "successes": 43,
+        "n": 50,
+        "wilson95": [
+          0.738,
+          0.93
+        ],
+        "text": "43/50 (0.74-0.93)",
+        "category_v2": {
+          "pushed mug before close": 7
+        }
+      },
+      "4e103843db": {
+        "successes": 46,
+        "n": 50,
+        "wilson95": [
+          0.812,
+          0.968
+        ],
+        "text": "46/50 (0.81-0.97)",
+        "category_v2": {
+          "pushed mug before close": 4
+        }
+      },
+      "49aff04f7a": {
+        "successes": 46,
+        "n": 50,
+        "wilson95": [
+          0.812,
+          0.968
+        ],
+        "text": "46/50 (0.81-0.97)",
+        "category_v2": {
+          "pushed mug before close": 4
+        }
+      },
+      "e8825dea53": {
+        "successes": 44,
+        "n": 50,
+        "wilson95": [
+          0.762,
+          0.944
+        ],
+        "text": "44/50 (0.76-0.94)",
+        "category_v2": {
+          "pushed mug before close": 5,
+          "slip during lift": 1
+        }
+      }
+    }
+  },
+  "paired": {
+    "R2_vs_F": {
+      "both": 45,
+      "first_only": 4,
+      "second_only": 1,
+      "neither": 0
+    },
+    "R2_vs_oracle": {
+      "both": 43,
+      "first_only": 6,
+      "second_only": 1,
+      "neither": 0
+    },
+    "R2_vs_b_hybrid_h45_4e103843db": {
+      "both": 45,
+      "first_only": 4,
+      "second_only": 1,
+      "neither": 0
+    },
+    "R1_vs_F": {
+      "both": 45,
+      "first_only": 2,
+      "second_only": 1,
+      "neither": 2
+    }
+  },
+  "r2_choices": {
+    "histogram": {
+      "26d4118b0c 65": 1,
+      "26d4118b0c 75": 2,
+      "26d4118b0c phih": 2,
+      "49aff04f7a 45": 1,
+      "49aff04f7a 75": 3,
+      "e8825dea53 45": 3,
+      "e8825dea53 55": 5,
+      "e8825dea53 phih": 33
+    },
+    "mean_departure_deg": 3.4214132311270715,
+    "max_departure_deg": 36.67776196222137,
+    "chose_my_heading": 35,
+    "clips": {
+      "e8825dea53": 41,
+      "49aff04f7a": 4,
+      "26d4118b0c": 5
+    },
+    "fell_back_to_R1": 2
+  },
+  "cv": {
+    "auc": 0.9158258731638784,
+    "brier": 0.10231807107421123,
+    "base_rate": 0.712037037037037,
+    "selection": {
+      "R1": 115,
+      "R2": 109,
+      "F": 115,
+      "CEIL": 120
+    },
+    "n_layouts": 120
+  },
+  "candidates": {
+    "rows": [
+      {
+        "clip": "26d4118b0c",
+        "candidate": "phih",
+        "phi_deg": 81.93991346704513,
+        "departure_deg": 0.0,
+        "text": "41/120 (0.26-0.43)",
+        "rate": 0.3416666666666667
+      },
+      {
+        "clip": "26d4118b0c",
+        "candidate": "75",
+        "phi_deg": 75.0,
+        "departure_deg": 6.93991346704513,
+        "text": "62/120 (0.43-0.60)",
+        "rate": 0.5166666666666667
+      },
+      {
+        "clip": "26d4118b0c",
+        "candidate": "65",
+        "phi_deg": 65.0,
+        "departure_deg": 16.93991346704513,
+        "text": "112/120 (0.87-0.97)",
+        "rate": 0.9333333333333333
+      },
+      {
+        "clip": "26d4118b0c",
+        "candidate": "55",
+        "phi_deg": 55.00000000000001,
+        "departure_deg": 26.939913467045127,
+        "text": "111/120 (0.86-0.96)",
+        "rate": 0.925
+      },
+      {
+        "clip": "26d4118b0c",
+        "candidate": "45",
+        "phi_deg": 45.00000000000001,
+        "departure_deg": 36.93991346704513,
+        "text": "111/120 (0.86-0.96)",
+        "rate": 0.925
+      },
+      {
+        "clip": "4e103843db",
+        "candidate": "phih",
+        "phi_deg": 85.84558610023504,
+        "departure_deg": 0.0,
+        "text": "31/120 (0.19-0.34)",
+        "rate": 0.25833333333333336
+      },
+      {
+        "clip": "4e103843db",
+        "candidate": "75",
+        "phi_deg": 75.0,
+        "departure_deg": 10.84558610023503,
+        "text": "52/120 (0.35-0.52)",
+        "rate": 0.43333333333333335
+      },
+      {
+        "clip": "4e103843db",
+        "candidate": "65",
+        "phi_deg": 65.0,
+        "departure_deg": 20.845586100235032,
+        "text": "94/120 (0.70-0.85)",
+        "rate": 0.7833333333333333
+      },
+      {
+        "clip": "4e103843db",
+        "candidate": "55",
+        "phi_deg": 55.00000000000001,
+        "departure_deg": 30.845586100235025,
+        "text": "103/120 (0.78-0.91)",
+        "rate": 0.8583333333333333
+      },
+      {
+        "clip": "4e103843db",
+        "candidate": "45",
+        "phi_deg": 45.00000000000001,
+        "departure_deg": 40.845586100235025,
+        "text": "115/120 (0.91-0.98)",
+        "rate": 0.9583333333333334
+      },
+      {
+        "clip": "49aff04f7a",
+        "candidate": "phih",
+        "phi_deg": 81.67776196222137,
+        "departure_deg": 0.0,
+        "text": "35/120 (0.22-0.38)",
+        "rate": 0.2916666666666667
+      },
+      {
+        "clip": "49aff04f7a",
+        "candidate": "75",
+        "phi_deg": 75.0,
+        "departure_deg": 6.677761962221369,
+        "text": "58/120 (0.40-0.57)",
+        "rate": 0.48333333333333334
+      },
+      {
+        "clip": "49aff04f7a",
+        "candidate": "65",
+        "phi_deg": 65.0,
+        "departure_deg": 16.67776196222137,
+        "text": "97/120 (0.73-0.87)",
+        "rate": 0.8083333333333333
+      },
+      {
+        "clip": "49aff04f7a",
+        "candidate": "55",
+        "phi_deg": 55.00000000000001,
+        "departure_deg": 26.677761962221364,
+        "text": "100/120 (0.76-0.89)",
+        "rate": 0.8333333333333334
+      },
+      {
+        "clip": "49aff04f7a",
+        "candidate": "45",
+        "phi_deg": 45.00000000000001,
+        "departure_deg": 36.67776196222137,
+        "text": "111/120 (0.86-0.96)",
+        "rate": 0.925
+      },
+      {
+        "clip": "e8825dea53",
+        "candidate": "phih",
+        "phi_deg": 61.69248416329159,
+        "departure_deg": 0.0,
+        "text": "96/120 (0.72-0.86)",
+        "rate": 0.8
+      },
+      {
+        "clip": "e8825dea53",
+        "candidate": "55",
+        "phi_deg": 55.00000000000001,
+        "departure_deg": 6.692484163291583,
+        "text": "97/120 (0.73-0.87)",
+        "rate": 0.8083333333333333
+      },
+      {
+        "clip": "e8825dea53",
+        "candidate": "45",
+        "phi_deg": 45.00000000000001,
+        "departure_deg": 16.692484163291585,
+        "text": "112/120 (0.87-0.97)",
+        "rate": 0.9333333333333333
+      }
+    ],
+    "ceiling": {
+      "layouts_with_a_success": 120,
+      "n": 120,
+      "wilson95": [
+        0.969,
+        1.0
+      ],
+      "text": "120/120 (0.97-1.00)"
+    },
+    "fixed_best": {
+      "clip": "4e103843db",
+      "candidate": "45",
+      "phi_deg": 45.00000000000001,
+      "text": "115/120 (0.91-0.98)",
+      "rule": "highest training success; ties -> larger phi; then table order"
+    }
+  },
+  "branches": {
+    "D1": "continue",
+    "D2": {
+      "auc": 0.9158258731638784,
+      "auc_below_0_6": false,
+      "R1_cv": 115,
+      "F_cv": 115,
+      "R1_not_better_than_F": true,
+      "notes": [
+        "learning does not beat the fixed best choice in CV (R1 115 <= F 115)"
+      ]
+    },
+    "D3": {
+      "below_30": [],
+      "what_failed": {}
+    }
+  },
+  "h45_best_clip": "4e103843db",
+  "F": {
+    "clip": "4e103843db",
+    "candidate": "45"
+  },
+  "video_picks": {
+    "r2_success": "e8825dea53__phi55__trial00",
+    "r2_failure": "e8825dea53__phi55__trial07"
+  },
+  "confounds": [
+    "the 4-clip pooled rows (naive, b_level, b_hybrid, b_hybrid_h45) reuse the same 50 layouts 4 times, so their Wilson intervals (which treat the 200 runs as independent) are too narrow",
+    "the place correction reads privileged simulator state (the cup's true pose in the hand) in every variant, the selector rules and the oracle alike; in the noisy runs only the PATH is built from the noisy layout",
+    "the 50 eval layouts were also used in M4 / M4b (to compare variants), but never to train, select or set a threshold here: the selector, F and the h45 clip come from the 120 training layouts only",
+    "b_hybrid_h45 (M4b rows) and b_hybrid at the original yaw use the trial's own handle yaw, as do the selector runs"
+  ],
+  "videos": null
+}

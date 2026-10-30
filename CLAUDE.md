@@ -59,7 +59,10 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
    - **HERO** whole-body controller drives the G1's 29 body joints; the G1 balances itself. HERO tracks a **reference clip**, not a palm target: we build the clip from **our retargeted palm path** (replacing the smooth-path step of HERO's `BenchReplanner`, reusing its IK → FK → `ClipReference` code). HERO's point-to-point replanner is the fallback and an ablation baseline.
    - We drive the Dex3 fingers ourselves (own finger PD loop on HERO's movable-finger model).
    - MuJoCo touch sensors (added by us) on the fingertips confirm the grasp before the lift.
-5. **Learn:** generate a few hundred randomized sim demos with object-aware replay, keep only successes, train a small ACT or Diffusion Policy (LeRobot, in `hoi-policy`), **export it to ONNX** and evaluate it closed-loop inside `hoi-sim` alongside HERO.
+5. **Learn (M5 plan change: a learned grasp selector, not ACT / Diffusion / LeRobot):** per layout, choose which of my clips and which grasp heading phi (my phi_h, 75, 65, 55 or 45 deg) the robot uses with the b_hybrid motion.
+   - Training data: 18 candidates on 120 disjoint training layouts in `hoi-sim` (2160 rollouts).
+   - Model: one pre-registered MLP predicting success, trained with PyTorch in `hoi-perception`, exported to ONNX and run with onnxruntime in `hoi-sim`.
+   - Why: M4b showed my heading transfers only up to about 65 deg on this arm.
 6. **Prove it:** success rate over 50 random layouts for three variants:
    - (a) naive kinematic replay
    - (b) object-aware replay + contact grasp
@@ -94,7 +97,7 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
 | ---------------- | ------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `hoi-perception` | 3.10                                              | **exists**, torch 2.11.0+cu128 verified on GPU | WiLoR, SAM 2, Open3D, Stray Scanner parsing                                                                                                                                                                                                            |
 | `hoi-sim`        | 3.11                                              | created 2026-10-28; lock in `envs/`            | HERO (editable, `[bench]`), `numpy<2` (HERO pin), `mujoco==3.13.0` (the version HERO names), mink, daqp, onnxruntime (CPU build — HERO's policy is tiny; avoids CUDA/cuDNN mismatches on Blackwell), pytest, imageio. **No torch.** Every later install: `pip install ... -c envs/hoi-sim.constraints.txt`. |
-| `hoi-policy`     | 3.12                                              | to create at M5                                | LeRobot (needs Python ≥3.12, numpy ≥2 — conflicts with HERO's `numpy<2`) + torch 2.11.0+cu128. Trains ACT/DP; the policy is exported to ONNX and run inside `hoi-sim`.                                                                       |
+| `hoi-policy`     | 3.12                                              | **not created** (M5 plan change)               | Was planned for LeRobot ACT/DP. M5 trains its small selector MLP in `hoi-perception` instead (onnx 1.23.2 added there for the export) and runs it with onnxruntime in `hoi-sim`.                                                                       |
 
 ### Environment rules
 
@@ -296,6 +299,16 @@ Code in `retarget/` (hoi-sim, kinematic only), outputs in `results/m3_retarget/`
   - b_hybrid 112/200; b_hybrid_h45 179/200; oracle 44/50.
   - Sweep: phi 45/55/65 20/20, 75 13/20, 85 8/20.
   - The comparisons are a sequential ablation (approach bundle, then heading), so the ranking of the two factors is not tested.
+- **M5 selector (`policy/`):**
+  - `features.py` / `rules.py`: numpy only, shared by both envs.
+  - `m5.py`: hoi-sim layouts, items, the candidate table, the ONNX check, selection, evaluation and the summary.
+  - `train_selector.py`: hoi-perception CV and training.
+  - `b_hybrid_phi` = b_hybrid with the grasp heading phi. Candidates: "phih", or phi_ora + (label - 45) deg; "45" = phi_ora exactly.
+  - One handle yaw per layout (its own). Run names `<clip>__phi<label>__<layout>[__noisy]`.
+  - Training layouts `train000-119` (results/m5/train_layouts.json). Test = trials 0-49, never used for training or selection.
+  - Inputs: noisy (cup / coaster N(0, 1 cm), yaw N(0, 10 deg)). Training: 5 copies per row, seed 0. CV held-out: per layout, seed 1.
+    Test: per trial, seed 2026.
+  - Rules: R1 = argmax p; R2 = the smallest departure among p >= 0.8, else R1; F = the fixed-best training candidate.
   - Regenerate with `python -m retarget.m4b_summary summarize`.
 
 ---
