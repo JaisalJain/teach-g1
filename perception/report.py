@@ -726,7 +726,7 @@ def summary():
     grasp_early = {clip: e for clip, e in ev_idx.items()
                    if e.get("grasp", -1) >= 0 and e.get("contact", -1) >= 0 and e["grasp"] < e["contact"]}
     (RESULTS / "summary.json").write_text(json.dumps(clean(
-        {"clips": rows, "clips_missing": missing, "hand_scale": {"s_hand": s_hands, "per_clip": scale},
+        {"clips": rows, "clips_missing": missing, "hand_scale": {"s_hand": s_hands[0] if len(s_hands) == 1 else s_hands, "per_clip": scale},   # a list = the demos disagree
          "v1_to_v2": v1_to_v2,
          "mask_test": {"by_window": mask_test, "decision": decision, "source_per_clip": sources,
                        "error": source_error},

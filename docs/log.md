@@ -811,3 +811,67 @@ What the runs show:
    - Candidates for the clearance: the palm hull at −2.15 mm, 54.63 mm along the approach line, or 15.0 mm along the palm normal.
    - Also: should B5/B6 keep the R0 cup and coaster positions fixed? `sample_layouts` derives cup positions from GRASP_OFFSET, so changing the offset changes the layouts.
 5. **Keep or drop** `sim/grasp_fix_b1.py` and the information-only extras?
+
+### M2 v2 — Track A: perception v2 (all numbers: `results/m2_perception_v2/summary.md`, `<clip>/gates.json`, `<clip>/stages/`)
+**How it was built.** Shared change by me first: `common.stage_cli` takes several stages per module (`--stage`), `RESULTS` points to
+`results/m2_perception_v2` (v1 read-only). A v2 contract fixed the implementation details before any v2 result (S5b: X = S5 kp3d,
+c = mean of the S5-shifted verts, x0, residual in ORIGINAL pixels; re-measured LiDAR residual = median |lidar − mesh| over S5's hand
+pixels within 3 cm, no new shift; A3 drop radii r + 3 cm and fitted coaster radius + 3 cm; consumers switch to `hand_fit.npz`; A4 stages
+`masks_full` + `mask_test` and the S6 decision; two-pass `run_clip` because s_hand and the A4 decision need all 4 clips). One decision was
+the user's: final-window A4 prompts come from that frame's video masks (box, deepest interior point, handle centroid as negative).
+Four module groups were implemented in parallel (implement → 2 adversarial reviewers → fixer); then I ran the whole v2 pipeline clean
+(`python -m perception.run_clip`, 499 s): every gate and cross-view value reproduced the agents' runs exactly. A separate verification
+workflow re-derived every v2 gate, cross-view value, s_hand, the A4 decision and the schema-3 fields with independent code: **no mismatch**.
+
+**Gates v2** (v1 → v2 for every gate is in summary.md):
+
+| gate | 26d4118b0c top-down | 4e103843db 90° | 49aff04f7a 45° | e8825dea53 45° |
+|---|---|---|---|---|
+| G1 coverage | ✔ (v1 ✘: no events) | ✔ | ✔ | ✔ |
+| G2 LiDAR residual (S5b hand) | ✔ 0.48 cm | ✔ 0.51 cm | ✔ 0.51 cm | ✔ 0.80 cm |
+| G3 palm reprojection | ✘ 36.7 px | ✘ 38.5 px | ✘ 50.6 px | ✘ 12.1 px |
+| G4 jitter | ✔ | ✔ | N/A | N/A |
+| G5 z_grasp | ✔ 50.1 mm | ✔ 46.0 mm | ✔ 62.9 mm | ✘ 88.7 mm (g before contact) |
+| G6 mug fit (video masks) | ✘ Ø 105.1 | ✘ Ø 105.7 | ✘ Ø 106.1 | ✘ Ø 105.8 |
+| G7 placement | ✔ 0.81 cm | ✔ 2.15 cm | ✔ 1.04 cm | ✔ 0.54 cm |
+| G8 table frame | ✔ x 1.3° | ✔ x 1.5° (v1 ✘ drift angle) | ✔ x 15.7° (v1 ✘ 23.9°) | ✔ x 7.6° |
+| G9 hand scale ±10 % | ✘ +12.9 % | ✔ −3.2 % | ✘ −17.1 % | ✔ +1.4 % |
+
+**A1 — hand scale (S5b).** s_hand = 1.0219 (pooled median over 1103 metric_valid frames). Per-clip median s [IQR]: 1.154 [1.116–1.193],
+0.989 [0.966–1.025], 0.847 [0.767–1.031], 1.036 [1.019–1.060]. The fit does not reach WiLoR's 2D palm keypoints: palm reprojection after
+pass 2 is 12–51 px (G3 fails everywhere; v1's all-21 plumbing numbers were 31–81 px). The hand-scale fixer's scratch probe (not a saved
+result) found that WiLoR's 2D keypoints are an orthographic image of its own 3D palm to sub-pixel accuracy; no scale + sideways shift
+under the real perspective camera can reproduce that, so a 12–51 px floor remains and the fitted perspective scale soaks up part of the
+distortion — which plausibly explains why s varies with the view (G9 fails on two clips). Re-measured LiDAR residual: NaN on 3
+metric_valid frames (4e103843db i = 90, 49aff04f7a i = 359, 367: no hand pixel left) — G2 takes the median over the frames that have a
+value and names the others; it passes either way.
+
+**A2 — contact = D_min + 1 cm.** The top-down clip now has events (D_min 106.5 mm; contact 60, lift 87). But on 3 clips the closest
+approach happens AFTER the lift, while the hand carries the mug (D_min frame vs lift: 4e103843db 225 vs 214, 49aff04f7a 201 vs 182,
+e8825dea53 159 vs 151; palm z there 92 / 131 / 148 mm ≥ h, flagged). On e8825dea53 this moves contact to frame 149, after g (148):
+z_grasp 88.7 mm = 0.98 h, G5 fails, and the hold before the lift is labelled approach. Implemented literally; needs the user's decision.
+
+**A3 — desk edges.** External contour + 3 cm drop around the mug and coaster + gap-aware extent: the junk lines are gone (49aff04f7a's
+0.584 m gap line now has extent 0.04 m; the real 0.50 m edge decides), G8 passes on all 4 clips. Remaining imperfections seen by the
+verifiers: object-outline remnants survive the 3 cm drop (top-down: the rim projects further out than the footprint), and on e8825dea53 a
+short non-edge piece (L3) sits in the long-edge group (x error 7.6°, within 20°).
+
+**A4 — mug masks.** Full-res image-predictor masks give init free-fit diameters 114.3 (top-down) / 105.8 / 106.1 / 105.7 mm vs video
+105.1 / 105.7 / 106.1 / 105.8 mm → 0 of 4 within 5 mm → S6 keeps the video masks (G6 unchanged from v1). Caveat for the reading: SAM 2
+resizes every input to 1024 × 1024 in both predictors (third_party/sam2 transforms), so "full-res" changes the input sampling and the
+predictor, not SAM 2's working resolution; the +6–7 mm remains unexplained. On the top-down clip the 4-DOF diameter is ill-conditioned
+(h unobservable but free; the verifier's Nelder–Mead with another initial simplex gives 106–113 mm at near-equal IoU). Final-window
+full-res fits failed on 2 clips (IoU 0.658 / 0.609; the positive prompt point landed in the white interior, so SAM 2 segmented the rim)
+— not used, since the rule uses the init window and chose video.
+
+**Runtime / memory (v2 stages, `<clip>/resources.json`):** hand_scale ≤ 0.5 s, hand_fit 1–2 s (≤ 0.25 GB); masks_full (SAM 2 image
+predictor, GPU) 4–6 s, 2.1 GB RSS, 0.71 GB VRAM; mask_test 89–119 s (≤ 0.34 GB); objects / table_frame / events / palm / demo < 1 s;
+report 4–7 s. Unchanged S1–S5 as in v1 (peak RSS 9.35 GB in SAM 2 video).
+
+**Small fixes after verification:** summary.json stores s_hand as a number (a list only if the demos disagree); wilor_smoke docstring.
+**Process notes:** some sub-agents ran read-only git commands despite the no-git rule (nothing changed); `perception/inventory.py` still
+writes to the v1 folder if rerun (it is the v1 Phase 0 script; not rerun).
+
+**Open questions for the user (Track A):** (1) A2: restrict D_min (e.g. palm z < h, or frames before the lift)? (2) G3/G9: WiLoR's
+orthographic 2D vs a perspective fit — change G3's definition or the S2 placement? (3) G6: the +6–7 mm bias persists with full-res
+masks — accept, or investigate the mug's real profile? (4) G2: frames without a re-measured residual — exclude (current) or count as fails?

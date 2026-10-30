@@ -2,7 +2,7 @@
 
     env -u PYTHONPATH conda run --no-capture-output -n hoi-perception python -m perception.wilor_smoke
 
-Needs S1 (perception.frames) for 4e103843db. Writes results/m2_perception/smoke/overlay_<i>.jpg (detector box, WiLoR's 2D
+Needs S1 (perception.frames) for 4e103843db. Writes <RESULTS>/smoke/overlay_<i>.jpg (the v1 run is in results/m2_perception/smoke/) (detector box, WiLoR's 2D
 keypoints, and the mesh projected with WiLoR's OWN demo camera: assumed focal 5000/256 x max(W, H), principal point at the
 image centre -- i.e. exactly what WiLoR's demo would draw) and smoke.json (time per frame, peak VRAM, peak RSS).
 """
