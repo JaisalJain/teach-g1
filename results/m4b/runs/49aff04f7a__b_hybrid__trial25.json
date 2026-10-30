@@ -1,0 +1,331 @@
+{
+  "run": "49aff04f7a__b_hybrid__trial25",
+  "clip": "49aff04f7a",
+  "variant": "b_hybrid",
+  "layout": "trial25",
+  "paths": "v2",
+  "profile": "mug_v1",
+  "trial": 25,
+  "layout_seed": 1,
+  "layout_index": 15,
+  "cup_xy": [
+    0.5266,
+    -0.3252
+  ],
+  "coaster_xy": [
+    0.5261,
+    -0.173
+  ],
+  "handle_yaw_deg": 15.08,
+  "trial_handle_yaw_deg": -21.6,
+  "mass_kg": 0.4,
+  "success": false,
+  "failed_phase": "reach",
+  "reason": "settle_pregrasp: palm 3.1 cm from the target after 5.0 s (not reachable)",
+  "category": "palm could not reach the target",
+  "cup_off_coaster_center_cm": 15.22,
+  "cup_tilt_deg": 0.0,
+  "contact_closure": null,
+  "lift_slip_in_hand_cm": null,
+  "lift_cup_rise_cm": null,
+  "settles": [
+    {
+      "phase": "settle_pregrasp",
+      "converged": false,
+      "seconds": 5.0,
+      "palm_err_cm": 3.06,
+      "replans": 9
+    }
+  ],
+  "diagnostics_run": [
+    "sim.m4_execute:collision_diagnostic"
+  ],
+  "detail": {
+    "segments": {
+      "approach1": [
+        0,
+        176
+      ],
+      "approach2": [
+        176,
+        276
+      ],
+      "transport1": [
+        364,
+        450
+      ],
+      "transport2": [
+        450,
+        552
+      ]
+    },
+    "cup_final": [
+      0.5266,
+      -0.3252,
+      0.7854
+    ],
+    "cup_height_above_resting_cm": -0.61,
+    "fell": false,
+    "plans": [
+      {
+        "phase": "pregrasp",
+        "frames": 777,
+        "path_frames": 177,
+        "ik_max_path_err_cm": 1.111,
+        "ik_terminal_palm_err_cm": 0.761,
+        "qp_failures": 0,
+        "base": "plan",
+        "start_offset_mm": 0.09,
+        "start_offset_deg": 0.0
+      }
+    ],
+    "sim_seconds": 10.56,
+    "path": {
+      "source": "v2",
+      "T": 738,
+      "sha256": "83a765527699fb930dbfcfe1dff8bea8929a9db8c347c61e52f3da90281a13ba",
+      "i_prelude_end": 60,
+      "i_pause": 176,
+      "i_G": 276,
+      "i_close_end": 364,
+      "i_peak": 450,
+      "i_P": 552,
+      "i_release": 552,
+      "info": {
+        "variant": "b_hybrid",
+        "layout": "trial25",
+        "clip": "49aff04f7a",
+        "k": 1.7386864576969785,
+        "time_scale": {
+          "k": 1.7386864576969785,
+          "v_h": 0.424017525667976,
+          "v_o": 0.2438723346529191,
+          "n_speed_samples": 168,
+          "a0": 113,
+          "oracle_pregrasp_leg": {
+            "dist_m": 0.23411744126680237,
+            "T_s": 1.8,
+            "peak_m_s": 0.2438723346529191,
+            "z_clear": 0.942849242350761
+          },
+          "oracle_transport_leg": {
+            "dist_m": 0.13661272018850207,
+            "T_s": 1.7076590023562759,
+            "peak_m_s": 0.15
+          },
+          "recorded_cup_xy": [
+            0.4933380951166243,
+            -0.23555634918610405
+          ],
+          "recorded_coaster_xy": [
+            0.4908415707984213,
+            -0.3721462561471624
+          ]
+        },
+        "a0": 113,
+        "a0_time_s": 1.8841074580559507,
+        "events": {
+          "g": 179,
+          "contact": 147,
+          "lift": 182,
+          "place": 284,
+          "release": 356
+        },
+        "n_clamped": 0,
+        "PG_clamped": false,
+        "bump_max_m": 0.06003958251320718,
+        "bump_scale": 1.0,
+        "G": [
+          0.441122659935983,
+          -0.37789735672284186,
+          0.8030054411972404
+        ],
+        "R_G": [
+          [
+            0.9894696860019216,
+            0.1447402517728174,
+            0.0
+          ],
+          [
+            -0.1447402517728174,
+            0.9894696860019216,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "quat_G_wxyz": [
+          0.9973639471130691,
+          0.0,
+          0.0,
+          -0.07256140157851951
+        ],
+        "heading_deg": 81.67776196222137,
+        "phi_h_deg": 81.67776196222137,
+        "PG": [
+          0.3730060255434699,
+          -0.4198511899092946,
+          0.8030054411972404
+        ],
+        "P": [
+          0.4405726994410506,
+          -0.2256822158633658,
+          0.8190054411972404
+        ],
+        "q": [
+          0.5266475719974777,
+          -0.32522156136222485,
+          0.8030054411972404
+        ],
+        "u": [
+          0.8514579299064138,
+          0.524422914830659,
+          0.0
+        ],
+        "retreat_to": [
+          0.3554269064504092,
+          -0.2781245073464317,
+          0.8690054411972404
+        ],
+        "p_r0": [
+          0.12437923281181035,
+          -0.2170739616172145,
+          0.942849242350761
+        ],
+        "z_clear": 0.942849242350761,
+        "human_to_sim_offset_xy": [
+          0.5266475719974777,
+          -0.32522156136222485
+        ],
+        "final_approach": "the oracle's move PG -> G, min-jerk, 2.0 s (path frames i_pause..i_G = its nominal version from PG)",
+        "frames": {
+          "prelude": 61,
+          "approach1": 116,
+          "final_approach": 100,
+          "close": 88,
+          "transport1": 86,
+          "transport2": 102,
+          "total": 738
+        },
+        "v2": {
+          "T_R_s": 0.4,
+          "j_peak": 66,
+          "peak_z_m": 0.8690438477982245,
+          "segments": [
+            {
+              "name": "approach1",
+              "m3_intervals": 96,
+              "D0_s": 1.92,
+              "D_s": 2.32,
+              "frames": 117,
+              "first_step_mm": 0.033082882303418513,
+              "last_step_mm": 0.0026409680325514486,
+              "end_error_m": 0.0,
+              "m3_first_last_speed_m_s": [
+                0.6786232267365793,
+                0.05417370323197124
+              ],
+              "v2_peak_speed_m_s": 0.36444495078223293,
+              "m3_peak_speed_m_s": 0.6786232267365793,
+              "v2_frames": [
+                60,
+                176
+              ]
+            },
+            {
+              "name": "transport1",
+              "m3_intervals": 66,
+              "D0_s": 1.32,
+              "D_s": 1.72,
+              "frames": 87,
+              "first_step_mm": 0.007393912589040286,
+              "last_step_mm": 0.0023312124565327717,
+              "end_error_m": 0.0,
+              "m3_first_last_speed_m_s": [
+                0.1516700018270909,
+                0.047819742697528034
+              ],
+              "v2_peak_speed_m_s": 0.2145716952060245,
+              "m3_peak_speed_m_s": 0.21509599168576007,
+              "v2_frames": [
+                364,
+                450
+              ]
+            },
+            {
+              "name": "transport2",
+              "m3_intervals": 82,
+              "D0_s": 1.64,
+              "D_s": 2.04,
+              "frames": 103,
+              "first_step_mm": 0.0029798521454214065,
+              "last_step_mm": 0.0039481172359539475,
+              "end_error_m": 0.0,
+              "m3_first_last_speed_m_s": [
+                0.061125172213646696,
+                0.08098702022479692
+              ],
+              "v2_peak_speed_m_s": 0.32726584385195057,
+              "m3_peak_speed_m_s": 0.32726584385195057,
+              "v2_frames": [
+                450,
+                552
+              ]
+            }
+          ]
+        },
+        "check_against_b_level": {
+          "approach_vs_m3_plus_w_PG_minus_G_max_m": 5.551115123125783e-17,
+          "prelude_identical": true,
+          "close_to_retreat_identical": true,
+          "b_level_i_close_end": 284
+        }
+      }
+    }
+  },
+  "collision_min": {
+    "min_m": -0.005496079933896032,
+    "min_mm": -5.4960799338960316,
+    "frame": 127,
+    "phase": "approach",
+    "remaining_arc_to_G_m": 0.12084090789196507,
+    "hand_body": "right_hand_middle_1_link",
+    "object_geom": "cup_geom",
+    "body": {
+      "min_mm": -5.4960799338960316,
+      "frame": 127,
+      "hand_body": "right_hand_middle_1_link"
+    },
+    "handle": {
+      "min_mm": 81.34273439294648,
+      "frame": 130,
+      "hand_body": "right_hand_middle_1_link",
+      "object_geom": "cup_handle_upper"
+    },
+    "window": [
+      60,
+      154
+    ],
+    "n_frames": 95,
+    "i_G": 176,
+    "arc_stop_m": 0.01,
+    "mapping_max_mm": 0.0004849783267496616,
+    "mapping_passed": true,
+    "method": "M3 harness single-plan IK clip (standing_palm setup, one plan_path(base='plan', base_goal=_goal(G, R_G), return_fk=True)); frames from the prelude's last frame to the last frame with remaining path arc length to G > 1 cm; per frame: scene.reset (open hands, mug at its layout pose), set_robot_to_clip_frame, mj_forward, min mj_geomDistance from the 8 right-hand geoms to cup_geom and the cup_handle_* capsules; information only, never a gate",
+    "plan": {
+      "frames": 1338,
+      "path_frames": 738,
+      "ik_max_path_err_cm": 2.7862817631863055,
+      "ik_terminal_palm_err_cm": 0.15031093681438454,
+      "qp_failures": 0
+    },
+    "path_start_minus_palm_start_mm": 0.09014472896523588,
+    "path_start_minus_p_s_m": 0.0,
+    "window_end": "1 cm of path arc before PG (path frame i_pause; the field i_G above is that frame); PG -> G is the oracle's leg"
+  },
+  "wall_s": 10.7,
+  "worker_peak_rss_mb": 1524
+}

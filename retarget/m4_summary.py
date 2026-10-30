@@ -38,7 +38,7 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import Rectangle
 
 from sim.m1_pick_mug import success_rate, wilson
-from sim.m4_execute import CLIPS, FIFTY, MUG_MASS_KG, N_TRIALS, OUT_DIR, PRIVILEGED, PROFILE, VARIANTS, run_name
+from sim.m4_execute import CLIPS, FIFTY, MUG_MASS_KG, N_TRIALS, OUT_DIR, PRIVILEGED, PROFILE, M4_VARIANTS as VARIANTS, run_name
 from sim.pick_place import CATEGORY, PALM_BOX, Grasp
 from sim.scene import mug_config
 

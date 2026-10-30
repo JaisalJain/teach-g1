@@ -60,7 +60,11 @@ Run from the repo root (env -u PYTHONPATH conda run --no-capture-output -n hoi-s
                PickPlace.run's own (run_m3.SetupOnly), byte for byte -> results/m4_execute/determinism_checks.json
   videos       after the batch: re-renders 4 runs with video (+ the GIF's run) and checks each re-run row against the saved one
                (see "videos" below). The only command that renders.
-Rendering: only ``videos`` writes video. It needs MUJOCO_GL=egl and __EGL_VENDOR_LIBRARY_FILENAMES (Mesa's, so rendering stays off the
+M4b additions (Execute, ``variant_layout``, ``cmd_render``): the variants b_hybrid and b_hybrid_h45 (retarget/paths_v2.py
+hybrid_path: my approach ends at the pre-grasp point PG, then the oracle's settle there and its own final approach move PG -> G;
+the rest is the b executor's steps 3-6); b_hybrid_h45 runs with the trial's own handle yaw. Their collision window ends 1 cm before
+PG. ``render`` re-runs saved rows with video for M4b (compared with the rows like ``videos``).
+Rendering: only ``videos`` and ``render`` write video. It needs MUJOCO_GL=egl and __EGL_VENDOR_LIBRARY_FILENAMES (Mesa's, so rendering stays off the
 NVIDIA GPU), both set on the command line, as for sim/m1_pick_mug.py videos.
 
 videos (``cmd_videos``): the runs are chosen from the saved rows by fixed rules (``video_picks``), each is run again from scratch with
@@ -114,7 +118,9 @@ from sim.scene import mug_config
 PROFILE = "mug_v1"
 MUG_MASS_KG = 0.40                 # spec: the mug from config at 0.40 kg (asserted against config/objects.yaml)
 CLIPS = run_m3.CLIPS
-VARIANTS = ("b_level", "b_tilt", "naive")
+M4_VARIANTS = ("b_level", "b_tilt", "naive")
+HYBRID = paths_v2.HYBRID_VARIANTS              # M4b: ("b_hybrid", "b_hybrid_h45")
+VARIANTS = M4_VARIANTS + HYBRID
 M3_VARIANT = {"b_level": "b_level", "b_tilt": "b_tilt", "naive": "a_naive"}     # M3's name for each variant
 PATH_SOURCES = ("v2", "m3")
 N_TRIALS = 50                      # layouts trial00-trial49
@@ -206,7 +212,7 @@ class Execute(PickPlace):
             if variant == "naive":
                 self._naive(result)
             else:
-                self._object_aware(cup0, result)
+                self._object_aware(cup0, result, hybrid=variant in HYBRID)
             result.update(self.evaluate())
         except Failure as f:
             result.update(success=False, failed_phase=f.phase, reason=f.reason)
@@ -218,8 +224,9 @@ class Execute(PickPlace):
         result.update(plans=self.plans, settles=self.settles, sim_seconds=round(float(s.data.time), 2))
         return result
 
-    def _object_aware(self, cup0: np.ndarray, result: dict):
-        """(b): the four slices with the oracle's settles and checks between them (module docstring, steps 1-6)."""
+    def _object_aware(self, cup0: np.ndarray, result: dict, hybrid: bool = False):
+        """(b): the four slices with the oracle's settles and checks between them (module docstring, steps 1-6). ``hybrid``
+        (M4b): steps 1-2 are replaced by my approach to PG, the oracle's settle at PG and the oracle's own final approach."""
         s, p = self.scene, self.exec_path
         pos, quat = np.asarray(p["palm_pos"], float), np.asarray(p["palm_quat_wxyz"], float)
         info = p["info"]
@@ -228,11 +235,18 @@ class Execute(PickPlace):
         cut = lambda name: slice(seg[name][0], seg[name][1] + 1)
         result["segments"] = seg
 
-        # 1-2. approach in two slices, each followed by the oracle's settle (the pause point plays the oracle's pre-grasp)
-        i_pause = seg["approach1"][1]
-        self.follow("pregrasp", pos[cut("approach1")], quat[cut("approach1")], base="plan", base_goal=self._goal(G, quat_G))
-        self.settle_or_fail("settle_pregrasp", pos[i_pause], quat[i_pause], max_s=SETTLE_MAX_S)
-        self.follow("approach", pos[cut("approach2")], quat[cut("approach2")])
+        if hybrid:
+            # 1-2 (M4b). my approach to PG, the oracle's settle there, then the oracle's straight final approach (its own move)
+            PG = np.asarray(info["PG"], float)
+            self.follow("pregrasp", pos[cut("approach1")], quat[cut("approach1")], base="plan", base_goal=self._goal(G, quat_G))
+            self.settle_or_fail("settle_pregrasp", PG, quat_G, max_s=SETTLE_MAX_S)
+            self.move("approach", [(G, quat_G, paths_v2.ORACLE_APPROACH_S)])
+        else:
+            # 1-2. approach in two slices, each followed by the oracle's settle (the pause point plays the oracle's pre-grasp)
+            i_pause = seg["approach1"][1]
+            self.follow("pregrasp", pos[cut("approach1")], quat[cut("approach1")], base="plan", base_goal=self._goal(G, quat_G))
+            self.settle_or_fail("settle_pregrasp", pos[i_pause], quat[i_pause], max_s=SETTLE_MAX_S)
+            self.follow("approach", pos[cut("approach2")], quat[cut("approach2")])
         self.settle_or_fail("settle_grasp", G, quat_G, max_s=SETTLE_GRASP_S)
         self.check_cup_undisturbed(cup0, "approach")
 
@@ -365,6 +379,16 @@ def m4_layouts(demo: dict, human: dict, oracle: dict, cup_height: float) -> dict
     return out
 
 
+def variant_layout(variant: str, layout: dict) -> dict:
+    """The layout a variant runs on. b_hybrid_h45 grasps at the oracle's heading, so its handle yaw is the trial's own
+    (handle_yaw_deg of trials(), the oracle's) instead of trial + (phi_h - phi_ora); every other variant: ``layout`` as it is."""
+    if variant != "b_hybrid_h45":
+        return layout
+    if layout.get("trial_handle_yaw_deg") is None:
+        raise ValueError("b_hybrid_h45 runs only on the trial layouts")
+    return dict(layout, handle_yaw=math.radians(layout["trial_handle_yaw_deg"]), handle_yaw_source="trials() handle_yaw_deg (the oracle's)")
+
+
 def layout_names(spec: list[str]) -> list[str]:
     """Layout names; "trialAA-BB" expands to trialAA .. trialBB (inclusive)."""
     out = []
@@ -385,7 +409,11 @@ def build_path(source: str, clip: str, variant: str, ctx: dict, layout: dict, p_
     the oracle reference built from this task's compiled mug."""
     demo, oracle, layouts = ctx["demo"], ctx["oracle"], ctx["layouts"]
     if source == "m3":
+        if variant in HYBRID:
+            raise ValueError("the hybrid variants exist only with v2 paths")
         return run_m3.build_path(M3_VARIANT[variant], demo, layouts, layout, oracle, p_s, q_now)
+    if source == "v2" and variant in HYBRID:
+        return paths_v2.hybrid_path(clip, variant, layout, p_s, q_now, oracle=oracle)
     if source == "v2":
         return paths_v2.v2_path(clip, variant, layout, p_s, q_now, oracle=oracle)
     raise ValueError(f"path source must be one of {PATH_SOURCES}")
@@ -436,6 +464,11 @@ def collision_diagnostic(task: Execute, ctx: dict) -> dict:
     PickPlace.run setup, which is bit-identical to the run's, then M3's single plan). naive: None (Step 3 is for b runs)."""
     if ctx["variant"] == "naive" or ctx["path"] is None:
         return dict(collision_min=None)
+    if ctx["variant"] in HYBRID:
+        # M4b: the window ends 1 cm of arc before PG (collision_min reads the window's end from i_G); PG -> G is the oracle's leg
+        out = collision_min(task, ctx["layout"], dict(ctx["path"], i_G=ctx["path"]["i_pause"]))
+        out["window_end"] = "1 cm of path arc before PG (path frame i_pause; the field i_G above is that frame); PG -> G is the oracle's leg"
+        return dict(collision_min=out)
     return dict(collision_min=collision_min(task, ctx["layout"], ctx["path"]))
 
 
@@ -452,7 +485,7 @@ def run_one(clip: str, variant: str, layout: str, *, paths: str = "v2", diagnost
     touches the row."""
     t0 = time.perf_counter()
     task, ctx = worker_task(), clip_context(clip)
-    lay = ctx["layouts"][layout]
+    lay = variant_layout(variant, ctx["layouts"][layout])
     made = {}
 
     def make_path(p_s, q_now):
@@ -765,13 +798,49 @@ def cmd_videos(args):
         raise SystemExit(1)
 
 
+def cmd_render(args):
+    """M4b videos: re-run the given saved rows with video (each through run_one, as ``videos`` does) and compare each new row with
+    its saved one, every field except wall_s and worker_peak_rss_mb; optionally a GIF (make_gif) from one of them, only if its
+    re-run is an identical success. Writes <out>/videos.json; exit 1 if any re-run differs."""
+    if os.environ.get("MUJOCO_GL") != "egl" or not os.environ.get("__EGL_VENDOR_LIBRARY_FILENAMES"):
+        raise SystemExit("render: set MUJOCO_GL=egl and __EGL_VENDOR_LIBRARY_FILENAMES (Mesa's) on the command line")
+    from sim.m1_grasp_final import gl_renderer
+    from sim.visuals import CAMERA_NAME, VIDEO_HEIGHT, VIDEO_WIDTH
+
+    t0 = time.perf_counter()
+    args.out.mkdir(parents=True, exist_ok=True)
+    report = dict(rule=args.rule, renderer=gl_renderer(), camera=CAMERA_NAME, resolution=f"{VIDEO_WIDTH}x{VIDEO_HEIGHT}",
+                  fps="25 (one frame per 2 control steps of 50 Hz)", videos=[], gif=None)
+    for src in args.rows:
+        saved = json.loads(src.read_text())
+        video, info = args.out / f"{saved['run']}.mp4", {}
+        again = run_one(saved["clip"], saved["variant"], saved["layout"], paths=saved["paths"],
+                        diagnostics=tuple(saved.get("diagnostics_run", ())), video_path=video, video_info=info)
+        differing = row_differences(json.loads(json.dumps(again)), saved)
+        report["videos"].append(dict(run=saved["run"], video=str(video), saved_row=str(src), saved_success=saved["success"],
+                                     saved_category=saved["category"], rerun_success=again["success"], rerun_category=again["category"],
+                                     identical=not differing, fields_differing=differing, control_steps=info["control_steps"], **mp4_info(video)))
+        print(f"{saved['run']}: saved {saved['success']} {saved['category']}, rerun {again['success']} {again['category']}, identical {not differing}", flush=True)
+    if args.gif:
+        entry = next(v for v in report["videos"] if v["run"] == args.gif)
+        if entry["identical"] and entry["rerun_success"]:
+            report["gif"] = dict(run=args.gif, **make_gif(Path(entry["video"]), args.gif_file))
+            print(f"GIF: {args.gif_file} {report['gif']['chosen']['size_bytes'] / 1e6:.2f} MB")
+        else:
+            print(f"no GIF: the re-run of {args.gif} is not an identical success")
+    report["resources"] = dict(wall_s=round(time.perf_counter() - t0, 1), peak_rss_mb=peak_rss_mb())
+    (args.out / "videos.json").write_text(json.dumps(report, indent=2))
+    if any(not v["identical"] for v in report["videos"]):
+        raise SystemExit(1)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
     run = sub.add_parser("run", help="run (clip, variant, layout) items on worker processes, one JSON row per run")
     run.add_argument("--items", type=Path, default=None, help="JSON list of {clip, variant, layout}; else the product below")
     run.add_argument("--clips", nargs="+", default=list(CLIPS), choices=CLIPS)
-    run.add_argument("--variants", nargs="+", default=list(VARIANTS), choices=VARIANTS)
+    run.add_argument("--variants", nargs="+", default=list(M4_VARIANTS), choices=VARIANTS, help="default: M4's three")
     run.add_argument("--layouts", nargs="+", default=[f"trial00-{N_TRIALS - 1:02d}"], help="names; trialAA-BB = a range; recorded_v2")
     run.add_argument("--paths", choices=PATH_SOURCES, default="v2")
     run.add_argument("--workers", type=int, default=MAX_WORKERS)
@@ -787,11 +856,17 @@ def main():
     vid.add_argument("--out", type=Path, default=OUT_DIR, help="videos/ and videos/videos.json go here, and the GIF")
     vid.add_argument("--runs", type=Path, default=OUT_DIR / "runs", help="the saved rows the runs are chosen from and compared with")
     vid.add_argument("--only", nargs="+", choices=VIDEO_ROLES, default=None, help="smoke tests: only these roles (default: all)")
+    ren = sub.add_parser("render", help="M4b: re-run saved rows with video, compare each with its row, optional GIF")
+    ren.add_argument("--rows", type=Path, nargs="+", required=True)
+    ren.add_argument("--out", type=Path, required=True, help="the mp4s and videos.json go here")
+    ren.add_argument("--rule", default="", help="how the rows were chosen (recorded in videos.json)")
+    ren.add_argument("--gif", default=None, help="run name to make the GIF from")
+    ren.add_argument("--gif-file", type=Path, default=None)
     chk = sub.add_parser("check-oracle", help="Track B mug_v1 trials through the unchanged oracle + Execute setup identity")
     chk.add_argument("--trials", type=int, default=5)
     chk.add_argument("--out", type=Path, default=OUT_DIR)
     args = ap.parse_args()
-    dict(run=cmd_run, rerun=cmd_rerun, videos=cmd_videos, **{"check-oracle": cmd_check_oracle})[args.cmd](args)
+    dict(run=cmd_run, rerun=cmd_rerun, videos=cmd_videos, render=cmd_render, **{"check-oracle": cmd_check_oracle})[args.cmd](args)
 
 
 if __name__ == "__main__":

@@ -39,6 +39,11 @@ with M3's phase names: prelude to (p_s.x, p_s.y, z_clear) 1.2 s; "approach" = pr
 0.6 + 0.6 s; "retreat" 1.5 s + 1.0 s hold. Nominal = the cup at rest at the layout and the nominal in-hand offset
 (cup - palm at G), exactly as warp.time_scale computes the oracle's legs; the real oracle measures both in the sim.
 
+M4b hybrid paths (``hybrid_path``: b_hybrid, b_hybrid_h45): my approach warped to the pre-grasp point PG = G - 8 cm u instead
+of G and re-timed as one segment, then the oracle's straight PG -> G leg (played by Execute with the oracle's move), then the
+close, transport, release and retreat built as M3 / v2 build them. b_hybrid has b_level's grasp, b_hybrid_h45 the oracle's
+heading at my grasp height. See hybrid_path's docstring.
+
 Saved npz (``save_path``): M3's fields (palm_pos, palm_quat_wxyz, closure, phase, i_pause, i_G, i_P, i_release) plus the
 split indices i_prelude_end, i_close_end, i_peak (-1 where a variant has none: naive has no pause, close hold or peak).
 """
@@ -57,11 +62,12 @@ from sim.pick_place import LIFT_HEIGHT, PLACE_CLEARANCE, PREGRASP_BACKOFF, RETRE
 from sim.reference_builder import min_jerk_path
 from sim.scene import COASTER_THICKNESS, mug_config
 
-from retarget.frames import TABLE_TOP, base_to_centre, load_demo
-from retarget.grasp import oracle_reference
+from retarget.frames import TABLE_TOP, base_to_centre, human_to_sim_offset, load_demo, table_to_world
+from retarget.grasp import grasp_pose, human_at_grasp, oracle_reference
 from retarget.naive import naive_path
-from retarget.warp import (CLOSE_RAMP_S, CLOSE_S, FPS, ORACLE_PREGRASP_S, ORACLE_TRANSPORT_MIN_S, PRELUDE_S, RELEASE_HOLD_S,
-                           RELEASE_S, RETREAT_HOLD_S, RETREAT_S, PathBuilder, n_frames, object_aware_path, recorded_layout)
+from retarget.warp import (APPROACH_MIN_Z, CLOSE_RAMP_S, CLOSE_S, FPS, ORACLE_PREGRASP_S, ORACLE_TRANSPORT_MIN_S, PRELUDE_S,
+                           RELEASE_HOLD_S, RELEASE_S, RETREAT_HOLD_S, RETREAT_S, PathBuilder, approach_start, event_frames, intervals,
+                           min_jerk_w, n_frames, object_aware_path, prelude, quat_of, recorded_layout, resample, time_scale)
 
 T_R = 0.4                       # s: length of the start ramp and of the stop ramp of a re-timed segment (spec)
 STEP_LIMIT_M = 0.001            # assert: the first and the last 50 Hz step of a re-timed segment move < 1 mm
@@ -386,3 +392,154 @@ def save_path(path: dict, file: Path) -> None:
     arrays["phase"] = np.asarray([str(p) for p in path["phase"]], dtype=str)
     file.parent.mkdir(parents=True, exist_ok=True)
     np.savez(file, **arrays)
+
+
+# ---------------------------------------------------------------------------------------------------------------- M4b hybrid
+HYBRID_VARIANTS = ("b_hybrid", "b_hybrid_h45")
+HYBRID_TOL_M = 1e-12            # b_hybrid self-check: its approach vs M3's b_level approach + w (PG - G)
+
+
+def hybrid_grasp(variant: str, cup_xy, human: dict, oracle: dict) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """(G, R_G, q) of a hybrid variant. b_hybrid = b_level's grasp (grasp_pose: my heading phi_h, my height h_frac_h).
+    b_hybrid_h45 = the same q (my height) with the oracle's rotation R_ora: grasp_pose's b_level formula with my heading
+    replaced by the oracle's, R = R_z(0) R_ora = R_ora (asserted bit for bit)."""
+    if variant == "b_hybrid":
+        return grasp_pose("b_level", cup_xy, human, oracle)
+    if variant == "b_hybrid_h45":
+        G, R, q = grasp_pose("b_level", cup_xy, dict(human, phi_h=oracle["phi_ora"]), oracle)
+        assert np.array_equal(R, oracle["R_ora"]), "R_z(0) R_ora is not R_ora"
+        return G, R, q
+    raise ValueError(f"variant must be one of {HYBRID_VARIANTS}")
+
+
+def hybrid_path(clip: str, variant: str, layout: dict, p_s, q_now_wxyz, *, oracle: dict | None = None) -> dict:
+    """M4b: the v2 path with a robot-specific final approach (``b_hybrid``, ``b_hybrid_h45``). Same arguments and return
+    format as v2_path.
+
+    Grasp G, R_G from ``hybrid_grasp``; u = M3's horizontal unit vector of (q - G) (warp.object_aware_path's u, which is also
+    the oracle's approach_dir definition: palm -> cup axis); pre-grasp point PG = G - PREGRASP_BACKOFF u.
+      prelude      M3's (warp.prelude, turning to R_G).
+      approach     my approach a0..g, time-scaled by k and warped as M3 does it (p~ + (1 - w)(p_r0 - p~(0)) + w(END - p~(1)),
+                   then z >= table top + 3 cm), but with END = PG instead of G and no pause; re-timed rest to rest as ONE
+                   segment ("approach1", Step 1's ``retime``). It ends at i_pause = PG, where Execute settles.
+      final_approach  the oracle's own straight leg PG -> G (min_jerk_path, ORACLE_APPROACH_S = 2.0 s, R_G held), ends at i_G.
+                   Nominal only: Execute plays it with the oracle's ``move`` from the live palm, never with follow.
+      close, transport 1 / 2, release, retreat: M3's (warp.object_aware_path's lines: transport warped G -> P with the 10 cm
+                   bump cap) with v2's split at the highest transport sample and v2's re-timing of both halves.
+    For b_hybrid the whole path is checked against M3 / v2's own b_level output for the same run (``_check_against_b_level``):
+    the warp is linear in its end point, so the approach must equal M3's b_level approach samples + w (PG - G) (PG - G is
+    horizontal, so the z clamp is unchanged); the prelude and everything from the close on must be v2 b_level's, bit for bit.
+    """
+    if variant not in HYBRID_VARIANTS:
+        raise ValueError(f"variant must be one of {HYBRID_VARIANTS}")
+    demo = _demo(clip)
+    h = float(layout["cup_height"])
+    oracle = oracle or default_oracle(h)
+    assert abs(oracle["h"] - h) < 1e-12, "layout and oracle disagree on the mug height"
+    recorded = recorded_layout(demo, oracle)                  # k is computed here, exactly as M3 does
+    human = human_at_grasp(demo, h)
+    t = demo["t"]
+    ev = event_frames(demo)
+    g, a0 = ev["g"], approach_start(demo, ev["g"])
+    ts = time_scale(demo, p_s, q_now_wxyz, recorded, oracle)
+    k = ts["k"]
+
+    cup_xy, coaster_xy = np.asarray(layout["cup_xy"], float), np.asarray(layout["coaster_xy"], float)
+    G, R_G, q = hybrid_grasp(variant, cup_xy, human, oracle)
+    quat_G = quat_of(R_G)
+    u = (q - G) * np.array([1.0, 1.0, 0.0])
+    u /= np.linalg.norm(u)
+    PG = G - PREGRASP_BACKOFF * u
+    P = G + np.array([*(coaster_xy - cup_xy), COASTER_THICKNESS + PLACE_CLEARANCE])
+    offset_xy = human_to_sim_offset(demo, cup_xy, h)
+    p_tilde = table_to_world(demo["palm_pos_table"], offset_xy)      # my palm, my mug's base on the sim mug's base
+
+    path = PathBuilder()
+    pre_pos, pre_quat, p_r0, z_clear = prelude(p_s, q_now_wxyz, G, quat_G)
+    i_prelude_end = path.add(pre_pos, pre_quat, 0.0, "prelude")
+
+    # approach: M3's warp onto p_r0 -> PG, M3's clamp, then one rest-to-rest segment
+    n_a = intervals(k, t, a0, g)
+    pt, _ = resample(t, p_tilde, a0, g, n_a)
+    w = min_jerk_w(np.arange(n_a + 1) / n_a)[:, None]
+    app = pt + (1 - w) * (p_r0 - pt[0]) + w * (PG - pt[-1])
+    low = app[:, 2] < APPROACH_MIN_Z
+    app[low, 2] = APPROACH_MIN_Z
+    app[0] = pre_pos[-1]                                       # sample 0 = p_r0 = the prelude's last frame (as in M3)
+    p1, q1, s1 = retime(app, np.repeat(quat_G[None], n_a + 1, axis=0), "approach1")
+    i_pause = path.add(p1[1:], q1[1:], 0.0, "approach")
+
+    # the oracle's final approach (nominal)
+    fp, fq = min_jerk_path(PG, quat_G, [(G, quat_G, ORACLE_APPROACH_S)])
+    i_G = path.add(fp[1:], fq[1:], 0.0, "final_approach")
+    n_c = n_frames(CLOSE_S)
+    i_close_end = path.add(np.repeat(G[None], n_c, axis=0), quat_G, np.minimum(1.0, np.arange(1, n_c + 1) / (CLOSE_RAMP_S * FPS)), "close")
+
+    # transport: M3's warp G -> P and bump cap; sample 0 = G (the close hold's last frame); v2's split and re-timing
+    n_t = intervals(k, t, ev["lift"], ev["place"])
+    pt, _ = resample(t, p_tilde, ev["lift"], ev["place"], n_t)
+    s = (np.arange(n_t + 1) / n_t)[:, None]
+    tr = pt + (1 - s) * (G - pt[0]) + s * (P - pt[-1])
+    line_z = (1 - s[:, 0]) * G[2] + s[:, 0] * P[2]
+    bump = tr[:, 2] - line_z
+    bump_max = float(bump.max())
+    bump_scale = LIFT_HEIGHT / bump_max if bump_max > LIFT_HEIGHT else 1.0
+    tr[:, 2] = line_z + bump_scale * bump
+    tr[0] = G
+    j_peak = int(np.argmax(tr[:, 2]))
+    tq = np.repeat(quat_G[None], n_t + 1, axis=0)
+    p3, q3, s3 = retime(tr[:j_peak + 1], tq[:j_peak + 1], "transport1")
+    i_peak = path.add(p3[1:], q3[1:], 1.0, "transport")
+    p4, q4, s4 = retime(tr[j_peak:], tq[j_peak:], "transport2")
+    i_P = path.add(p4[1:], q4[1:], 1.0, "transport")
+
+    # release and retreat, as M3 (the oracle's)
+    n_r = n_frames(RELEASE_S)
+    path.add(np.repeat(P[None], n_r, axis=0), quat_G, 1.0 - np.arange(1, n_r + 1) / n_r, "release")
+    path.add(np.repeat(P[None], n_frames(RELEASE_HOLD_S), axis=0), quat_G, 0.0, "release")
+    back = P - RETREAT_BACK * u + np.array([0.0, 0.0, RETREAT_UP])
+    rp, rq = min_jerk_path(P, quat_G, [(back, quat_G, RETREAT_S)])
+    path.add(rp[1:], rq[1:], 0.0, "retreat")
+    path.add(np.repeat(back[None], n_frames(RETREAT_HOLD_S), axis=0), quat_G, 0.0, "retreat")
+
+    out = path.arrays()
+    for seg, first, last in ((s1, i_prelude_end, i_pause), (s3, i_close_end, i_peak), (s4, i_peak, i_P)):
+        seg.update(v2_frames=[int(first), int(last)])
+    out.update(i_pause=int(i_pause), i_G=int(i_G), i_P=int(i_P), i_release=int(i_P), i_prelude_end=int(i_prelude_end),
+               i_close_end=int(i_close_end), i_peak=int(i_peak))
+    out["follow"] = dict(approach1=[0, int(i_pause)], approach2=[int(i_pause), int(i_G)], transport1=[int(i_close_end), int(i_peak)],
+                         transport2=[int(i_peak), int(i_P)])
+    out["info"] = dict(
+        variant=variant, layout=layout.get("name"), clip=clip, k=k, time_scale=ts, a0=a0, a0_time_s=float(t[a0] - t[0]), events=ev,
+        n_clamped=int(low.sum()), PG_clamped=bool(low[-1]), bump_max_m=bump_max, bump_scale=bump_scale,
+        G=G.tolist(), R_G=R_G.tolist(), quat_G_wxyz=quat_G.tolist(), heading_deg=math.degrees(math.atan2(R_G[1, 1], R_G[0, 1])),
+        phi_h_deg=math.degrees(human["phi_h"]), PG=PG.tolist(), P=P.tolist(), q=q.tolist(), u=u.tolist(), retreat_to=back.tolist(),
+        p_r0=p_r0.tolist(), z_clear=z_clear, human_to_sim_offset_xy=offset_xy.tolist(),
+        final_approach="the oracle's move PG -> G, min-jerk, 2.0 s (path frames i_pause..i_G = its nominal version from PG)",
+        frames=dict(prelude=i_prelude_end + 1, approach1=s1["frames"] - 1, final_approach=i_G - i_pause, close=n_c,
+                    transport1=s3["frames"] - 1, transport2=s4["frames"] - 1, total=len(out["palm_pos"])),
+        v2=dict(T_R_s=T_R, j_peak=j_peak, peak_z_m=float(tr[j_peak, 2]), segments=[s1, s3, s4]))
+    if variant == "b_hybrid":
+        out["info"]["check_against_b_level"] = _check_against_b_level(out, clip, layout, p_s, q_now_wxyz, oracle, PG, G, app)
+    return out
+
+
+def _check_against_b_level(out: dict, clip: str, layout: dict, p_s, q_now_wxyz, oracle: dict, PG, G, app) -> dict:
+    """b_hybrid vs M3 / v2's own b_level path of the same run (hybrid_path's docstring). Raises if anything differs."""
+    m3 = m3_path(clip, "b_level", layout, p_s, q_now_wxyz, oracle=oracle)
+    v2 = v2_from_m3_b(m3)
+    phase3 = np.asarray(m3["phase"])
+    app_frames = np.concatenate([[_last(phase3, "prelude")], np.flatnonzero(phase3 == "approach")])
+    m3_app = np.asarray(m3["palm_pos"], float)[app_frames]
+    n_a = len(m3_app) - 1
+    assert len(app) == n_a + 1, "approach sample counts differ"
+    w = min_jerk_w(np.arange(n_a + 1) / n_a)[:, None]
+    app_err = float(np.abs(m3_app + w * (PG - G) - app).max())
+    assert app_err <= HYBRID_TOL_M, f"approach differs from M3's + w (PG - G) by {app_err} m"
+    pre, n_c = out["i_prelude_end"] + 1, n_frames(CLOSE_S)
+    after = {k: (out[k][out["i_close_end"] - n_c + 1:], v2[k][v2["i_close_end"] - n_c + 1:]) for k in ("palm_pos", "palm_quat_wxyz", "closure")}
+    same_after = all(np.array_equal(a, b) for a, b in after.values())
+    same_pre = all(np.array_equal(out[k][:pre], v2[k][:pre]) for k in ("palm_pos", "palm_quat_wxyz"))
+    assert same_after and same_pre, f"b_hybrid differs from v2 b_level: prelude identical {same_pre}, close..retreat identical {same_after}"
+    return dict(approach_vs_m3_plus_w_PG_minus_G_max_m=app_err, prelude_identical=same_pre, close_to_retreat_identical=same_after,
+                b_level_i_close_end=int(v2["i_close_end"]))
