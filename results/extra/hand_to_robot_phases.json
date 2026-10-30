@@ -1,0 +1,112 @@
+{
+  "run": "e8825dea53__b_hybrid__trial00",
+  "saved_row": "results/m4b/runs/e8825dea53__b_hybrid__trial00.json",
+  "call": "sim.m4_execute.run_one(\"e8825dea53\", \"b_hybrid\", \"trial00\", paths=\"v2\", diagnostics=()), then sim.m4_execute.worker_task().log.phases",
+  "compared": "sim.m4_execute.row_differences(new row, saved row): every field, recursively, except wall_s, worker_peak_rss_mb (left out by row_differences) and diagnostics_run, collision_min (diagnostics=() drops the collision diagnostic)",
+  "identical": true,
+  "fields_differing": [],
+  "not_compared_differences": [
+    "collision_min",
+    "diagnostics_run"
+  ],
+  "saved_success": true,
+  "rerun_success": true,
+  "saved_category": null,
+  "rerun_category": null,
+  "control_steps": 1095,
+  "video_control_steps": 1095,
+  "video_frames_in_file": 547,
+  "steps_match_video": true,
+  "phase_runs": [
+    {
+      "phase": "stand",
+      "first_step": 0,
+      "last_step": 99,
+      "steps": 100,
+      "t_start_s": 0.0,
+      "t_end_s": 2.0
+    },
+    {
+      "phase": "pregrasp",
+      "first_step": 100,
+      "last_step": 304,
+      "steps": 205,
+      "t_start_s": 2.0,
+      "t_end_s": 6.1
+    },
+    {
+      "phase": "settle_pregrasp",
+      "first_step": 305,
+      "last_step": 456,
+      "steps": 152,
+      "t_start_s": 6.1,
+      "t_end_s": 9.14
+    },
+    {
+      "phase": "approach",
+      "first_step": 457,
+      "last_step": 557,
+      "steps": 101,
+      "t_start_s": 9.14,
+      "t_end_s": 11.16
+    },
+    {
+      "phase": "settle_grasp",
+      "first_step": 558,
+      "last_step": 559,
+      "steps": 2,
+      "t_start_s": 11.16,
+      "t_end_s": 11.2
+    },
+    {
+      "phase": "close",
+      "first_step": 560,
+      "last_step": 647,
+      "steps": 88,
+      "t_start_s": 11.2,
+      "t_end_s": 12.96
+    },
+    {
+      "phase": "lift",
+      "first_step": 648,
+      "last_step": 707,
+      "steps": 60,
+      "t_start_s": 12.96,
+      "t_end_s": 14.16
+    },
+    {
+      "phase": "transport",
+      "first_step": 708,
+      "last_step": 846,
+      "steps": 139,
+      "t_start_s": 14.16,
+      "t_end_s": 16.94
+    },
+    {
+      "phase": "settle_place",
+      "first_step": 847,
+      "last_step": 908,
+      "steps": 62,
+      "t_start_s": 16.94,
+      "t_end_s": 18.18
+    },
+    {
+      "phase": "open",
+      "first_step": 909,
+      "last_step": 968,
+      "steps": 60,
+      "t_start_s": 18.18,
+      "t_end_s": 19.38
+    },
+    {
+      "phase": "retreat",
+      "first_step": 969,
+      "last_step": 1094,
+      "steps": 126,
+      "t_start_s": 19.38,
+      "t_end_s": 21.9
+    }
+  ],
+  "wall_s": 28.0,
+  "peak_rss_mb": 1628
+}
