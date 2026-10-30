@@ -875,3 +875,23 @@ writes to the v1 folder if rerun (it is the v1 Phase 0 script; not rerun).
 **Open questions for the user (Track A):** (1) A2: restrict D_min (e.g. palm z < h, or frames before the lift)? (2) G3/G9: WiLoR's
 orthographic 2D vs a perspective fit — change G3's definition or the S2 placement? (3) G6: the +6–7 mm bias persists with full-res
 masks — accept, or investigate the mug's real profile? (4) G2: frames without a re-measured residual — exclude (current) or count as fails?
+
+---
+
+## 2026-10-30 (Fri) — M2 v3: grasp fix ladder (Track B) + final perception fixes (Track A); perception is frozen after this
+
+v1 and v2 results stay untouched; v3 writes to `results/m1_grasp_fix/v3/` and `results/m2_perception_v3/`.
+
+**Why definitions change (user's wording):**
+- **B2 anchor.** B2 v2's palm-centre anchor failed its own positive control: it rated the 80 mm cylinder infeasible although the oracle
+  grasps it 20/20. The oracle's hard-coded offset is not a valid anchor for other diameters either, because it puts the palm 11.65 mm
+  inside a 99 mm mug. v3 anchors at the radius-consistent grasp pose, which equals the oracle pose at 80 mm.
+  (Radius-consistent pose: the object axis sits at palm-frame (0.077, r + 0.015, 0); for r = 0.040 this is the oracle's (0.077, 0.055, 0).)
+- **Hand scale.** The v2 hand-scale fit absorbed WiLoR's orthographic-vs-perspective mismatch (per-view scales 0.85–1.15, pooled 1.02),
+  so v3 fixes the scale at 1. The v2 scale results stay in `results/m2_perception_v2/` and the "M2 v2 — Track A" entry above as a
+  documented negative result (G9 is removed in v3).
+- **Contact rule.** The v2 contact rule could select a closest approach that happened after the lift. v3 takes the closest approach only
+  before the palm rises near the mug (`t_rise`).
+- **G3** becomes information only (palm reprojection in px and in mm at the hand: monocular hand-model limitation, orthographic model vs a
+  35–45 cm perspective camera). **G6** stays reported with unchanged thresholds, marked "known bias +6–7 mm, cause unresolved"; downstream
+  positions are validated by G7 and the sim uses the label geometry.
