@@ -6,7 +6,7 @@ Entry for the **"Humanoid Challenge: Teach a Humanoid With Your Own Hands"** (Aw
 
 **Deadline: Wed 4 Nov 2026, 23:59 IST.** Submission = a public GitHub repo. Code freeze target: Nov 4, 12:00 IST.
 
-**One-line pitch:** From ~15 iPhone LiDAR clips of my own hand, a standing Unitree G1 learns to pick up a cup and place it on a coaster from anywhere on the table — with a measured success rate.
+**One-line pitch:** From 4 iPhone LiDAR clips of my own hand, a standing Unitree G1 picks up a mug and places it on a coaster anywhere in its reachable workspace, with a measured success rate.
 
 ### Challenge rules that constrain design
 
@@ -29,12 +29,28 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
 - README (or short deck): how to run it, example videos/GIFs, design choices, what worked / what didn't.
 - My recorded data (or a representative sample) plus a note on how it was collected.
 
+### Recorded data
+
+- The project uses the **4 existing clips** in `data/raw/<id>/` (the earlier plan of 15–20 new demos is dropped). Each clip is the same task —
+  side-wrap pick of my mug, place it on the coaster, release, hand out — filmed from a different viewpoint, and each is a separate execution:
+  - `26d4118b0c`: top-down (captured at 30 Hz)
+  - `4e103843db`: 90° (camera at my side, square to the desk edge, ~37° from vertical)
+  - `49aff04f7a`: 45° (left/right unconfirmed)
+  - `e8825dea53`: 45° (left/right unconfirmed; the earlier view check saw the hand cut off during the grasp and lift)
+- **Me and the scene:** I used my right hand and sat at the desk's near long edge in all 4 clips. Object: glossy dark-green ceramic mug
+  with a handle. Coaster: flat resin disc. Surface: a lap desk (60 cm long, ~38.5 cm deep; the near long edge has a shallow curve) on a bed.
+  The phone was propped by hand.
+- **`config/objects.yaml` is the single source of object and desk geometry** (mug, coaster, desk; each value carries a `source` flag:
+  label / measured / derived / estimated). Perception and sim read it; never hard-code these dimensions.
+- **Secondary question:** how the capture viewpoint affects the extracted hand–object trajectory and later robot success.
+  Confound: viewpoint and execution vary together; n = 4.
+
 ---
 
 ## The approach
 
-1. **Record:** iPhone (LiDAR) + **Stray Scanner** app (Record3D is paywalled) gives RGB video + LiDAR depth + confidence + intrinsics + camera odometry + IMU. Static third-person view, about 60–80 cm from the table at about 45°. In frame: cup, coaster, my hand and forearm. 15–20 demos, cup and coaster in varied positions. Matte cup.
-2. **Perceive** (`hoi-perception` env): WiLoR for 3D hand pose (MANO), SAM 2 for cup and coaster masks, LiDAR depth for metric object positions, RANSAC plane fit for the table. Output: one `.npz` per demo.
+1. **Record:** iPhone (LiDAR) + **Stray Scanner** app (Record3D is paywalled) gives RGB video + LiDAR depth + confidence + intrinsics + camera odometry + IMU. Third-person view; in frame: mug, coaster, my hand and forearm. The data set is the 4 existing clips (see "Recorded data" above).
+2. **Perceive** (`hoi-perception` env): WiLoR for 3D hand pose (MANO), shifted to metric depth with the LiDAR; SAM 2 masks for the mug body, mug handle and coaster; RANSAC plane fit for the table; the known mug geometry (`config/objects.yaml`) fitted to the masks (the glossy mug's depth only initialises the fit). Output: one `.npz` per demo (schema v2).
 3. **Retarget** (`hoi-sim` env):
    - Build a **table frame** (z up, origin on the table plane).
    - Express the wrist trajectory **relative to the cup** (approach/grasp/lift) and **relative to the coaster** (transport/place). This object-centric step is what lets the motion generalize to new layouts (the idea comes from OKAMI, CoRL 2024).
@@ -128,16 +144,33 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
   - **Frame alignment:** ffmpeg decodes N−1 video frames for N depth/odometry rows (first frame hidden by the MP4 edit list) →
     decoded frame k = index k+1; index 0 has no image. Use odometry timestamps, never the video clock (it claims 60 fps even for 30 Hz).
   - Phone held in portrait → frames come out sideways; rotate with `stray.upright_rot90` for viewing / detectors.
-- **Demo `.npz` schema** (camera frame unless noted). Keep fields stable once the retargeter depends on them:
-  - `t` (T,) — timestamps
-  - `K` (3,3) — intrinsics
-  - `hand_kp` (T,21,3) — MANO keypoints
-  - `wrist_pos` (T,3), `wrist_rot` (T,3,3)
-  - `mano_pose` (T,45) — optional
-  - `hand_valid` (T,) bool
-  - `cup_pos` (T,3), `coaster_pos` (T,3), `cup_valid` (T,)
-  - `table_plane` (4,) — [nx, ny, nz, d]
-  - `phase` (T,) int — 0 approach, 1 grasp, 2 lift/transport, 3 place, 4 release/retreat. Segment from finger closure + cup motion.
+- **Table frame** (perception, per clip; built in `perception` stage S7, `T_table_world` in the `.npz`):
+  - z = table-plane normal (pointing up, away from the desk), origin = initial mug base centre (on the plane).
+  - x = **my forward** direction: in-plane perpendicular to the desk's long edges (fitted to the desk boundary in depth), signed so the
+    first metric palm position has x < 0 (I sit at the near long edge). y = z × x (so y points to my left).
+  - `x_axis_method` records how x was found (long-edge rule, largest-extent fallback, reference-direction fallback, or `failed`).
+- **Demo `.npz` schema v2** (`data/demos/<clip>.npz`, written by `perception.build_demo`; `schema_version = 2`). Table frame unless the
+  name says `cam` / `world`. T = number of odometry rows; index i = odometry row = depth/confidence file index (image = decoded frame i−1;
+  i = 0 has no image). Invalid entries are NaN (floats) / False (bools).
+  - Metadata: `schema_version`, `clip_id`, `view_label`, `t` (T,) [s, odometry clock], `K` (T,3,3) RGB-pixel intrinsics (original
+    sideways orientation, 1920×1440), `T_world_cam` (T,4,4) camera-to-world (OpenCV camera axes, ARKit world y-up), `T_table_world` (4,4),
+    `table_plane_world` (4,) [n, d] with n·p + d = 0, n·(+y) > 0, `table_rms_m`, `x_axis_method`, `x_axis_vs_reference_deg`.
+  - Hand: `hand_valid` (T,) (right hand detected + reconstructed), `metric_valid` (T,) (LiDAR depth correction succeeded),
+    `hand_kp_cam` (T,21,3) [m, camera frame, after the LiDAR shift], `hand_kp_table` (T,21,3), `palm_pos_table_raw` / `palm_pos_table`
+    (T,3), `palm_rot_table_raw` / `palm_rot_table` (T,3,3) (columns = palm axes x_f, y, n; raw = per frame, plain = gap-filled +
+    Savitzky–Golay smoothed), `palm_normal_flipped` (bool), `mano_global_orient` (T,3,3) (camera frame), `mano_hand_pose` (T,45)
+    axis-angle, `mano_betas` (T,10), `depth_shift_m` (T,), `lidar_residual_m` (T,), `reproj_err_px` (T,) (plumbing check).
+  - Keypoint order (21): to be filled in from WiLoR's MANO wrapper once verified (expected OpenPose: wrist 0, thumb 1–4, index 5–8,
+    middle 9–12, ring 13–16, pinky 17–20).
+  - Palm: `palm_pos = 0.5·(kp[0] + kp[9])`; x_f = kp[9] − kp[0] normalised; n = (kp[5] − kp[0]) × (kp[17] − kp[0]) normalised (flipped
+    for all frames if needed so that n points toward the cup axis at the grasp frame), orthonormalised; y = n × x_f.
+  - Objects: `cup_init_pos_table`, `cup_final_pos_table` (3,) mug base centre, `cup_init_yaw`, `cup_final_yaw` [rad, handle direction
+    from table x], `cup_yaw_valid`, `cup_init_iou`, `cup_final_iou`, `cup_free_fit_r_h` (2,) [m], `coaster_pos_table` (3,),
+    `coaster_diameter_fit_m`.
+  - Events: `phase` (T,) int (0 approach, 1 grasp [t_contact, t_lift), 2 transport [t_lift, t_place), 3 place [t_place, t_release),
+    4 release/retreat, −1 undefined), `t_contact`, `t_lift`, `t_place`, `t_release` [s, NaN if not detected], `grasp_index` (int, −1 if
+    none), `T_palm_in_cup_at_grasp` (4,4) (cup frame: origin = initial base centre, z up, x toward the handle).
+  - Dimensions: `mug_dims`, `coaster_dims` (copied from `config/objects.yaml`, with their source flags).
 
 ---
 

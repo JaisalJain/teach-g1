@@ -7,10 +7,13 @@ mug:
   height_m:              {value: 0.091, source: label}   # label "H 9.10 cm"
   overall_width_with_handle_m: {value: 0.143, source: label}  # label "W 14.30 cm"
   handle_protrusion_m:   {value: 0.044, source: derived}  # 0.143 - 0.099
-  handle_height_m:       {value: null, source: estimated} # estimate from data later
-  handle_thickness_m:    {value: null, source: estimated}
+  handle_height_m:       {value: 0.06, source: estimated}
+  handle_thickness_m:    {value: 0.012, source: estimated}
   mass_kg:               {value: 0.37, source: estimated} # unverified guess; sim runs a sensitivity sweep
   capacity_ml: 414
 coaster:
   diameter_m:  {value: 0.104, source: estimated}  # "about 0.5 cm bigger than the mug"
   thickness_m: {value: 0.005, source: estimated}
+desk:
+  length_m: {value: 0.60, source: measured}    # long edges; I sit at the near long edge
+  width_m:  {value: 0.385, source: measured}   # ±0.5 cm; the near long edge has a shallow curve

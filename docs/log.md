@@ -399,3 +399,48 @@ is expected without camera motion. Hand/forearm visibility is a judgement by eye
    handle size unknown; mass 0.37 kg estimated; coaster Ø 10.4 cm / 5 mm estimated).
 8. **Disk / RAM:** /home 410 G, 37 G free (≥ 30 G required, but only just; 91 % used). RAM 30 Gi, 24 Gi available; swap 14 Gi.
 9. Cleaned /tmp/mano_unzip and /tmp/mano_ref.npz; zip kept in ~/Downloads.
+
+---
+
+## 2026-10-30 (Fri) — M2: perception on the 4 test clips (Track A) + mug model and oracle re-run (Track B)
+
+### Phase 0 — shared updates and preflight
+- **CLAUDE.md** updated (the M2 prompt wins over the old plan): new pitch ("From 4 iPhone LiDAR clips of my own hand ... a mug ...
+  anywhere in its reachable workspace"); new "Recorded data" section (the 4 existing clips = the data set, one viewpoint each, right hand,
+  near long edge, glossy dark-green mug with handle, resin coaster, lap desk 60 × 38.5 cm on a bed, phone propped by hand; secondary
+  question = viewpoint effect, confounded with execution, n = 4); removed "Matte cup", "15–20 demos", "60–80 cm at 45°";
+  `config/objects.yaml` declared the single source of object + desk geometry; old `.npz` schema replaced by schema v2 + table-frame definition.
+- **config/objects.yaml:** `handle_height_m` 0.06 and `handle_thickness_m` 0.012 (both `estimated`); appended the `desk` block
+  (0.60 × 0.385 m, `measured`).
+- **Path adaptation:** the prompt says `data/raw/test/<id>`; the clips are in `data/raw/<id>/` (as in M2.1). All 4 IDs present → used as is.
+- **hoi-sim:** `pip install pyyaml==6.0.3 -c envs/hoi-sim.constraints.txt` (needed by Track B to read `config/objects.yaml`); `pip check`
+  clean; lock regenerated — the only diff is the added `PyYAML==6.0.3` line. Done here (shared preflight) so Track B stays inside `sim/`.
+- **Inventory** (`perception/inventory.py` → `results/m2_perception/inventory.json`):
+
+  | clip | view | odometry rows / depth / confidence | decoded video frames | duration | median dt | max dt | dt > 1.5 × median |
+  |---|---|---|---|---|---|---|---|
+  | 26d4118b0c | top-down | 250 / 250 / 250 | 249 | 8.300 s | 33.3 ms | 33.3 ms | 0 |
+  | 4e103843db | 90° | 514 / 514 / 514 | 513 | 8.870 s | 16.7 ms | 33.4 ms | 19 |
+  | 49aff04f7a | 45° | 479 / 479 / 479 | 478 | 7.970 s | 16.7 ms | 16.7 ms | 0 |
+  | e8825dea53 | 45° | 474 / 474 / 474 | 473 | 7.887 s | 16.7 ms | 16.7 ms | 0 |
+
+- **WiLoR loader** (`perception/wilor_loader.py`). Third-party facts were read from the code by a research workflow (4 readers +
+  4 adversarial verifiers, read-only). Every relative path WiLoR uses at load time and how it is overridden: config yaml / checkpoint /
+  detector → absolute paths; `get_config(update_cachedir=True)` would prefix MANO paths with `./pretrained_models/` → `update_cachedir=False`;
+  yacs does not expand `${MANO.DATA_DIR}` → MANO `DATA_DIR` / `MODEL_PATH` / `MEAN_PARAMS` set to the absolute `mano_data/`;
+  `MODEL.BACKBONE.PRETRAINED_WEIGHTS` (a training-time file) popped, as `load_wilor` does; `MODEL.BBOX_SHAPE = [192, 256]` as `load_wilor`.
+  `WiLoR(cfg, init_renderer=False)` (the pyrender renderer is only for training logs), state dict loaded with `strict=False` like
+  `load_wilor` (490/490 keys match, asserted), then `.eval()`. `sys.path` is extended inside Python; no chdir.
+  - **weights_only:** `wilor_final.ckpt` loads with torch 2.11's default `weights_only=True` (passed explicitly). The YOLO detector does
+    **not** (checked: `UnpicklingError: Weights only load failed`): ultralytics calls `torch.load(file)` itself and the file is a
+    dill-pickled ultralytics model, so `weights_only` cannot be passed through. `load_detector` sets `TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1`
+    (torch only applies it to calls that do not pass `weights_only`) — i.e. the detector is loaded with `weights_only=False`, a trusted
+    local file. Also: `YOLO_AUTOINSTALL=false`, ultralytics analytics events disabled.
+  - Verified facts used later: detector `conf=0.3` (WiLoR demo), classes `{0: left, 1: right}`, BGR input, imgsz 512 from the checkpoint;
+    crop `rescale_factor=2.0`; outputs are rotation matrices (global_orient (1,3,3), hand_pose (15,3,3), betas (10)); joints / vertices
+    have no translation (add the camera translation); 2D keypoints are normalised crop coordinates (pixels = box_centre + kp2d · box_size);
+    WiLoR's `cam_crop_to_full` assumes f = 5000/256 · max(W, H) = 37 500 px for our frames and the image centre as principal point.
+- **Smoke test** (`perception/wilor_smoke.py` → `results/m2_perception/smoke/`): 3 upright frames of 4e103843db (i = 150, 250, 350):
+  one right-hand detection each (score 0.733 / 0.748 / 0.790); detector + WiLoR 0.559 s (incl. CUDA warm-up) / 0.156 / 0.144 s per frame;
+  model load 4.5 s; **peak VRAM 2.82 GB, peak RSS 6.06 GB**. Overlays (box, WiLoR 2D keypoints, mesh with WiLoR's own demo camera) sit
+  on the hand. PASS.
