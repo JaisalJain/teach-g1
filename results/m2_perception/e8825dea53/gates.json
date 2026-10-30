@@ -1,0 +1,100 @@
+{
+ "clip": "e8825dea53",
+ "view": "45deg",
+ "gates": {
+  "G1": {
+   "value": {
+    "coverage": 0.9966216216216216,
+    "longest_invalid_run_s": 0.0,
+    "longest_invalid_run_frames": 0,
+    "grasp_valid": true,
+    "lift_valid": true
+   },
+   "text": "coverage 99.7%, longest invalid run 0.000 s (0 frames), g valid True, lift valid True",
+   "result": "pass",
+   "reason": null
+  },
+  "G2": {
+   "value": {
+    "median": 0.008150315293366461,
+    "n_frames": 316
+   },
+   "text": "median 0.82 cm over 316 metric_valid frames",
+   "result": "pass",
+   "reason": null
+  },
+  "G3": {
+   "value": {
+    "median": 30.908349488537816,
+    "n_frames": 316
+   },
+   "text": "median 30.91 px over 316 metric_valid frames",
+   "result": "fail",
+   "reason": null
+  },
+  "G4": {
+   "value": {
+    "holds": []
+   },
+   "text": "no static hold",
+   "result": "N/A",
+   "reason": "N/A: no run with smoothed palm speed < 2 cm/s for >= 0.3 s"
+  },
+  "G5": {
+   "value": {
+    "d_axis_m": 0.09660797718065497,
+    "d_range_m": [
+     0.059500000000000004,
+     0.0995
+    ],
+    "z_grasp_m": 0.0627105785981791,
+    "z_range_m": [
+     0.02275,
+     0.07735
+    ]
+   },
+   "text": "d 96.6 mm (pass 59.5-99.5), z_grasp 62.7 mm (pass 22.8-77.4)",
+   "result": "pass",
+   "reason": null
+  },
+  "G6": {
+   "value": {
+    "init_iou": 0.9383108373738698,
+    "free_fit_diameter_m": 0.10578626433686311,
+    "free_fit_height_m": 0.08812156167896579,
+    "height_check": true
+   },
+   "text": "IoU 0.938, diameter 105.8 mm (label 99), height 88.1 mm (label 91)",
+   "result": "fail",
+   "reason": null
+  },
+  "G7": {
+   "value": {
+    "distance_m": 0.005425647100748376
+   },
+   "text": "0.54 cm",
+   "result": "pass",
+   "reason": null
+  },
+  "G8": {
+   "value": {
+    "plane_rms_m": 0.004599556150951679,
+    "drift_offset_m": 0.001796445859793827,
+    "drift_normal_diff_deg": 0.69855953265115,
+    "drift_check": true,
+    "x_axis_method": "long_edge_extent",
+    "x_vs_reference_deg": -33.967206194923016,
+    "expected_deg": 45.0,
+    "x_abs_err_deg": 11.032793805076984
+   },
+   "text": "plane RMS 4.60 mm, drift offset 1.8 mm, normal 0.70 deg (pass), x (long_edge_extent) error 11.0 deg",
+   "result": "pass",
+   "reason": null
+  }
+ },
+ "palm_normal_flip": {
+  "flipped": false,
+  "decided": true,
+  "normal_dot_at_grasp": 0.8548417572890834
+ }
+}

@@ -1,0 +1,36 @@
+{
+ "stage": "events",
+ "clip": "26d4118b0c",
+ "seconds": 0.52,
+ "peak_rss_gb": 0.152,
+ "contact": -1,
+ "lift": -1,
+ "grasp": -1,
+ "place": -1,
+ "release": -1,
+ "t_contact_rel_s": null,
+ "t_lift_rel_s": null,
+ "t_grasp_rel_s": null,
+ "t_place_rel_s": null,
+ "t_release_rel_s": null,
+ "z_grasp_m": null,
+ "lift_confirm": null,
+ "min_iou_in_window": null,
+ "table_x_known": true,
+ "n_metric_valid": 161,
+ "phase_counts": {
+  "-1": 250,
+  "0": 0,
+  "1": 0,
+  "2": 0,
+  "3": 0,
+  "4": 0
+ },
+ "reasons": {
+  "contact": "d_axis never <= r + 0.05 m = 0.100 m (min 0.102 m)",
+  "lift": "contact undefined",
+  "grasp": "lift undefined",
+  "place": "grasp undefined",
+  "release": "place undefined"
+ }
+}

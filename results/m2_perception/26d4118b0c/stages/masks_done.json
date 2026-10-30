@@ -1,0 +1,19 @@
+{
+ "stage": "masks",
+ "clip": "26d4118b0c",
+ "seconds": 69.81,
+ "peak_rss_gb": 5.422,
+ "peak_vram_gb": 0.796,
+ "n_sam2_frames": 249,
+ "obj_ids": [
+  1,
+  2,
+  3
+ ],
+ "area_px_mug_body_first": 48731.0,
+ "area_px_mug_handle_first": 4637.0,
+ "area_px_coaster_first": 27725.0,
+ "frames_empty_mug_body": 0,
+ "frames_empty_mug_handle": 0,
+ "frames_empty_coaster": 6
+}

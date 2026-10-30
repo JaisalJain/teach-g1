@@ -1,0 +1,16 @@
+{
+ "coaster_dx_m": -0.08892891790068247,
+ "coaster_dy_m": -0.10370478715235679,
+ "coaster_dist_m": 0.13661272018850204,
+ "approach_yaw_deg": 151.34027085996806,
+ "grasp_height_frac": 0.6795134756913963,
+ "finger_pitch_deg": 13.545888715896256,
+ "palm_normal_elev_deg": -12.545449476596923,
+ "lift_height_m": 0.06584984918786785,
+ "reach_duration_s": 0.7169613330624998,
+ "transport_duration_s": 1.6840258330339566,
+ "init_handle_yaw_deg": 32.473344917253335,
+ "coaster_diameter_m": 0.10719499867571115,
+ "long_edge_rule": "long_edge_extent",
+ "handle_yaw_valid": true
+}

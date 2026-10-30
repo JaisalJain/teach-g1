@@ -1,0 +1,26 @@
+{
+ "stage": "objects",
+ "clip": "49aff04f7a",
+ "seconds": 27.41,
+ "peak_rss_gb": 0.25,
+ "init_iou": 0.9469808237314081,
+ "final_iou": 0.8819552782111284,
+ "final_flag": null,
+ "grid_best_on_edge": [
+  true,
+  false
+ ],
+ "fit_minus_guess_m": [
+  0.06303233483479787,
+  0.03966347520895283
+ ],
+ "init_free_r_m": 0.053025839898058674,
+ "init_free_h_m": 0.08575238260489937,
+ "h_observable": true,
+ "handle_valid": [
+  true,
+  true
+ ],
+ "coaster_diameter_m": 0.10719499867571115,
+ "coaster_config_diameter_m": 0.104
+}

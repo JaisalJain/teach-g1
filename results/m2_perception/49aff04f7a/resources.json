@@ -1,0 +1,52 @@
+{
+ "frames": {
+  "seconds": 11.89,
+  "peak_rss_gb": 0.08,
+  "peak_vram_gb": null
+ },
+ "hand": {
+  "seconds": 69.9,
+  "peak_rss_gb": 6.058,
+  "peak_vram_gb": 2.818
+ },
+ "masks": {
+  "seconds": 102.34,
+  "peak_rss_gb": 8.828,
+  "peak_vram_gb": 0.796
+ },
+ "table": {
+  "seconds": 21.66,
+  "peak_rss_gb": 0.498,
+  "peak_vram_gb": null
+ },
+ "hand_metric": {
+  "seconds": 1.21,
+  "peak_rss_gb": 0.191,
+  "peak_vram_gb": null
+ },
+ "objects": {
+  "seconds": 27.41,
+  "peak_rss_gb": 0.25,
+  "peak_vram_gb": null
+ },
+ "table_frame": {
+  "seconds": 0.41,
+  "peak_rss_gb": 0.277,
+  "peak_vram_gb": null
+ },
+ "events": {
+  "seconds": 0.88,
+  "peak_rss_gb": 0.211,
+  "peak_vram_gb": null
+ },
+ "palm": {
+  "seconds": 0.0,
+  "peak_rss_gb": 0.149,
+  "peak_vram_gb": null
+ },
+ "demo": {
+  "seconds": 0.07,
+  "peak_rss_gb": 0.035,
+  "peak_vram_gb": null
+ }
+}

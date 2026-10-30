@@ -1,0 +1,39 @@
+{
+ "contact": {
+  "index": -1,
+  "t": null
+ },
+ "lift": {
+  "index": -1,
+  "t": null
+ },
+ "grasp": {
+  "index": -1,
+  "t": null
+ },
+ "place": {
+  "index": -1,
+  "t": null
+ },
+ "release": {
+  "index": -1,
+  "t": null
+ },
+ "peak": {
+  "index": -1,
+  "t": null
+ },
+ "lift_confirm": {
+  "iou_below_0p7_within_0p3s": null,
+  "min_iou_in_window": null
+ },
+ "z_grasp_m": null,
+ "table_x_known": true,
+ "reasons": {
+  "contact": "d_axis never <= r + 0.05 m = 0.100 m (min 0.102 m)",
+  "lift": "contact undefined",
+  "grasp": "lift undefined",
+  "place": "grasp undefined",
+  "release": "place undefined"
+ }
+}

@@ -1,0 +1,19 @@
+{
+ "stage": "hand_metric",
+ "clip": "4e103843db",
+ "seconds": 1.44,
+ "peak_rss_gb": 0.201,
+ "n_frames": 514,
+ "n_hand_valid": 366,
+ "n_shift_defined": 366,
+ "n_metric_valid": 366,
+ "plumbing_note": "reproj = corrected kp3d vs WiLoR's own kp2d: tests our transforms, not WiLoR's accuracy. Dominated by S2's full-perspective placement vs WiLoR's near-orthographic crop camera (see the hand_metric docstring)",
+ "depth_shift_m_median": -0.0003211898278974029,
+ "depth_shift_m_range": [
+  -0.11258160292926939,
+  0.058733992526759315
+ ],
+ "lidar_residual_m_median": 0.005524176931790456,
+ "n_pixels_median": 1945.5,
+ "plumbing_reproj_err_px_median": 61.22586099767692
+}

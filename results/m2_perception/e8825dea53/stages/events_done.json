@@ -1,0 +1,30 @@
+{
+ "stage": "events",
+ "clip": "e8825dea53",
+ "seconds": 0.95,
+ "peak_rss_gb": 0.209,
+ "contact": 114,
+ "lift": 143,
+ "grasp": 140,
+ "place": 270,
+ "release": 334,
+ "t_contact_rel_s": 1.901,
+ "t_lift_rel_s": 2.384,
+ "t_grasp_rel_s": 2.334,
+ "t_place_rel_s": 4.502,
+ "t_release_rel_s": 5.569,
+ "z_grasp_m": 0.0627105785981791,
+ "lift_confirm": true,
+ "min_iou_in_window": 0.0,
+ "table_x_known": true,
+ "n_metric_valid": 316,
+ "phase_counts": {
+  "-1": 0,
+  "0": 114,
+  "1": 29,
+  "2": 127,
+  "3": 64,
+  "4": 140
+ },
+ "reasons": {}
+}

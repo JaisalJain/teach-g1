@@ -1,0 +1,15 @@
+{
+ "stage": "demo",
+ "clip": "e8825dea53",
+ "seconds": 0.06,
+ "peak_rss_gb": 0.035,
+ "path": "data/demos/e8825dea53.npz",
+ "schema_version": 2,
+ "n_fields": 45,
+ "n_frames": 474,
+ "missing": [],
+ "n_hand_valid": 318,
+ "n_metric_valid": 316,
+ "grasp_index": 140,
+ "x_axis_method": "long_edge_extent"
+}

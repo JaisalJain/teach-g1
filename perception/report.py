@@ -517,6 +517,14 @@ def run(clip: str) -> dict:
         resources[s] = None if done is None else {key: done.get(key) for key in ("seconds", "peak_rss_gb", "peak_vram_gb")}
     (out / "resources.json").write_text(json.dumps(resources, indent=1))
 
+    # the stage outputs behind every reported number, copied next to them (data/work/ is not committed)
+    (out / "stages").mkdir(exist_ok=True)
+    for s in STAGES:
+        if (WORK / clip / s / "done.json").exists():
+            shutil.copy(WORK / clip / s / "done.json", out / "stages" / f"{s}_done.json")
+        if (WORK / clip / s / f"{s}.json").exists():                    # table.json, objects.json, events.json, ...
+            shutil.copy(WORK / clip / s / f"{s}.json", out / "stages" / f"{s}.json")
+
     copied = []
     for stage, name in COPIED_PLOTS.items():
         if (WORK / clip / stage / name).exists():

@@ -1,0 +1,16 @@
+{
+ "coaster_dx_m": 0.0029127358683014998,
+ "coaster_dy_m": -0.14432409416317138,
+ "coaster_dist_m": 0.144353483457305,
+ "approach_yaw_deg": null,
+ "grasp_height_frac": null,
+ "finger_pitch_deg": null,
+ "palm_normal_elev_deg": null,
+ "lift_height_m": null,
+ "reach_duration_s": null,
+ "transport_duration_s": null,
+ "init_handle_yaw_deg": 3.553215871534612,
+ "coaster_diameter_m": 0.10337801828516148,
+ "long_edge_rule": "largest_total_extent",
+ "handle_yaw_valid": true
+}

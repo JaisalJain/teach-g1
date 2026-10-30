@@ -1,0 +1,33 @@
+{
+ "contact": {
+  "index": 168,
+  "t": 534433.582305333
+ },
+ "lift": {
+  "index": 214,
+  "t": 534434.415981333
+ },
+ "grasp": {
+  "index": 211,
+  "t": 534434.365960791
+ },
+ "place": {
+  "index": 344,
+  "t": 534436.63355975
+ },
+ "release": {
+  "index": 414,
+  "t": 534437.800706333
+ },
+ "peak": {
+  "index": 238,
+  "t": 534434.832819416
+ },
+ "lift_confirm": {
+  "iou_below_0p7_within_0p3s": true,
+  "min_iou_in_window": 0.18785279124704712
+ },
+ "z_grasp_m": 0.04751962025975057,
+ "table_x_known": true,
+ "reasons": {}
+}

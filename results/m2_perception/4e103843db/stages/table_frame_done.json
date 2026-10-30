@@ -1,0 +1,35 @@
+{
+ "stage": "table_frame",
+ "clip": "4e103843db",
+ "seconds": 0.45,
+ "peak_rss_gb": 0.286,
+ "x_axis_method": "largest_total_extent",
+ "rule_used": "largest_total_extent",
+ "line_extents_m": [
+  0.3102315672037402,
+  0.36477565558830605,
+  0.38035664282759946,
+  0.16187233817017183
+ ],
+ "line_largest_gaps_m": [
+  0.001724140691351246,
+  0.0028377551841490406,
+  0.22955891009832097,
+  0.003515776593844347
+ ],
+ "line_inliers_near_objects": [
+  0,
+  0,
+  44,
+  73
+ ],
+ "long_edge_group": 0,
+ "sign_flipped": true,
+ "reference_angle_deg": -1.6977720371441165,
+ "reference_abs_err_deg": 1.6977720371441165,
+ "drift": {
+  "offset_m": -0.00043466429894079006,
+  "normal_diff_deg": 2.427586032684361,
+  "flag": true
+ }
+}

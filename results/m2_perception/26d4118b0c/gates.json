@@ -1,0 +1,114 @@
+{
+ "clip": "26d4118b0c",
+ "view": "top-down",
+ "gates": {
+  "G1": {
+   "value": {
+    "coverage": null,
+    "longest_invalid_run_s": null,
+    "longest_invalid_run_frames": null,
+    "grasp_valid": null,
+    "lift_valid": null
+   },
+   "text": "coverage undefined, longest invalid run undefined, g valid undefined, lift valid undefined",
+   "result": "fail",
+   "reason": "undefined: contact, grasp, lift, place, release"
+  },
+  "G2": {
+   "value": {
+    "median": 0.005269898898828701,
+    "n_frames": 161
+   },
+   "text": "median 0.53 cm over 161 metric_valid frames",
+   "result": "pass",
+   "reason": null
+  },
+  "G3": {
+   "value": {
+    "median": 41.75100999780139,
+    "n_frames": 161
+   },
+   "text": "median 41.75 px over 161 metric_valid frames",
+   "result": "fail",
+   "reason": null
+  },
+  "G4": {
+   "value": {
+    "holds": [
+     {
+      "frames": [
+       67,
+       81
+      ],
+      "start_s": 2.2333787080133334,
+      "duration_s": 0.466676083044149,
+      "std_raw_m": 0.0006331475503502252,
+      "std_smoothed_m": 0.0005518155967046607,
+      "n_raw": 15
+     }
+    ],
+    "max_std_raw_m": 0.0006331475503502252,
+    "max_std_smoothed_m": 0.0005518155967046607
+   },
+   "text": "1 hold(s), max raw std 0.06 cm (smoothed 0.06 cm)",
+   "result": "pass",
+   "reason": null
+  },
+  "G5": {
+   "value": {
+    "d_axis_m": null,
+    "d_range_m": [
+     0.059500000000000004,
+     0.0995
+    ],
+    "z_grasp_m": null,
+    "z_range_m": [
+     0.02275,
+     0.07735
+    ]
+   },
+   "text": "d nan mm (pass 59.5-99.5), z_grasp nan mm (pass 22.8-77.4)",
+   "result": "fail",
+   "reason": "grasp frame g undefined"
+  },
+  "G6": {
+   "value": {
+    "init_iou": 0.9181960978835979,
+    "free_fit_diameter_m": 0.1051353499643383,
+    "free_fit_height_m": null,
+    "height_check": null
+   },
+   "text": "IoU 0.918, diameter 105.1 mm (label 99), height N/A (unobservable from this view)",
+   "result": "fail",
+   "reason": null
+  },
+  "G7": {
+   "value": {
+    "distance_m": 0.008146706917782855
+   },
+   "text": "0.81 cm",
+   "result": "pass",
+   "reason": null
+  },
+  "G8": {
+   "value": {
+    "plane_rms_m": 0.0054467869232204345,
+    "drift_offset_m": -0.003233240833479034,
+    "drift_normal_diff_deg": 1.2930480419067216,
+    "drift_check": true,
+    "x_axis_method": "largest_total_extent",
+    "x_vs_reference_deg": -0.792764920879047,
+    "expected_deg": 0.0,
+    "x_abs_err_deg": 0.792764920879047
+   },
+   "text": "plane RMS 5.45 mm, drift offset -3.2 mm, normal 1.29 deg (pass), x (largest_total_extent) error 0.8 deg",
+   "result": "pass",
+   "reason": null
+  }
+ },
+ "palm_normal_flip": {
+  "flipped": null,
+  "decided": false,
+  "normal_dot_at_grasp": null
+ }
+}

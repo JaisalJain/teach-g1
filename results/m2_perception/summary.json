@@ -1,0 +1,586 @@
+{
+ "clips": {
+  "26d4118b0c": {
+   "view": "top-down",
+   "gates": {
+    "G1": {
+     "value": {
+      "coverage": null,
+      "longest_invalid_run_s": null,
+      "longest_invalid_run_frames": null,
+      "grasp_valid": null,
+      "lift_valid": null
+     },
+     "text": "coverage undefined, longest invalid run undefined, g valid undefined, lift valid undefined",
+     "result": "fail",
+     "reason": "undefined: contact, grasp, lift, place, release"
+    },
+    "G2": {
+     "value": {
+      "median": 0.005269898898828701,
+      "n_frames": 161
+     },
+     "text": "median 0.53 cm over 161 metric_valid frames",
+     "result": "pass",
+     "reason": null
+    },
+    "G3": {
+     "value": {
+      "median": 41.75100999780139,
+      "n_frames": 161
+     },
+     "text": "median 41.75 px over 161 metric_valid frames",
+     "result": "fail",
+     "reason": null
+    },
+    "G4": {
+     "value": {
+      "holds": [
+       {
+        "frames": [
+         67,
+         81
+        ],
+        "start_s": 2.2333787080133334,
+        "duration_s": 0.466676083044149,
+        "std_raw_m": 0.0006331475503502252,
+        "std_smoothed_m": 0.0005518155967046607,
+        "n_raw": 15
+       }
+      ],
+      "max_std_raw_m": 0.0006331475503502252,
+      "max_std_smoothed_m": 0.0005518155967046607
+     },
+     "text": "1 hold(s), max raw std 0.06 cm (smoothed 0.06 cm)",
+     "result": "pass",
+     "reason": null
+    },
+    "G5": {
+     "value": {
+      "d_axis_m": null,
+      "d_range_m": [
+       0.059500000000000004,
+       0.0995
+      ],
+      "z_grasp_m": null,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ]
+     },
+     "text": "d nan mm (pass 59.5-99.5), z_grasp nan mm (pass 22.8-77.4)",
+     "result": "fail",
+     "reason": "grasp frame g undefined"
+    },
+    "G6": {
+     "value": {
+      "init_iou": 0.9181960978835979,
+      "free_fit_diameter_m": 0.1051353499643383,
+      "free_fit_height_m": null,
+      "height_check": null
+     },
+     "text": "IoU 0.918, diameter 105.1 mm (label 99), height N/A (unobservable from this view)",
+     "result": "fail",
+     "reason": null
+    },
+    "G7": {
+     "value": {
+      "distance_m": 0.008146706917782855
+     },
+     "text": "0.81 cm",
+     "result": "pass",
+     "reason": null
+    },
+    "G8": {
+     "value": {
+      "plane_rms_m": 0.0054467869232204345,
+      "drift_offset_m": -0.003233240833479034,
+      "drift_normal_diff_deg": 1.2930480419067216,
+      "drift_check": true,
+      "x_axis_method": "largest_total_extent",
+      "x_vs_reference_deg": -0.792764920879047,
+      "expected_deg": 0.0,
+      "x_abs_err_deg": 0.792764920879047
+     },
+     "text": "plane RMS 5.45 mm, drift offset -3.2 mm, normal 1.29 deg (pass), x (largest_total_extent) error 0.8 deg",
+     "result": "pass",
+     "reason": null
+    }
+   },
+   "palm_normal_flip": {
+    "flipped": null,
+    "decided": false,
+    "normal_dot_at_grasp": null
+   },
+   "crossview": {
+    "coaster_dx_m": 0.0029127358683014998,
+    "coaster_dy_m": -0.14432409416317138,
+    "coaster_dist_m": 0.144353483457305,
+    "approach_yaw_deg": null,
+    "grasp_height_frac": null,
+    "finger_pitch_deg": null,
+    "palm_normal_elev_deg": null,
+    "lift_height_m": null,
+    "reach_duration_s": null,
+    "transport_duration_s": null,
+    "init_handle_yaw_deg": 3.553215871534612,
+    "coaster_diameter_m": 0.10337801828516148,
+    "long_edge_rule": "largest_total_extent",
+    "handle_yaw_valid": true
+   }
+  },
+  "4e103843db": {
+   "view": "90deg",
+   "gates": {
+    "G1": {
+     "value": {
+      "coverage": 1.0,
+      "longest_invalid_run_s": 0.0,
+      "longest_invalid_run_frames": 0,
+      "grasp_valid": true,
+      "lift_valid": true
+     },
+     "text": "coverage 100.0%, longest invalid run 0.000 s (0 frames), g valid True, lift valid True",
+     "result": "pass",
+     "reason": null
+    },
+    "G2": {
+     "value": {
+      "median": 0.005524176931790456,
+      "n_frames": 366
+     },
+     "text": "median 0.55 cm over 366 metric_valid frames",
+     "result": "pass",
+     "reason": null
+    },
+    "G3": {
+     "value": {
+      "median": 61.22586099767692,
+      "n_frames": 366
+     },
+     "text": "median 61.23 px over 366 metric_valid frames",
+     "result": "fail",
+     "reason": null
+    },
+    "G4": {
+     "value": {
+      "holds": [
+       {
+        "frames": [
+         358,
+         380
+        ],
+        "start_s": 6.28591670806054,
+        "duration_s": 0.36681754200253636,
+        "std_raw_m": 0.0005462429762652256,
+        "std_smoothed_m": 0.00038234258560869644,
+        "n_raw": 23
+       }
+      ],
+      "max_std_raw_m": 0.0005462429762652256,
+      "max_std_smoothed_m": 0.00038234258560869644
+     },
+     "text": "1 hold(s), max raw std 0.05 cm (smoothed 0.04 cm)",
+     "result": "pass",
+     "reason": null
+    },
+    "G5": {
+     "value": {
+      "d_axis_m": 0.09939673129295491,
+      "d_range_m": [
+       0.059500000000000004,
+       0.0995
+      ],
+      "z_grasp_m": 0.04751962025975057,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ]
+     },
+     "text": "d 99.4 mm (pass 59.5-99.5), z_grasp 47.5 mm (pass 22.8-77.4)",
+     "result": "pass",
+     "reason": null
+    },
+    "G6": {
+     "value": {
+      "init_iou": 0.942652329749104,
+      "free_fit_diameter_m": 0.10571260023508347,
+      "free_fit_height_m": 0.08687408353469453,
+      "height_check": true
+     },
+     "text": "IoU 0.943, diameter 105.7 mm (label 99), height 86.9 mm (label 91)",
+     "result": "fail",
+     "reason": null
+    },
+    "G7": {
+     "value": {
+      "distance_m": 0.02154680298290465
+     },
+     "text": "2.15 cm",
+     "result": "pass",
+     "reason": null
+    },
+    "G8": {
+     "value": {
+      "plane_rms_m": 0.004479729481860118,
+      "drift_offset_m": -0.00043466429894079006,
+      "drift_normal_diff_deg": 2.427586032684361,
+      "drift_check": false,
+      "x_axis_method": "largest_total_extent",
+      "x_vs_reference_deg": -1.6977720371441165,
+      "expected_deg": 0.0,
+      "x_abs_err_deg": 1.6977720371441165
+     },
+     "text": "plane RMS 4.48 mm, drift offset -0.4 mm, normal 2.43 deg (fail), x (largest_total_extent) error 1.7 deg",
+     "result": "fail",
+     "reason": null
+    }
+   },
+   "palm_normal_flip": {
+    "flipped": false,
+    "decided": true,
+    "normal_dot_at_grasp": 0.8246876650628889
+   },
+   "crossview": {
+    "coaster_dx_m": 0.006732147502804153,
+    "coaster_dy_m": -0.14392532925628573,
+    "coaster_dist_m": 0.1440826922691611,
+    "approach_yaw_deg": 157.8171429113699,
+    "grasp_height_frac": 0.5221936292280283,
+    "finger_pitch_deg": 20.806810079200307,
+    "palm_normal_elev_deg": -15.6206633692693,
+    "lift_height_m": 0.06542718199806391,
+    "reach_duration_s": 1.4339227080345154,
+    "transport_duration_s": 2.2175784170394763,
+    "init_handle_yaw_deg": 81.9846465631533,
+    "coaster_diameter_m": 0.10367669422739804,
+    "long_edge_rule": "largest_total_extent",
+    "handle_yaw_valid": true
+   }
+  },
+  "49aff04f7a": {
+   "view": "45deg",
+   "gates": {
+    "G1": {
+     "value": {
+      "coverage": 0.9920634920634921,
+      "longest_invalid_run_s": 0.016673541045747697,
+      "longest_invalid_run_frames": 1,
+      "grasp_valid": true,
+      "lift_valid": true
+     },
+     "text": "coverage 99.2%, longest invalid run 0.017 s (1 frames), g valid True, lift valid True",
+     "result": "pass",
+     "reason": null
+    },
+    "G2": {
+     "value": {
+      "median": 0.0038115493132058753,
+      "n_frames": 260
+     },
+     "text": "median 0.38 cm over 260 metric_valid frames",
+     "result": "pass",
+     "reason": null
+    },
+    "G3": {
+     "value": {
+      "median": 80.98182856720628,
+      "n_frames": 260
+     },
+     "text": "median 80.98 px over 260 metric_valid frames",
+     "result": "fail",
+     "reason": null
+    },
+    "G4": {
+     "value": {
+      "holds": []
+     },
+     "text": "no static hold",
+     "result": "N/A",
+     "reason": "N/A: no run with smoothed palm speed < 2 cm/s for >= 0.3 s"
+    },
+    "G5": {
+     "value": {
+      "d_axis_m": 0.09612890376318713,
+      "d_range_m": [
+       0.059500000000000004,
+       0.0995
+      ],
+      "z_grasp_m": 0.06183572628791706,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ]
+     },
+     "text": "d 96.1 mm (pass 59.5-99.5), z_grasp 61.8 mm (pass 22.8-77.4)",
+     "result": "pass",
+     "reason": null
+    },
+    "G6": {
+     "value": {
+      "init_iou": 0.9469808237314081,
+      "free_fit_diameter_m": 0.10605167979611735,
+      "free_fit_height_m": 0.08575238260489937,
+      "height_check": false
+     },
+     "text": "IoU 0.947, diameter 106.1 mm (label 99), height 85.8 mm (label 91)",
+     "result": "fail",
+     "reason": null
+    },
+    "G7": {
+     "value": {
+      "distance_m": 0.010414753486016445
+     },
+     "text": "1.04 cm",
+     "result": "pass",
+     "reason": null
+    },
+    "G8": {
+     "value": {
+      "plane_rms_m": 0.004191100384630459,
+      "drift_offset_m": 5.722794067264392e-05,
+      "drift_normal_diff_deg": 1.4596684091198546,
+      "drift_check": true,
+      "x_axis_method": "long_edge_extent",
+      "x_vs_reference_deg": 68.86167056948122,
+      "expected_deg": 45.0,
+      "x_abs_err_deg": 23.86167056948122
+     },
+     "text": "plane RMS 4.19 mm, drift offset 0.1 mm, normal 1.46 deg (pass), x (long_edge_extent) error 23.9 deg",
+     "result": "fail",
+     "reason": null
+    }
+   },
+   "palm_normal_flip": {
+    "flipped": false,
+    "decided": true,
+    "normal_dot_at_grasp": 0.7204981451574944
+   },
+   "crossview": {
+    "coaster_dx_m": -0.08892891790068247,
+    "coaster_dy_m": -0.10370478715235679,
+    "coaster_dist_m": 0.13661272018850204,
+    "approach_yaw_deg": 151.34027085996806,
+    "grasp_height_frac": 0.6795134756913963,
+    "finger_pitch_deg": 13.545888715896256,
+    "palm_normal_elev_deg": -12.545449476596923,
+    "lift_height_m": 0.06584984918786785,
+    "reach_duration_s": 0.7169613330624998,
+    "transport_duration_s": 1.6840258330339566,
+    "init_handle_yaw_deg": 32.473344917253335,
+    "coaster_diameter_m": 0.10719499867571115,
+    "long_edge_rule": "long_edge_extent",
+    "handle_yaw_valid": true
+   }
+  },
+  "e8825dea53": {
+   "view": "45deg",
+   "gates": {
+    "G1": {
+     "value": {
+      "coverage": 0.9966216216216216,
+      "longest_invalid_run_s": 0.0,
+      "longest_invalid_run_frames": 0,
+      "grasp_valid": true,
+      "lift_valid": true
+     },
+     "text": "coverage 99.7%, longest invalid run 0.000 s (0 frames), g valid True, lift valid True",
+     "result": "pass",
+     "reason": null
+    },
+    "G2": {
+     "value": {
+      "median": 0.008150315293366461,
+      "n_frames": 316
+     },
+     "text": "median 0.82 cm over 316 metric_valid frames",
+     "result": "pass",
+     "reason": null
+    },
+    "G3": {
+     "value": {
+      "median": 30.908349488537816,
+      "n_frames": 316
+     },
+     "text": "median 30.91 px over 316 metric_valid frames",
+     "result": "fail",
+     "reason": null
+    },
+    "G4": {
+     "value": {
+      "holds": []
+     },
+     "text": "no static hold",
+     "result": "N/A",
+     "reason": "N/A: no run with smoothed palm speed < 2 cm/s for >= 0.3 s"
+    },
+    "G5": {
+     "value": {
+      "d_axis_m": 0.09660797718065497,
+      "d_range_m": [
+       0.059500000000000004,
+       0.0995
+      ],
+      "z_grasp_m": 0.0627105785981791,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ]
+     },
+     "text": "d 96.6 mm (pass 59.5-99.5), z_grasp 62.7 mm (pass 22.8-77.4)",
+     "result": "pass",
+     "reason": null
+    },
+    "G6": {
+     "value": {
+      "init_iou": 0.9383108373738698,
+      "free_fit_diameter_m": 0.10578626433686311,
+      "free_fit_height_m": 0.08812156167896579,
+      "height_check": true
+     },
+     "text": "IoU 0.938, diameter 105.8 mm (label 99), height 88.1 mm (label 91)",
+     "result": "fail",
+     "reason": null
+    },
+    "G7": {
+     "value": {
+      "distance_m": 0.005425647100748376
+     },
+     "text": "0.54 cm",
+     "result": "pass",
+     "reason": null
+    },
+    "G8": {
+     "value": {
+      "plane_rms_m": 0.004599556150951679,
+      "drift_offset_m": 0.001796445859793827,
+      "drift_normal_diff_deg": 0.69855953265115,
+      "drift_check": true,
+      "x_axis_method": "long_edge_extent",
+      "x_vs_reference_deg": -33.967206194923016,
+      "expected_deg": 45.0,
+      "x_abs_err_deg": 11.032793805076984
+     },
+     "text": "plane RMS 4.60 mm, drift offset 1.8 mm, normal 0.70 deg (pass), x (long_edge_extent) error 11.0 deg",
+     "result": "pass",
+     "reason": null
+    }
+   },
+   "palm_normal_flip": {
+    "flipped": false,
+    "decided": true,
+    "normal_dot_at_grasp": 0.8548417572890834
+   },
+   "crossview": {
+    "coaster_dx_m": -0.03586418023667659,
+    "coaster_dy_m": -0.16566343581296628,
+    "coaster_dist_m": 0.16950107194175976,
+    "approach_yaw_deg": null,
+    "grasp_height_frac": 0.6891272373426276,
+    "finger_pitch_deg": 21.616340477864565,
+    "palm_normal_elev_deg": -22.256087130640736,
+    "lift_height_m": 0.11850393498548303,
+    "reach_duration_s": 1.2505139999557287,
+    "transport_duration_s": 2.11753737507388,
+    "init_handle_yaw_deg": null,
+    "coaster_diameter_m": 0.10298277055886924,
+    "long_edge_rule": "long_edge_extent",
+    "handle_yaw_valid": false
+   }
+  }
+ },
+ "clips_missing": [],
+ "spreads": {
+  "coaster_dx_m": {
+   "min": -0.08892891790068247,
+   "max": 0.006732147502804153,
+   "range": 0.09566106540348662,
+   "n": 4
+  },
+  "coaster_dy_m": {
+   "min": -0.16566343581296628,
+   "max": -0.10370478715235679,
+   "range": 0.06195864866060949,
+   "n": 4
+  },
+  "coaster_dist_m": {
+   "min": 0.13661272018850204,
+   "max": 0.16950107194175976,
+   "range": 0.032888351753257716,
+   "n": 4
+  },
+  "approach_yaw_deg": {
+   "min": 151.34027085996806,
+   "max": 157.8171429113699,
+   "range": 6.476872051401841,
+   "n": 2
+  },
+  "grasp_height_frac": {
+   "min": 0.5221936292280283,
+   "max": 0.6891272373426276,
+   "range": 0.16693360811459934,
+   "n": 3
+  },
+  "finger_pitch_deg": {
+   "min": 13.545888715896256,
+   "max": 21.616340477864565,
+   "range": 8.07045176196831,
+   "n": 3
+  },
+  "palm_normal_elev_deg": {
+   "min": -22.256087130640736,
+   "max": -12.545449476596923,
+   "range": 9.710637654043813,
+   "n": 3
+  },
+  "lift_height_m": {
+   "min": 0.06542718199806391,
+   "max": 0.11850393498548303,
+   "range": 0.053076752987419124,
+   "n": 3
+  },
+  "reach_duration_s": {
+   "min": 0.7169613330624998,
+   "max": 1.4339227080345154,
+   "range": 0.7169613749720156,
+   "n": 3
+  },
+  "transport_duration_s": {
+   "min": 1.6840258330339566,
+   "max": 2.2175784170394763,
+   "range": 0.5335525840055197,
+   "n": 3
+  },
+  "init_handle_yaw_deg": {
+   "min": 3.553215871534612,
+   "max": 81.9846465631533,
+   "range": 78.43143069161869,
+   "n": 3
+  },
+  "coaster_diameter_m": {
+   "min": 0.10298277055886924,
+   "max": 0.10719499867571115,
+   "range": 0.0042122281168419096,
+   "n": 4
+  },
+  "long_edge_rule": {
+   "counts": {
+    "largest_total_extent": 2,
+    "long_edge_extent": 2
+   }
+  }
+ },
+ "palm_normal_flip": {
+  "flipped": {
+   "26d4118b0c": null,
+   "4e103843db": false,
+   "49aff04f7a": false,
+   "e8825dea53": false
+  },
+  "undecided": [
+   "26d4118b0c"
+  ],
+  "error": null
+ },
+ "confound": "Viewpoint and execution vary together across these clips (views: top-down, 90deg, 45deg, 45deg); n = 4."
+}

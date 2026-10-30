@@ -1,0 +1,20 @@
+{
+ "stage": "frames",
+ "clip": "49aff04f7a",
+ "seconds": 11.89,
+ "peak_rss_gb": 0.08,
+ "n_frames": 479,
+ "n_images": 478,
+ "rot_k": 3,
+ "upright_size_wh": [
+  1440,
+  1920
+ ],
+ "half_size_wh": [
+  720,
+  960
+ ],
+ "dropped_frames": [],
+ "median_dt_s": 0.016673541045747697,
+ "max_dt_s": 0.016673667007125914
+}
