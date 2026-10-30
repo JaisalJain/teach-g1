@@ -1,0 +1,42 @@
+{
+ "stage": "table_frame",
+ "clip": "49aff04f7a",
+ "seconds": 0.41,
+ "peak_rss_gb": 0.278,
+ "x_axis_method": "long_edge_extent",
+ "rule_used": "extent>0.42",
+ "line_extents_m": [
+  0.49734252919144994,
+  0.15730839254912798,
+  0.03818243496540813
+ ],
+ "line_spans_m": [
+  0.49734252919144994,
+  0.15730839254912798,
+  0.5657817913912819
+ ],
+ "line_largest_gaps_m": [
+  0.01804937744014945,
+  0.002880655656871539,
+  0.4488024499573292
+ ],
+ "n_contour_px": 375,
+ "n_dropped_px": 0,
+ "n_dropped_px_near_mug": 0,
+ "n_dropped_px_near_coaster": 0,
+ "n_boundary_px": 375,
+ "line_inliers_near_objects": [
+  0,
+  0,
+  0
+ ],
+ "long_edge_group": 0,
+ "sign_flipped": true,
+ "reference_angle_deg": 29.29503300889299,
+ "reference_abs_err_deg": 15.70496699110701,
+ "drift": {
+  "offset_m": 5.722794067264392e-05,
+  "normal_diff_deg": 1.4596684091198546,
+  "flag": false
+ }
+}

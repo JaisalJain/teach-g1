@@ -1,0 +1,20 @@
+{
+ "stage": "hand_scale",
+ "clip": "4e103843db",
+ "seconds": 0.48,
+ "peak_rss_gb": 0.108,
+ "n_metric_valid": 366,
+ "n_fit_failed": 0,
+ "median_s": 0.9890944743955989,
+ "s_iqr": [
+  0.9656317801235457,
+  1.0253137396510477
+ ],
+ "s_range": [
+  0.5528919308043703,
+  1.1492053349963323
+ ],
+ "t_xy_mm_median_norm": 11.995050067300244,
+ "reproj_err_palm_px_median_s5": 45.97779923250344,
+ "reproj_err_palm_px_median_pass1": 38.7869231029301
+}

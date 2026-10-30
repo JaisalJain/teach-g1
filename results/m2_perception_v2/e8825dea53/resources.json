@@ -1,0 +1,72 @@
+{
+ "frames": {
+  "seconds": 11.45,
+  "peak_rss_gb": 0.085,
+  "peak_vram_gb": null
+ },
+ "hand": {
+  "seconds": 63.37,
+  "peak_rss_gb": 6.058,
+  "peak_vram_gb": 2.818
+ },
+ "masks": {
+  "seconds": 86.71,
+  "peak_rss_gb": 8.382,
+  "peak_vram_gb": 0.795
+ },
+ "table": {
+  "seconds": 16.27,
+  "peak_rss_gb": 0.45,
+  "peak_vram_gb": null
+ },
+ "hand_metric": {
+  "seconds": 1.56,
+  "peak_rss_gb": 0.191,
+  "peak_vram_gb": null
+ },
+ "hand_scale": {
+  "seconds": 0.36,
+  "peak_rss_gb": 0.107,
+  "peak_vram_gb": null
+ },
+ "masks_full": {
+  "seconds": 4.77,
+  "peak_rss_gb": 2.087,
+  "peak_vram_gb": 0.715
+ },
+ "mask_test": {
+  "seconds": 89.06,
+  "peak_rss_gb": 0.329,
+  "peak_vram_gb": null
+ },
+ "hand_fit": {
+  "seconds": 1.47,
+  "peak_rss_gb": 0.238,
+  "peak_vram_gb": null
+ },
+ "objects": {
+  "seconds": 0.21,
+  "peak_rss_gb": 0.261,
+  "peak_vram_gb": null
+ },
+ "table_frame": {
+  "seconds": 0.41,
+  "peak_rss_gb": 0.277,
+  "peak_vram_gb": null
+ },
+ "events": {
+  "seconds": 0.89,
+  "peak_rss_gb": 0.209,
+  "peak_vram_gb": null
+ },
+ "palm": {
+  "seconds": 0.0,
+  "peak_rss_gb": 0.149,
+  "peak_vram_gb": null
+ },
+ "demo": {
+  "seconds": 0.08,
+  "peak_rss_gb": 0.037,
+  "peak_vram_gb": null
+ }
+}

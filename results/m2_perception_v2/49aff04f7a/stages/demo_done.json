@@ -1,0 +1,19 @@
+{
+ "stage": "demo",
+ "clip": "49aff04f7a",
+ "seconds": 0.06,
+ "peak_rss_gb": 0.038,
+ "path": "data/demos/49aff04f7a.npz",
+ "schema_version": 3,
+ "n_fields": 53,
+ "n_frames": 479,
+ "missing": [],
+ "n_hand_valid": 262,
+ "n_metric_valid": 260,
+ "grasp_index": 179,
+ "x_axis_method": "long_edge_extent",
+ "s_hand": 1.021934301640882,
+ "contact_rule": "relative_min_plus_1cm",
+ "d_axis_min_m": 0.09559447964424794,
+ "mug_mask_source": "video"
+}

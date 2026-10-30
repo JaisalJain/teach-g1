@@ -1,0 +1,23 @@
+{
+ "stage": "hand_fit",
+ "clip": "49aff04f7a",
+ "seconds": 1.2,
+ "peak_rss_gb": 0.239,
+ "s_hand": 1.021934301640882,
+ "s_hand_frames_per_clip": {
+  "26d4118b0c": 161,
+  "4e103843db": 366,
+  "49aff04f7a": 260,
+  "e8825dea53": 316
+ },
+ "n_metric_valid": 260,
+ "n_fit_failed": 0,
+ "n_residual_undefined": 2,
+ "clip_median_s": 0.8466817078585713,
+ "t_xy_mm_median_norm": 13.662804397358109,
+ "reproj_err_palm_px_median": 50.634794440936645,
+ "reproj_err_all_px_median": 50.994237647446255,
+ "lidar_residual_m_median": 0.005103558221749786,
+ "lidar_residual_m_median_s5": 0.0038115493132058753,
+ "n_pixels_median": 751.0
+}

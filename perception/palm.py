@@ -2,7 +2,8 @@
 
     env -u PYTHONPATH conda run --no-capture-output -n hoi-perception python -m perception.palm --clip <id>
 
-Inputs: the LiDAR-corrected keypoints (S5) in the table frame (S7), the events (S8) and the initial cup (S6).
+Inputs: the fitted hand keypoints (S5b, hand_fit.npz, read by events.hand_kp_table) in the table frame (S7), the
+events (S8) and the initial cup (S6).
 
 Position   palm_pos = 0.5 (kp[0] + kp[9]), wrist + middle-finger base (the same point the events use).
 Axes       x_f = normalize(kp[9] - kp[0])                            finger direction

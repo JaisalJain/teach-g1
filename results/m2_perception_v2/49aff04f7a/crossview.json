@@ -1,0 +1,30 @@
+{
+ "coaster_dx_m": -0.0024965243182030195,
+ "coaster_dy_m": -0.13658990696105835,
+ "coaster_dist_m": 0.13661272018850204,
+ "approach_yaw_deg": 152.96469238620435,
+ "grasp_height_frac": 0.6913006550654638,
+ "finger_pitch_deg": 13.545892368001377,
+ "palm_normal_elev_deg": -12.545448880045447,
+ "lift_height_m": 0.06886527396190179,
+ "reach_duration_s": 0.7169613330624998,
+ "transport_duration_s": 1.7006993329850957,
+ "init_handle_yaw_deg": 72.03998247784153,
+ "coaster_diameter_m": 0.10719499867571115,
+ "long_edge_rule": "long_edge_extent",
+ "d_axis_min_m": 0.09559447964424794,
+ "median_s": 0.8466817078585713,
+ "mug_mask_source": "video",
+ "handle_yaw_valid": true,
+ "d_axis_min_index": 201,
+ "d_min_z_flag": true,
+ "event_index": {
+  "contact": 149,
+  "grasp": 179,
+  "lift": 182
+ },
+ "s_iqr": [
+  0.7674866180155551,
+  1.0306336971837482
+ ]
+}

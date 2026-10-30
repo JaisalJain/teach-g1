@@ -149,9 +149,9 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
   - x = **my forward** direction: in-plane perpendicular to the desk's long edges (fitted to the desk boundary in depth), signed so the
     first metric palm position has x < 0 (I sit at the near long edge). y = z × x (so y points to my left).
   - `x_axis_method` records how x was found (long-edge rule, largest-extent fallback, reference-direction fallback, or `failed`).
-- **Demo `.npz` schema v2** (`data/demos/<clip>.npz`, written by `perception.build_demo` = S10; `schema_version = 2`; the field
-  list below is copied from that module's docstring, which is the master copy). Always written, also for clips that fail
-  their gates: what could not be produced is NaN (False for flags, -1 for indices / phase).
+- **Demo `.npz` schema v3** (`data/demos/<clip>.npz`, written by `perception.build_demo` = S10; `schema_version = 3` since M2 v2;
+  the field list below is copied from that module's docstring, which is the master copy). Always written, also for clips that
+  fail their gates: what could not be produced is NaN (False for flags, -1 for indices / phase).
 
 ```
 Frames: "table" = the S7 table frame (z = table normal, up; origin = initial mug base centre on the table; x = my
@@ -160,7 +160,7 @@ z forward). "world" = ARKit world, y up. Units: metres, radians, seconds. T = nu
 rows); i = 0 has no image, so every per-image field is NaN / False there.
 
 Metadata
-  schema_version          () int     2
+  schema_version          () int     3
   clip_id, view_label     () str     view_label: "top-down" | "90deg" | "45deg"
   t                       (T,)       odometry timestamps [s], ARKit clock (absolute; t - t[0] = clip time)
   K                       (T,3,3)    RGB intrinsics [px] of the ORIGINAL 1920x1440 image
@@ -172,11 +172,14 @@ Metadata
   x_axis_method           () str     how S7 found table x: long_edge_extent | largest_total_extent | reference_fallback |
                                      failed ("missing" if S7 has no output)
   x_axis_vs_reference_deg ()         signed angle from the S7 reference direction to table x, about z [deg]
-Hand (WiLoR MANO right hand, depth-corrected with the LiDAR in S5)
+Hand (WiLoR MANO right hand; S5 moves it along its viewing ray to the LiDAR depth, S5b scales it by s_hand about its
+     mesh centroid and slides it parallel to the image plane, fitted by robust least squares (soft_l1, f_scale 5 px) to
+     WiLoR's 2D palm keypoints; the fit leaves a palm reprojection error, see reproj_err_palm_px)
   hand_valid              (T,) bool  a right hand was detected and reconstructed (S2)
   metric_valid            (T,) bool  hand_valid and >= 30 LiDAR pixels in the S5 correction; use only these frames
-  hand_kp_cam             (T,21,3)   21 keypoints after the S5 depth correction, cam frame; NaN where not metric_valid
-                                     (S5 corrects only those frames)
+                                     (S5b keeps S5's metric_valid)
+  hand_kp_cam             (T,21,3)   21 keypoints of the S5b hand (S5 depth shift, then scale s_hand + sideways shift),
+                                     cam frame; NaN where not metric_valid (S5 and S5b correct only those frames)
   hand_kp_table           (T,21,3)   the same keypoints in the table frame (NaN where not metric_valid)
                                      order (OpenPose, verified in WiLoR's mano_wrapper.py): wrist 0, thumb 1-4,
                                      index 5-8, middle 9-12, ring 13-16, pinky 17-20 (4, 8, 12, 16, 20 = fingertips)
@@ -191,13 +194,25 @@ Hand (WiLoR MANO right hand, depth-corrected with the LiDAR in S5)
   mano_global_orient      (T,3,3)    MANO root rotation in the table frame (R_table_cam @ WiLoR's cam-frame global_orient)
   mano_hand_pose          (T,45)     15 MANO joint rotations, axis-angle [rad], each relative to its parent joint
   mano_betas              (T,10)     MANO shape coefficients
-                                     (mano_*: WiLoR's own values -- S5 only translates the hand -- on every hand_valid
-                                     frame, also where the hand is not metric_valid)
+                                     (mano_*: WiLoR's own values on every hand_valid frame, also where the hand is not
+                                     metric_valid. S5 and S5b only move and scale the hand, so the metric hand is the
+                                     MANO hand of these values scaled by s_hand, plus a per-frame translation: align
+                                     its keypoints to hand_kp_cam / hand_kp_table)
+  hand_scale_per_frame    (T,)       S5b pass 1: the scale s fitted per frame to the 5 palm keypoints (with its own
+                                     sideways shift); NaN where not metric_valid. Not applied: a per-frame consistency
+                                     record (gate G9 compares each clip's median with s_hand)
+  s_hand                  ()         the scale applied to the hand in every frame and every clip: median of the pass-1 s
+                                     over the metric_valid frames of all 4 clips pooled (one hand)
   depth_shift_m           (T,)       S5 depth shift D = median(lidar - mesh) (+ = WiLoR's hand was too close); finite
                                      wherever S5 could compute D, i.e. also on hand_valid frames that are not metric_valid
-  lidar_residual_m        (T,)       median |lidar - (mesh + D)| over the S5 pass-2 pixels (finite where D is)
-  reproj_err_px           (T,)       plumbing check: corrected kp3d projected with K vs WiLoR's own 2D keypoints
-                                     (tests our transforms, NOT WiLoR's accuracy)
+  lidar_residual_m        (T,)       re-measured on the S5b hand (no new depth shift): median |lidar - mesh| over the hand
+                                     pixels within 3 cm of the mesh; metric_valid frames only, NaN where no pixel is left
+  reproj_err_palm_px      (T,)       S5b pass 2: median over the 5 palm keypoints (wrist, index / middle / ring / pinky
+                                     bases) of |project(K, kp) - WiLoR's 2D keypoint| [px]; metric_valid frames (gate G3)
+  reproj_err_all_px       (T,)       the same over all 21 keypoints (the fingers included)
+  reproj_err_px           (T,)       S5's plumbing check from BEFORE S5b, kept from schema 2: the S5 hand's 21 keypoints
+                                     projected with K vs WiLoR's own 2D keypoints (tests our transforms, NOT WiLoR's
+                                     accuracy)
 Objects (table frame)
   cup_init_pos_table, cup_final_pos_table (3,)  mug base centre on the table plane, initial / final window (S6)
   cup_init_yaw, cup_final_yaw  ()    handle direction: angle of (handle point P - cup axis) from table x, about z [rad]
@@ -206,10 +221,19 @@ Objects (table frame)
   cup_free_fit_r_h        (2,)       [r, h] of the 4-DOF validation fit, initial window; h NaN = unobservable
   coaster_pos_table       (3,)       coaster centre on the table plane (initial window)
   coaster_diameter_fit_m  ()         diameter of the RANSAC circle fit
+  mug_mask_source         () str     the mug body masks behind the cup fits above (S6, chosen by the A4 rule for all
+                                     clips): "video" (SAM 2 video predictor, half res) | "full_res_image" (SAM 2 image
+                                     predictor on the full-res frames of the two static windows)
 Events (S8, from the raw metric palm)
   phase                   (T,) int8  0 approach, 1 grasp, 2 transport, 3 place, 4 release/retreat, -1 undefined
   t_contact, t_lift, t_place, t_release ()   [s], same clock as t (NaN = not detected)
-  grasp_index             () int     grasp frame g (index into t), -1 = undefined
+  contact_rule            () str     "relative_min_plus_1cm": t_contact = first metric_valid frame with
+                                     d_axis <= D_min + 1 cm (d_axis = horizontal palm distance to the initial cup axis)
+  d_axis_min_m            ()         D_min = min d_axis over the metric_valid frames
+  d_axis_min_index        () int     the frame of D_min (index into t), -1 = undefined
+  grasp_index             () int     grasp frame g (index into t), -1 = undefined. g = last valid frame <= lift - 3, so
+                                     it can come BEFORE t_contact when D_min falls after the lift (S8); phase[g] is then
+                                     0 (approach)
   T_palm_in_cup_at_grasp  (4,4)      smoothed palm pose at g in the cup frame (origin = initial base centre, z up,
                                      x toward the handle at the initial yaw; table x if that yaw is invalid). Raw pose
                                      if g's valid run is shorter than the smoothing window. NaN if g is undefined, or

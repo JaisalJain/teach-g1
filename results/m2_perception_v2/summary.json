@@ -1,0 +1,1915 @@
+{
+ "clips": {
+  "26d4118b0c": {
+   "view": "top-down",
+   "gates": {
+    "G1": {
+     "value": {
+      "coverage": 1.0,
+      "longest_invalid_run_s": 0.0,
+      "longest_invalid_run_frames": 0,
+      "grasp_valid": true,
+      "lift_valid": true
+     },
+     "text": "coverage 100.0%, longest invalid run 0.000 s (0 frames), g valid True, lift valid True",
+     "result": "pass",
+     "reason": null
+    },
+    "G2": {
+     "value": {
+      "median": 0.004842133637003337,
+      "n_frames": 161,
+      "n_undefined": 0,
+      "undefined_frames": []
+     },
+     "text": "median 0.48 cm over 161 metric_valid frames",
+     "result": "pass",
+     "reason": null
+    },
+    "G3": {
+     "value": {
+      "median": 36.71369484780972,
+      "median_all21_px": 45.37567413786389,
+      "n_frames": 161,
+      "n_undefined": 0,
+      "undefined_frames": []
+     },
+     "text": "palm median 36.71 px over 161 metric_valid frames; all 21 keypoints 45.38 px (information)",
+     "result": "fail",
+     "reason": null
+    },
+    "G4": {
+     "value": {
+      "holds": [
+       {
+        "frames": [
+         67,
+         81
+        ],
+        "start_s": 2.2333787080133334,
+        "duration_s": 0.466676083044149,
+        "std_raw_m": 0.0006911260116179795,
+        "std_smoothed_m": 0.0006169492826882026,
+        "n_raw": 15
+       }
+      ],
+      "max_std_raw_m": 0.0006911260116179795,
+      "max_std_smoothed_m": 0.0006169492826882026
+     },
+     "text": "1 hold(s), max raw std 0.07 cm (smoothed 0.06 cm)",
+     "result": "pass",
+     "reason": null
+    },
+    "G5": {
+     "value": {
+      "z_grasp_m": 0.0501039791540199,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ],
+      "d_axis_m": 0.11097844482943105,
+      "d_minus_r_m": 0.061478444829431045,
+      "grasp_index": 84,
+      "contact_index": 60,
+      "lift_index": 87,
+      "grasp_before_contact": false
+     },
+     "text": "z_grasp 50.1 mm (pass 22.8-77.4); information: palm-to-axis distance 111.0 mm, distance - r 61.5 mm",
+     "result": "pass",
+     "reason": null
+    },
+    "G6": {
+     "value": {
+      "mask_source": "video",
+      "init_iou": 0.9181960978835979,
+      "free_fit_diameter_m": 0.1051353499643383,
+      "free_fit_height_m": null,
+      "height_check": null
+     },
+     "text": "video masks: IoU 0.918, diameter 105.1 mm (label 99), height N/A (unobservable from this view)",
+     "result": "fail",
+     "reason": null
+    },
+    "G7": {
+     "value": {
+      "distance_m": 0.008146706917782855
+     },
+     "text": "0.81 cm",
+     "result": "pass",
+     "reason": null
+    },
+    "G8": {
+     "value": {
+      "plane_rms_m": 0.0054467869232204345,
+      "drift_offset_m": -0.003233240833479034,
+      "drift_offset_check": true,
+      "drift_normal_diff_deg": 1.2930480419067216,
+      "x_axis_method": "largest_total_extent",
+      "x_vs_reference_deg": -1.3424722860482157,
+      "expected_deg": 0.0,
+      "x_abs_err_deg": 1.3424722860482157
+     },
+     "text": "plane RMS 5.45 mm, drift offset -3.2 mm (pass), normal 1.29 deg (information), x (largest_total_extent) error 1.3 deg",
+     "result": "pass",
+     "reason": null
+    },
+    "G9": {
+     "value": {
+      "median_s": 1.1536139613638525,
+      "s_iqr": [
+       1.1163082188767717,
+       1.1925016187424586
+      ],
+      "n_frames": 161,
+      "s_hand": 1.021934301640882,
+      "ratio_to_s_hand": 1.1288533514449388
+     },
+     "text": "median s 1.154 (IQR 1.116-1.193, 161 frames) vs s_hand 1.022: +12.9 %",
+     "result": "fail",
+     "reason": null
+    }
+   },
+   "palm_normal_flip": {
+    "flipped": false,
+    "decided": true,
+    "normal_dot_at_grasp": 0.7282601764572879
+   },
+   "crossview": {
+    "coaster_dx_m": 0.004297255291035896,
+    "coaster_dy_m": -0.14428950683685252,
+    "coaster_dist_m": 0.144353483457305,
+    "approach_yaw_deg": -138.61616066837706,
+    "grasp_height_frac": 0.5505931775167022,
+    "finger_pitch_deg": 10.732705457329482,
+    "palm_normal_elev_deg": -15.940497130492691,
+    "lift_height_m": 0.08940040867064655,
+    "reach_duration_s": 0.7666822499595582,
+    "transport_duration_s": 2.3000465420773253,
+    "init_handle_yaw_deg": 4.102923236703794,
+    "coaster_diameter_m": 0.10337801828516148,
+    "long_edge_rule": "largest_total_extent",
+    "d_axis_min_m": 0.10645411518114627,
+    "median_s": 1.1536139613638525,
+    "mug_mask_source": "video",
+    "handle_yaw_valid": true,
+    "d_axis_min_index": 68,
+    "d_min_z_flag": false,
+    "event_index": {
+     "contact": 60,
+     "grasp": 84,
+     "lift": 87
+    },
+    "s_iqr": [
+     1.1163082188767717,
+     1.1925016187424586
+    ]
+   }
+  },
+  "4e103843db": {
+   "view": "90deg",
+   "gates": {
+    "G1": {
+     "value": {
+      "coverage": 1.0,
+      "longest_invalid_run_s": 0.0,
+      "longest_invalid_run_frames": 0,
+      "grasp_valid": true,
+      "lift_valid": true
+     },
+     "text": "coverage 100.0%, longest invalid run 0.000 s (0 frames), g valid True, lift valid True",
+     "result": "pass",
+     "reason": null
+    },
+    "G2": {
+     "value": {
+      "median": 0.005137277856982175,
+      "n_frames": 366,
+      "n_undefined": 1,
+      "undefined_frames": [
+       90
+      ]
+     },
+     "text": "median 0.51 cm over 365 metric_valid frames (1 more without a residual: frames [90])",
+     "result": "pass",
+     "reason": null
+    },
+    "G3": {
+     "value": {
+      "median": 38.500899452078656,
+      "median_all21_px": 38.24801703921989,
+      "n_frames": 366,
+      "n_undefined": 0,
+      "undefined_frames": []
+     },
+     "text": "palm median 38.50 px over 366 metric_valid frames; all 21 keypoints 38.25 px (information)",
+     "result": "fail",
+     "reason": null
+    },
+    "G4": {
+     "value": {
+      "holds": [
+       {
+        "frames": [
+         358,
+         379
+        ],
+        "start_s": 6.28591670806054,
+        "duration_s": 0.3501439579995349,
+        "std_raw_m": 0.0006627288390144238,
+        "std_smoothed_m": 0.00047667728499889244,
+        "n_raw": 22
+       }
+      ],
+      "max_std_raw_m": 0.0006627288390144238,
+      "max_std_smoothed_m": 0.00047667728499889244
+     },
+     "text": "1 hold(s), max raw std 0.07 cm (smoothed 0.05 cm)",
+     "result": "pass",
+     "reason": null
+    },
+    "G5": {
+     "value": {
+      "z_grasp_m": 0.04595576427169712,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ],
+      "d_axis_m": 0.10182256915366929,
+      "d_minus_r_m": 0.052322569153669285,
+      "grasp_index": 211,
+      "contact_index": 166,
+      "lift_index": 214,
+      "grasp_before_contact": false
+     },
+     "text": "z_grasp 46.0 mm (pass 22.8-77.4); information: palm-to-axis distance 101.8 mm, distance - r 52.3 mm",
+     "result": "pass",
+     "reason": null
+    },
+    "G6": {
+     "value": {
+      "mask_source": "video",
+      "init_iou": 0.942652329749104,
+      "free_fit_diameter_m": 0.10571260023508347,
+      "free_fit_height_m": 0.08687408353469453,
+      "height_check": true
+     },
+     "text": "video masks: IoU 0.943, diameter 105.7 mm (label 99), height 86.9 mm (label 91)",
+     "result": "fail",
+     "reason": null
+    },
+    "G7": {
+     "value": {
+      "distance_m": 0.02154680298290465
+     },
+     "text": "2.15 cm",
+     "result": "pass",
+     "reason": null
+    },
+    "G8": {
+     "value": {
+      "plane_rms_m": 0.004479729481860118,
+      "drift_offset_m": -0.00043466429894079006,
+      "drift_offset_check": true,
+      "drift_normal_diff_deg": 2.427586032684361,
+      "x_axis_method": "largest_total_extent",
+      "x_vs_reference_deg": -1.5039711601943928,
+      "expected_deg": 0.0,
+      "x_abs_err_deg": 1.5039711601943928
+     },
+     "text": "plane RMS 4.48 mm, drift offset -0.4 mm (pass), normal 2.43 deg (information), x (largest_total_extent) error 1.5 deg",
+     "result": "pass",
+     "reason": null
+    },
+    "G9": {
+     "value": {
+      "median_s": 0.9890944743955989,
+      "s_iqr": [
+       0.9656317801235457,
+       1.0253137396510477
+      ],
+      "n_frames": 366,
+      "s_hand": 1.021934301640882,
+      "ratio_to_s_hand": 0.9678650308610316
+     },
+     "text": "median s 0.989 (IQR 0.966-1.025, 366 frames) vs s_hand 1.022: -3.2 %",
+     "result": "pass",
+     "reason": null
+    }
+   },
+   "palm_normal_flip": {
+    "flipped": false,
+    "decided": true,
+    "normal_dot_at_grasp": 0.8151359483230984
+   },
+   "crossview": {
+    "coaster_dx_m": 0.006245287761716428,
+    "coaster_dy_m": -0.14394727712708957,
+    "coaster_dist_m": 0.1440826922691611,
+    "approach_yaw_deg": 156.58862563795805,
+    "grasp_height_frac": 0.5050083985900783,
+    "finger_pitch_deg": 20.806809811943044,
+    "palm_normal_elev_deg": -15.620664364522202,
+    "lift_height_m": 0.06770749999284766,
+    "reach_duration_s": 1.4005756250116974,
+    "transport_duration_s": 2.23425199999474,
+    "init_handle_yaw_deg": 81.79084568620358,
+    "coaster_diameter_m": 0.10367669422739804,
+    "long_edge_rule": "largest_total_extent",
+    "d_axis_min_m": 0.09327313989776265,
+    "median_s": 0.9890944743955989,
+    "mug_mask_source": "video",
+    "handle_yaw_valid": true,
+    "d_axis_min_index": 225,
+    "d_min_z_flag": true,
+    "event_index": {
+     "contact": 166,
+     "grasp": 211,
+     "lift": 214
+    },
+    "s_iqr": [
+     0.9656317801235457,
+     1.0253137396510477
+    ]
+   }
+  },
+  "49aff04f7a": {
+   "view": "45deg",
+   "gates": {
+    "G1": {
+     "value": {
+      "coverage": 0.9920318725099602,
+      "longest_invalid_run_s": 0.016673541045747697,
+      "longest_invalid_run_frames": 1,
+      "grasp_valid": true,
+      "lift_valid": true
+     },
+     "text": "coverage 99.2%, longest invalid run 0.017 s (1 frames), g valid True, lift valid True",
+     "result": "pass",
+     "reason": null
+    },
+    "G2": {
+     "value": {
+      "median": 0.005103558221749786,
+      "n_frames": 260,
+      "n_undefined": 2,
+      "undefined_frames": [
+       359,
+       367
+      ]
+     },
+     "text": "median 0.51 cm over 258 metric_valid frames (2 more without a residual: frames [359, 367])",
+     "result": "pass",
+     "reason": null
+    },
+    "G3": {
+     "value": {
+      "median": 50.634794440936645,
+      "median_all21_px": 50.994237647446255,
+      "n_frames": 260,
+      "n_undefined": 0,
+      "undefined_frames": []
+     },
+     "text": "palm median 50.63 px over 260 metric_valid frames; all 21 keypoints 50.99 px (information)",
+     "result": "fail",
+     "reason": null
+    },
+    "G4": {
+     "value": {
+      "holds": []
+     },
+     "text": "no static hold",
+     "result": "N/A",
+     "reason": "N/A: no run with smoothed palm speed < 2 cm/s for >= 0.3 s"
+    },
+    "G5": {
+     "value": {
+      "z_grasp_m": 0.0629083596109572,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ],
+      "d_axis_m": 0.10144399144042411,
+      "d_minus_r_m": 0.05194399144042411,
+      "grasp_index": 179,
+      "contact_index": 149,
+      "lift_index": 182,
+      "grasp_before_contact": false
+     },
+     "text": "z_grasp 62.9 mm (pass 22.8-77.4); information: palm-to-axis distance 101.4 mm, distance - r 51.9 mm",
+     "result": "pass",
+     "reason": null
+    },
+    "G6": {
+     "value": {
+      "mask_source": "video",
+      "init_iou": 0.9469808237314081,
+      "free_fit_diameter_m": 0.10605167979611735,
+      "free_fit_height_m": 0.08575238260489937,
+      "height_check": false
+     },
+     "text": "video masks: IoU 0.947, diameter 106.1 mm (label 99), height 85.8 mm (label 91)",
+     "result": "fail",
+     "reason": null
+    },
+    "G7": {
+     "value": {
+      "distance_m": 0.010414753486016445
+     },
+     "text": "1.04 cm",
+     "result": "pass",
+     "reason": null
+    },
+    "G8": {
+     "value": {
+      "plane_rms_m": 0.004191100384630459,
+      "drift_offset_m": 5.722794067264392e-05,
+      "drift_offset_check": true,
+      "drift_normal_diff_deg": 1.4596684091198546,
+      "x_axis_method": "long_edge_extent",
+      "x_vs_reference_deg": 29.29503300889299,
+      "expected_deg": 45.0,
+      "x_abs_err_deg": 15.70496699110701
+     },
+     "text": "plane RMS 4.19 mm, drift offset 0.1 mm (pass), normal 1.46 deg (information), x (long_edge_extent) error 15.7 deg",
+     "result": "pass",
+     "reason": null
+    },
+    "G9": {
+     "value": {
+      "median_s": 0.8466817078585713,
+      "s_iqr": [
+       0.7674866180155551,
+       1.0306336971837482
+      ],
+      "n_frames": 260,
+      "s_hand": 1.021934301640882,
+      "ratio_to_s_hand": 0.8285089427951347
+     },
+     "text": "median s 0.847 (IQR 0.767-1.031, 260 frames) vs s_hand 1.022: -17.1 %",
+     "result": "fail",
+     "reason": null
+    }
+   },
+   "palm_normal_flip": {
+    "flipped": false,
+    "decided": true,
+    "normal_dot_at_grasp": 0.739131779390374
+   },
+   "crossview": {
+    "coaster_dx_m": -0.0024965243182030195,
+    "coaster_dy_m": -0.13658990696105835,
+    "coaster_dist_m": 0.13661272018850204,
+    "approach_yaw_deg": 152.96469238620435,
+    "grasp_height_frac": 0.6913006550654638,
+    "finger_pitch_deg": 13.545892368001377,
+    "palm_normal_elev_deg": -12.545448880045447,
+    "lift_height_m": 0.06886527396190179,
+    "reach_duration_s": 0.7169613330624998,
+    "transport_duration_s": 1.7006993329850957,
+    "init_handle_yaw_deg": 72.03998247784153,
+    "coaster_diameter_m": 0.10719499867571115,
+    "long_edge_rule": "long_edge_extent",
+    "d_axis_min_m": 0.09559447964424794,
+    "median_s": 0.8466817078585713,
+    "mug_mask_source": "video",
+    "handle_yaw_valid": true,
+    "d_axis_min_index": 201,
+    "d_min_z_flag": true,
+    "event_index": {
+     "contact": 149,
+     "grasp": 179,
+     "lift": 182
+    },
+    "s_iqr": [
+     0.7674866180155551,
+     1.0306336971837482
+    ]
+   }
+  },
+  "e8825dea53": {
+   "view": "45deg",
+   "gates": {
+    "G1": {
+     "value": {
+      "coverage": 0.9965986394557823,
+      "longest_invalid_run_s": 0.0,
+      "longest_invalid_run_frames": 0,
+      "grasp_valid": true,
+      "lift_valid": true
+     },
+     "text": "coverage 99.7%, longest invalid run 0.000 s (0 frames), g valid True, lift valid True",
+     "result": "pass",
+     "reason": null
+    },
+    "G2": {
+     "value": {
+      "median": 0.00795558130981698,
+      "n_frames": 316,
+      "n_undefined": 0,
+      "undefined_frames": []
+     },
+     "text": "median 0.80 cm over 316 metric_valid frames",
+     "result": "pass",
+     "reason": null
+    },
+    "G3": {
+     "value": {
+      "median": 12.07939665792814,
+      "median_all21_px": 22.85331309157128,
+      "n_frames": 316,
+      "n_undefined": 0,
+      "undefined_frames": []
+     },
+     "text": "palm median 12.08 px over 316 metric_valid frames; all 21 keypoints 22.85 px (information)",
+     "result": "fail",
+     "reason": null
+    },
+    "G4": {
+     "value": {
+      "holds": []
+     },
+     "text": "no static hold",
+     "result": "N/A",
+     "reason": "N/A: no run with smoothed palm speed < 2 cm/s for >= 0.3 s"
+    },
+    "G5": {
+     "value": {
+      "z_grasp_m": 0.08873197535770927,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ],
+      "d_axis_m": 0.08960447805490623,
+      "d_minus_r_m": 0.04010447805490623,
+      "grasp_index": 148,
+      "contact_index": 149,
+      "lift_index": 151,
+      "grasp_before_contact": true
+     },
+     "text": "z_grasp 88.7 mm (pass 22.8-77.4); information: palm-to-axis distance 89.6 mm, distance - r 40.1 mm; NOTE: g 148 comes before contact 149 (lift 151)",
+     "result": "fail",
+     "reason": null
+    },
+    "G6": {
+     "value": {
+      "mask_source": "video",
+      "init_iou": 0.9383108373738698,
+      "free_fit_diameter_m": 0.10578626433686311,
+      "free_fit_height_m": 0.08812156167896579,
+      "height_check": true
+     },
+     "text": "video masks: IoU 0.938, diameter 105.8 mm (label 99), height 88.1 mm (label 91)",
+     "result": "fail",
+     "reason": null
+    },
+    "G7": {
+     "value": {
+      "distance_m": 0.005425647100748376
+     },
+     "text": "0.54 cm",
+     "result": "pass",
+     "reason": null
+    },
+    "G8": {
+     "value": {
+      "plane_rms_m": 0.004599556150951679,
+      "drift_offset_m": 0.001796445859793827,
+      "drift_offset_check": true,
+      "drift_normal_diff_deg": 0.69855953265115,
+      "x_axis_method": "largest_total_extent",
+      "x_vs_reference_deg": -37.44220609118214,
+      "expected_deg": 45.0,
+      "x_abs_err_deg": 7.557793908817857
+     },
+     "text": "plane RMS 4.60 mm, drift offset 1.8 mm (pass), normal 0.70 deg (information), x (largest_total_extent) error 7.6 deg",
+     "result": "pass",
+     "reason": null
+    },
+    "G9": {
+     "value": {
+      "median_s": 1.036356788754408,
+      "s_iqr": [
+       1.0185283057323282,
+       1.0599771625890684
+      ],
+      "n_frames": 316,
+      "s_hand": 1.021934301640882,
+      "ratio_to_s_hand": 1.0141129298530918
+     },
+     "text": "median s 1.036 (IQR 1.019-1.060, 316 frames) vs s_hand 1.022: +1.4 %",
+     "result": "pass",
+     "reason": null
+    }
+   },
+   "palm_normal_flip": {
+    "flipped": false,
+    "decided": true,
+    "normal_dot_at_grasp": 0.8419701459459262
+   },
+   "crossview": {
+    "coaster_dx_m": -0.02575687817213934,
+    "coaster_dy_m": -0.16753267327966562,
+    "coaster_dist_m": 0.16950107194175976,
+    "approach_yaw_deg": null,
+    "grasp_height_frac": 0.9750766522825195,
+    "finger_pitch_deg": 23.403131997841832,
+    "palm_normal_elev_deg": -23.53290679055917,
+    "lift_height_m": 0.09402091795202772,
+    "reach_duration_s": 1.8340871660038829,
+    "transport_duration_s": 1.6673522080527619,
+    "init_handle_yaw_deg": null,
+    "coaster_diameter_m": 0.10298277055886924,
+    "long_edge_rule": "largest_total_extent",
+    "d_axis_min_m": 0.07802329297521735,
+    "median_s": 1.036356788754408,
+    "mug_mask_source": "video",
+    "handle_yaw_valid": false,
+    "d_axis_min_index": 159,
+    "d_min_z_flag": true,
+    "event_index": {
+     "contact": 149,
+     "grasp": 148,
+     "lift": 151
+    },
+    "s_iqr": [
+     1.0185283057323282,
+     1.0599771625890684
+    ]
+   }
+  }
+ },
+ "clips_missing": [],
+ "hand_scale": {
+  "s_hand": [
+   1.021934301640882
+  ],
+  "per_clip": {
+   "26d4118b0c": {
+    "median_s": 1.1536139613638525,
+    "s_iqr": [
+     1.1163082188767717,
+     1.1925016187424586
+    ],
+    "n_frames": 161,
+    "s_hand": 1.021934301640882,
+    "ratio_to_s_hand": 1.1288533514449388
+   },
+   "4e103843db": {
+    "median_s": 0.9890944743955989,
+    "s_iqr": [
+     0.9656317801235457,
+     1.0253137396510477
+    ],
+    "n_frames": 366,
+    "s_hand": 1.021934301640882,
+    "ratio_to_s_hand": 0.9678650308610316
+   },
+   "49aff04f7a": {
+    "median_s": 0.8466817078585713,
+    "s_iqr": [
+     0.7674866180155551,
+     1.0306336971837482
+    ],
+    "n_frames": 260,
+    "s_hand": 1.021934301640882,
+    "ratio_to_s_hand": 0.8285089427951347
+   },
+   "e8825dea53": {
+    "median_s": 1.036356788754408,
+    "s_iqr": [
+     1.0185283057323282,
+     1.0599771625890684
+    ],
+    "n_frames": 316,
+    "s_hand": 1.021934301640882,
+    "ratio_to_s_hand": 1.0141129298530918
+   }
+  }
+ },
+ "v1_to_v2": {
+  "26d4118b0c": {
+   "G1": {
+    "v1": {
+     "result": "fail",
+     "text": "coverage undefined, longest invalid run undefined, g valid undefined, lift valid undefined",
+     "value": {
+      "coverage": null,
+      "longest_invalid_run_s": null,
+      "longest_invalid_run_frames": null,
+      "grasp_valid": null,
+      "lift_valid": null
+     },
+     "reason": "undefined: contact, grasp, lift, place, release"
+    },
+    "v2": {
+     "result": "pass",
+     "text": "coverage 100.0%, longest invalid run 0.000 s (0 frames), g valid True, lift valid True",
+     "value": {
+      "coverage": 1.0,
+      "longest_invalid_run_s": 0.0,
+      "longest_invalid_run_frames": 0,
+      "grasp_valid": true,
+      "lift_valid": true
+     },
+     "reason": null
+    }
+   },
+   "G2": {
+    "v1": {
+     "result": "pass",
+     "text": "median 0.53 cm over 161 metric_valid frames",
+     "value": {
+      "median": 0.005269898898828701,
+      "n_frames": 161
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "median 0.48 cm over 161 metric_valid frames",
+     "value": {
+      "median": 0.004842133637003337,
+      "n_frames": 161,
+      "n_undefined": 0,
+      "undefined_frames": []
+     },
+     "reason": null
+    }
+   },
+   "G3": {
+    "v1": {
+     "result": "fail",
+     "text": "median 41.75 px over 161 metric_valid frames",
+     "value": {
+      "median": 41.75100999780139,
+      "n_frames": 161
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "fail",
+     "text": "palm median 36.71 px over 161 metric_valid frames; all 21 keypoints 45.38 px (information)",
+     "value": {
+      "median": 36.71369484780972,
+      "median_all21_px": 45.37567413786389,
+      "n_frames": 161,
+      "n_undefined": 0,
+      "undefined_frames": []
+     },
+     "reason": null
+    }
+   },
+   "G4": {
+    "v1": {
+     "result": "pass",
+     "text": "1 hold(s), max raw std 0.06 cm (smoothed 0.06 cm)",
+     "value": {
+      "holds": [
+       {
+        "frames": [
+         67,
+         81
+        ],
+        "start_s": 2.2333787080133334,
+        "duration_s": 0.466676083044149,
+        "std_raw_m": 0.0006331475503502252,
+        "std_smoothed_m": 0.0005518155967046607,
+        "n_raw": 15
+       }
+      ],
+      "max_std_raw_m": 0.0006331475503502252,
+      "max_std_smoothed_m": 0.0005518155967046607
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "1 hold(s), max raw std 0.07 cm (smoothed 0.06 cm)",
+     "value": {
+      "holds": [
+       {
+        "frames": [
+         67,
+         81
+        ],
+        "start_s": 2.2333787080133334,
+        "duration_s": 0.466676083044149,
+        "std_raw_m": 0.0006911260116179795,
+        "std_smoothed_m": 0.0006169492826882026,
+        "n_raw": 15
+       }
+      ],
+      "max_std_raw_m": 0.0006911260116179795,
+      "max_std_smoothed_m": 0.0006169492826882026
+     },
+     "reason": null
+    }
+   },
+   "G5": {
+    "v1": {
+     "result": "fail",
+     "text": "d nan mm (pass 59.5-99.5), z_grasp nan mm (pass 22.8-77.4)",
+     "value": {
+      "d_axis_m": null,
+      "d_range_m": [
+       0.059500000000000004,
+       0.0995
+      ],
+      "z_grasp_m": null,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ]
+     },
+     "reason": "grasp frame g undefined"
+    },
+    "v2": {
+     "result": "pass",
+     "text": "z_grasp 50.1 mm (pass 22.8-77.4); information: palm-to-axis distance 111.0 mm, distance - r 61.5 mm",
+     "value": {
+      "z_grasp_m": 0.0501039791540199,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ],
+      "d_axis_m": 0.11097844482943105,
+      "d_minus_r_m": 0.061478444829431045,
+      "grasp_index": 84,
+      "contact_index": 60,
+      "lift_index": 87,
+      "grasp_before_contact": false
+     },
+     "reason": null
+    }
+   },
+   "G6": {
+    "v1": {
+     "result": "fail",
+     "text": "IoU 0.918, diameter 105.1 mm (label 99), height N/A (unobservable from this view)",
+     "value": {
+      "init_iou": 0.9181960978835979,
+      "free_fit_diameter_m": 0.1051353499643383,
+      "free_fit_height_m": null,
+      "height_check": null
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "fail",
+     "text": "video masks: IoU 0.918, diameter 105.1 mm (label 99), height N/A (unobservable from this view)",
+     "value": {
+      "mask_source": "video",
+      "init_iou": 0.9181960978835979,
+      "free_fit_diameter_m": 0.1051353499643383,
+      "free_fit_height_m": null,
+      "height_check": null
+     },
+     "reason": null
+    }
+   },
+   "G7": {
+    "v1": {
+     "result": "pass",
+     "text": "0.81 cm",
+     "value": {
+      "distance_m": 0.008146706917782855
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "0.81 cm",
+     "value": {
+      "distance_m": 0.008146706917782855
+     },
+     "reason": null
+    }
+   },
+   "G8": {
+    "v1": {
+     "result": "pass",
+     "text": "plane RMS 5.45 mm, drift offset -3.2 mm, normal 1.29 deg (pass), x (largest_total_extent) error 0.8 deg",
+     "value": {
+      "plane_rms_m": 0.0054467869232204345,
+      "drift_offset_m": -0.003233240833479034,
+      "drift_normal_diff_deg": 1.2930480419067216,
+      "drift_check": true,
+      "x_axis_method": "largest_total_extent",
+      "x_vs_reference_deg": -0.792764920879047,
+      "expected_deg": 0.0,
+      "x_abs_err_deg": 0.792764920879047
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "plane RMS 5.45 mm, drift offset -3.2 mm (pass), normal 1.29 deg (information), x (largest_total_extent) error 1.3 deg",
+     "value": {
+      "plane_rms_m": 0.0054467869232204345,
+      "drift_offset_m": -0.003233240833479034,
+      "drift_offset_check": true,
+      "drift_normal_diff_deg": 1.2930480419067216,
+      "x_axis_method": "largest_total_extent",
+      "x_vs_reference_deg": -1.3424722860482157,
+      "expected_deg": 0.0,
+      "x_abs_err_deg": 1.3424722860482157
+     },
+     "reason": null
+    }
+   },
+   "G9": {
+    "v1": null,
+    "v2": {
+     "result": "fail",
+     "text": "median s 1.154 (IQR 1.116-1.193, 161 frames) vs s_hand 1.022: +12.9 %",
+     "value": {
+      "median_s": 1.1536139613638525,
+      "s_iqr": [
+       1.1163082188767717,
+       1.1925016187424586
+      ],
+      "n_frames": 161,
+      "s_hand": 1.021934301640882,
+      "ratio_to_s_hand": 1.1288533514449388
+     },
+     "reason": null
+    }
+   }
+  },
+  "4e103843db": {
+   "G1": {
+    "v1": {
+     "result": "pass",
+     "text": "coverage 100.0%, longest invalid run 0.000 s (0 frames), g valid True, lift valid True",
+     "value": {
+      "coverage": 1.0,
+      "longest_invalid_run_s": 0.0,
+      "longest_invalid_run_frames": 0,
+      "grasp_valid": true,
+      "lift_valid": true
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "coverage 100.0%, longest invalid run 0.000 s (0 frames), g valid True, lift valid True",
+     "value": {
+      "coverage": 1.0,
+      "longest_invalid_run_s": 0.0,
+      "longest_invalid_run_frames": 0,
+      "grasp_valid": true,
+      "lift_valid": true
+     },
+     "reason": null
+    }
+   },
+   "G2": {
+    "v1": {
+     "result": "pass",
+     "text": "median 0.55 cm over 366 metric_valid frames",
+     "value": {
+      "median": 0.005524176931790456,
+      "n_frames": 366
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "median 0.51 cm over 365 metric_valid frames (1 more without a residual: frames [90])",
+     "value": {
+      "median": 0.005137277856982175,
+      "n_frames": 366,
+      "n_undefined": 1,
+      "undefined_frames": [
+       90
+      ]
+     },
+     "reason": null
+    }
+   },
+   "G3": {
+    "v1": {
+     "result": "fail",
+     "text": "median 61.23 px over 366 metric_valid frames",
+     "value": {
+      "median": 61.22586099767692,
+      "n_frames": 366
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "fail",
+     "text": "palm median 38.50 px over 366 metric_valid frames; all 21 keypoints 38.25 px (information)",
+     "value": {
+      "median": 38.500899452078656,
+      "median_all21_px": 38.24801703921989,
+      "n_frames": 366,
+      "n_undefined": 0,
+      "undefined_frames": []
+     },
+     "reason": null
+    }
+   },
+   "G4": {
+    "v1": {
+     "result": "pass",
+     "text": "1 hold(s), max raw std 0.05 cm (smoothed 0.04 cm)",
+     "value": {
+      "holds": [
+       {
+        "frames": [
+         358,
+         380
+        ],
+        "start_s": 6.28591670806054,
+        "duration_s": 0.36681754200253636,
+        "std_raw_m": 0.0005462429762652256,
+        "std_smoothed_m": 0.00038234258560869644,
+        "n_raw": 23
+       }
+      ],
+      "max_std_raw_m": 0.0005462429762652256,
+      "max_std_smoothed_m": 0.00038234258560869644
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "1 hold(s), max raw std 0.07 cm (smoothed 0.05 cm)",
+     "value": {
+      "holds": [
+       {
+        "frames": [
+         358,
+         379
+        ],
+        "start_s": 6.28591670806054,
+        "duration_s": 0.3501439579995349,
+        "std_raw_m": 0.0006627288390144238,
+        "std_smoothed_m": 0.00047667728499889244,
+        "n_raw": 22
+       }
+      ],
+      "max_std_raw_m": 0.0006627288390144238,
+      "max_std_smoothed_m": 0.00047667728499889244
+     },
+     "reason": null
+    }
+   },
+   "G5": {
+    "v1": {
+     "result": "pass",
+     "text": "d 99.4 mm (pass 59.5-99.5), z_grasp 47.5 mm (pass 22.8-77.4)",
+     "value": {
+      "d_axis_m": 0.09939673129295491,
+      "d_range_m": [
+       0.059500000000000004,
+       0.0995
+      ],
+      "z_grasp_m": 0.04751962025975057,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ]
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "z_grasp 46.0 mm (pass 22.8-77.4); information: palm-to-axis distance 101.8 mm, distance - r 52.3 mm",
+     "value": {
+      "z_grasp_m": 0.04595576427169712,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ],
+      "d_axis_m": 0.10182256915366929,
+      "d_minus_r_m": 0.052322569153669285,
+      "grasp_index": 211,
+      "contact_index": 166,
+      "lift_index": 214,
+      "grasp_before_contact": false
+     },
+     "reason": null
+    }
+   },
+   "G6": {
+    "v1": {
+     "result": "fail",
+     "text": "IoU 0.943, diameter 105.7 mm (label 99), height 86.9 mm (label 91)",
+     "value": {
+      "init_iou": 0.942652329749104,
+      "free_fit_diameter_m": 0.10571260023508347,
+      "free_fit_height_m": 0.08687408353469453,
+      "height_check": true
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "fail",
+     "text": "video masks: IoU 0.943, diameter 105.7 mm (label 99), height 86.9 mm (label 91)",
+     "value": {
+      "mask_source": "video",
+      "init_iou": 0.942652329749104,
+      "free_fit_diameter_m": 0.10571260023508347,
+      "free_fit_height_m": 0.08687408353469453,
+      "height_check": true
+     },
+     "reason": null
+    }
+   },
+   "G7": {
+    "v1": {
+     "result": "pass",
+     "text": "2.15 cm",
+     "value": {
+      "distance_m": 0.02154680298290465
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "2.15 cm",
+     "value": {
+      "distance_m": 0.02154680298290465
+     },
+     "reason": null
+    }
+   },
+   "G8": {
+    "v1": {
+     "result": "fail",
+     "text": "plane RMS 4.48 mm, drift offset -0.4 mm, normal 2.43 deg (fail), x (largest_total_extent) error 1.7 deg",
+     "value": {
+      "plane_rms_m": 0.004479729481860118,
+      "drift_offset_m": -0.00043466429894079006,
+      "drift_normal_diff_deg": 2.427586032684361,
+      "drift_check": false,
+      "x_axis_method": "largest_total_extent",
+      "x_vs_reference_deg": -1.6977720371441165,
+      "expected_deg": 0.0,
+      "x_abs_err_deg": 1.6977720371441165
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "plane RMS 4.48 mm, drift offset -0.4 mm (pass), normal 2.43 deg (information), x (largest_total_extent) error 1.5 deg",
+     "value": {
+      "plane_rms_m": 0.004479729481860118,
+      "drift_offset_m": -0.00043466429894079006,
+      "drift_offset_check": true,
+      "drift_normal_diff_deg": 2.427586032684361,
+      "x_axis_method": "largest_total_extent",
+      "x_vs_reference_deg": -1.5039711601943928,
+      "expected_deg": 0.0,
+      "x_abs_err_deg": 1.5039711601943928
+     },
+     "reason": null
+    }
+   },
+   "G9": {
+    "v1": null,
+    "v2": {
+     "result": "pass",
+     "text": "median s 0.989 (IQR 0.966-1.025, 366 frames) vs s_hand 1.022: -3.2 %",
+     "value": {
+      "median_s": 0.9890944743955989,
+      "s_iqr": [
+       0.9656317801235457,
+       1.0253137396510477
+      ],
+      "n_frames": 366,
+      "s_hand": 1.021934301640882,
+      "ratio_to_s_hand": 0.9678650308610316
+     },
+     "reason": null
+    }
+   }
+  },
+  "49aff04f7a": {
+   "G1": {
+    "v1": {
+     "result": "pass",
+     "text": "coverage 99.2%, longest invalid run 0.017 s (1 frames), g valid True, lift valid True",
+     "value": {
+      "coverage": 0.9920634920634921,
+      "longest_invalid_run_s": 0.016673541045747697,
+      "longest_invalid_run_frames": 1,
+      "grasp_valid": true,
+      "lift_valid": true
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "coverage 99.2%, longest invalid run 0.017 s (1 frames), g valid True, lift valid True",
+     "value": {
+      "coverage": 0.9920318725099602,
+      "longest_invalid_run_s": 0.016673541045747697,
+      "longest_invalid_run_frames": 1,
+      "grasp_valid": true,
+      "lift_valid": true
+     },
+     "reason": null
+    }
+   },
+   "G2": {
+    "v1": {
+     "result": "pass",
+     "text": "median 0.38 cm over 260 metric_valid frames",
+     "value": {
+      "median": 0.0038115493132058753,
+      "n_frames": 260
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "median 0.51 cm over 258 metric_valid frames (2 more without a residual: frames [359, 367])",
+     "value": {
+      "median": 0.005103558221749786,
+      "n_frames": 260,
+      "n_undefined": 2,
+      "undefined_frames": [
+       359,
+       367
+      ]
+     },
+     "reason": null
+    }
+   },
+   "G3": {
+    "v1": {
+     "result": "fail",
+     "text": "median 80.98 px over 260 metric_valid frames",
+     "value": {
+      "median": 80.98182856720628,
+      "n_frames": 260
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "fail",
+     "text": "palm median 50.63 px over 260 metric_valid frames; all 21 keypoints 50.99 px (information)",
+     "value": {
+      "median": 50.634794440936645,
+      "median_all21_px": 50.994237647446255,
+      "n_frames": 260,
+      "n_undefined": 0,
+      "undefined_frames": []
+     },
+     "reason": null
+    }
+   },
+   "G4": {
+    "v1": {
+     "result": "N/A",
+     "text": "no static hold",
+     "value": {
+      "holds": []
+     },
+     "reason": "N/A: no run with smoothed palm speed < 2 cm/s for >= 0.3 s"
+    },
+    "v2": {
+     "result": "N/A",
+     "text": "no static hold",
+     "value": {
+      "holds": []
+     },
+     "reason": "N/A: no run with smoothed palm speed < 2 cm/s for >= 0.3 s"
+    }
+   },
+   "G5": {
+    "v1": {
+     "result": "pass",
+     "text": "d 96.1 mm (pass 59.5-99.5), z_grasp 61.8 mm (pass 22.8-77.4)",
+     "value": {
+      "d_axis_m": 0.09612890376318713,
+      "d_range_m": [
+       0.059500000000000004,
+       0.0995
+      ],
+      "z_grasp_m": 0.06183572628791706,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ]
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "z_grasp 62.9 mm (pass 22.8-77.4); information: palm-to-axis distance 101.4 mm, distance - r 51.9 mm",
+     "value": {
+      "z_grasp_m": 0.0629083596109572,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ],
+      "d_axis_m": 0.10144399144042411,
+      "d_minus_r_m": 0.05194399144042411,
+      "grasp_index": 179,
+      "contact_index": 149,
+      "lift_index": 182,
+      "grasp_before_contact": false
+     },
+     "reason": null
+    }
+   },
+   "G6": {
+    "v1": {
+     "result": "fail",
+     "text": "IoU 0.947, diameter 106.1 mm (label 99), height 85.8 mm (label 91)",
+     "value": {
+      "init_iou": 0.9469808237314081,
+      "free_fit_diameter_m": 0.10605167979611735,
+      "free_fit_height_m": 0.08575238260489937,
+      "height_check": false
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "fail",
+     "text": "video masks: IoU 0.947, diameter 106.1 mm (label 99), height 85.8 mm (label 91)",
+     "value": {
+      "mask_source": "video",
+      "init_iou": 0.9469808237314081,
+      "free_fit_diameter_m": 0.10605167979611735,
+      "free_fit_height_m": 0.08575238260489937,
+      "height_check": false
+     },
+     "reason": null
+    }
+   },
+   "G7": {
+    "v1": {
+     "result": "pass",
+     "text": "1.04 cm",
+     "value": {
+      "distance_m": 0.010414753486016445
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "1.04 cm",
+     "value": {
+      "distance_m": 0.010414753486016445
+     },
+     "reason": null
+    }
+   },
+   "G8": {
+    "v1": {
+     "result": "fail",
+     "text": "plane RMS 4.19 mm, drift offset 0.1 mm, normal 1.46 deg (pass), x (long_edge_extent) error 23.9 deg",
+     "value": {
+      "plane_rms_m": 0.004191100384630459,
+      "drift_offset_m": 5.722794067264392e-05,
+      "drift_normal_diff_deg": 1.4596684091198546,
+      "drift_check": true,
+      "x_axis_method": "long_edge_extent",
+      "x_vs_reference_deg": 68.86167056948122,
+      "expected_deg": 45.0,
+      "x_abs_err_deg": 23.86167056948122
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "plane RMS 4.19 mm, drift offset 0.1 mm (pass), normal 1.46 deg (information), x (long_edge_extent) error 15.7 deg",
+     "value": {
+      "plane_rms_m": 0.004191100384630459,
+      "drift_offset_m": 5.722794067264392e-05,
+      "drift_offset_check": true,
+      "drift_normal_diff_deg": 1.4596684091198546,
+      "x_axis_method": "long_edge_extent",
+      "x_vs_reference_deg": 29.29503300889299,
+      "expected_deg": 45.0,
+      "x_abs_err_deg": 15.70496699110701
+     },
+     "reason": null
+    }
+   },
+   "G9": {
+    "v1": null,
+    "v2": {
+     "result": "fail",
+     "text": "median s 0.847 (IQR 0.767-1.031, 260 frames) vs s_hand 1.022: -17.1 %",
+     "value": {
+      "median_s": 0.8466817078585713,
+      "s_iqr": [
+       0.7674866180155551,
+       1.0306336971837482
+      ],
+      "n_frames": 260,
+      "s_hand": 1.021934301640882,
+      "ratio_to_s_hand": 0.8285089427951347
+     },
+     "reason": null
+    }
+   }
+  },
+  "e8825dea53": {
+   "G1": {
+    "v1": {
+     "result": "pass",
+     "text": "coverage 99.7%, longest invalid run 0.000 s (0 frames), g valid True, lift valid True",
+     "value": {
+      "coverage": 0.9966216216216216,
+      "longest_invalid_run_s": 0.0,
+      "longest_invalid_run_frames": 0,
+      "grasp_valid": true,
+      "lift_valid": true
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "coverage 99.7%, longest invalid run 0.000 s (0 frames), g valid True, lift valid True",
+     "value": {
+      "coverage": 0.9965986394557823,
+      "longest_invalid_run_s": 0.0,
+      "longest_invalid_run_frames": 0,
+      "grasp_valid": true,
+      "lift_valid": true
+     },
+     "reason": null
+    }
+   },
+   "G2": {
+    "v1": {
+     "result": "pass",
+     "text": "median 0.82 cm over 316 metric_valid frames",
+     "value": {
+      "median": 0.008150315293366461,
+      "n_frames": 316
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "median 0.80 cm over 316 metric_valid frames",
+     "value": {
+      "median": 0.00795558130981698,
+      "n_frames": 316,
+      "n_undefined": 0,
+      "undefined_frames": []
+     },
+     "reason": null
+    }
+   },
+   "G3": {
+    "v1": {
+     "result": "fail",
+     "text": "median 30.91 px over 316 metric_valid frames",
+     "value": {
+      "median": 30.908349488537816,
+      "n_frames": 316
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "fail",
+     "text": "palm median 12.08 px over 316 metric_valid frames; all 21 keypoints 22.85 px (information)",
+     "value": {
+      "median": 12.07939665792814,
+      "median_all21_px": 22.85331309157128,
+      "n_frames": 316,
+      "n_undefined": 0,
+      "undefined_frames": []
+     },
+     "reason": null
+    }
+   },
+   "G4": {
+    "v1": {
+     "result": "N/A",
+     "text": "no static hold",
+     "value": {
+      "holds": []
+     },
+     "reason": "N/A: no run with smoothed palm speed < 2 cm/s for >= 0.3 s"
+    },
+    "v2": {
+     "result": "N/A",
+     "text": "no static hold",
+     "value": {
+      "holds": []
+     },
+     "reason": "N/A: no run with smoothed palm speed < 2 cm/s for >= 0.3 s"
+    }
+   },
+   "G5": {
+    "v1": {
+     "result": "pass",
+     "text": "d 96.6 mm (pass 59.5-99.5), z_grasp 62.7 mm (pass 22.8-77.4)",
+     "value": {
+      "d_axis_m": 0.09660797718065497,
+      "d_range_m": [
+       0.059500000000000004,
+       0.0995
+      ],
+      "z_grasp_m": 0.0627105785981791,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ]
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "fail",
+     "text": "z_grasp 88.7 mm (pass 22.8-77.4); information: palm-to-axis distance 89.6 mm, distance - r 40.1 mm; NOTE: g 148 comes before contact 149 (lift 151)",
+     "value": {
+      "z_grasp_m": 0.08873197535770927,
+      "z_range_m": [
+       0.02275,
+       0.07735
+      ],
+      "d_axis_m": 0.08960447805490623,
+      "d_minus_r_m": 0.04010447805490623,
+      "grasp_index": 148,
+      "contact_index": 149,
+      "lift_index": 151,
+      "grasp_before_contact": true
+     },
+     "reason": null
+    }
+   },
+   "G6": {
+    "v1": {
+     "result": "fail",
+     "text": "IoU 0.938, diameter 105.8 mm (label 99), height 88.1 mm (label 91)",
+     "value": {
+      "init_iou": 0.9383108373738698,
+      "free_fit_diameter_m": 0.10578626433686311,
+      "free_fit_height_m": 0.08812156167896579,
+      "height_check": true
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "fail",
+     "text": "video masks: IoU 0.938, diameter 105.8 mm (label 99), height 88.1 mm (label 91)",
+     "value": {
+      "mask_source": "video",
+      "init_iou": 0.9383108373738698,
+      "free_fit_diameter_m": 0.10578626433686311,
+      "free_fit_height_m": 0.08812156167896579,
+      "height_check": true
+     },
+     "reason": null
+    }
+   },
+   "G7": {
+    "v1": {
+     "result": "pass",
+     "text": "0.54 cm",
+     "value": {
+      "distance_m": 0.005425647100748376
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "0.54 cm",
+     "value": {
+      "distance_m": 0.005425647100748376
+     },
+     "reason": null
+    }
+   },
+   "G8": {
+    "v1": {
+     "result": "pass",
+     "text": "plane RMS 4.60 mm, drift offset 1.8 mm, normal 0.70 deg (pass), x (long_edge_extent) error 11.0 deg",
+     "value": {
+      "plane_rms_m": 0.004599556150951679,
+      "drift_offset_m": 0.001796445859793827,
+      "drift_normal_diff_deg": 0.69855953265115,
+      "drift_check": true,
+      "x_axis_method": "long_edge_extent",
+      "x_vs_reference_deg": -33.967206194923016,
+      "expected_deg": 45.0,
+      "x_abs_err_deg": 11.032793805076984
+     },
+     "reason": null
+    },
+    "v2": {
+     "result": "pass",
+     "text": "plane RMS 4.60 mm, drift offset 1.8 mm (pass), normal 0.70 deg (information), x (largest_total_extent) error 7.6 deg",
+     "value": {
+      "plane_rms_m": 0.004599556150951679,
+      "drift_offset_m": 0.001796445859793827,
+      "drift_offset_check": true,
+      "drift_normal_diff_deg": 0.69855953265115,
+      "x_axis_method": "largest_total_extent",
+      "x_vs_reference_deg": -37.44220609118214,
+      "expected_deg": 45.0,
+      "x_abs_err_deg": 7.557793908817857
+     },
+     "reason": null
+    }
+   },
+   "G9": {
+    "v1": null,
+    "v2": {
+     "result": "pass",
+     "text": "median s 1.036 (IQR 1.019-1.060, 316 frames) vs s_hand 1.022: +1.4 %",
+     "value": {
+      "median_s": 1.036356788754408,
+      "s_iqr": [
+       1.0185283057323282,
+       1.0599771625890684
+      ],
+      "n_frames": 316,
+      "s_hand": 1.021934301640882,
+      "ratio_to_s_hand": 1.0141129298530918
+     },
+     "reason": null
+    }
+   }
+  }
+ },
+ "mask_test": {
+  "by_window": {
+   "26d4118b0c": {
+    "video": {
+     "init": {
+      "iou": 0.9181960978835979,
+      "diameter_m": 0.1051353499643383,
+      "height_m": 0.08834022226098188,
+      "h_observable": false
+     },
+     "final": {
+      "iou": 0.8720160766482624,
+      "diameter_m": 0.10462855917030585,
+      "height_m": 0.09304756681980673,
+      "h_observable": false
+     }
+    },
+    "full_res_image": {
+     "init": {
+      "iou": 0.926435673142941,
+      "diameter_m": 0.11427698629969728,
+      "height_m": 0.06353112198041663,
+      "h_observable": false
+     },
+     "final": {
+      "iou": 0.8787528395718642,
+      "diameter_m": 0.1041306999802106,
+      "height_m": 0.0941852701938633,
+      "h_observable": false
+     }
+    }
+   },
+   "4e103843db": {
+    "video": {
+     "init": {
+      "iou": 0.942652329749104,
+      "diameter_m": 0.10571260023508347,
+      "height_m": 0.08687408353469453,
+      "h_observable": true
+     },
+     "final": {
+      "iou": 0.9013217078402879,
+      "diameter_m": 0.10753473592593166,
+      "height_m": 0.08969329700681937,
+      "h_observable": true
+     }
+    },
+    "full_res_image": {
+     "init": {
+      "iou": 0.9450667729718956,
+      "diameter_m": 0.10579052430714118,
+      "height_m": 0.08621974313351341,
+      "h_observable": true
+     },
+     "final": {
+      "iou": 0.6575639650681784,
+      "diameter_m": 0.10787922536416358,
+      "height_m": 0.08710927722600571,
+      "h_observable": true
+     }
+    }
+   },
+   "49aff04f7a": {
+    "video": {
+     "init": {
+      "iou": 0.9469808237314081,
+      "diameter_m": 0.10605167979611735,
+      "height_m": 0.08575238260489937,
+      "h_observable": true
+     },
+     "final": {
+      "iou": 0.8819552782111284,
+      "diameter_m": 0.10424846332530034,
+      "height_m": 0.09708374132959685,
+      "h_observable": true
+     }
+    },
+    "full_res_image": {
+     "init": {
+      "iou": 0.9495444516547696,
+      "diameter_m": 0.10604738652466236,
+      "height_m": 0.08529789118396164,
+      "h_observable": true
+     },
+     "final": {
+      "iou": 0.608580830290379,
+      "diameter_m": 0.10545284838704758,
+      "height_m": 0.050003442715226734,
+      "h_observable": true
+     }
+    }
+   },
+   "e8825dea53": {
+    "video": {
+     "init": {
+      "iou": 0.9383108373738698,
+      "diameter_m": 0.10578626433686311,
+      "height_m": 0.08812156167896579,
+      "h_observable": true
+     },
+     "final": {
+      "iou": 0.9106631139711427,
+      "diameter_m": 0.10324166014789232,
+      "height_m": 0.0921213124724236,
+      "h_observable": true
+     }
+    },
+    "full_res_image": {
+     "init": {
+      "iou": 0.9417651512657603,
+      "diameter_m": 0.10565698277105268,
+      "height_m": 0.08775135537984421,
+      "h_observable": true
+     },
+     "final": {
+      "iou": 0.9219432558080213,
+      "diameter_m": 0.10233404607650994,
+      "height_m": 0.0927467251017437,
+      "h_observable": true
+     }
+    }
+   }
+  },
+  "decision": {
+   "rule": "full_res_image for all clips if |full-res init free-fit diameter - label| <= 5 mm on >= 3 of 4 clips, else video",
+   "label_diameter_m": 0.099,
+   "full_res_init_diameter_m": {
+    "26d4118b0c": 0.11427698629969728,
+    "4e103843db": 0.10579052430714118,
+    "49aff04f7a": 0.10604738652466236,
+    "e8825dea53": 0.10565698277105268
+   },
+   "clips_within_5mm": [],
+   "n_within_5mm": 0,
+   "chosen": "video",
+   "reason": "0 of 4 clips within 5 mm of the 99.0 mm label (none); the rule needs 3 -> keep the video masks"
+  },
+  "source_per_clip": {
+   "26d4118b0c": "video",
+   "4e103843db": "video",
+   "49aff04f7a": "video",
+   "e8825dea53": "video"
+  },
+  "error": null
+ },
+ "spreads": {
+  "coaster_dx_m": {
+   "min": -0.02575687817213934,
+   "max": 0.006245287761716428,
+   "range": 0.03200216593385577,
+   "n": 4
+  },
+  "coaster_dy_m": {
+   "min": -0.16753267327966562,
+   "max": -0.13658990696105835,
+   "range": 0.030942766318607262,
+   "n": 4
+  },
+  "coaster_dist_m": {
+   "min": 0.13661272018850204,
+   "max": 0.16950107194175976,
+   "range": 0.032888351753257716,
+   "n": 4
+  },
+  "approach_yaw_deg": {
+   "min": -138.61616066837706,
+   "max": 156.58862563795805,
+   "range": 295.2047863063351,
+   "n": 3
+  },
+  "grasp_height_frac": {
+   "min": 0.5050083985900783,
+   "max": 0.9750766522825195,
+   "range": 0.4700682536924412,
+   "n": 4
+  },
+  "finger_pitch_deg": {
+   "min": 10.732705457329482,
+   "max": 23.403131997841832,
+   "range": 12.67042654051235,
+   "n": 4
+  },
+  "palm_normal_elev_deg": {
+   "min": -23.53290679055917,
+   "max": -12.545448880045447,
+   "range": 10.987457910513724,
+   "n": 4
+  },
+  "lift_height_m": {
+   "min": 0.06770749999284766,
+   "max": 0.09402091795202772,
+   "range": 0.02631341795918006,
+   "n": 4
+  },
+  "reach_duration_s": {
+   "min": 0.7169613330624998,
+   "max": 1.8340871660038829,
+   "range": 1.1171258329413831,
+   "n": 4
+  },
+  "transport_duration_s": {
+   "min": 1.6673522080527619,
+   "max": 2.3000465420773253,
+   "range": 0.6326943340245634,
+   "n": 4
+  },
+  "init_handle_yaw_deg": {
+   "min": 4.102923236703794,
+   "max": 81.79084568620358,
+   "range": 77.6879224494998,
+   "n": 3
+  },
+  "coaster_diameter_m": {
+   "min": 0.10298277055886924,
+   "max": 0.10719499867571115,
+   "range": 0.0042122281168419096,
+   "n": 4
+  },
+  "long_edge_rule": {
+   "counts": {
+    "largest_total_extent": 3,
+    "long_edge_extent": 1
+   }
+  },
+  "d_axis_min_m": {
+   "min": 0.07802329297521735,
+   "max": 0.10645411518114627,
+   "range": 0.02843082220592892,
+   "n": 4
+  },
+  "median_s": {
+   "min": 0.8466817078585713,
+   "max": 1.1536139613638525,
+   "range": 0.3069322535052812,
+   "n": 4
+  },
+  "mug_mask_source": {
+   "counts": {
+    "video": 4
+   }
+  }
+ },
+ "d_min_z_flagged": [
+  "4e103843db",
+  "49aff04f7a",
+  "e8825dea53"
+ ],
+ "d_min_after_lift": {
+  "4e103843db": {
+   "d_axis_min_index": 225,
+   "lift": 214
+  },
+  "49aff04f7a": {
+   "d_axis_min_index": 201,
+   "lift": 182
+  },
+  "e8825dea53": {
+   "d_axis_min_index": 159,
+   "lift": 151
+  }
+ },
+ "grasp_before_contact": {
+  "e8825dea53": {
+   "contact": 149,
+   "grasp": 148,
+   "lift": 151
+  }
+ },
+ "palm_normal_flip": {
+  "flipped": {
+   "26d4118b0c": false,
+   "4e103843db": false,
+   "49aff04f7a": false,
+   "e8825dea53": false
+  },
+  "undecided": [],
+  "error": null
+ },
+ "confound": "Viewpoint and execution vary together across these clips (views: top-down, 90deg, 45deg, 45deg); n = 4."
+}

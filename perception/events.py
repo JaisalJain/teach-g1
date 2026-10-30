@@ -2,8 +2,9 @@
 
     env -u PYTHONPATH conda run --no-capture-output -n hoi-perception python -m perception.events --clip <id>
 
-Palm = 0.5 (kp[0] + kp[9]) (wrist + middle-finger base) of the LiDAR-corrected keypoints (S5), in the table frame (S7),
-on metric_valid frames only. The events use the RAW palm, not the smoothed one: smoothing would round off the lift and
+Palm = 0.5 (kp[0] + kp[9]) (wrist + middle-finger base) of the fitted hand keypoints (S5b, hand_fit.npz: LiDAR depth
+shift, then the hand scale s_hand and a sideways shift fitted to WiLoR's 2D palm keypoints), in the table frame (S7), on
+metric_valid frames only. The events use the RAW palm, not the smoothed one: smoothing would round off the lift and
 shift it in time.
 
 If S7 found no table x axis (x_axis_method "failed", a 45 deg clip without desk edges), the events are computed in a
@@ -14,7 +15,17 @@ on x, so nothing is guessed. events.json records this as table_x_known = false.
     d_final(i) the same to the FINAL cup axis
     z(i)       palm height above the table (the table frame origin is on the plane)
 
-    contact  first valid frame with d_axis <= r + 0.05 m (r = mug radius from config)
+    D_min    min of d_axis over ALL valid frames (the palm's closest approach to the initial cup axis), at frame
+             i_min. Flagged (d_min_z_flag) if the palm is at or above the mug top there (z >= h, h from config). The
+             flag tests only that height. On the recorded clips it fires when D_min falls AFTER the lift: the palm
+             point comes closer to the initial axis while the hand lifts and carries the mug than at any time during
+             the approach, so i_min is a transport frame, not an approach frame.
+    contact  first valid frame with d_axis <= D_min + 0.01 m (contact_rule "relative_min_plus_1cm"). Relative to the
+             clip's own closest approach because v1's fixed threshold r + 5 cm = 99.5 mm sat on the data's edge: the
+             palm point (wrist + middle-finger base) came 96-102 mm from the axis in the v1 clips, so the top-down
+             clip missed contact by a few mm and lost every event. When D_min falls after the lift, D_min + 1 cm may
+             first be reached while the hand is already rising, and contact can then come after g (it is not forced
+             to come before it).
     lift     first valid k > contact with z >= m_k + 0.015 m on k and on the 4 next valid frames, m_k = min z over the
              valid frames in [contact, k]. The running minimum lets the hand settle lower after contact; 5 frames
              ignore a short bump.
@@ -30,7 +41,8 @@ phase: 0 approach [0, contact), 1 grasp [contact, lift), 2 transport [lift, plac
 4 release/retreat [release, N). A span whose bounding event is undefined is -1. An undefined event has index -1 and
 t = null, with the reason in events.json.
 
-Writes data/work/<clip>/events/: events.json, events.npz (phase, d_axis, d_final, z, body_iou), events.png.
+Writes data/work/<clip>/events/: events.json (the events, plus contact_rule, d_axis_min_m, d_axis_min_index,
+z_at_d_axis_min_m, d_min_z_flag), events.npz (phase, d_axis, d_final, z, body_iou), events.png.
 """
 
 from __future__ import annotations
@@ -45,7 +57,8 @@ from perception.geometry import plane_basis, transform
 from perception.masks_sam2 import BODY, load_masks
 
 EVENTS = ("contact", "lift", "grasp", "place", "release")
-CONTACT_MARGIN_M = 0.05     # contact: d_axis <= r + this
+CONTACT_ABOVE_MIN_M = 0.01  # contact: d_axis <= D_min + this
+CONTACT_RULE = "relative_min_plus_1cm"
 LIFT_RISE_M = 0.015         # lift: z above its running minimum by this ...
 LIFT_FRAMES = 5             # ... on this many consecutive valid frames
 GRASP_BEFORE_LIFT = 3       # g = last valid frame at least this many frames before the lift
@@ -72,29 +85,35 @@ def table_from_world(clip: str) -> tuple[np.ndarray, bool]:
 
 
 def hand_kp_table(clip: str, T_tw: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """Corrected keypoints (S5) in the table frame: (N, 21, 3), NaN where not metric_valid; and metric_valid (N,)."""
+    """Fitted keypoints (S5b) in the table frame: (N, 21, 3), NaN where not metric_valid; and metric_valid (N,)."""
     T_wc = np.load(WORK / clip / "frames" / "meta.npz")["T_world_cam"]
-    hm = np.load(WORK / clip / "hand_metric" / "hand_metric.npz")
-    valid = hm["metric_valid"].astype(bool)
+    hf = np.load(WORK / clip / "hand_fit" / "hand_fit.npz")
+    valid = hf["metric_valid"].astype(bool)
     T_tc = T_tw @ T_wc                                         # camera -> table, per frame
-    kp = np.einsum("nij,nkj->nki", T_tc[:, :3, :3], hm["kp3d"].astype(np.float64)) + T_tc[:, None, :3, 3]
+    kp = np.einsum("nij,nkj->nki", T_tc[:, :3, :3], hf["kp3d"].astype(np.float64)) + T_tc[:, None, :3, 3]
     kp[~valid] = np.nan
     return kp, valid
 
 
-def detect_events(valid, z, d_axis, d_final, r):
-    """Event indices (-1 = undefined) and the reason for each undefined event. Only valid frames are looked at."""
+def closest_approach(valid, d_axis) -> tuple[float, int]:
+    """D_min = min of d_axis over the valid frames, and its frame (NaN, -1 without valid frames)."""
+    vi = np.flatnonzero(valid)
+    if len(vi) == 0:
+        return np.nan, -1
+    i_min = int(vi[np.argmin(d_axis[vi])])
+    return float(d_axis[i_min]), i_min
+
+
+def detect_events(valid, z, d_axis, d_final, d_min):
+    """Event indices (-1 = undefined) and the reason for each undefined event. Only valid frames are looked at.
+    d_min = D_min from closest_approach."""
     ev, why = {}, {}
     vi = np.flatnonzero(valid)
 
-    near = vi[d_axis[vi] <= r + CONTACT_MARGIN_M]
     if len(vi) == 0:
         why["contact"] = "no metric_valid frames"
-    elif len(near) == 0:
-        why["contact"] = f"d_axis never <= r + {CONTACT_MARGIN_M} m = {r + CONTACT_MARGIN_M:.3f} m " \
-                         f"(min {d_axis[vi].min():.3f} m)"
-    else:
-        ev["contact"] = int(near[0])
+    else:                                                      # never empty: the D_min frame itself qualifies
+        ev["contact"] = int(vi[d_axis[vi] <= d_min + CONTACT_ABOVE_MIN_M][0])
 
     if "contact" in ev:
         k = vi[vi >= ev["contact"]]
@@ -168,13 +187,15 @@ def body_iou(clip: str, n: int) -> np.ndarray:
     return iou
 
 
-def plot(path, clip, t, valid, d_axis, d_final, z, iou, ev, r, z_grasp):
+def plot(path, clip, t, valid, d_axis, d_final, z, iou, ev, d_min, i_min, z_grasp):
     s = t - t[0]
     fig = Figure(figsize=(11, 8.5), layout="constrained")     # constrained: no clipped axis labels
     ax = fig.subplots(4, 1, sharex=True, height_ratios=[3, 3, 2, 1])
     ax[0].plot(s, d_axis, color=BLUE, lw=1.5, label="to initial cup axis")
     ax[0].plot(s, d_final, color=ORANGE, lw=1.5, label="to final cup axis")
-    ax[0].axhline(r + CONTACT_MARGIN_M, color=GREY, ls=":", lw=1, label="r + 5 cm (contact)")
+    if i_min >= 0:
+        ax[0].axhline(d_min + CONTACT_ABOVE_MIN_M, color=GREY, ls=":", lw=1, label="D_min + 1 cm (contact)")
+        ax[0].plot(s[i_min], d_min, "o", color=INK, ms=5, label=f"D_min = {d_min * 100:.1f} cm")
     ax[0].set_ylabel("horizontal palm\ndistance [m]")
     ax[1].plot(s, z, color=BLUE, lw=1.5, label="palm z")
     if np.isfinite(z_grasp):
@@ -190,12 +211,13 @@ def plot(path, clip, t, valid, d_axis, d_final, z, iou, ev, r, z_grasp):
     ax[3].set_ylabel("metric\nvalid")
     ax[3].set_yticks([0, 1])
     ax[3].set_xlabel("time since first frame [s]")
-    # events in time order; labels alternate between two heights because grasp and lift are 3 frames apart
+    # events in time order; labels cycle through three heights: contact and grasp both come before the lift but in
+    # either order, so the first three labels are always contact, grasp and lift, which can be only a few frames apart
     timed = sorted((ev[e], e) for e in EVENTS if ev[e] >= 0)
     for j, (i, name) in enumerate(timed):
         for a in ax:
             a.axvline(s[i], color=INK, lw=0.8, alpha=0.7)
-        ax[0].text(s[i], 1.03 + 0.09 * (j % 2), name, transform=ax[0].get_xaxis_transform(), ha="center", fontsize=9)
+        ax[0].text(s[i], 1.03 + 0.07 * (j % 3), name, transform=ax[0].get_xaxis_transform(), ha="center", fontsize=9)
     for a in ax[:3]:
         a.legend(loc="upper right", fontsize=8, frameon=False)
         a.grid(alpha=0.25, lw=0.5)
@@ -207,7 +229,7 @@ def run(clip: str) -> dict:
     out = stage_dir(clip, "events")
     t = np.load(WORK / clip / "frames" / "meta.npz")["t"]
     n = len(t)
-    r = cfg(load_config(), "mug", "body_outer_diameter_m") / 2
+    h = cfg(load_config(), "mug", "height_m")
     T_tw, x_known = table_from_world(clip)          # x_known False: stand-in x, fine for d_axis, d_final and z
     kp, valid = hand_kp_table(clip, T_tw)
     obj = json.loads((WORK / clip / "objects" / "objects.json").read_text())
@@ -217,7 +239,12 @@ def run(clip: str) -> dict:
     d_axis = np.linalg.norm(palm[:, :2] - cup_init[:2], axis=1)
     d_final = np.linalg.norm(palm[:, :2] - cup_final[:2], axis=1)
     z = palm[:, 2]
-    ev, why = detect_events(valid, z, d_axis, d_final, r)
+    if not np.isfinite(kp[valid]).all():            # a NaN would silently become D_min (np.argmin returns it)
+        raise ValueError(f"{clip}: hand_fit.npz has non-finite keypoints on metric_valid frames")
+    d_min, i_min = closest_approach(valid, d_axis)
+    z_at_min = float(z[i_min]) if i_min >= 0 else None
+    d_min_z_flag = None if i_min < 0 else z_at_min >= h      # closest approach at or above the mug top
+    ev, why = detect_events(valid, z, d_axis, d_final, d_min)
     z_grasp = z[ev["grasp"]] if ev["grasp"] >= 0 else np.nan
     phase = phase_labels(n, ev)
     iou = body_iou(clip, n)
@@ -233,15 +260,20 @@ def run(clip: str) -> dict:
     result = {**events,
               "lift_confirm": {"iou_below_0p7_within_0p3s": confirm, "min_iou_in_window": min_iou},
               "z_grasp_m": float(z_grasp) if np.isfinite(z_grasp) else None,
+              "contact_rule": CONTACT_RULE, "d_axis_min_m": d_min if i_min >= 0 else None, "d_axis_min_index": i_min,
+              "z_at_d_axis_min_m": z_at_min, "d_min_z_flag": d_min_z_flag,
               "table_x_known": x_known, "reasons": why}
     (out / "events.json").write_text(json.dumps(result, indent=1))
     np.savez(out / "events.npz", phase=phase, d_axis=d_axis, d_final=d_final, z=z, body_iou=iou)
-    plot(out / "events.png", clip, t, valid, d_axis, d_final, z, iou, ev, r, z_grasp)
+    plot(out / "events.png", clip, t, valid, d_axis, d_final, z, iou, ev, d_min, i_min, z_grasp)
 
     for e, reason in why.items():
         print(f"{clip}: {e} undefined -- {reason}")
     t_rel = {f"t_{e}_rel_s": round(float(t[ev[e]] - t[0]), 3) if ev[e] >= 0 else None for e in EVENTS}
-    return {**{e: ev[e] for e in EVENTS}, **t_rel, "z_grasp_m": result["z_grasp_m"], "lift_confirm": confirm,
+    return {**{e: ev[e] for e in EVENTS}, **t_rel, "z_grasp_m": result["z_grasp_m"],
+            **{k: result[k] for k in ("contact_rule", "d_axis_min_m", "d_axis_min_index", "z_at_d_axis_min_m",
+                                      "d_min_z_flag")},
+            "lift_confirm": confirm,
             "min_iou_in_window": min_iou, "table_x_known": x_known, "n_metric_valid": int(valid.sum()),
             "phase_counts": {int(p): int(np.count_nonzero(phase == p)) for p in range(-1, 5)}, "reasons": why}
 

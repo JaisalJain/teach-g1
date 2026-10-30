@@ -24,6 +24,40 @@ Mask = logit > 0 at the JPEG resolution.
 Storage: masks.npz holds np.packbits of every upright half-res mask (compressed). ``load_masks`` returns any mask in the
 ORIGINAL (sideways) orientation at half, full or depth resolution (nearest neighbour at pixel centres). This loader does not
 import torch, so the CPU stages can use it.
+
+A4 (M2 v2) -- full-res image masks for the S6 mug test:
+
+    env -u PYTHONPATH conda run --no-capture-output -n hoi-perception python -m perception.masks_sam2 --clip <id> --stage full
+
+With the video masks, S6's free fit makes the mug 6-7 mm wider than its label on every clip, and a ruler confirms the
+label. To test whether the masks are the cause, the mug body is segmented again with the SAM 2.1 IMAGE predictor
+(SAM2ImagePredictor, API read from sam2_image_predictor.py; same config and checkpoint, bf16 autocast) on the upright
+FULL-res frames (frames/full), only for the 11 frames each S6 fit uses (both static windows). Prompts:
+- init window: the S3 body prompt (box + points), since the mug has not moved since frame i = 1;
+- final window (the mug has moved): per frame, from that frame's own video masks: box = bounding box of the body mask,
+  positive point = its deepest interior point (distance-transform maximum, as green_prompt), negative point = the
+  centroid of the handle mask if that mask is not empty.
+Both are upright half-res pixels, mapped to full res at pixel centres: u_full + 0.5 = 2 (u_half + 0.5). One mask per
+frame (multimask_output=False); mask = the predictor's binary mask at the image's own resolution (logits upsampled,
+> 0; no hole filling, as in S3). Writes data/work/<clip>/masks_full/: masks_full.npz (per window the frame list and the
+packed body masks in the ORIGINAL orientation, 1440x1920) and prompts_used.json (every prompt, in upright full-res pixels).
+``load_full_masks`` reads them back without torch.
+
+What this test changes, and what it does not. Both SAM 2 predictors resize every input to 1024x1024 (the model's
+image_size; image predictor: Resize in sam2/utils/transforms.py, video predictor: _load_img_as_tensor in
+sam2/utils/misc.py) and decode 256x256 mask logits, upsampled bilinearly to the input's own size. So A4 does NOT
+raise SAM 2's working resolution. It changes three things: the input sampling (1440x1920 shrunk to 1024x1024 instead
+of 720x960 enlarged), the predictor (image predictor, no video memory) and the grid the 256x256 logits are upsampled
+to (one logit cell = 5.6 x 7.5 full-res px, 1.6-2.7 mm at the mug's base, 0.40-0.50 m from the camera). A full-res
+diameter equal to the video one therefore means "feeding full-res frames to the image predictor does not remove the
+bias", not "the mask edges are not the cause".
+
+Known limitation (seen on the real clips; the prompt rule is the user's and is not changed after seeing results): in
+the final window the distance-transform maximum of the video body mask lies on the mug's white interior on all 4 clips
+(the camera sees into the open mug). Without video memory, the image predictor then segments only the rim, interior
+and letters on 4e103843db and 49aff04f7a (video / full-res area 1.48x and 1.69x, per-frame IoU 0.66-0.68 and
+0.58-0.60). Their final-window full_res_image fits are failed segmentations, not measurements. The A4 decision uses
+the init window only, whose S3 prompts also put a positive point on the green wall, so it is unaffected.
 """
 
 from __future__ import annotations
@@ -75,7 +109,8 @@ class Masks:
 
 
 def resample(m: np.ndarray, res: str) -> np.ndarray:
-    """ORIGINAL half-res mask (720, 960) -> "half", "full" (1440, 1920) or "depth" (192, 256), nearest neighbour."""
+    """ORIGINAL half-res mask (720, 960) -> "half", "full" (1440, 1920) or "depth" (192, 256), nearest neighbour.
+    "depth" works from any input resolution (S6 also uses it on the full-res A4 masks)."""
     size = {"half": m.shape, "full": (2 * m.shape[0], 2 * m.shape[1]), "depth": (192, 256)}[res]
     rows = np.floor((np.arange(size[0]) + 0.5) * m.shape[0] / size[0]).astype(int)   # source pixel under each centre
     cols = np.floor((np.arange(size[1]) + 0.5) * m.shape[1] / size[1]).astype(int)
@@ -84,6 +119,17 @@ def resample(m: np.ndarray, res: str) -> np.ndarray:
 
 def load_masks(clip: str) -> Masks:
     return Masks(clip)
+
+
+def load_full_masks(clip: str) -> dict:
+    """A4 masks: {window: (frames, (n, 1440, 1920) bool mug body masks in the ORIGINAL orientation)}."""
+    f = np.load(WORK / clip / "masks_full" / "masks_full.npz")
+    shape = tuple(int(v) for v in f["shape"])
+    out = {}
+    for w in ("init", "final"):
+        masks = [np.unpackbits(b, count=shape[0] * shape[1]).reshape(shape).astype(bool) for b in f[f"{w}_bits"]]
+        out[w] = (f[f"{w}_frames"].tolist(), np.stack(masks))
+    return out
 
 
 # ---------------------------------------------------------------------------------------------------------- prompts
@@ -236,8 +282,78 @@ def run(clip: str) -> dict:
             **{f"frames_empty_{NAMES[o].replace(' ', '_')}": int(np.sum(a[1:] == 0)) for o, a in areas.items()}}
 
 
+# ---------------------------------------------------------------------------------------------------------- A4 stage
+def half_to_full(xy) -> list:
+    """Upright half-res pixel coordinates (any shape) -> upright full-res, at pixel centres: u_full + 0.5 = 2 (u_half + 0.5)."""
+    return (2 * np.asarray(xy, dtype=np.float64) + 0.5).tolist()
+
+
+def prompt_from_video_masks(body: np.ndarray, handle: np.ndarray) -> dict:
+    """Body prompt for one frame from its own video masks (upright half-res): box = bounding box of the body mask,
+    positive point = its deepest interior point, negative point = the centroid of the handle mask (if not empty)."""
+    if not body.any():
+        raise ValueError("empty video body mask: nothing to prompt from")
+    ys, xs = np.nonzero(body)
+    dist = cv2.distanceTransform(body.astype(np.uint8), cv2.DIST_L2, 5)
+    y, x = np.unravel_index(np.argmax(dist), dist.shape)
+    points, labels = [[int(x), int(y)]], [1]
+    if handle.any():
+        hy, hx = np.nonzero(handle)
+        points.append([float(hx.mean()), float(hy.mean())])
+        labels.append(0)
+    return {"box": [int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())], "points": points, "labels": labels}
+
+
+def run_full(clip: str) -> dict:
+    """A4: SAM 2 image-predictor body masks at full res for the 11 fit frames of both S6 windows (see the docstring)."""
+    import torch
+    from sam2.build_sam import build_sam2
+    from sam2.sam2_image_predictor import SAM2ImagePredictor
+
+    from perception.objects import final_window, fit_frames      # objects imports this module: import here, not on top
+
+    out = stage_dir(clip, "masks_full")
+    table = json.loads((WORK / clip / "table" / "table.json").read_text())
+    t = np.load(WORK / clip / "frames" / "meta.npz")["t"]
+    windows = {"init": fit_frames(*table["init_window"]),
+               "final": fit_frames(*final_window(t, table["last_hand_valid"])[0])}
+    s3 = next(o for o in load_prompts(clip)["objects"] if o["obj_id"] == BODY)
+    video = load_masks(clip)
+    predictor = SAM2ImagePredictor(build_sam2(SAM2_CONFIG, str(SAM2_CHECKPOINT), device="cuda"))
+    saved, used, areas = {}, [], {}
+    with torch.inference_mode(), torch.autocast("cuda", dtype=torch.bfloat16):
+        for name, frames in windows.items():
+            bits = []
+            for i in frames:
+                if name == "init":
+                    p = {"box": s3["box"], "points": s3["points"], "labels": s3["labels"], "source": "s3_prompt"}
+                else:                                               # video masks back to upright half-res, like S3
+                    body, handle = np.rot90(video.get(BODY, i), video.k), np.rot90(video.get(HANDLE, i), video.k)
+                    p = {**prompt_from_video_masks(body, handle), "source": "video_mask"}
+                box, points = half_to_full(p["box"]), half_to_full(p["points"])
+                rgb = cv2.cvtColor(cv2.imread(str(WORK / clip / "frames" / "full" / f"{i:06d}.jpg")), cv2.COLOR_BGR2RGB)
+                predictor.set_image(rgb)
+                m, _, _ = predictor.predict(point_coords=np.array(points, np.float32) if points else None,
+                                            point_labels=np.array(p["labels"], np.int32) if points else None,
+                                            box=np.array(box, np.float32), multimask_output=False)
+                mask = np.rot90(m[0] > 0, -video.k)                 # upright -> ORIGINAL orientation (1440 x 1920)
+                bits.append(np.packbits(mask.reshape(-1)))
+                used.append({"i": i, "window": name, "box": box, "points": points, "labels": p["labels"],
+                             "source": p["source"], "area_px": int(mask.sum())})
+            saved[f"{name}_frames"], saved[f"{name}_bits"] = np.array(frames), np.stack(bits)
+            areas[name] = float(np.median([u["area_px"] for u in used if u["window"] == name]))
+    np.savez_compressed(out / "masks_full.npz", **saved, shape=np.array(mask.shape))
+    (out / "prompts_used.json").write_text(json.dumps(
+        {"coordinates": "upright full-res pixels (x, y) of frames/full/{i:06d}.jpg, mapped from upright half-res by "
+                        "u_full = 2 u_half + 0.5", "frames": used}, indent=1))
+    del predictor
+    torch.cuda.empty_cache()
+    return {"windows": windows, "median_area_px_full": areas,
+            "n_final_frames_with_handle_point": sum(0 in u["labels"] for u in used if u["window"] == "final")}
+
+
 if __name__ == "__main__":
     if "--grid" in sys.argv or "--preview" in sys.argv:
         tools(sys.argv[1:])
     else:
-        stage_cli("masks", run, gpu=True)
+        stage_cli({"video": ("masks", run, True), "full": ("masks_full", run_full, True)})
