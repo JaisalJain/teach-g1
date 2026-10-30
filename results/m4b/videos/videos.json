@@ -1,0 +1,88 @@
+{
+  "rule": "retarget/m4b_summary.py video_picks: the best clip's first b_hybrid success (trial order); the first b_hybrid failure of the most common b_hybrid category_v2",
+  "renderer": "Intel / Mesa Intel(R) Graphics (ARL) (EGL)",
+  "camera": "grasp_right",
+  "resolution": "1280x720",
+  "fps": "25 (one frame per 2 control steps of 50 Hz)",
+  "videos": [
+    {
+      "run": "e8825dea53__b_hybrid__trial00",
+      "video": "results/m4b/videos/e8825dea53__b_hybrid__trial00.mp4",
+      "saved_row": "results/m4b/runs/e8825dea53__b_hybrid__trial00.json",
+      "saved_success": true,
+      "saved_category": null,
+      "rerun_success": true,
+      "rerun_category": null,
+      "identical": true,
+      "fields_differing": [],
+      "control_steps": 1095,
+      "frames_in_file": 547,
+      "width": 1280,
+      "height": 720,
+      "fps": "25/1",
+      "size_bytes": 5237393
+    },
+    {
+      "run": "26d4118b0c__b_hybrid__trial00",
+      "video": "results/m4b/videos/26d4118b0c__b_hybrid__trial00.mp4",
+      "saved_row": "results/m4b/runs/26d4118b0c__b_hybrid__trial00.json",
+      "saved_success": false,
+      "saved_category": "palm could not reach the target",
+      "rerun_success": false,
+      "rerun_category": "palm could not reach the target",
+      "identical": true,
+      "fields_differing": [],
+      "control_steps": 1119,
+      "frames_in_file": 559,
+      "width": 1280,
+      "height": 720,
+      "fps": "25/1",
+      "size_bytes": 5562932
+    }
+  ],
+  "gif": {
+    "run": "e8825dea53__b_hybrid__trial00",
+    "file": "results/m4b/b_hybrid_success.gif",
+    "source": "results/m4b/videos/e8825dea53__b_hybrid__trial00.mp4",
+    "chosen": {
+      "width": 480,
+      "fps": 10.0,
+      "size_bytes": 3895057
+    },
+    "tried": [
+      {
+        "width": 960,
+        "fps": 12.5,
+        "size_bytes": 15702068
+      },
+      {
+        "width": 800,
+        "fps": 10.0,
+        "size_bytes": 9490070
+      },
+      {
+        "width": 640,
+        "fps": 10.0,
+        "size_bytes": 6202398
+      },
+      {
+        "width": 576,
+        "fps": 10.0,
+        "size_bytes": 5319976
+      },
+      {
+        "width": 480,
+        "fps": 10.0,
+        "size_bytes": 3895057
+      }
+    ],
+    "max_bytes": 5000000,
+    "real_time": true,
+    "frames": 219,
+    "tool": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+  },
+  "resources": {
+    "wall_s": 50.7,
+    "peak_rss_mb": 1965
+  }
+}

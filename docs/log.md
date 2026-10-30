@@ -1555,3 +1555,131 @@ All far below the 16 GB per-process cap.
   `results/m4_execute/videos/`): 4e103843db b_level recorded_v2 (fails at reach, palm 6.6 cm short), e8825dea53 b_level trial07 (approach
   knock), 4e103843db naive trial00, oracle mug_v1 trial00 (success), and e8825dea53 b_level recorded_v2 (success). GIF of that b_level
   success: `results/m4_execute/b_level_success.gif` (4.92 MB) — the 90° recorded-layout run could not be used because it failed.
+
+## M4b — diagnose and fix: robot-specific final approach + heading test
+
+All numbers below come from `results/m4b/summary.md` / `summary.json` (`python -m retarget.m4b_summary summarize`), `results/m4b/m4_category_v2.json`
+and `results/m4b/heading_sweep/`. Profile mug_v1, my mug at 0.40 kg, trials 0-49 (the oracle's 50 layouts).
+
+### Why
+The M4 failure analysis (from M4's saved rows) found two problems:
+- **The human final approach.** Most `b_level` failures pushed the mug more than 2 cm before the close. Following my final approach drives
+  the Dex3's open fingers, about 8 cm beyond the palm, through the mug. The oracle's straight final approach clears the mug by about
+  5.6 mm. The brief spoke of a "first overlap 6-9 cm before G", but the rows record only the DEEPEST overlap (collision_min.frame and its
+  remaining_arc_to_G_m), not the first one. The independent check found the deepest overlap typically 6-9 cm before G, and up to
+  12.6 cm.
+- **The heading.** On top-down and 90° the pre-grasp settle also misses, at palm headings of 82-86°.
+
+M4b tests one fix, a robot-specific final approach, and isolates the heading.
+
+### Step 1 — category_v2 (`retarget/m4b_summary.py`, no reruns)
+- **Definition:** "pushed mug before close" when the run failed before close_hand started and the mug's final xy is more than 2 cm from
+  its layout xy. Otherwise category_v2 is the run's own category.
+- **What "before close" means:** failed_phase "approach"; a "reach" failure of settle_pregrasp or settle_grasp (the last settle record,
+  asserted to be the one named in the reason); or a fall in a pre-close phase.
+- **M4 `b_level` failures re-filed as pushed:** 31/50 (26d), 25/50 (4e), 50/50 (49aff), 26/27 (e88), as the spec's numbers.
+- **M4 `b_tilt`:** 92/161 failures pushed; e88 `b_tilt` 0/33.
+- The run files are not edited.
+
+### Step 2 — `b_hybrid`, `b_hybrid_h45`
+- **Paths** (`retarget/paths_v2.py`: `hybrid_grasp`, `hybrid_path`):
+  - b_level's grasp (h45: R_ora at my grasp height); u = M3's horizontal unit vector of (q - G); PG = G - 0.08 u.
+  - My approach a0..g is warped onto p_r0 -> PG with M3's formula and z clamp, with no pause, and re-timed as one segment.
+  - The path then holds the oracle's straight leg PG -> G as a nominal record (phase "final_approach"). Close, transport, release and
+    retreat are built as M3 / v2 build them.
+- **Self-check (on every b_hybrid run):**
+  - The warp is linear in its end point, so the approach must equal M3's b_level approach plus w (PG - G). The largest difference is
+    5.6e-17 m on the smoke runs.
+  - The prelude and every frame from the close on are bit-identical to v2 b_level.
+- **Executor** (`sim/m4_execute.py`, `_object_aware(..., hybrid=True)`):
+  1. follow approach 1 (base "plan", base goal = `_goal(G, R_G)`).
+  2. `settle_or_fail` at PG (5 s).
+  3. The oracle's `move("approach", [(G, quat_G, 2.0)])`.
+  4. `settle_grasp` (3 s), then `check_cup_undisturbed`.
+  5. M4's steps 3-6 unchanged.
+- **Handle yaw:** b_hybrid_h45 uses the trial's own handle yaw (`variant_layout`); b_hybrid uses M4's (trial + (phi_h - phi_ora)).
+- **Collision window:** ends 1 cm of arc before PG.
+- **M4 unchanged:** 3 M4 rows re-run identical (`results/m4b/checks/`). The M4 summary regenerates identically (only the input-path
+  string differs). Two independent code reviews against the spec found nothing.
+- **Fix needed along the way:** `retarget/m4_summary.py` imported `VARIANTS`, which now includes the hybrids. It is pinned to
+  `M4_VARIANTS`.
+
+### Step 3 — heading sweep (`sim/m4b_heading_sweep.py`)
+- **Setup:** Track B final's mug_v1 oracle (`ForcePickPlace`, built as Track B built it) with `task.grasp` turned by delta = phi - 45 deg
+  about the cup axis: offset, quaternion and approach_dir. Handle yaw = trial + delta.
+- **Check (passed):** phi = 45 reproduces fifty.json's trials 0-19, 20/20 identical in every field except wall_s. It runs first, and
+  the command stops if it fails.
+
+### Results
+
+| clip (phi_h) | M4 b_level | b_hybrid | b_hybrid_h45 |
+|---|---|---|---|
+| 26d4118b0c top-down (81.9) | 0/50 | 22/50 | 43/50 |
+| 4e103843db 90° (85.8) | 0/50 | 14/50 | 46/50 |
+| 49aff04f7a 45° (81.7) | 0/50 | 27/50 | 46/50 |
+| e8825dea53 45° (61.7) | 23/50 | 49/50 | 44/50 |
+| pool | 23/200 | 112/200 (0.49-0.63) | 179/200 (0.84-0.93) |
+
+- **Oracle:** 44/50 on the same layouts.
+- **Heading sweep, success /20:** phi 45: 20, 55: 20, 65: 20, 75: 13, 85: 8.
+- **Paired comparisons:**
+  - b_hybrid vs b_level: b_hybrid wins 89 layouts and loses none (22 + 14 + 27 + 26).
+  - b_hybrid vs h45, on the three high-heading clips: h45 alone wins 22, 32 and 21 layouts; b_hybrid alone wins 1, 0 and 2.
+  - b_hybrid vs h45, on e88: b_hybrid alone wins 5, h45 alone 0.
+  - e88 b_hybrid vs the oracle: 44 both, 5 b_hybrid only, 0 oracle only.
+- **Failures:**
+  - b_hybrid: reach 74 (pre-grasp 49, place 20, grasp 5), knocks 14.
+  - h45: knocks 20, 1 lift slip. No reach failure.
+- **Collision (min mm):** b_hybrid successes median 12.6, 40 of 112 overlapping; b_hybrid failures median -27.5, 74 of 88 overlapping;
+  h45 successes median 50.4, 0 of 179 overlapping.
+
+### Reading
+The comparisons are a sequential ablation (M4 b_level -> b_hybrid -> b_hybrid_h45), not a factorial design: there is no "b_level at 45 deg"
+arm. So each step is tested only as the bundle of changes it makes, and the ranking of the two factors is not tested.
+
+- **Tested: the robot-specific approach bundle helps at my heading (23/200 -> 112/200, 89 layouts won, none lost).**
+  - Same in b_level and b_hybrid: the grasp, the layout, and every path frame from the close on (bit-identical, checked on all 200).
+  - Different, all bundled together:
+    - where the pre-grasp settle happens: PG, straight back from G, vs a point on my path 8 cm of arc before G;
+    - the approach before that point: my approach warped back to PG, re-timed as one segment and up to about 1 s longer;
+    - the final leg: the oracle's straight 2 s move vs my last 8 cm.
+  - Which part of the bundle matters is not separated.
+- **Tested: turning the grasp to the oracle's 45 deg helps on top of the hybrid approach (112/200 -> 179/200).**
+  - "Heading" means the whole grasp turned about the cup axis: G, PG, P and the retreat follow it, and the handle co-rotates
+    (b_hybrid: trial yaw + (phi_h - 45); h45: the trial's own yaw).
+  - Height, approach shape, transport and k are the same.
+  - The gain is all on the three clips with phi_h 81.7-85.8 deg (h45-only 22 / 32 / 21 layouts vs b_hybrid-only 1 / 0 / 2).
+  - On e88 (61.7 deg) b_hybrid is as good or better: 49 vs 44, paired 5 / 0.
+- **Not tested: which factor is larger.** Pooled, the approach step gains more (net +89 vs +67), but per clip it differs: on 4e the
+  heading step gains +32, the approach step +14.
+- **Tested on the scripted oracle alone:** success falls between 65 and 75 deg (20/20 -> 13/20; 85 deg: 8/20).
+- **Only suggested: why high headings fail.** There are two signals and they are not separated:
+  - Most b_hybrid reach failures give up at the pre-grasp (49) or place (20) settle, as at phi 85 in the sweep (5 pre-grasp, 3 place).
+  - All 49 pre-grasp reach failures and all 5 grasp-settle ones overlap the mug in the kinematic diagnostic on the way to PG (median
+    -36.9 mm), against 40/112 b_hybrid successes and 0/179 h45 successes. Yet none of the 49 moved the mug more than 2 cm.
+  - So either the arm's reach at those headings or contact on the way to PG could be the cause.
+  - In M4, 49aff (81.7 deg) had no pre-grasp reach failures at all, so the heading alone does not explain the pre-grasp misses.
+- **Data role, honestly:**
+  - Both hybrids drop my final ~8 cm of approach: it is replaced by the oracle's settle and straight move.
+  - h45 also drops my heading; it keeps my approach shape up to PG, my grasp height, my transport and my timing.
+  - b_hybrid keeps my heading as well, and matches or beats the oracle only on e88, whose heading is inside the range where the oracle
+    sweep stays at 20/20 (<= 65 deg).
+- **category_v2 caveat:** cup positions are saved to 0.1 mm, so labels within 0.2 mm of the 2 cm threshold depend on the rounding (7 runs,
+  listed in summary.md). Two of them are in M4b: h45 26d trial36 at 20.009 mm and b_hybrid 4e trial10 at 20.082 mm, both counted as
+  pushed.
+- **Process:**
+  - Two agent code reviews of Step 2 found nothing. They are not saved in the repo.
+  - An independent re-derivation from the raw rows matched every number in summary.md (263 checks).
+  - The same check flagged the overstated first draft of this Reading, rewritten as above.
+
+### Videos and resources
+- **Videos:**
+  - `results/m4b/videos/` (gitignored): e88 b_hybrid trial00 (success) and 26d b_hybrid trial00 (reach failure at settle_place). Both
+    re-runs are identical to their rows.
+  - GIF: `results/m4b/b_hybrid_success.gif`, 3.90 MB (480 px, 10 fps).
+  - Renderer: Mesa Intel.
+- **Resources:**
+  - Batch: 746 s on 8 workers (mean 14.9 s per run, max 21.1 s); peak RSS 1524-1627 MB per worker.
+  - Sweep: 126 s, at most 1658 MB per process.
+  - Render: 51 s, 1965 MB.
+  - No GPU.

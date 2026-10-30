@@ -1,0 +1,1227 @@
+{
+  "what": "M4b Step 4 summary (retarget/m4b_summary.py summarize)",
+  "sources": {
+    "hybrid_rows": "results/m4b/runs",
+    "m4_rows": "results/m4_execute/runs",
+    "oracle": "results/m1_grasp_fix/v3_final/runs/fifty.json",
+    "heading_sweep": "results/m4b/heading_sweep/runs.json",
+    "phi_h": "results/m3_retarget/human_values.json"
+  },
+  "definitions": {
+    "category_v2": "'pushed mug before close' if the run failed before the close phase and |cup_final xy - cup_xy| > 0.02 m, else category",
+    "wilson": "Wilson score interval, z = 1.96",
+    "collision_min": "retarget/collision.py, mm, negative = overlap; hybrids: window ends 1 cm before PG",
+    "categories": {
+      "approach": "missed/knocked cup",
+      "close": "missed/knocked cup",
+      "lift": "slip during lift",
+      "transport": "dropped while moving",
+      "lower": "dropped while moving",
+      "fell": "fell",
+      "reach": "palm could not reach the target",
+      "place": "released but not on the coaster"
+    }
+  },
+  "m4_category_v2": {
+    "b_level/26d4118b0c": {
+      "n": 50,
+      "successes": 0,
+      "failures": 50,
+      "category": {
+        "palm could not reach the target": 50
+      },
+      "category_v2": {
+        "pushed mug before close": 31,
+        "palm could not reach the target": 19
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 31,
+        "palm could not reach the target -> palm could not reach the target": 19
+      }
+    },
+    "b_level/4e103843db": {
+      "n": 50,
+      "successes": 0,
+      "failures": 50,
+      "category": {
+        "palm could not reach the target": 50
+      },
+      "category_v2": {
+        "pushed mug before close": 25,
+        "palm could not reach the target": 25
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 25,
+        "palm could not reach the target -> palm could not reach the target": 25
+      }
+    },
+    "b_level/49aff04f7a": {
+      "n": 50,
+      "successes": 0,
+      "failures": 50,
+      "category": {
+        "palm could not reach the target": 46,
+        "missed/knocked cup": 4
+      },
+      "category_v2": {
+        "pushed mug before close": 50
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 46,
+        "missed/knocked cup -> pushed mug before close": 4
+      }
+    },
+    "b_level/e8825dea53": {
+      "n": 50,
+      "successes": 23,
+      "failures": 27,
+      "category": {
+        "palm could not reach the target": 23,
+        "missed/knocked cup": 4
+      },
+      "category_v2": {
+        "pushed mug before close": 26,
+        "palm could not reach the target": 1
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 22,
+        "missed/knocked cup -> pushed mug before close": 4,
+        "palm could not reach the target -> palm could not reach the target": 1
+      }
+    },
+    "b_tilt/26d4118b0c": {
+      "n": 50,
+      "successes": 4,
+      "failures": 46,
+      "category": {
+        "palm could not reach the target": 45,
+        "missed/knocked cup": 1
+      },
+      "category_v2": {
+        "pushed mug before close": 28,
+        "palm could not reach the target": 18
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 27,
+        "palm could not reach the target -> palm could not reach the target": 18,
+        "missed/knocked cup -> pushed mug before close": 1
+      }
+    },
+    "b_tilt/4e103843db": {
+      "n": 50,
+      "successes": 0,
+      "failures": 50,
+      "category": {
+        "palm could not reach the target": 50
+      },
+      "category_v2": {
+        "pushed mug before close": 43,
+        "palm could not reach the target": 7
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 43,
+        "palm could not reach the target -> palm could not reach the target": 7
+      }
+    },
+    "b_tilt/49aff04f7a": {
+      "n": 50,
+      "successes": 18,
+      "failures": 32,
+      "category": {
+        "palm could not reach the target": 29,
+        "missed/knocked cup": 3
+      },
+      "category_v2": {
+        "pushed mug before close": 21,
+        "palm could not reach the target": 11
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 18,
+        "palm could not reach the target -> palm could not reach the target": 11,
+        "missed/knocked cup -> pushed mug before close": 3
+      }
+    },
+    "b_tilt/e8825dea53": {
+      "n": 50,
+      "successes": 17,
+      "failures": 33,
+      "category": {
+        "palm could not reach the target": 31,
+        "dropped while moving": 2
+      },
+      "category_v2": {
+        "palm could not reach the target": 31,
+        "dropped while moving": 2
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> palm could not reach the target": 31,
+        "dropped while moving -> dropped while moving": 2
+      }
+    }
+  },
+  "phi_h_deg": {
+    "26d4118b0c": 81.93991346704513,
+    "4e103843db": 85.84558610023504,
+    "49aff04f7a": 81.67776196222137,
+    "e8825dea53": 61.69248416329159
+  },
+  "main": {
+    "oracle": {
+      "successes": 44,
+      "n": 50,
+      "wilson95": [
+        0.762,
+        0.944
+      ],
+      "category": {
+        "missed/knocked cup": 5,
+        "slip during lift": 1
+      },
+      "category_v2": {
+        "pushed mug before close": 5,
+        "slip during lift": 1
+      }
+    },
+    "b_level": {
+      "26d4118b0c": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "category": {
+          "palm could not reach the target": 50
+        },
+        "category_v2": {
+          "pushed mug before close": 31,
+          "palm could not reach the target": 19
+        }
+      },
+      "4e103843db": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "category": {
+          "palm could not reach the target": 50
+        },
+        "category_v2": {
+          "pushed mug before close": 25,
+          "palm could not reach the target": 25
+        }
+      },
+      "49aff04f7a": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "category": {
+          "palm could not reach the target": 46,
+          "missed/knocked cup": 4
+        },
+        "category_v2": {
+          "pushed mug before close": 50
+        }
+      },
+      "e8825dea53": {
+        "successes": 23,
+        "n": 50,
+        "wilson95": [
+          0.33,
+          0.596
+        ],
+        "category": {
+          "palm could not reach the target": 23,
+          "missed/knocked cup": 4
+        },
+        "category_v2": {
+          "pushed mug before close": 26,
+          "palm could not reach the target": 1
+        }
+      },
+      "pool": {
+        "successes": 23,
+        "n": 200,
+        "wilson95": [
+          0.078,
+          0.167
+        ],
+        "category": {
+          "palm could not reach the target": 169,
+          "missed/knocked cup": 8
+        },
+        "category_v2": {
+          "pushed mug before close": 132,
+          "palm could not reach the target": 45
+        }
+      }
+    },
+    "b_hybrid": {
+      "26d4118b0c": {
+        "successes": 22,
+        "n": 50,
+        "wilson95": [
+          0.312,
+          0.577
+        ],
+        "category": {
+          "palm could not reach the target": 23,
+          "missed/knocked cup": 5
+        },
+        "category_v2": {
+          "palm could not reach the target": 21,
+          "pushed mug before close": 7
+        }
+      },
+      "4e103843db": {
+        "successes": 14,
+        "n": 50,
+        "wilson95": [
+          0.175,
+          0.417
+        ],
+        "category": {
+          "palm could not reach the target": 34,
+          "missed/knocked cup": 2
+        },
+        "category_v2": {
+          "palm could not reach the target": 33,
+          "pushed mug before close": 3
+        }
+      },
+      "49aff04f7a": {
+        "successes": 27,
+        "n": 50,
+        "wilson95": [
+          0.404,
+          0.67
+        ],
+        "category": {
+          "palm could not reach the target": 17,
+          "missed/knocked cup": 6
+        },
+        "category_v2": {
+          "palm could not reach the target": 15,
+          "pushed mug before close": 8
+        }
+      },
+      "e8825dea53": {
+        "successes": 49,
+        "n": 50,
+        "wilson95": [
+          0.895,
+          0.996
+        ],
+        "category": {
+          "missed/knocked cup": 1
+        },
+        "category_v2": {
+          "pushed mug before close": 1
+        }
+      },
+      "pool": {
+        "successes": 112,
+        "n": 200,
+        "wilson95": [
+          0.491,
+          0.627
+        ],
+        "category": {
+          "palm could not reach the target": 74,
+          "missed/knocked cup": 14
+        },
+        "category_v2": {
+          "palm could not reach the target": 69,
+          "pushed mug before close": 19
+        }
+      }
+    },
+    "b_hybrid_h45": {
+      "26d4118b0c": {
+        "successes": 43,
+        "n": 50,
+        "wilson95": [
+          0.738,
+          0.93
+        ],
+        "category": {
+          "missed/knocked cup": 7
+        },
+        "category_v2": {
+          "pushed mug before close": 7
+        }
+      },
+      "4e103843db": {
+        "successes": 46,
+        "n": 50,
+        "wilson95": [
+          0.812,
+          0.968
+        ],
+        "category": {
+          "missed/knocked cup": 4
+        },
+        "category_v2": {
+          "pushed mug before close": 4
+        }
+      },
+      "49aff04f7a": {
+        "successes": 46,
+        "n": 50,
+        "wilson95": [
+          0.812,
+          0.968
+        ],
+        "category": {
+          "missed/knocked cup": 4
+        },
+        "category_v2": {
+          "pushed mug before close": 4
+        }
+      },
+      "e8825dea53": {
+        "successes": 44,
+        "n": 50,
+        "wilson95": [
+          0.762,
+          0.944
+        ],
+        "category": {
+          "missed/knocked cup": 5,
+          "slip during lift": 1
+        },
+        "category_v2": {
+          "pushed mug before close": 5,
+          "slip during lift": 1
+        }
+      },
+      "pool": {
+        "successes": 179,
+        "n": 200,
+        "wilson95": [
+          0.845,
+          0.93
+        ],
+        "category": {
+          "missed/knocked cup": 20,
+          "slip during lift": 1
+        },
+        "category_v2": {
+          "pushed mug before close": 20,
+          "slip during lift": 1
+        }
+      }
+    }
+  },
+  "paired": {
+    "26d4118b0c": {
+      "b_level_vs_oracle": {
+        "both": 0,
+        "b_level_only": 0,
+        "oracle_only": 44,
+        "neither": 6
+      },
+      "b_hybrid_vs_oracle": {
+        "both": 20,
+        "b_hybrid_only": 2,
+        "oracle_only": 24,
+        "neither": 4
+      },
+      "b_hybrid_h45_vs_oracle": {
+        "both": 42,
+        "b_hybrid_h45_only": 1,
+        "oracle_only": 2,
+        "neither": 5
+      },
+      "b_hybrid_vs_b_level": {
+        "both": 0,
+        "b_hybrid_only": 22,
+        "b_level_only": 0,
+        "neither": 28
+      },
+      "b_hybrid_vs_b_hybrid_h45": {
+        "both": 21,
+        "b_hybrid_only": 1,
+        "b_hybrid_h45_only": 22,
+        "neither": 6
+      }
+    },
+    "4e103843db": {
+      "b_level_vs_oracle": {
+        "both": 0,
+        "b_level_only": 0,
+        "oracle_only": 44,
+        "neither": 6
+      },
+      "b_hybrid_vs_oracle": {
+        "both": 13,
+        "b_hybrid_only": 1,
+        "oracle_only": 31,
+        "neither": 5
+      },
+      "b_hybrid_h45_vs_oracle": {
+        "both": 43,
+        "b_hybrid_h45_only": 3,
+        "oracle_only": 1,
+        "neither": 3
+      },
+      "b_hybrid_vs_b_level": {
+        "both": 0,
+        "b_hybrid_only": 14,
+        "b_level_only": 0,
+        "neither": 36
+      },
+      "b_hybrid_vs_b_hybrid_h45": {
+        "both": 14,
+        "b_hybrid_only": 0,
+        "b_hybrid_h45_only": 32,
+        "neither": 4
+      }
+    },
+    "49aff04f7a": {
+      "b_level_vs_oracle": {
+        "both": 0,
+        "b_level_only": 0,
+        "oracle_only": 44,
+        "neither": 6
+      },
+      "b_hybrid_vs_oracle": {
+        "both": 23,
+        "b_hybrid_only": 4,
+        "oracle_only": 21,
+        "neither": 2
+      },
+      "b_hybrid_h45_vs_oracle": {
+        "both": 43,
+        "b_hybrid_h45_only": 3,
+        "oracle_only": 1,
+        "neither": 3
+      },
+      "b_hybrid_vs_b_level": {
+        "both": 0,
+        "b_hybrid_only": 27,
+        "b_level_only": 0,
+        "neither": 23
+      },
+      "b_hybrid_vs_b_hybrid_h45": {
+        "both": 25,
+        "b_hybrid_only": 2,
+        "b_hybrid_h45_only": 21,
+        "neither": 2
+      }
+    },
+    "e8825dea53": {
+      "b_level_vs_oracle": {
+        "both": 22,
+        "b_level_only": 1,
+        "oracle_only": 22,
+        "neither": 5
+      },
+      "b_hybrid_vs_oracle": {
+        "both": 44,
+        "b_hybrid_only": 5,
+        "oracle_only": 0,
+        "neither": 1
+      },
+      "b_hybrid_h45_vs_oracle": {
+        "both": 42,
+        "b_hybrid_h45_only": 2,
+        "oracle_only": 2,
+        "neither": 4
+      },
+      "b_hybrid_vs_b_level": {
+        "both": 23,
+        "b_hybrid_only": 26,
+        "b_level_only": 0,
+        "neither": 1
+      },
+      "b_hybrid_vs_b_hybrid_h45": {
+        "both": 44,
+        "b_hybrid_only": 5,
+        "b_hybrid_h45_only": 0,
+        "neither": 1
+      }
+    }
+  },
+  "reach_settles": {
+    "b_level": {
+      "26d4118b0c": {
+        "settle_pregrasp": 21,
+        "settle_grasp": 29,
+        "settle_place": 0
+      },
+      "4e103843db": {
+        "settle_pregrasp": 29,
+        "settle_grasp": 21,
+        "settle_place": 0
+      },
+      "49aff04f7a": {
+        "settle_pregrasp": 0,
+        "settle_grasp": 46,
+        "settle_place": 0
+      },
+      "e8825dea53": {
+        "settle_pregrasp": 0,
+        "settle_grasp": 23,
+        "settle_place": 0
+      }
+    },
+    "b_hybrid": {
+      "26d4118b0c": {
+        "settle_pregrasp": 15,
+        "settle_grasp": 2,
+        "settle_place": 6
+      },
+      "4e103843db": {
+        "settle_pregrasp": 25,
+        "settle_grasp": 1,
+        "settle_place": 8
+      },
+      "49aff04f7a": {
+        "settle_pregrasp": 9,
+        "settle_grasp": 2,
+        "settle_place": 6
+      },
+      "e8825dea53": {
+        "settle_pregrasp": 0,
+        "settle_grasp": 0,
+        "settle_place": 0
+      }
+    },
+    "b_hybrid_h45": {
+      "26d4118b0c": {
+        "settle_pregrasp": 0,
+        "settle_grasp": 0,
+        "settle_place": 0
+      },
+      "4e103843db": {
+        "settle_pregrasp": 0,
+        "settle_grasp": 0,
+        "settle_place": 0
+      },
+      "49aff04f7a": {
+        "settle_pregrasp": 0,
+        "settle_grasp": 0,
+        "settle_place": 0
+      },
+      "e8825dea53": {
+        "settle_pregrasp": 0,
+        "settle_grasp": 0,
+        "settle_place": 0
+      }
+    }
+  },
+  "heading_sweep": {
+    "phi45_reproduces_track_b": true,
+    "rows": [
+      {
+        "phi_deg": 45,
+        "successes": 20,
+        "n": 20,
+        "wilson95": [
+          0.839,
+          1.0
+        ],
+        "category": {},
+        "category_v2": {},
+        "reach_settle": {}
+      },
+      {
+        "phi_deg": 55,
+        "successes": 20,
+        "n": 20,
+        "wilson95": [
+          0.839,
+          1.0
+        ],
+        "category": {},
+        "category_v2": {},
+        "reach_settle": {}
+      },
+      {
+        "phi_deg": 65,
+        "successes": 20,
+        "n": 20,
+        "wilson95": [
+          0.839,
+          1.0
+        ],
+        "category": {},
+        "category_v2": {},
+        "reach_settle": {}
+      },
+      {
+        "phi_deg": 75,
+        "successes": 13,
+        "n": 20,
+        "wilson95": [
+          0.433,
+          0.819
+        ],
+        "category": {
+          "missed/knocked cup": 4,
+          "palm could not reach the target": 2,
+          "slip during lift": 1
+        },
+        "category_v2": {
+          "pushed mug before close": 4,
+          "palm could not reach the target": 2,
+          "slip during lift": 1
+        },
+        "reach_settle": {
+          "settle_place": 2
+        }
+      },
+      {
+        "phi_deg": 85,
+        "successes": 8,
+        "n": 20,
+        "wilson95": [
+          0.219,
+          0.613
+        ],
+        "category": {
+          "palm could not reach the target": 8,
+          "missed/knocked cup": 3,
+          "slip during lift": 1
+        },
+        "category_v2": {
+          "palm could not reach the target": 8,
+          "pushed mug before close": 2,
+          "missed/knocked cup": 1,
+          "slip during lift": 1
+        },
+        "reach_settle": {
+          "settle_place": 3,
+          "settle_pregrasp": 5
+        }
+      }
+    ],
+    "plot": "heading_sweep.png"
+  },
+  "collision": {
+    "b_hybrid": {
+      "success": {
+        "n": 112,
+        "median": 12.6,
+        "min": -37.3,
+        "max": 55.3,
+        "overlap": 40
+      },
+      "failure": {
+        "n": 88,
+        "median": -27.5,
+        "min": -41.7,
+        "max": 37.0,
+        "overlap": 74
+      },
+      "failure_by_category_v2": {
+        "palm could not reach the target": {
+          "n": 69,
+          "median": -31.0,
+          "min": -41.7,
+          "max": 37.0,
+          "overlap": 57
+        },
+        "pushed mug before close": {
+          "n": 19,
+          "median": -13.6,
+          "min": -38.5,
+          "max": 33.2,
+          "overlap": 17
+        }
+      },
+      "reach_by_settle": {
+        "settle_pregrasp": {
+          "n": 49,
+          "median": -36.9,
+          "min": -41.7,
+          "max": -0.9,
+          "overlap": 49
+        },
+        "settle_grasp": {
+          "n": 5,
+          "median": -25.4,
+          "min": -35.8,
+          "max": -2.9,
+          "overlap": 5
+        },
+        "settle_place": {
+          "n": 20,
+          "median": 3.1,
+          "min": -19.4,
+          "max": 37.0,
+          "overlap": 8
+        }
+      }
+    },
+    "b_hybrid_h45": {
+      "success": {
+        "n": 179,
+        "median": 50.4,
+        "min": 5.0,
+        "max": 59.0,
+        "overlap": 0
+      },
+      "failure": {
+        "n": 21,
+        "median": 25.6,
+        "min": -6.0,
+        "max": 47.5,
+        "overlap": 3
+      },
+      "failure_by_category_v2": {
+        "pushed mug before close": {
+          "n": 20,
+          "median": 23.7,
+          "min": -6.0,
+          "max": 47.5,
+          "overlap": 3
+        },
+        "slip during lift": {
+          "n": 1,
+          "median": 27.3,
+          "min": 27.3,
+          "max": 27.3,
+          "overlap": 0
+        }
+      },
+      "reach_by_settle": {
+        "settle_pregrasp": null,
+        "settle_grasp": null,
+        "settle_place": null
+      }
+    },
+    "b_level (M4; window ends 1 cm before G)": {
+      "success": {
+        "n": 23,
+        "median": -2.1,
+        "min": -21.9,
+        "max": 0.6,
+        "overlap": 21
+      },
+      "failure": {
+        "n": 177,
+        "median": -37.2,
+        "min": -58.4,
+        "max": -0.2,
+        "overlap": 177
+      },
+      "failure_by_category_v2": {
+        "palm could not reach the target": {
+          "n": 45,
+          "median": -55.2,
+          "min": -58.4,
+          "max": -0.2,
+          "overlap": 45
+        },
+        "pushed mug before close": {
+          "n": 132,
+          "median": -31.4,
+          "min": -56.6,
+          "max": -0.9,
+          "overlap": 132
+        }
+      },
+      "reach_by_settle": {
+        "settle_pregrasp": {
+          "n": 50,
+          "median": -55.3,
+          "min": -58.4,
+          "max": -40.8,
+          "overlap": 50
+        },
+        "settle_grasp": {
+          "n": 119,
+          "median": -31.4,
+          "min": -54.5,
+          "max": -0.2,
+          "overlap": 119
+        },
+        "settle_place": null
+      }
+    }
+  },
+  "category_v2_near_threshold": [
+    {
+      "run": "26d4118b0c__b_hybrid_h45__trial36",
+      "cup_shift_mm": 20.009,
+      "category_v2": "pushed mug before close"
+    },
+    {
+      "run": "4e103843db__b_hybrid__trial10",
+      "cup_shift_mm": 20.082,
+      "category_v2": "pushed mug before close"
+    },
+    {
+      "run": "49aff04f7a__b_tilt__trial07",
+      "cup_shift_mm": 19.99,
+      "category_v2": "palm could not reach the target"
+    },
+    {
+      "run": "49aff04f7a__b_tilt__trial31",
+      "cup_shift_mm": 19.867,
+      "category_v2": "palm could not reach the target"
+    },
+    {
+      "run": "49aff04f7a__b_tilt__trial49",
+      "cup_shift_mm": 20.173,
+      "category_v2": "pushed mug before close"
+    },
+    {
+      "run": "4e103843db__b_tilt__trial02",
+      "cup_shift_mm": 19.936,
+      "category_v2": "palm could not reach the target"
+    },
+    {
+      "run": "phi85_trial06",
+      "cup_shift_mm": 19.983,
+      "category_v2": "missed/knocked cup"
+    }
+  ],
+  "video_picks": {
+    "best_clip": "e8825dea53",
+    "best_clip_successes": 49,
+    "best_success": "e8825dea53__b_hybrid__trial00",
+    "failure_category_v2": "palm could not reach the target",
+    "failure": "26d4118b0c__b_hybrid__trial00"
+  },
+  "videos": {
+    "rule": "retarget/m4b_summary.py video_picks: the best clip's first b_hybrid success (trial order); the first b_hybrid failure of the most common b_hybrid category_v2",
+    "renderer": "Intel / Mesa Intel(R) Graphics (ARL) (EGL)",
+    "camera": "grasp_right",
+    "resolution": "1280x720",
+    "fps": "25 (one frame per 2 control steps of 50 Hz)",
+    "videos": [
+      {
+        "run": "e8825dea53__b_hybrid__trial00",
+        "video": "results/m4b/videos/e8825dea53__b_hybrid__trial00.mp4",
+        "saved_row": "results/m4b/runs/e8825dea53__b_hybrid__trial00.json",
+        "saved_success": true,
+        "saved_category": null,
+        "rerun_success": true,
+        "rerun_category": null,
+        "identical": true,
+        "fields_differing": [],
+        "control_steps": 1095,
+        "frames_in_file": 547,
+        "width": 1280,
+        "height": 720,
+        "fps": "25/1",
+        "size_bytes": 5237393
+      },
+      {
+        "run": "26d4118b0c__b_hybrid__trial00",
+        "video": "results/m4b/videos/26d4118b0c__b_hybrid__trial00.mp4",
+        "saved_row": "results/m4b/runs/26d4118b0c__b_hybrid__trial00.json",
+        "saved_success": false,
+        "saved_category": "palm could not reach the target",
+        "rerun_success": false,
+        "rerun_category": "palm could not reach the target",
+        "identical": true,
+        "fields_differing": [],
+        "control_steps": 1119,
+        "frames_in_file": 559,
+        "width": 1280,
+        "height": 720,
+        "fps": "25/1",
+        "size_bytes": 5562932
+      }
+    ],
+    "gif": {
+      "run": "e8825dea53__b_hybrid__trial00",
+      "file": "results/m4b/b_hybrid_success.gif",
+      "source": "results/m4b/videos/e8825dea53__b_hybrid__trial00.mp4",
+      "chosen": {
+        "width": 480,
+        "fps": 10.0,
+        "size_bytes": 3895057
+      },
+      "tried": [
+        {
+          "width": 960,
+          "fps": 12.5,
+          "size_bytes": 15702068
+        },
+        {
+          "width": 800,
+          "fps": 10.0,
+          "size_bytes": 9490070
+        },
+        {
+          "width": 640,
+          "fps": 10.0,
+          "size_bytes": 6202398
+        },
+        {
+          "width": 576,
+          "fps": 10.0,
+          "size_bytes": 5319976
+        },
+        {
+          "width": 480,
+          "fps": 10.0,
+          "size_bytes": 3895057
+        }
+      ],
+      "max_bytes": 5000000,
+      "real_time": true,
+      "frames": 219,
+      "tool": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+    },
+    "resources": {
+      "wall_s": 50.7,
+      "peak_rss_mb": 1965
+    }
+  },
+  "resources_runs": [
+    {
+      "command": "run",
+      "items": 400,
+      "workers": 8,
+      "paths": "v2",
+      "diagnostics": [
+        "sim.m4_execute:collision_diagnostic"
+      ],
+      "wall_s": 746.1,
+      "parent_peak_rss_mb": 64,
+      "per_process_peak_rss_mb": [
+        1524,
+        1526,
+        1538,
+        1543,
+        1590,
+        1601,
+        1607,
+        1627
+      ],
+      "errors": [],
+      "successes": 291,
+      "gpu": "none (CPU only, onnxruntime CPU)"
+    }
+  ],
+  "resources_sweep": {
+    "wall_s": 125.7,
+    "workers": 8,
+    "per_process": [
+      {
+        "phi_deg": 45,
+        "trials": [
+          0,
+          1,
+          2
+        ],
+        "wall_s": 27.1,
+        "peak_rss_mb": 1541
+      },
+      {
+        "phi_deg": 45,
+        "trials": [
+          3,
+          4,
+          5
+        ],
+        "wall_s": 27.5,
+        "peak_rss_mb": 1563
+      },
+      {
+        "phi_deg": 45,
+        "trials": [
+          6,
+          7,
+          8
+        ],
+        "wall_s": 27.4,
+        "peak_rss_mb": 1603
+      },
+      {
+        "phi_deg": 45,
+        "trials": [
+          9,
+          10,
+          11
+        ],
+        "wall_s": 26.5,
+        "peak_rss_mb": 1648
+      },
+      {
+        "phi_deg": 45,
+        "trials": [
+          12,
+          13
+        ],
+        "wall_s": 19.9,
+        "peak_rss_mb": 1599
+      },
+      {
+        "phi_deg": 45,
+        "trials": [
+          14,
+          15
+        ],
+        "wall_s": 21.5,
+        "peak_rss_mb": 1533
+      },
+      {
+        "phi_deg": 45,
+        "trials": [
+          16,
+          17
+        ],
+        "wall_s": 21.7,
+        "peak_rss_mb": 1614
+      },
+      {
+        "phi_deg": 45,
+        "trials": [
+          18,
+          19
+        ],
+        "wall_s": 20.9,
+        "peak_rss_mb": 1602
+      },
+      {
+        "phi_deg": 55,
+        "trials": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "wall_s": 96.7,
+        "peak_rss_mb": 1596
+      },
+      {
+        "phi_deg": 55,
+        "trials": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "wall_s": 96.3,
+        "peak_rss_mb": 1592
+      },
+      {
+        "phi_deg": 65,
+        "trials": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "wall_s": 97.9,
+        "peak_rss_mb": 1565
+      },
+      {
+        "phi_deg": 65,
+        "trials": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "wall_s": 97.8,
+        "peak_rss_mb": 1535
+      },
+      {
+        "phi_deg": 75,
+        "trials": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "wall_s": 91.4,
+        "peak_rss_mb": 1588
+      },
+      {
+        "phi_deg": 75,
+        "trials": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "wall_s": 94.0,
+        "peak_rss_mb": 1545
+      },
+      {
+        "phi_deg": 85,
+        "trials": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "wall_s": 89.1,
+        "peak_rss_mb": 1565
+      },
+      {
+        "phi_deg": 85,
+        "trials": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "wall_s": 93.1,
+        "peak_rss_mb": 1658
+      }
+    ],
+    "gpu": "none (CPU only)"
+  }
+}

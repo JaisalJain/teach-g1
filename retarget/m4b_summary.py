@@ -155,8 +155,19 @@ def collision(rows: list[dict]) -> dict:
     mm = lambda r: r["collision_min"]["min_mm"]
     assert all(r["collision_min"] and r["collision_min"]["mapping_passed"] for r in rows), "a collision diagnostic is missing or unmapped"
     fails = [r for r in rows if not r["success"]]
+    reach = [r for r in fails if r["failed_phase"] == "reach"]
     return dict(success=stats_mm([mm(r) for r in rows if r["success"]]), failure=stats_mm([mm(r) for r in fails]),
-                failure_by_category_v2={c: stats_mm([mm(r) for r in fails if category_v2(r) == c]) for c in sorted({category_v2(r) for r in fails})})
+                failure_by_category_v2={c: stats_mm([mm(r) for r in fails if category_v2(r) == c]) for c in sorted({category_v2(r) for r in fails})},
+                reach_by_settle={st: stats_mm([mm(r) for r in reach if r["settles"][-1]["phase"] == st]) for st in SETTLES})
+
+
+NEAR_M = 0.0002                                 # category_v2 labels within 0.2 mm of the 2 cm threshold (positions are saved to 0.1 mm)
+
+
+def near_threshold(rows: list[dict]) -> list[dict]:
+    """Failed-before-close runs whose mug shift is within NEAR_M of PUSH_M: their category_v2 depends on the 0.1 mm rounding."""
+    return [dict(run=r.get("run", f"phi{r.get('phi_deg')}_trial{r['trial']:02d}"), cup_shift_mm=round(cup_shift_m(r) * 1e3, 3), category_v2=category_v2(r))
+            for r in rows if not r["success"] and failed_before_close(r) and abs(cup_shift_m(r) - PUSH_M) < NEAR_M]
 
 
 def reach_settles(rows: list[dict]) -> dict:
@@ -190,13 +201,14 @@ def sweep_plot(sweep: dict, phi_h: dict, path: Path):
     lo = np.array([s["wilson95"][0] for s in sweep]); hi = np.array([s["wilson95"][1] for s in sweep])
     fig, ax = plt.subplots(figsize=(7, 4), dpi=150)
     ax.errorbar(phis, k / n, yerr=[k / n - lo, hi - k / n], color=BLUE, marker="o", capsize=4, lw=2, label="oracle mug_v1, grasp turned to phi (20 layouts each)")
-    for i, (clip, phi) in enumerate(sorted(phi_h.items(), key=lambda x: x[1])):
+    for phi in phi_h.values():
         ax.axvline(phi, color=ORANGE, ls="--", lw=1)
-        ax.text(phi, 1.02 + 0.06 * (i % 2), f"{clip[:5]} ({VIEW[clip]})", rotation=0, ha="center", va="bottom", fontsize=7, color=ORANGE)
-    ax.set(xlabel="palm heading phi [deg] (oracle 45)", ylabel="success rate (Wilson 95 %)", ylim=(0, 1.0), xticks=phis)
+    ax.plot([], [], color=ORANGE, ls="--", lw=1, label="my clips' phi_h: " + ", ".join(
+        f"{c[:5]} {VIEW[c]} {phi:.1f}" for c, phi in sorted(phi_h.items(), key=lambda x: x[1])))
+    ax.set(xlabel="palm heading phi [deg] (oracle 45)", ylabel="success rate (Wilson 95 %)", ylim=(0, 1.05), xticks=phis)
     ax.spines[["top", "right"]].set_visible(False)
-    ax.legend(loc="lower left", fontsize=8, frameon=False)
-    ax.set_title("Heading sweep; dashed = my clips' phi_h", fontsize=9, loc="left", pad=22)
+    ax.legend(loc="lower left", fontsize=7, frameon=False)
+    ax.set_title("Heading sweep: the oracle's grasp turned about the cup axis", fontsize=9, loc="left")
     fig.tight_layout()
     fig.savefig(path)
     plt.close(fig)
@@ -242,6 +254,8 @@ def cmd_summarize(args):
                              for v in ("b_level", "b_tilt") for c in [*CLIPS]},
              phi_h_deg=phi_h, main=main, paired=pairs, reach_settles={v: {c: reach_settles(by_trial(c, v, runs_from)) for c in CLIPS} for v in VARIANTS},
              heading_sweep=dict(phi45_reproduces_track_b=sw["phi45_check"], rows=sweep, plot="heading_sweep.png"), collision=coll,
+             category_v2_near_threshold=near_threshold([*hyb.values(), *[r for r in load_rows(M4_DIR / "runs").values() if r["trial"] is not None],
+                                                         *sw["runs"], *oracle]),
              video_picks=video_picks(hyb), videos=json.loads(VIDEOS.read_text()) if VIDEOS.exists() else None,
              resources_runs=[json.loads(p.read_text()) for p in sorted(args.out.glob("run_resources_*.json"))], resources_sweep=sw["resources"])
     (args.out / "summary.json").write_text(json.dumps(s, indent=2))
@@ -299,6 +313,9 @@ def render(s: dict) -> str:
         L.append(f"| {v} | {f(d['success'])} | {f(d['failure'])} |")
     for v, d in s["collision"].items():
         L.append(f"- {v} failures by category_v2: " + "; ".join(f"{c}: {f(x)}" for c, x in d["failure_by_category_v2"].items()))
+        L.append(f"- {v} reach failures by the settle that gave up: " + "; ".join(f"{c}: {f(x)}" for c, x in d["reach_by_settle"].items()))
+    L += ["", f"category_v2 labels within {NEAR_M * 1e3:.1f} mm of the 2 cm threshold (cup positions are saved to 0.1 mm, so these depend on "
+          "the rounding): " + ("; ".join(f"{x['run']} {x['cup_shift_mm']} mm -> {x['category_v2']}" for x in s["category_v2_near_threshold"]) or "none")]
     vp = s["video_picks"]
     L += ["", "## Videos", "", f"Picks (fixed rules, `video_picks`): best clip {vp['best_clip']} ({vp['best_clip_successes']}/50 b_hybrid successes): "
           f"success {vp['best_success']}; failure ({vp['failure_category_v2']}): {vp['failure']}."]

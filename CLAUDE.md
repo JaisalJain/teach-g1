@@ -274,6 +274,29 @@ Code in `retarget/` (hoi-sim, kinematic only), outputs in `results/m3_retarget/`
 - **Check order:** `settle_grasp` runs before `check_cup_undisturbed`, so a mug pushed by the open hand is usually filed as "reach" (palm could not reach the target), not "missed/knocked cup"; look at `detail.cup_final` vs `cup_xy` before reading "reach" as unreachable.
 - **Collision diagnostic:** `retarget.collision.collision_min` (min signed distance, right-hand geoms to the mug, over the approach window on M3's single-plan IK clip), information only, never a gate.
 - **M4 results:** `results/m4_execute/summary.md` (62/600 trial-run successes; oracle 44/50 on the same layouts; b_level 23/200, b_tilt 39/200, naive 0/200; 1/4 on the recorded layout v2). Regenerate with `python -m retarget.m4_summary`; rerun any row with `python -m sim.m4_execute rerun --row <row.json> --report <file>`.
+- **M4b hybrid (`paths_v2.hybrid_path`; variants `b_hybrid`, `b_hybrid_h45`):**
+  - Grasp: b_hybrid uses b_level's grasp; h45 uses R_ora at my grasp height (`hybrid_grasp`).
+  - u = M3's horizontal unit vector of (q - G); PG = G - 0.08 u.
+  - Approach: my a0..g warped onto p_r0 -> PG (M3's formula and z clamp), no pause, re-timed as one segment (i_pause = PG). Then the
+    oracle's settle at PG (5 s) and its own `move` PG -> G (2.0 s); path frames i_pause..i_G (phase "final_approach") are that leg's
+    nominal record.
+  - Close to retreat: M4's b executor.
+  - Handle yaw: h45 uses the trial's own (`variant_layout`).
+  - Collision window ends 1 cm of arc before PG.
+  - b_hybrid self-checks against v2 b_level on every build.
+- **category_v2 (`retarget/m4b_summary.py`):** "pushed mug before close" if the run failed before close_hand (approach check, a
+  pre-grasp / grasp settle, or a fall before the close) and |cup_final xy - cup_xy| > 2 cm; otherwise `category`. It is computed from
+  the rows; the rows are never edited.
+- **Heading sweep (`sim/m4b_heading_sweep.py`):**
+  - Track B final's mug_v1 oracle with `task.grasp` turned by phi - 45 deg about the cup axis (offset, quaternion, approach_dir);
+    handle yaw = trial + delta.
+  - Trials 0-19.
+  - phi = 45 must reproduce fifty.json exactly.
+- **M4b results:** `results/m4b/summary.md`.
+  - b_hybrid 112/200; b_hybrid_h45 179/200; oracle 44/50.
+  - Sweep: phi 45/55/65 20/20, 75 13/20, 85 8/20.
+  - The comparisons are a sequential ablation (approach bundle, then heading), so the ranking of the two factors is not tested.
+  - Regenerate with `python -m retarget.m4b_summary summarize`.
 
 ---
 
