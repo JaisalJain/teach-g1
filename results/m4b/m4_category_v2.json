@@ -1,0 +1,3513 @@
+{
+  "rule": "category_v2 = 'pushed mug before close' if the run failed before the close phase and |cup_final xy - cup_xy| > 0.02 m, else category (retarget/m4b_summary.py)",
+  "runs_dir": "results/m4_execute/runs",
+  "rows": 604,
+  "groups": {
+    "b_level/26d4118b0c/trials": {
+      "n": 50,
+      "successes": 0,
+      "failures": 50,
+      "category": {
+        "palm could not reach the target": 50
+      },
+      "category_v2": {
+        "pushed mug before close": 31,
+        "palm could not reach the target": 19
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 31,
+        "palm could not reach the target -> palm could not reach the target": 19
+      }
+    },
+    "b_level/4e103843db/trials": {
+      "n": 50,
+      "successes": 0,
+      "failures": 50,
+      "category": {
+        "palm could not reach the target": 50
+      },
+      "category_v2": {
+        "pushed mug before close": 25,
+        "palm could not reach the target": 25
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 25,
+        "palm could not reach the target -> palm could not reach the target": 25
+      }
+    },
+    "b_level/49aff04f7a/trials": {
+      "n": 50,
+      "successes": 0,
+      "failures": 50,
+      "category": {
+        "palm could not reach the target": 46,
+        "missed/knocked cup": 4
+      },
+      "category_v2": {
+        "pushed mug before close": 50
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 46,
+        "missed/knocked cup -> pushed mug before close": 4
+      }
+    },
+    "b_level/e8825dea53/trials": {
+      "n": 50,
+      "successes": 23,
+      "failures": 27,
+      "category": {
+        "palm could not reach the target": 23,
+        "missed/knocked cup": 4
+      },
+      "category_v2": {
+        "pushed mug before close": 26,
+        "palm could not reach the target": 1
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 22,
+        "missed/knocked cup -> pushed mug before close": 4,
+        "palm could not reach the target -> palm could not reach the target": 1
+      }
+    },
+    "b_level/pool/trials": {
+      "n": 200,
+      "successes": 23,
+      "failures": 177,
+      "category": {
+        "palm could not reach the target": 169,
+        "missed/knocked cup": 8
+      },
+      "category_v2": {
+        "pushed mug before close": 132,
+        "palm could not reach the target": 45
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 124,
+        "palm could not reach the target -> palm could not reach the target": 45,
+        "missed/knocked cup -> pushed mug before close": 8
+      }
+    },
+    "b_tilt/26d4118b0c/trials": {
+      "n": 50,
+      "successes": 4,
+      "failures": 46,
+      "category": {
+        "palm could not reach the target": 45,
+        "missed/knocked cup": 1
+      },
+      "category_v2": {
+        "pushed mug before close": 28,
+        "palm could not reach the target": 18
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 27,
+        "palm could not reach the target -> palm could not reach the target": 18,
+        "missed/knocked cup -> pushed mug before close": 1
+      }
+    },
+    "b_tilt/4e103843db/trials": {
+      "n": 50,
+      "successes": 0,
+      "failures": 50,
+      "category": {
+        "palm could not reach the target": 50
+      },
+      "category_v2": {
+        "pushed mug before close": 43,
+        "palm could not reach the target": 7
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 43,
+        "palm could not reach the target -> palm could not reach the target": 7
+      }
+    },
+    "b_tilt/49aff04f7a/trials": {
+      "n": 50,
+      "successes": 18,
+      "failures": 32,
+      "category": {
+        "palm could not reach the target": 29,
+        "missed/knocked cup": 3
+      },
+      "category_v2": {
+        "pushed mug before close": 21,
+        "palm could not reach the target": 11
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 18,
+        "palm could not reach the target -> palm could not reach the target": 11,
+        "missed/knocked cup -> pushed mug before close": 3
+      }
+    },
+    "b_tilt/e8825dea53/trials": {
+      "n": 50,
+      "successes": 17,
+      "failures": 33,
+      "category": {
+        "palm could not reach the target": 31,
+        "dropped while moving": 2
+      },
+      "category_v2": {
+        "palm could not reach the target": 31,
+        "dropped while moving": 2
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> palm could not reach the target": 31,
+        "dropped while moving -> dropped while moving": 2
+      }
+    },
+    "b_tilt/pool/trials": {
+      "n": 200,
+      "successes": 39,
+      "failures": 161,
+      "category": {
+        "palm could not reach the target": 155,
+        "missed/knocked cup": 4,
+        "dropped while moving": 2
+      },
+      "category_v2": {
+        "pushed mug before close": 92,
+        "palm could not reach the target": 67,
+        "dropped while moving": 2
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 88,
+        "palm could not reach the target -> palm could not reach the target": 67,
+        "missed/knocked cup -> pushed mug before close": 4,
+        "dropped while moving -> dropped while moving": 2
+      }
+    },
+    "naive/26d4118b0c/trials": {
+      "n": 50,
+      "successes": 0,
+      "failures": 50,
+      "category": {
+        "released but not on the coaster": 50
+      },
+      "category_v2": {
+        "released but not on the coaster": 50
+      },
+      "category_to_v2": {
+        "released but not on the coaster -> released but not on the coaster": 50
+      }
+    },
+    "naive/4e103843db/trials": {
+      "n": 50,
+      "successes": 0,
+      "failures": 50,
+      "category": {
+        "released but not on the coaster": 50
+      },
+      "category_v2": {
+        "released but not on the coaster": 50
+      },
+      "category_to_v2": {
+        "released but not on the coaster -> released but not on the coaster": 50
+      }
+    },
+    "naive/49aff04f7a/trials": {
+      "n": 50,
+      "successes": 0,
+      "failures": 50,
+      "category": {
+        "released but not on the coaster": 50
+      },
+      "category_v2": {
+        "released but not on the coaster": 50
+      },
+      "category_to_v2": {
+        "released but not on the coaster -> released but not on the coaster": 50
+      }
+    },
+    "naive/e8825dea53/trials": {
+      "n": 50,
+      "successes": 0,
+      "failures": 50,
+      "category": {
+        "released but not on the coaster": 50
+      },
+      "category_v2": {
+        "released but not on the coaster": 50
+      },
+      "category_to_v2": {
+        "released but not on the coaster -> released but not on the coaster": 50
+      }
+    },
+    "naive/pool/trials": {
+      "n": 200,
+      "successes": 0,
+      "failures": 200,
+      "category": {
+        "released but not on the coaster": 200
+      },
+      "category_v2": {
+        "released but not on the coaster": 200
+      },
+      "category_to_v2": {
+        "released but not on the coaster -> released but not on the coaster": 200
+      }
+    },
+    "b_level/recorded_v2": {
+      "n": 4,
+      "successes": 1,
+      "failures": 3,
+      "category": {
+        "palm could not reach the target": 3
+      },
+      "category_v2": {
+        "pushed mug before close": 3
+      },
+      "category_to_v2": {
+        "palm could not reach the target -> pushed mug before close": 3
+      }
+    }
+  },
+  "runs": {
+    "26d4118b0c__b_level__recorded_v2": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.82
+    },
+    "26d4118b0c__b_level__trial00": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 6.01
+    },
+    "26d4118b0c__b_level__trial01": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.69
+    },
+    "26d4118b0c__b_level__trial02": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 6.5
+    },
+    "26d4118b0c__b_level__trial03": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.63
+    },
+    "26d4118b0c__b_level__trial04": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.72
+    },
+    "26d4118b0c__b_level__trial05": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.65
+    },
+    "26d4118b0c__b_level__trial06": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.43
+    },
+    "26d4118b0c__b_level__trial07": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.59
+    },
+    "26d4118b0c__b_level__trial08": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.18
+    },
+    "26d4118b0c__b_level__trial09": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.9
+    },
+    "26d4118b0c__b_level__trial10": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.54
+    },
+    "26d4118b0c__b_level__trial11": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.38
+    },
+    "26d4118b0c__b_level__trial12": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.68
+    },
+    "26d4118b0c__b_level__trial13": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.53
+    },
+    "26d4118b0c__b_level__trial14": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.96
+    },
+    "26d4118b0c__b_level__trial15": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.33
+    },
+    "26d4118b0c__b_level__trial16": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.53
+    },
+    "26d4118b0c__b_level__trial17": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.92
+    },
+    "26d4118b0c__b_level__trial18": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.99
+    },
+    "26d4118b0c__b_level__trial19": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.14
+    },
+    "26d4118b0c__b_level__trial20": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.97
+    },
+    "26d4118b0c__b_level__trial21": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.65
+    },
+    "26d4118b0c__b_level__trial22": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.42
+    },
+    "26d4118b0c__b_level__trial23": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.22
+    },
+    "26d4118b0c__b_level__trial24": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.09
+    },
+    "26d4118b0c__b_level__trial25": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.19
+    },
+    "26d4118b0c__b_level__trial26": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.3
+    },
+    "26d4118b0c__b_level__trial27": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.05
+    },
+    "26d4118b0c__b_level__trial28": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.21
+    },
+    "26d4118b0c__b_level__trial29": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.45
+    },
+    "26d4118b0c__b_level__trial30": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.72
+    },
+    "26d4118b0c__b_level__trial31": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.86
+    },
+    "26d4118b0c__b_level__trial32": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.6
+    },
+    "26d4118b0c__b_level__trial33": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.38
+    },
+    "26d4118b0c__b_level__trial34": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.22
+    },
+    "26d4118b0c__b_level__trial35": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.75
+    },
+    "26d4118b0c__b_level__trial36": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.39
+    },
+    "26d4118b0c__b_level__trial37": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.55
+    },
+    "26d4118b0c__b_level__trial38": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.4
+    },
+    "26d4118b0c__b_level__trial39": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.86
+    },
+    "26d4118b0c__b_level__trial40": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 6.01
+    },
+    "26d4118b0c__b_level__trial41": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.52
+    },
+    "26d4118b0c__b_level__trial42": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.58
+    },
+    "26d4118b0c__b_level__trial43": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.6
+    },
+    "26d4118b0c__b_level__trial44": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.29
+    },
+    "26d4118b0c__b_level__trial45": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.31
+    },
+    "26d4118b0c__b_level__trial46": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.66
+    },
+    "26d4118b0c__b_level__trial47": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.33
+    },
+    "26d4118b0c__b_level__trial48": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.46
+    },
+    "26d4118b0c__b_level__trial49": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.38
+    },
+    "26d4118b0c__b_tilt__trial00": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.19
+    },
+    "26d4118b0c__b_tilt__trial01": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.31
+    },
+    "26d4118b0c__b_tilt__trial02": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.02
+    },
+    "26d4118b0c__b_tilt__trial03": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.96
+    },
+    "26d4118b0c__b_tilt__trial04": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.11
+    },
+    "26d4118b0c__b_tilt__trial05": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.22
+    },
+    "26d4118b0c__b_tilt__trial06": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.65
+    },
+    "26d4118b0c__b_tilt__trial07": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.17
+    },
+    "26d4118b0c__b_tilt__trial08": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.28
+    },
+    "26d4118b0c__b_tilt__trial09": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.59
+    },
+    "26d4118b0c__b_tilt__trial10": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.72
+    },
+    "26d4118b0c__b_tilt__trial11": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.28
+    },
+    "26d4118b0c__b_tilt__trial12": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.49
+    },
+    "26d4118b0c__b_tilt__trial13": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.04
+    },
+    "26d4118b0c__b_tilt__trial14": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.68
+    },
+    "26d4118b0c__b_tilt__trial15": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.26
+    },
+    "26d4118b0c__b_tilt__trial16": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.76
+    },
+    "26d4118b0c__b_tilt__trial17": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": false,
+      "cup_shift_cm": 13.27
+    },
+    "26d4118b0c__b_tilt__trial18": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.51
+    },
+    "26d4118b0c__b_tilt__trial19": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.85
+    },
+    "26d4118b0c__b_tilt__trial20": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.44
+    },
+    "26d4118b0c__b_tilt__trial22": {
+      "category": "missed/knocked cup",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.28
+    },
+    "26d4118b0c__b_tilt__trial23": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.77
+    },
+    "26d4118b0c__b_tilt__trial24": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.91
+    },
+    "26d4118b0c__b_tilt__trial25": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.87
+    },
+    "26d4118b0c__b_tilt__trial26": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.4
+    },
+    "26d4118b0c__b_tilt__trial28": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": false,
+      "cup_shift_cm": 10.47
+    },
+    "26d4118b0c__b_tilt__trial29": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.12
+    },
+    "26d4118b0c__b_tilt__trial30": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.98
+    },
+    "26d4118b0c__b_tilt__trial31": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.78
+    },
+    "26d4118b0c__b_tilt__trial32": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.07
+    },
+    "26d4118b0c__b_tilt__trial33": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.38
+    },
+    "26d4118b0c__b_tilt__trial34": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.99
+    },
+    "26d4118b0c__b_tilt__trial35": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.72
+    },
+    "26d4118b0c__b_tilt__trial36": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.47
+    },
+    "26d4118b0c__b_tilt__trial38": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.58
+    },
+    "26d4118b0c__b_tilt__trial39": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.61
+    },
+    "26d4118b0c__b_tilt__trial40": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": false,
+      "cup_shift_cm": 10.48
+    },
+    "26d4118b0c__b_tilt__trial41": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.85
+    },
+    "26d4118b0c__b_tilt__trial42": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.87
+    },
+    "26d4118b0c__b_tilt__trial43": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.33
+    },
+    "26d4118b0c__b_tilt__trial44": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.26
+    },
+    "26d4118b0c__b_tilt__trial45": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.56
+    },
+    "26d4118b0c__b_tilt__trial47": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.86
+    },
+    "26d4118b0c__b_tilt__trial48": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.45
+    },
+    "26d4118b0c__b_tilt__trial49": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.81
+    },
+    "26d4118b0c__naive__trial00": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial01": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial02": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial03": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.28
+    },
+    "26d4118b0c__naive__trial04": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 8.63
+    },
+    "26d4118b0c__naive__trial05": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial06": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.86
+    },
+    "26d4118b0c__naive__trial07": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.23
+    },
+    "26d4118b0c__naive__trial08": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.44
+    },
+    "26d4118b0c__naive__trial09": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.99
+    },
+    "26d4118b0c__naive__trial10": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.96
+    },
+    "26d4118b0c__naive__trial11": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial12": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial13": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.23
+    },
+    "26d4118b0c__naive__trial14": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial15": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial16": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.99
+    },
+    "26d4118b0c__naive__trial17": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.01
+    },
+    "26d4118b0c__naive__trial18": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial19": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.97
+    },
+    "26d4118b0c__naive__trial20": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial21": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.04
+    },
+    "26d4118b0c__naive__trial22": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial23": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.96
+    },
+    "26d4118b0c__naive__trial24": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.39
+    },
+    "26d4118b0c__naive__trial25": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.78
+    },
+    "26d4118b0c__naive__trial26": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial27": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.01
+    },
+    "26d4118b0c__naive__trial28": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial29": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.78
+    },
+    "26d4118b0c__naive__trial30": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial31": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.23
+    },
+    "26d4118b0c__naive__trial32": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 8.2
+    },
+    "26d4118b0c__naive__trial33": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.41
+    },
+    "26d4118b0c__naive__trial34": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.82
+    },
+    "26d4118b0c__naive__trial35": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 3.53
+    },
+    "26d4118b0c__naive__trial36": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 7.53
+    },
+    "26d4118b0c__naive__trial37": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial38": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.11
+    },
+    "26d4118b0c__naive__trial39": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial40": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial41": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 9.15
+    },
+    "26d4118b0c__naive__trial42": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 9.16
+    },
+    "26d4118b0c__naive__trial43": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.57
+    },
+    "26d4118b0c__naive__trial44": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.11
+    },
+    "26d4118b0c__naive__trial45": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.54
+    },
+    "26d4118b0c__naive__trial46": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "26d4118b0c__naive__trial47": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.0
+    },
+    "26d4118b0c__naive__trial48": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 1.63
+    },
+    "26d4118b0c__naive__trial49": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 2.79
+    },
+    "49aff04f7a__b_level__recorded_v2": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.97
+    },
+    "49aff04f7a__b_level__trial00": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.2
+    },
+    "49aff04f7a__b_level__trial01": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.66
+    },
+    "49aff04f7a__b_level__trial02": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.07
+    },
+    "49aff04f7a__b_level__trial03": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.69
+    },
+    "49aff04f7a__b_level__trial04": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.78
+    },
+    "49aff04f7a__b_level__trial05": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.5
+    },
+    "49aff04f7a__b_level__trial06": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.84
+    },
+    "49aff04f7a__b_level__trial07": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.41
+    },
+    "49aff04f7a__b_level__trial08": {
+      "category": "missed/knocked cup",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.27
+    },
+    "49aff04f7a__b_level__trial09": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.31
+    },
+    "49aff04f7a__b_level__trial10": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.8
+    },
+    "49aff04f7a__b_level__trial11": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.84
+    },
+    "49aff04f7a__b_level__trial12": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.27
+    },
+    "49aff04f7a__b_level__trial13": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.03
+    },
+    "49aff04f7a__b_level__trial14": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.31
+    },
+    "49aff04f7a__b_level__trial15": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.86
+    },
+    "49aff04f7a__b_level__trial16": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.5
+    },
+    "49aff04f7a__b_level__trial17": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.28
+    },
+    "49aff04f7a__b_level__trial18": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.2
+    },
+    "49aff04f7a__b_level__trial19": {
+      "category": "missed/knocked cup",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.8
+    },
+    "49aff04f7a__b_level__trial20": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.3
+    },
+    "49aff04f7a__b_level__trial21": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.35
+    },
+    "49aff04f7a__b_level__trial22": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.78
+    },
+    "49aff04f7a__b_level__trial23": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.89
+    },
+    "49aff04f7a__b_level__trial24": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.24
+    },
+    "49aff04f7a__b_level__trial25": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.3
+    },
+    "49aff04f7a__b_level__trial26": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.59
+    },
+    "49aff04f7a__b_level__trial27": {
+      "category": "missed/knocked cup",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.37
+    },
+    "49aff04f7a__b_level__trial28": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.13
+    },
+    "49aff04f7a__b_level__trial29": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.32
+    },
+    "49aff04f7a__b_level__trial30": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.19
+    },
+    "49aff04f7a__b_level__trial31": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.42
+    },
+    "49aff04f7a__b_level__trial32": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.35
+    },
+    "49aff04f7a__b_level__trial33": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.16
+    },
+    "49aff04f7a__b_level__trial34": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.66
+    },
+    "49aff04f7a__b_level__trial35": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.77
+    },
+    "49aff04f7a__b_level__trial36": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.34
+    },
+    "49aff04f7a__b_level__trial37": {
+      "category": "missed/knocked cup",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.38
+    },
+    "49aff04f7a__b_level__trial38": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.15
+    },
+    "49aff04f7a__b_level__trial39": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.24
+    },
+    "49aff04f7a__b_level__trial40": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.21
+    },
+    "49aff04f7a__b_level__trial41": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.93
+    },
+    "49aff04f7a__b_level__trial42": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.96
+    },
+    "49aff04f7a__b_level__trial43": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.76
+    },
+    "49aff04f7a__b_level__trial44": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.82
+    },
+    "49aff04f7a__b_level__trial45": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.33
+    },
+    "49aff04f7a__b_level__trial46": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.75
+    },
+    "49aff04f7a__b_level__trial47": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.53
+    },
+    "49aff04f7a__b_level__trial48": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.91
+    },
+    "49aff04f7a__b_level__trial49": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.15
+    },
+    "49aff04f7a__b_tilt__trial00": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": false,
+      "cup_shift_cm": 14.54
+    },
+    "49aff04f7a__b_tilt__trial03": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.22
+    },
+    "49aff04f7a__b_tilt__trial05": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": false,
+      "cup_shift_cm": 11.36
+    },
+    "49aff04f7a__b_tilt__trial06": {
+      "category": "missed/knocked cup",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.17
+    },
+    "49aff04f7a__b_tilt__trial07": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.0
+    },
+    "49aff04f7a__b_tilt__trial08": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.53
+    },
+    "49aff04f7a__b_tilt__trial09": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.06
+    },
+    "49aff04f7a__b_tilt__trial10": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.06
+    },
+    "49aff04f7a__b_tilt__trial13": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.82
+    },
+    "49aff04f7a__b_tilt__trial16": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.05
+    },
+    "49aff04f7a__b_tilt__trial17": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": false,
+      "cup_shift_cm": 11.79
+    },
+    "49aff04f7a__b_tilt__trial18": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": false,
+      "cup_shift_cm": 15.31
+    },
+    "49aff04f7a__b_tilt__trial19": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.38
+    },
+    "49aff04f7a__b_tilt__trial23": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.92
+    },
+    "49aff04f7a__b_tilt__trial24": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.07
+    },
+    "49aff04f7a__b_tilt__trial25": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.74
+    },
+    "49aff04f7a__b_tilt__trial28": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": false,
+      "cup_shift_cm": 10.46
+    },
+    "49aff04f7a__b_tilt__trial29": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.28
+    },
+    "49aff04f7a__b_tilt__trial31": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.99
+    },
+    "49aff04f7a__b_tilt__trial32": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.04
+    },
+    "49aff04f7a__b_tilt__trial33": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.71
+    },
+    "49aff04f7a__b_tilt__trial34": {
+      "category": "missed/knocked cup",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.8
+    },
+    "49aff04f7a__b_tilt__trial35": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.06
+    },
+    "49aff04f7a__b_tilt__trial36": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.33
+    },
+    "49aff04f7a__b_tilt__trial38": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.94
+    },
+    "49aff04f7a__b_tilt__trial40": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": false,
+      "cup_shift_cm": 9.55
+    },
+    "49aff04f7a__b_tilt__trial43": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.9
+    },
+    "49aff04f7a__b_tilt__trial44": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.05
+    },
+    "49aff04f7a__b_tilt__trial45": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.35
+    },
+    "49aff04f7a__b_tilt__trial47": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.05
+    },
+    "49aff04f7a__b_tilt__trial48": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": false,
+      "cup_shift_cm": 8.46
+    },
+    "49aff04f7a__b_tilt__trial49": {
+      "category": "missed/knocked cup",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.02
+    },
+    "49aff04f7a__naive__trial00": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial01": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial02": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial03": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.72
+    },
+    "49aff04f7a__naive__trial04": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 9.49
+    },
+    "49aff04f7a__naive__trial05": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial06": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 8.42
+    },
+    "49aff04f7a__naive__trial07": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.14
+    },
+    "49aff04f7a__naive__trial08": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 7.28
+    },
+    "49aff04f7a__naive__trial09": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 7.3
+    },
+    "49aff04f7a__naive__trial10": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.72
+    },
+    "49aff04f7a__naive__trial11": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial12": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial13": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 15.64
+    },
+    "49aff04f7a__naive__trial14": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial15": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial16": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 7.68
+    },
+    "49aff04f7a__naive__trial17": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.01
+    },
+    "49aff04f7a__naive__trial18": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial19": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 7.98
+    },
+    "49aff04f7a__naive__trial20": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial21": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 1.14
+    },
+    "49aff04f7a__naive__trial22": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.97
+    },
+    "49aff04f7a__naive__trial23": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.26
+    },
+    "49aff04f7a__naive__trial24": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.27
+    },
+    "49aff04f7a__naive__trial25": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 7.88
+    },
+    "49aff04f7a__naive__trial26": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial27": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.01
+    },
+    "49aff04f7a__naive__trial28": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial29": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.84
+    },
+    "49aff04f7a__naive__trial30": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial31": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.83
+    },
+    "49aff04f7a__naive__trial32": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 8.95
+    },
+    "49aff04f7a__naive__trial33": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 9.46
+    },
+    "49aff04f7a__naive__trial34": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.31
+    },
+    "49aff04f7a__naive__trial35": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.51
+    },
+    "49aff04f7a__naive__trial36": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 12.31
+    },
+    "49aff04f7a__naive__trial37": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial38": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.2
+    },
+    "49aff04f7a__naive__trial39": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial40": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial41": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 8.4
+    },
+    "49aff04f7a__naive__trial42": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 8.52
+    },
+    "49aff04f7a__naive__trial43": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.14
+    },
+    "49aff04f7a__naive__trial44": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.56
+    },
+    "49aff04f7a__naive__trial45": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 9.35
+    },
+    "49aff04f7a__naive__trial46": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "49aff04f7a__naive__trial47": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 3.65
+    },
+    "49aff04f7a__naive__trial48": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 2.41
+    },
+    "49aff04f7a__naive__trial49": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.52
+    },
+    "4e103843db__b_level__recorded_v2": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.06
+    },
+    "4e103843db__b_level__trial00": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.06
+    },
+    "4e103843db__b_level__trial01": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.2
+    },
+    "4e103843db__b_level__trial02": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.29
+    },
+    "4e103843db__b_level__trial03": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.55
+    },
+    "4e103843db__b_level__trial04": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.86
+    },
+    "4e103843db__b_level__trial05": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.12
+    },
+    "4e103843db__b_level__trial06": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.29
+    },
+    "4e103843db__b_level__trial07": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.59
+    },
+    "4e103843db__b_level__trial08": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.18
+    },
+    "4e103843db__b_level__trial09": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.95
+    },
+    "4e103843db__b_level__trial10": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.35
+    },
+    "4e103843db__b_level__trial11": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.19
+    },
+    "4e103843db__b_level__trial12": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.77
+    },
+    "4e103843db__b_level__trial13": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.54
+    },
+    "4e103843db__b_level__trial14": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.98
+    },
+    "4e103843db__b_level__trial15": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.41
+    },
+    "4e103843db__b_level__trial16": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.58
+    },
+    "4e103843db__b_level__trial17": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.41
+    },
+    "4e103843db__b_level__trial18": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.19
+    },
+    "4e103843db__b_level__trial19": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.12
+    },
+    "4e103843db__b_level__trial20": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.37
+    },
+    "4e103843db__b_level__trial21": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.43
+    },
+    "4e103843db__b_level__trial22": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.44
+    },
+    "4e103843db__b_level__trial23": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.12
+    },
+    "4e103843db__b_level__trial24": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.72
+    },
+    "4e103843db__b_level__trial25": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.17
+    },
+    "4e103843db__b_level__trial26": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.7
+    },
+    "4e103843db__b_level__trial27": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.58
+    },
+    "4e103843db__b_level__trial28": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.65
+    },
+    "4e103843db__b_level__trial29": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.9
+    },
+    "4e103843db__b_level__trial30": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.1
+    },
+    "4e103843db__b_level__trial31": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.98
+    },
+    "4e103843db__b_level__trial32": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.63
+    },
+    "4e103843db__b_level__trial33": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.38
+    },
+    "4e103843db__b_level__trial34": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.34
+    },
+    "4e103843db__b_level__trial35": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.85
+    },
+    "4e103843db__b_level__trial36": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.31
+    },
+    "4e103843db__b_level__trial37": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.96
+    },
+    "4e103843db__b_level__trial38": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.26
+    },
+    "4e103843db__b_level__trial39": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.53
+    },
+    "4e103843db__b_level__trial40": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.22
+    },
+    "4e103843db__b_level__trial41": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.79
+    },
+    "4e103843db__b_level__trial42": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.77
+    },
+    "4e103843db__b_level__trial43": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.44
+    },
+    "4e103843db__b_level__trial44": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.54
+    },
+    "4e103843db__b_level__trial45": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.47
+    },
+    "4e103843db__b_level__trial46": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.38
+    },
+    "4e103843db__b_level__trial47": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.34
+    },
+    "4e103843db__b_level__trial48": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.27
+    },
+    "4e103843db__b_level__trial49": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.35
+    },
+    "4e103843db__b_tilt__trial00": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.06
+    },
+    "4e103843db__b_tilt__trial01": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.86
+    },
+    "4e103843db__b_tilt__trial02": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.99
+    },
+    "4e103843db__b_tilt__trial03": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.64
+    },
+    "4e103843db__b_tilt__trial04": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.31
+    },
+    "4e103843db__b_tilt__trial05": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.51
+    },
+    "4e103843db__b_tilt__trial06": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.03
+    },
+    "4e103843db__b_tilt__trial07": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.29
+    },
+    "4e103843db__b_tilt__trial08": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.87
+    },
+    "4e103843db__b_tilt__trial09": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.06
+    },
+    "4e103843db__b_tilt__trial10": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.61
+    },
+    "4e103843db__b_tilt__trial11": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": false,
+      "cup_shift_cm": 14.1
+    },
+    "4e103843db__b_tilt__trial12": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.55
+    },
+    "4e103843db__b_tilt__trial13": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.44
+    },
+    "4e103843db__b_tilt__trial14": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.21
+    },
+    "4e103843db__b_tilt__trial15": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.07
+    },
+    "4e103843db__b_tilt__trial16": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.38
+    },
+    "4e103843db__b_tilt__trial17": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.4
+    },
+    "4e103843db__b_tilt__trial18": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.79
+    },
+    "4e103843db__b_tilt__trial19": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.91
+    },
+    "4e103843db__b_tilt__trial20": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.1
+    },
+    "4e103843db__b_tilt__trial21": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.99
+    },
+    "4e103843db__b_tilt__trial22": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.81
+    },
+    "4e103843db__b_tilt__trial23": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.5
+    },
+    "4e103843db__b_tilt__trial24": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.0
+    },
+    "4e103843db__b_tilt__trial25": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.99
+    },
+    "4e103843db__b_tilt__trial26": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.64
+    },
+    "4e103843db__b_tilt__trial27": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.29
+    },
+    "4e103843db__b_tilt__trial28": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.06
+    },
+    "4e103843db__b_tilt__trial29": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.91
+    },
+    "4e103843db__b_tilt__trial30": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.14
+    },
+    "4e103843db__b_tilt__trial31": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.98
+    },
+    "4e103843db__b_tilt__trial32": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.05
+    },
+    "4e103843db__b_tilt__trial33": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.64
+    },
+    "4e103843db__b_tilt__trial34": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.22
+    },
+    "4e103843db__b_tilt__trial35": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.94
+    },
+    "4e103843db__b_tilt__trial36": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.0
+    },
+    "4e103843db__b_tilt__trial37": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.21
+    },
+    "4e103843db__b_tilt__trial38": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.78
+    },
+    "4e103843db__b_tilt__trial39": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.53
+    },
+    "4e103843db__b_tilt__trial40": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.28
+    },
+    "4e103843db__b_tilt__trial41": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 5.31
+    },
+    "4e103843db__b_tilt__trial42": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.58
+    },
+    "4e103843db__b_tilt__trial43": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.46
+    },
+    "4e103843db__b_tilt__trial44": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.42
+    },
+    "4e103843db__b_tilt__trial45": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.2
+    },
+    "4e103843db__b_tilt__trial46": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.89
+    },
+    "4e103843db__b_tilt__trial47": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.49
+    },
+    "4e103843db__b_tilt__trial48": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.41
+    },
+    "4e103843db__b_tilt__trial49": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.59
+    },
+    "4e103843db__naive__trial00": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "4e103843db__naive__trial01": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.74
+    },
+    "4e103843db__naive__trial02": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.03
+    },
+    "4e103843db__naive__trial03": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.27
+    },
+    "4e103843db__naive__trial04": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.08
+    },
+    "4e103843db__naive__trial05": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.97
+    },
+    "4e103843db__naive__trial06": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 2.98
+    },
+    "4e103843db__naive__trial07": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.36
+    },
+    "4e103843db__naive__trial08": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.3
+    },
+    "4e103843db__naive__trial09": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 7.63
+    },
+    "4e103843db__naive__trial10": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 9.01
+    },
+    "4e103843db__naive__trial11": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "4e103843db__naive__trial12": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.94
+    },
+    "4e103843db__naive__trial13": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.09
+    },
+    "4e103843db__naive__trial14": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.93
+    },
+    "4e103843db__naive__trial15": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "4e103843db__naive__trial16": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 8.18
+    },
+    "4e103843db__naive__trial17": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.01
+    },
+    "4e103843db__naive__trial18": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.01
+    },
+    "4e103843db__naive__trial19": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 10.43
+    },
+    "4e103843db__naive__trial20": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "4e103843db__naive__trial21": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.34
+    },
+    "4e103843db__naive__trial22": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 1.36
+    },
+    "4e103843db__naive__trial23": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.98
+    },
+    "4e103843db__naive__trial24": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.66
+    },
+    "4e103843db__naive__trial25": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.68
+    },
+    "4e103843db__naive__trial26": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "4e103843db__naive__trial27": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "4e103843db__naive__trial28": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "4e103843db__naive__trial29": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.75
+    },
+    "4e103843db__naive__trial30": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "4e103843db__naive__trial31": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.45
+    },
+    "4e103843db__naive__trial32": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.63
+    },
+    "4e103843db__naive__trial33": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.92
+    },
+    "4e103843db__naive__trial34": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.95
+    },
+    "4e103843db__naive__trial35": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.87
+    },
+    "4e103843db__naive__trial36": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.79
+    },
+    "4e103843db__naive__trial37": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "4e103843db__naive__trial38": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 1.63
+    },
+    "4e103843db__naive__trial39": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "4e103843db__naive__trial40": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "4e103843db__naive__trial41": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.65
+    },
+    "4e103843db__naive__trial42": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.67
+    },
+    "4e103843db__naive__trial43": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.36
+    },
+    "4e103843db__naive__trial44": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 1.32
+    },
+    "4e103843db__naive__trial45": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.25
+    },
+    "4e103843db__naive__trial46": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.09
+    },
+    "4e103843db__naive__trial47": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 3.93
+    },
+    "4e103843db__naive__trial48": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 1.13
+    },
+    "4e103843db__naive__trial49": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.33
+    },
+    "e8825dea53__b_level__trial02": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.06
+    },
+    "e8825dea53__b_level__trial03": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.54
+    },
+    "e8825dea53__b_level__trial06": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.19
+    },
+    "e8825dea53__b_level__trial07": {
+      "category": "missed/knocked cup",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.21
+    },
+    "e8825dea53__b_level__trial09": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.95
+    },
+    "e8825dea53__b_level__trial10": {
+      "category": "missed/knocked cup",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.14
+    },
+    "e8825dea53__b_level__trial13": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.81
+    },
+    "e8825dea53__b_level__trial14": {
+      "category": "missed/knocked cup",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.17
+    },
+    "e8825dea53__b_level__trial18": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.47
+    },
+    "e8825dea53__b_level__trial20": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.28
+    },
+    "e8825dea53__b_level__trial24": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.04
+    },
+    "e8825dea53__b_level__trial26": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.91
+    },
+    "e8825dea53__b_level__trial31": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.96
+    },
+    "e8825dea53__b_level__trial32": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.02
+    },
+    "e8825dea53__b_level__trial33": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.77
+    },
+    "e8825dea53__b_level__trial34": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.86
+    },
+    "e8825dea53__b_level__trial35": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.82
+    },
+    "e8825dea53__b_level__trial36": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.49
+    },
+    "e8825dea53__b_level__trial38": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.61
+    },
+    "e8825dea53__b_level__trial39": {
+      "category": "missed/knocked cup",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.12
+    },
+    "e8825dea53__b_level__trial41": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.33
+    },
+    "e8825dea53__b_level__trial42": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.23
+    },
+    "e8825dea53__b_level__trial44": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 4.75
+    },
+    "e8825dea53__b_level__trial45": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.72
+    },
+    "e8825dea53__b_level__trial47": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.67
+    },
+    "e8825dea53__b_level__trial48": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 2.18
+    },
+    "e8825dea53__b_level__trial49": {
+      "category": "palm could not reach the target",
+      "category_v2": "pushed mug before close",
+      "failed_before_close": true,
+      "cup_shift_cm": 3.62
+    },
+    "e8825dea53__b_tilt__trial00": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.2
+    },
+    "e8825dea53__b_tilt__trial01": {
+      "category": "dropped while moving",
+      "category_v2": "dropped while moving",
+      "failed_before_close": false,
+      "cup_shift_cm": 9.83
+    },
+    "e8825dea53__b_tilt__trial02": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.15
+    },
+    "e8825dea53__b_tilt__trial05": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.14
+    },
+    "e8825dea53__b_tilt__trial08": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 1.36
+    },
+    "e8825dea53__b_tilt__trial09": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.06
+    },
+    "e8825dea53__b_tilt__trial11": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.55
+    },
+    "e8825dea53__b_tilt__trial12": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.32
+    },
+    "e8825dea53__b_tilt__trial13": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.16
+    },
+    "e8825dea53__b_tilt__trial14": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.24
+    },
+    "e8825dea53__b_tilt__trial15": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.53
+    },
+    "e8825dea53__b_tilt__trial17": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.09
+    },
+    "e8825dea53__b_tilt__trial18": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.21
+    },
+    "e8825dea53__b_tilt__trial19": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.75
+    },
+    "e8825dea53__b_tilt__trial20": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.34
+    },
+    "e8825dea53__b_tilt__trial21": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.0
+    },
+    "e8825dea53__b_tilt__trial22": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.01
+    },
+    "e8825dea53__b_tilt__trial24": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.23
+    },
+    "e8825dea53__b_tilt__trial25": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.71
+    },
+    "e8825dea53__b_tilt__trial26": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.41
+    },
+    "e8825dea53__b_tilt__trial27": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.01
+    },
+    "e8825dea53__b_tilt__trial28": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.0
+    },
+    "e8825dea53__b_tilt__trial30": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.19
+    },
+    "e8825dea53__b_tilt__trial31": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.05
+    },
+    "e8825dea53__b_tilt__trial32": {
+      "category": "dropped while moving",
+      "category_v2": "dropped while moving",
+      "failed_before_close": false,
+      "cup_shift_cm": 10.03
+    },
+    "e8825dea53__b_tilt__trial34": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.0
+    },
+    "e8825dea53__b_tilt__trial37": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.14
+    },
+    "e8825dea53__b_tilt__trial39": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.38
+    },
+    "e8825dea53__b_tilt__trial40": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.11
+    },
+    "e8825dea53__b_tilt__trial43": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.56
+    },
+    "e8825dea53__b_tilt__trial45": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.01
+    },
+    "e8825dea53__b_tilt__trial46": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.01
+    },
+    "e8825dea53__b_tilt__trial48": {
+      "category": "palm could not reach the target",
+      "category_v2": "palm could not reach the target",
+      "failed_before_close": true,
+      "cup_shift_cm": 0.19
+    },
+    "e8825dea53__naive__trial00": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "e8825dea53__naive__trial01": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.67
+    },
+    "e8825dea53__naive__trial02": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 1.27
+    },
+    "e8825dea53__naive__trial03": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 9.35
+    },
+    "e8825dea53__naive__trial04": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.27
+    },
+    "e8825dea53__naive__trial05": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.77
+    },
+    "e8825dea53__naive__trial06": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 2.67
+    },
+    "e8825dea53__naive__trial07": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.23
+    },
+    "e8825dea53__naive__trial08": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 3.8
+    },
+    "e8825dea53__naive__trial09": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 7.17
+    },
+    "e8825dea53__naive__trial10": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.42
+    },
+    "e8825dea53__naive__trial11": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "e8825dea53__naive__trial12": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.68
+    },
+    "e8825dea53__naive__trial13": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.97
+    },
+    "e8825dea53__naive__trial14": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.68
+    },
+    "e8825dea53__naive__trial15": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "e8825dea53__naive__trial16": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.81
+    },
+    "e8825dea53__naive__trial17": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "e8825dea53__naive__trial18": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "e8825dea53__naive__trial19": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 8.56
+    },
+    "e8825dea53__naive__trial20": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "e8825dea53__naive__trial21": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.26
+    },
+    "e8825dea53__naive__trial22": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 1.76
+    },
+    "e8825dea53__naive__trial23": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.52
+    },
+    "e8825dea53__naive__trial24": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.8
+    },
+    "e8825dea53__naive__trial25": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.95
+    },
+    "e8825dea53__naive__trial26": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "e8825dea53__naive__trial27": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "e8825dea53__naive__trial28": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "e8825dea53__naive__trial29": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.05
+    },
+    "e8825dea53__naive__trial30": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "e8825dea53__naive__trial31": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 5.52
+    },
+    "e8825dea53__naive__trial32": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.01
+    },
+    "e8825dea53__naive__trial33": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.64
+    },
+    "e8825dea53__naive__trial34": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 1.96
+    },
+    "e8825dea53__naive__trial35": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.46
+    },
+    "e8825dea53__naive__trial36": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 10.73
+    },
+    "e8825dea53__naive__trial37": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "e8825dea53__naive__trial38": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.38
+    },
+    "e8825dea53__naive__trial39": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.6
+    },
+    "e8825dea53__naive__trial40": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.0
+    },
+    "e8825dea53__naive__trial41": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.57
+    },
+    "e8825dea53__naive__trial42": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 4.43
+    },
+    "e8825dea53__naive__trial43": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 7.12
+    },
+    "e8825dea53__naive__trial44": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 2.6
+    },
+    "e8825dea53__naive__trial45": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 6.17
+    },
+    "e8825dea53__naive__trial46": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.52
+    },
+    "e8825dea53__naive__trial47": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 3.07
+    },
+    "e8825dea53__naive__trial48": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.34
+    },
+    "e8825dea53__naive__trial49": {
+      "category": "released but not on the coaster",
+      "category_v2": "released but not on the coaster",
+      "failed_before_close": false,
+      "cup_shift_cm": 0.22
+    }
+  }
+}
