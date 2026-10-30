@@ -1,0 +1,4204 @@
+{
+  "step": "run1",
+  "what": "Run 1: B3's R3 (full mug from config, 0.40 kg), trials 0-19 of trials() built with the legacy grasp, R3's handle yaws (asserted against B3's R3 rows)",
+  "profile": "mug_v1",
+  "params": {
+    "grasp_offset": "radius",
+    "closing_targets": "hero",
+    "contact_model": "grasp"
+  },
+  "effective_params": {
+    "grasp_offset": "radius",
+    "closing_targets": "hero",
+    "contact_model": "grasp"
+  },
+  "base_run": "R3",
+  "object": "full mug (config), handle 0.06 x 0.010 m",
+  "cup_model": "mug",
+  "mass_kg": 0.4,
+  "cup_yaw": "each trial's handle yaw from trials() (= B3 R3 for trials 0-19)",
+  "processes": "4 parallel CPU processes of consecutive trials (sim/m1_grasp_ladder.py run_parallel): [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9], [10, 11, 12, 13, 14], [15, 16, 17, 18, 19]]",
+  "grasp": {
+    "grasp_offset": "radius",
+    "cup_radius_m": 0.0495,
+    "cup_in_palm_frame_m": [
+      0.077,
+      0.0645,
+      0.0
+    ],
+    "palm_point_to_surface_along_normal_m": 0.015,
+    "approach_dir_in_palm_frame_deg": 39.95,
+    "palm_offset_m": [
+      -0.1001,
+      0.0088,
+      0.0195
+    ],
+    "approach_dir_world": [
+      0.9961,
+      -0.088,
+      -0.0
+    ],
+    "palm_quat_wxyz": [
+      0.9239,
+      0.0,
+      0.0,
+      -0.3827
+    ],
+    "closing_targets": "hero",
+    "closing_targets_source": "HERO's closed Dex3 pose (sim2sim.interactive_scene HAND_CLOSED)",
+    "right_hand_closed_pose_rad": {
+      "thumb_0": 0.0,
+      "thumb_1": 0.0,
+      "thumb_2": -1.2,
+      "index_0": 1.57,
+      "index_1": 1.2,
+      "middle_0": 1.2,
+      "middle_1": 1.2
+    }
+  },
+  "contact": {
+    "contact_model": "grasp",
+    "cone": "mjCONE_ELLIPTIC",
+    "impratio": 10.0,
+    "noslip_iterations": 3,
+    "solver": "mjSOL_NEWTON",
+    "solver_tolerance": 1e-08,
+    "condim_right_hand_geoms": {
+      "right_hand_palm_link": 4,
+      "right_hand_thumb_0_link": 3,
+      "right_hand_thumb_1_link": 3,
+      "right_hand_thumb_2_link": 4,
+      "right_hand_middle_0_link": 3,
+      "right_hand_middle_1_link": 4,
+      "right_hand_index_0_link": 3,
+      "right_hand_index_1_link": 4
+    },
+    "condim_cup_geoms": [
+      4
+    ],
+    "condim_explicit_pairs": [
+      4
+    ]
+  },
+  "mass_properties": {
+    "mass_kg": 0.4,
+    "com_offset_m": [
+      0.00129,
+      0.0,
+      0.0
+    ],
+    "inertia_diag_kgm2": [
+      0.0005155,
+      0.0005551,
+      0.0005212
+    ]
+  },
+  "cup_height_m": 0.091,
+  "moments": {
+    "closed": "the control step in which the right hand's closure first reaches 1.0 (close phase: set_hand_closure(1.0), then that 20 ms step, the first one with the squeeze rule on); state after the step = its last 1 ms substep",
+    "lift": "B3's lift frame: first control step of the oracle's 'lift' phase (hand fully closed after the 0.5 s close hold, lift reference just started, palm not yet risen); contacts = data.contact after that step (its last 1 ms substep)"
+  },
+  "record": {
+    "normal_force_N": "per hand part (thumb = thumb_0/1/2, index = index_0/1, middle = middle_0/1, palm = palm_link; B3's hand_parts), sum of mujoco.mj_contactForce component 0 (normal force in the contact frame) over the contacts in data.contact between that part's collision geoms and any geom of the cup body",
+    "finger_tau_Nm": "the 7 right finger-joint torques applied in the step's last substep (TableScene.last_finger_tau, after the squeeze rule = what was written to qfrc_applied), FINGER_SUFFIXES order",
+    "saturated": "|tau| >= 0.99 x the joint's effort limit {'thumb_0': 2.45, 'thumb_1': 1.4, 'thumb_2': 1.4, 'index_0': 1.4, 'index_1': 1.4, 'middle_0': 1.4, 'middle_1': 1.4} N m",
+    "touch_N": "the right fingertip touch sensors (thumb_2, index_1, middle_1; sim/scene.py: normal force inside a box site around the distal link's collision geometry)",
+    "timing": "data.contact, the contact forces and the touch sensors all come from the last substep's mj_forward (mj_step computes them before it integrates); the torque is the one applied in that substep"
+  },
+  "summary": {
+    "successes": 20,
+    "trials": 20,
+    "rate": 1.0,
+    "wilson95": [
+      0.839,
+      1.0
+    ],
+    "failures_by_category": {},
+    "lift_slip_in_hand_mm": {
+      "n": 20,
+      "mean": 5.3,
+      "median": 5.25,
+      "min": 1.7,
+      "max": 10.9,
+      "over_lift_slip_limit": 0
+    },
+    "lift_cup_rise_cm": {
+      "n": 20,
+      "mean": 6.81,
+      "median": 6.83,
+      "min": 6.25,
+      "max": 7.95
+    },
+    "lift_frame": {
+      "reached": 20,
+      "grasp_contact": 12,
+      "fraction_of_all": 0.6,
+      "fraction_of_reached": 0.6,
+      "part_touching_counts": {
+        "thumb": 20,
+        "index": 15,
+        "middle": 20,
+        "palm": 12
+      },
+      "substep_sensitivity": {
+        "grasp_contact_last_substep": 12,
+        "grasp_contact_any_substep": 12,
+        "grasp_contact_all_substeps": 12,
+        "part_touching_any_substep": {
+          "thumb": 20,
+          "index": 15,
+          "middle": 20,
+          "palm": 12
+        }
+      }
+    }
+  },
+  "forces": {
+    "closed": {
+      "trials_reached": 20,
+      "normal_force_N": {
+        "thumb": {
+          "n": 20,
+          "mean": 68.61,
+          "median": 74.81,
+          "min": 23.85,
+          "max": 102.33
+        },
+        "index": {
+          "n": 20,
+          "mean": 19.29,
+          "median": 22.9,
+          "min": 0.0,
+          "max": 35.36
+        },
+        "middle": {
+          "n": 20,
+          "mean": 24.98,
+          "median": 24.87,
+          "min": 20.18,
+          "max": 31.63
+        },
+        "palm": {
+          "n": 20,
+          "mean": 18.22,
+          "median": 6.49,
+          "min": 0.0,
+          "max": 57.89
+        }
+      },
+      "finger_tau_Nm": {
+        "thumb_0": {
+          "n": 20,
+          "mean": -0.11,
+          "median": -0.1,
+          "min": -0.28,
+          "max": 0.08
+        },
+        "thumb_1": {
+          "n": 20,
+          "mean": -1.4,
+          "median": -1.4,
+          "min": -1.4,
+          "max": -1.4
+        },
+        "thumb_2": {
+          "n": 20,
+          "mean": -1.14,
+          "median": -1.19,
+          "min": -1.29,
+          "max": -0.84
+        },
+        "index_0": {
+          "n": 20,
+          "mean": 1.0,
+          "median": 1.4,
+          "min": -0.0,
+          "max": 1.4
+        },
+        "index_1": {
+          "n": 20,
+          "mean": 0.64,
+          "median": 0.84,
+          "min": -0.01,
+          "max": 1.29
+        },
+        "middle_0": {
+          "n": 20,
+          "mean": 1.4,
+          "median": 1.4,
+          "min": 1.4,
+          "max": 1.4
+        },
+        "middle_1": {
+          "n": 20,
+          "mean": 0.97,
+          "median": 0.94,
+          "min": 0.84,
+          "max": 1.27
+        }
+      },
+      "saturated_trials": {
+        "thumb_0": 0,
+        "thumb_1": 20,
+        "thumb_2": 0,
+        "index_0": 12,
+        "index_1": 0,
+        "middle_0": 20,
+        "middle_1": 0
+      },
+      "touch_N": {
+        "thumb_2": {
+          "n": 20,
+          "mean": 34.11,
+          "median": 35.44,
+          "min": 23.85,
+          "max": 38.18
+        },
+        "index_1": {
+          "n": 20,
+          "mean": 17.16,
+          "median": 21.53,
+          "min": 0.0,
+          "max": 32.27
+        },
+        "middle_1": {
+          "n": 20,
+          "mean": 23.8,
+          "median": 24.87,
+          "min": 0.0,
+          "max": 31.63
+        }
+      }
+    },
+    "lift": {
+      "trials_reached": 20,
+      "normal_force_N": {
+        "thumb": {
+          "n": 20,
+          "mean": 60.28,
+          "median": 64.28,
+          "min": 23.59,
+          "max": 96.72
+        },
+        "index": {
+          "n": 20,
+          "mean": 20.44,
+          "median": 26.1,
+          "min": 0.0,
+          "max": 38.24
+        },
+        "middle": {
+          "n": 20,
+          "mean": 29.15,
+          "median": 28.4,
+          "min": 20.58,
+          "max": 39.14
+        },
+        "palm": {
+          "n": 20,
+          "mean": 22.67,
+          "median": 17.02,
+          "min": 0.0,
+          "max": 60.07
+        }
+      },
+      "finger_tau_Nm": {
+        "thumb_0": {
+          "n": 20,
+          "mean": -0.09,
+          "median": -0.06,
+          "min": -0.34,
+          "max": 0.22
+        },
+        "thumb_1": {
+          "n": 20,
+          "mean": -1.4,
+          "median": -1.4,
+          "min": -1.4,
+          "max": -1.4
+        },
+        "thumb_2": {
+          "n": 20,
+          "mean": -1.04,
+          "median": -1.05,
+          "min": -1.17,
+          "max": -0.84
+        },
+        "index_0": {
+          "n": 20,
+          "mean": 0.97,
+          "median": 1.4,
+          "min": -0.0,
+          "max": 1.4
+        },
+        "index_1": {
+          "n": 20,
+          "mean": 0.52,
+          "median": 0.51,
+          "min": -0.0,
+          "max": 1.27
+        },
+        "middle_0": {
+          "n": 20,
+          "mean": 1.4,
+          "median": 1.4,
+          "min": 1.4,
+          "max": 1.4
+        },
+        "middle_1": {
+          "n": 20,
+          "mean": 1.02,
+          "median": 1.02,
+          "min": 0.84,
+          "max": 1.27
+        }
+      },
+      "saturated_trials": {
+        "thumb_0": 0,
+        "thumb_1": 20,
+        "thumb_2": 0,
+        "index_0": 12,
+        "index_1": 0,
+        "middle_0": 20,
+        "middle_1": 0
+      },
+      "touch_N": {
+        "thumb_2": {
+          "n": 20,
+          "mean": 31.6,
+          "median": 32.86,
+          "min": 23.59,
+          "max": 37.81
+        },
+        "index_1": {
+          "n": 20,
+          "mean": 18.45,
+          "median": 24.93,
+          "min": 0.0,
+          "max": 30.74
+        },
+        "middle_1": {
+          "n": 20,
+          "mean": 29.1,
+          "median": 28.4,
+          "min": 20.58,
+          "max": 39.14
+        }
+      }
+    }
+  },
+  "resources": {
+    "wall_s": 37.0,
+    "parent_peak_rss_mb": 147,
+    "per_process": [
+      {
+        "trials": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "wall_s": 36.4,
+        "peak_rss_mb": 1676
+      },
+      {
+        "trials": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "wall_s": 35.6,
+        "peak_rss_mb": 1673
+      },
+      {
+        "trials": [
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "wall_s": 34.4,
+        "peak_rss_mb": 1679
+      },
+      {
+        "trials": [
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "wall_s": 36.9,
+        "peak_rss_mb": 1608
+      }
+    ],
+    "peak_rss_mb_sum_of_processes": 6636,
+    "gpu": "none (CPU only, onnxruntime CPU)"
+  },
+  "runs": [
+    {
+      "trial": 0,
+      "layout_seed": 0,
+      "layout_index": 0,
+      "cup_xy": [
+        0.4977,
+        -0.1485
+      ],
+      "coaster_xy": [
+        0.5249,
+        -0.335
+      ],
+      "cup_yaw_deg": -38.36,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.48,
+      "lift_slip_in_hand_cm": 0.63,
+      "lift_cup_rise_cm": 6.57,
+      "cup_off_coaster_center_cm": 0.26,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 8.0,
+      "detail": {
+        "cup_final": [
+          0.5247,
+          -0.3376,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.77,
+            "ik_terminal_palm_err_cm": 0.529,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.614,
+            "ik_terminal_palm_err_cm": 0.126,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.117,
+            "ik_terminal_palm_err_cm": 0.117,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 721,
+            "path_frames": 121,
+            "ik_max_path_err_cm": 0.215,
+            "ik_terminal_palm_err_cm": 0.302,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.337,
+            "ik_terminal_palm_err_cm": 0.406,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.258,
+            "ik_terminal_palm_err_cm": 0.238,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 2.44,
+            "palm_err_cm": 1.29,
+            "replans": 4
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.78,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.6,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 21.12
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 88.80712205662545,
+            "index": 24.86670489515048,
+            "middle": 24.605965469999862,
+            "palm": 12.98349138831459
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.07735014449905828,
+            "thumb_1": -1.4,
+            "thumb_2": -1.0979784733246203,
+            "index_0": 1.4,
+            "index_1": 1.0004104207989424,
+            "middle_0": 1.4,
+            "middle_1": 0.958802891193735
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 31.7553311687632,
+            "index_1": 24.86670489515048,
+            "middle_1": 24.605965469999862
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 82.77555113412257,
+            "index": 25.898188515022333,
+            "middle": 26.431400093953688,
+            "palm": 40.952798194863135
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.07986779654196247,
+            "thumb_1": -1.4,
+            "thumb_2": -0.9281187318002334,
+            "index_0": 1.4,
+            "index_1": 1.0030533003526207,
+            "middle_0": 1.4,
+            "middle_1": 1.0181637899594547
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 27.30056862824622,
+            "index_1": 25.898188515022333,
+            "middle_1": 26.431400093953688
+          }
+        }
+      }
+    },
+    {
+      "trial": 1,
+      "layout_seed": 0,
+      "layout_index": 1,
+      "cup_xy": [
+        0.4517,
+        -0.169
+      ],
+      "coaster_xy": [
+        0.522,
+        -0.2877
+      ],
+      "cup_yaw_deg": 3.13,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.56,
+      "lift_slip_in_hand_cm": 0.64,
+      "lift_cup_rise_cm": 6.37,
+      "cup_off_coaster_center_cm": 0.92,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 5.7,
+      "detail": {
+        "cup_final": [
+          0.5307,
+          -0.2907,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.771,
+            "ik_terminal_palm_err_cm": 0.564,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.604,
+            "ik_terminal_palm_err_cm": 0.494,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.116,
+            "ik_terminal_palm_err_cm": 0.213,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 695,
+            "path_frames": 95,
+            "ik_max_path_err_cm": 0.188,
+            "ik_terminal_palm_err_cm": 0.215,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.251,
+            "ik_terminal_palm_err_cm": 0.27,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.201,
+            "ik_terminal_palm_err_cm": 0.197,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.24,
+            "palm_err_cm": 1.21,
+            "replans": 2
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 1.03,
+            "replans": 1
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.58,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 20.0
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 29.947708273930562,
+            "index": 0.0,
+            "middle": 31.62644117742589,
+            "palm": 45.30242725056954
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.050631961197657276,
+            "thumb_1": -1.4,
+            "thumb_2": -1.0308310357015276,
+            "index_0": -0.0030185082835283567,
+            "index_1": -0.009557552331409983,
+            "middle_0": 1.4,
+            "middle_1": 1.1454786942965396
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 29.947708273930562,
+            "index_1": 0.0,
+            "middle_1": 31.62644117742589
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 30.170687954114342,
+            "index": 0.0,
+            "middle": 32.33708118484702,
+            "palm": 48.5658823480797
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.053025966088258096,
+            "thumb_1": -1.4,
+            "thumb_2": -1.0360604595911846,
+            "index_0": -0.0035297232044164124,
+            "index_1": -0.0005929933891797893,
+            "middle_0": 1.4,
+            "middle_1": 1.2236655669821892
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 30.170687954114342,
+            "index_1": 0.0,
+            "middle_1": 32.33708118484702
+          }
+        }
+      }
+    },
+    {
+      "trial": 2,
+      "layout_seed": 0,
+      "layout_index": 2,
+      "cup_xy": [
+        0.4884,
+        -0.1763
+      ],
+      "coaster_xy": [
+        0.4664,
+        -0.3252
+      ],
+      "cup_yaw_deg": -12.41,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.496,
+      "lift_slip_in_hand_cm": 0.74,
+      "lift_cup_rise_cm": 6.45,
+      "cup_off_coaster_center_cm": 0.8,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 0,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 0
+        }
+      },
+      "wall_s": 6.6,
+      "detail": {
+        "cup_final": [
+          0.4716,
+          -0.3312,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.77,
+            "ik_terminal_palm_err_cm": 0.443,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.527,
+            "ik_terminal_palm_err_cm": 0.156,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.11,
+            "ik_terminal_palm_err_cm": 0.125,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 703,
+            "path_frames": 103,
+            "ik_max_path_err_cm": 0.128,
+            "ik_terminal_palm_err_cm": 0.19,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.222,
+            "ik_terminal_palm_err_cm": 0.284,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.185,
+            "ik_terminal_palm_err_cm": 0.195,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 2.44,
+            "palm_err_cm": 0.91,
+            "replans": 4
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.47,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.61,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 20.76
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 92.92470115686353,
+            "index": 22.350549186045992,
+            "middle": 23.70991847801792,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.21240569106004795,
+            "thumb_1": -1.4,
+            "thumb_2": -1.2198377741449038,
+            "index_0": 1.4,
+            "index_1": 0.84,
+            "middle_0": 1.4,
+            "middle_1": 0.9351204632361443
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 36.11672170738332,
+            "index_1": 22.350549186045992,
+            "middle_1": 23.70991847801792
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 75.03737956359609,
+            "index": 26.293333388621786,
+            "middle": 24.124752940894453,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.27435194274121233,
+            "thumb_1": -1.4,
+            "thumb_2": -0.9707085799739559,
+            "index_0": 1.4,
+            "index_1": 0.84,
+            "middle_0": 1.4,
+            "middle_1": 0.9172550312993428
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 30.10795112382997,
+            "index_1": 26.293333388621786,
+            "middle_1": 24.124752940894453
+          }
+        }
+      }
+    },
+    {
+      "trial": 3,
+      "layout_seed": 0,
+      "layout_index": 3,
+      "cup_xy": [
+        0.4798,
+        -0.3145
+      ],
+      "coaster_xy": [
+        0.5062,
+        -0.1501
+      ],
+      "cup_yaw_deg": -21.12,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.496,
+      "lift_slip_in_hand_cm": 0.27,
+      "lift_cup_rise_cm": 7.17,
+      "cup_off_coaster_center_cm": 0.9,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 7.7,
+      "detail": {
+        "cup_final": [
+          0.4973,
+          -0.1494,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.764,
+            "ik_terminal_palm_err_cm": 0.26,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.618,
+            "ik_terminal_palm_err_cm": 0.439,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.177,
+            "ik_terminal_palm_err_cm": 0.158,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 702,
+            "path_frames": 102,
+            "ik_max_path_err_cm": 0.185,
+            "ik_terminal_palm_err_cm": 0.089,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.181,
+            "ik_terminal_palm_err_cm": 0.111,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.218,
+            "ik_terminal_palm_err_cm": 0.244,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 4.24,
+            "palm_err_cm": 1.37,
+            "replans": 7
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.04,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.79,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 21.94
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 73.67310919094425,
+            "index": 28.92047805984111,
+            "middle": 26.258394558122696,
+            "palm": 50.64468301602169
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.15723691858764674,
+            "thumb_1": -1.4,
+            "thumb_2": -1.2514302732875104,
+            "index_0": 1.4,
+            "index_1": 1.2198843066050982,
+            "middle_0": 1.4,
+            "middle_1": 1.0659442715406229
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 36.99052742406846,
+            "index_1": 28.92047805984111,
+            "middle_1": 26.258394558122696
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 65.60778683214475,
+            "index": 27.815879787952746,
+            "middle": 28.482717789097656,
+            "palm": 51.133223631898325
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.14069104788574616,
+            "thumb_1": -1.4,
+            "thumb_2": -1.115167457957183,
+            "index_0": 1.4,
+            "index_1": 1.143448265637767,
+            "middle_0": 1.4,
+            "middle_1": 1.165412616598648
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 34.725557798299675,
+            "index_1": 27.815879787952746,
+            "middle_1": 28.482717789097656
+          }
+        }
+      }
+    },
+    {
+      "trial": 4,
+      "layout_seed": 0,
+      "layout_index": 4,
+      "cup_xy": [
+        0.4913,
+        -0.2891
+      ],
+      "coaster_xy": [
+        0.5235,
+        -0.1509
+      ],
+      "cup_yaw_deg": -22.52,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.464,
+      "lift_slip_in_hand_cm": 0.34,
+      "lift_cup_rise_cm": 6.88,
+      "cup_off_coaster_center_cm": 0.67,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 6.5,
+      "detail": {
+        "cup_final": [
+          0.5191,
+          -0.1559,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.764,
+            "ik_terminal_palm_err_cm": 0.342,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.473,
+            "ik_terminal_palm_err_cm": 0.389,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.183,
+            "ik_terminal_palm_err_cm": 0.159,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 688,
+            "path_frames": 88,
+            "ik_max_path_err_cm": 0.213,
+            "ik_terminal_palm_err_cm": 0.123,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.203,
+            "ik_terminal_palm_err_cm": 0.131,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.212,
+            "ik_terminal_palm_err_cm": 0.203,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 0.65,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.23,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.95,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 21.06
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 79.5347336373884,
+            "index": 26.971015923069075,
+            "middle": 26.997855253570826,
+            "palm": 34.94475438992545
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.18742099373247548,
+            "thumb_1": -1.4,
+            "thumb_2": -1.250841915534697,
+            "index_0": 1.4,
+            "index_1": 1.1290152255183619,
+            "middle_0": 1.4,
+            "middle_1": 1.0166182851502692
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 36.81928063588376,
+            "index_1": 26.971015923069075,
+            "middle_1": 26.997855253570826
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 43.349588882653464,
+            "index": 30.735610087921383,
+            "middle": 32.33424117233036,
+            "palm": 48.97406389120242
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.009485516704899884,
+            "thumb_1": -1.4,
+            "thumb_2": -0.944226782134693,
+            "index_0": 1.4,
+            "index_1": 1.2010224341670823,
+            "middle_0": 1.4,
+            "middle_1": 1.1006540058118748
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 28.558918271520884,
+            "index_1": 30.735610087921383,
+            "middle_1": 32.33424117233036
+          }
+        }
+      }
+    },
+    {
+      "trial": 5,
+      "layout_seed": 0,
+      "layout_index": 5,
+      "cup_xy": [
+        0.4474,
+        -0.1892
+      ],
+      "coaster_xy": [
+        0.5048,
+        -0.3299
+      ],
+      "cup_yaw_deg": 16.68,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.544,
+      "lift_slip_in_hand_cm": 0.48,
+      "lift_cup_rise_cm": 6.44,
+      "cup_off_coaster_center_cm": 0.18,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 6.7,
+      "detail": {
+        "cup_final": [
+          0.5065,
+          -0.3306,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.771,
+            "ik_terminal_palm_err_cm": 0.563,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.605,
+            "ik_terminal_palm_err_cm": 0.522,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.114,
+            "ik_terminal_palm_err_cm": 0.203,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 706,
+            "path_frames": 106,
+            "ik_max_path_err_cm": 0.205,
+            "ik_terminal_palm_err_cm": 0.256,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.287,
+            "ik_terminal_palm_err_cm": 0.34,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.201,
+            "ik_terminal_palm_err_cm": 0.172,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.24,
+            "palm_err_cm": 1.36,
+            "replans": 2
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 1.39,
+            "replans": 1
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.62,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 20.22
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 37.39095201596496,
+            "index": 0.0,
+            "middle": 31.421310174879267,
+            "palm": 57.8887500494818
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.0898412130879402,
+            "thumb_1": -1.4,
+            "thumb_2": -1.1517486508196035,
+            "index_0": -0.0032209601625735676,
+            "index_1": -0.00935090325574298,
+            "middle_0": 1.4,
+            "middle_1": 1.2661343530986766
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 35.41001872181894,
+            "index_1": 0.0,
+            "middle_1": 31.421310174879267
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 49.38096572332997,
+            "index": 0.0,
+            "middle": 32.933973657665724,
+            "palm": 50.06581896107097
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.0674825612495818,
+            "thumb_1": -1.4,
+            "thumb_2": -1.1697037022209413,
+            "index_0": -0.002957041580194698,
+            "index_1": -0.00040348612322616884,
+            "middle_0": 1.4,
+            "middle_1": 1.1930339906787009
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 34.780313519738314,
+            "index_1": 0.0,
+            "middle_1": 32.933973657665724
+          }
+        }
+      }
+    },
+    {
+      "trial": 6,
+      "layout_seed": 0,
+      "layout_index": 6,
+      "cup_xy": [
+        0.4749,
+        -0.299
+      ],
+      "coaster_xy": [
+        0.5313,
+        -0.1731
+      ],
+      "cup_yaw_deg": 27.0,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.48,
+      "lift_slip_in_hand_cm": 0.68,
+      "lift_cup_rise_cm": 6.83,
+      "cup_off_coaster_center_cm": 0.58,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 0,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 0
+        }
+      },
+      "wall_s": 7.0,
+      "detail": {
+        "cup_final": [
+          0.5256,
+          -0.1721,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.764,
+            "ik_terminal_palm_err_cm": 0.575,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.589,
+            "ik_terminal_palm_err_cm": 0.349,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.131,
+            "ik_terminal_palm_err_cm": 0.181,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 680,
+            "path_frames": 80,
+            "ik_max_path_err_cm": 0.195,
+            "ik_terminal_palm_err_cm": 0.143,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.204,
+            "ik_terminal_palm_err_cm": 0.15,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.209,
+            "ik_terminal_palm_err_cm": 0.223,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 1.4,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.36,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.01,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 20.9
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 99.21652834557975,
+            "index": 29.156959726548997,
+            "middle": 27.282382871855845,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.11635140170634783,
+            "thumb_1": -1.4,
+            "thumb_2": -1.192146429370365,
+            "index_0": 1.4,
+            "index_1": 0.84,
+            "middle_0": 1.4,
+            "middle_1": 0.8688322983422676
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 35.07961759485303,
+            "index_1": 29.156959726548997,
+            "middle_1": 27.282382871855845
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 92.48867513051101,
+            "index": 23.58127375922424,
+            "middle": 27.15410966861704,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.0051237284709066255,
+            "thumb_1": -1.4,
+            "thumb_2": -1.0904794693447115,
+            "index_0": 1.4,
+            "index_1": 0.84,
+            "middle_0": 1.4,
+            "middle_1": 1.0263882357241092
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 33.062164360247735,
+            "index_1": 23.58127375922424,
+            "middle_1": 27.15410966861704
+          }
+        }
+      }
+    },
+    {
+      "trial": 7,
+      "layout_seed": 0,
+      "layout_index": 7,
+      "cup_xy": [
+        0.5148,
+        -0.3021
+      ],
+      "coaster_xy": [
+        0.4829,
+        -0.1535
+      ],
+      "cup_yaw_deg": -38.5,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.48,
+      "lift_slip_in_hand_cm": 0.17,
+      "lift_cup_rise_cm": 7.12,
+      "cup_off_coaster_center_cm": 0.95,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 0,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 0
+        }
+      },
+      "wall_s": 6.3,
+      "detail": {
+        "cup_final": [
+          0.4823,
+          -0.163,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.76,
+            "ik_terminal_palm_err_cm": 0.323,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.603,
+            "ik_terminal_palm_err_cm": 0.382,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.285,
+            "ik_terminal_palm_err_cm": 0.303,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 687,
+            "path_frames": 87,
+            "ik_max_path_err_cm": 0.238,
+            "ik_terminal_palm_err_cm": 0.196,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.174,
+            "ik_terminal_palm_err_cm": 0.14,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.231,
+            "ik_terminal_palm_err_cm": 0.27,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 0.7,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.75,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.87,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 21.04
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 67.86288491900893,
+            "index": 20.24867450784711,
+            "middle": 20.182460163172088,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.06956716583182697,
+            "thumb_1": -1.4,
+            "thumb_2": -1.1785117742649678,
+            "index_0": 1.4,
+            "index_1": 0.8605753617644446,
+            "middle_0": 1.4,
+            "middle_1": 0.84
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 36.87988878191252,
+            "index_1": 20.24867450784711,
+            "middle_1": 20.182460163172088
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 57.891220224134635,
+            "index": 20.731021290359728,
+            "middle": 20.576740991392292,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.055754823757015806,
+            "thumb_1": -1.4,
+            "thumb_2": -1.044219079201958,
+            "index_0": 1.4,
+            "index_1": 0.84,
+            "middle_0": 1.4,
+            "middle_1": 0.84
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 35.709509570436595,
+            "index_1": 20.731021290359728,
+            "middle_1": 20.576740991392292
+          }
+        }
+      }
+    },
+    {
+      "trial": 8,
+      "layout_seed": 0,
+      "layout_index": 8,
+      "cup_xy": [
+        0.5311,
+        -0.3182
+      ],
+      "coaster_xy": [
+        0.5142,
+        -0.1777
+      ],
+      "cup_yaw_deg": 4.29,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.512,
+      "lift_slip_in_hand_cm": 0.44,
+      "lift_cup_rise_cm": 7.39,
+      "cup_off_coaster_center_cm": 1.35,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 0,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 0
+        }
+      },
+      "wall_s": 7.1,
+      "detail": {
+        "cup_final": [
+          0.5104,
+          -0.1907,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.754,
+            "ik_terminal_palm_err_cm": 0.264,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.684,
+            "ik_terminal_palm_err_cm": 0.465,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.346,
+            "ik_terminal_palm_err_cm": 0.364,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 679,
+            "path_frames": 79,
+            "ik_max_path_err_cm": 0.199,
+            "ik_terminal_palm_err_cm": 0.121,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.193,
+            "ik_terminal_palm_err_cm": 0.148,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.201,
+            "ik_terminal_palm_err_cm": 0.226,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.04,
+            "palm_err_cm": 1.21,
+            "replans": 5
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 1.15,
+            "replans": 1
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.01,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 20.88
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 82.1541814643347,
+            "index": 35.3566297879213,
+            "middle": 27.32494580654167,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.2840174157588216,
+            "thumb_1": -1.4,
+            "thumb_2": -1.2096335004217726,
+            "index_0": 1.0987995175220115,
+            "index_1": -0.009527486488221815,
+            "middle_0": 1.4,
+            "middle_1": 1.0662668060399967
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 35.259057956584385,
+            "index_1": 0.0,
+            "middle_1": 27.32494580654167
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 78.92846269340407,
+            "index": 29.761669990227535,
+            "middle": 25.013207035735206,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.3431503950509655,
+            "thumb_1": -1.4,
+            "thumb_2": -1.169969646807285,
+            "index_0": 0.8747295785233019,
+            "index_1": 0.016162443083016044,
+            "middle_0": 1.4,
+            "middle_1": 0.963352096266965
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 34.19199200373998,
+            "index_1": 3.010151351916769,
+            "middle_1": 25.013207035735206
+          }
+        }
+      }
+    },
+    {
+      "trial": 9,
+      "layout_seed": 0,
+      "layout_index": 9,
+      "cup_xy": [
+        0.484,
+        -0.3355
+      ],
+      "coaster_xy": [
+        0.5178,
+        -0.1652
+      ],
+      "cup_yaw_deg": -27.62,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.48,
+      "lift_slip_in_hand_cm": 0.38,
+      "lift_cup_rise_cm": 6.32,
+      "cup_off_coaster_center_cm": 0.64,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 6.7,
+      "detail": {
+        "cup_final": [
+          0.5133,
+          -0.1697,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.76,
+            "ik_terminal_palm_err_cm": 0.268,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.655,
+            "ik_terminal_palm_err_cm": 0.447,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.281,
+            "ik_terminal_palm_err_cm": 0.279,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.211,
+            "ik_terminal_palm_err_cm": 0.124,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.194,
+            "ik_terminal_palm_err_cm": 0.138,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.201,
+            "ik_terminal_palm_err_cm": 0.211,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 4.24,
+            "palm_err_cm": 0.83,
+            "replans": 7
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.06,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.99,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 21.92
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 73.32919419087821,
+            "index": 30.5207754976855,
+            "middle": 24.82799958611976,
+            "palm": 51.38155182160913
+          },
+          "finger_tau_Nm": {
+            "thumb_0": 0.07562970761240409,
+            "thumb_1": -1.4,
+            "thumb_2": -1.2686225802973194,
+            "index_0": 1.4,
+            "index_1": 1.2913247444729772,
+            "middle_0": 1.4,
+            "middle_1": 1.037741385063974
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 37.21441212040931,
+            "index_1": 30.5207754976855,
+            "middle_1": 24.82799958611976
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 62.95703477899444,
+            "index": 29.952485073210056,
+            "middle": 24.531740657652755,
+            "palm": 49.233562046965844
+          },
+          "finger_tau_Nm": {
+            "thumb_0": 0.2232732209438681,
+            "thumb_1": -1.4,
+            "thumb_2": -1.1213057773575192,
+            "index_0": 1.4,
+            "index_1": 1.2694343332451006,
+            "middle_0": 1.4,
+            "middle_1": 1.0315323940728973
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 29.39617924510345,
+            "index_1": 29.952485073210056,
+            "middle_1": 24.531740657652755
+          }
+        }
+      }
+    },
+    {
+      "trial": 10,
+      "layout_seed": 1,
+      "layout_index": 0,
+      "cup_xy": [
+        0.5184,
+        -0.2795
+      ],
+      "coaster_xy": [
+        0.4919,
+        -0.1394
+      ],
+      "cup_yaw_deg": 32.56,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.496,
+      "lift_slip_in_hand_cm": 0.51,
+      "lift_cup_rise_cm": 6.98,
+      "cup_off_coaster_center_cm": 1.52,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 0,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 0
+        }
+      },
+      "wall_s": 7.0,
+      "detail": {
+        "cup_final": [
+          0.4992,
+          -0.1528,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.764,
+            "ik_terminal_palm_err_cm": 0.398,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.651,
+            "ik_terminal_palm_err_cm": 0.349,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.223,
+            "ik_terminal_palm_err_cm": 0.212,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 682,
+            "path_frames": 82,
+            "ik_max_path_err_cm": 0.177,
+            "ik_terminal_palm_err_cm": 0.122,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.17,
+            "ik_terminal_palm_err_cm": 0.113,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.231,
+            "ik_terminal_palm_err_cm": 0.273,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.04,
+            "palm_err_cm": 1.27,
+            "replans": 5
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.96,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.57,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 20.34
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 55.40862364899773,
+            "index": 20.699660899364783,
+            "middle": 20.503792191080546,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.10480604069747332,
+            "thumb_1": -1.4,
+            "thumb_2": -1.1375965853009506,
+            "index_0": 1.4,
+            "index_1": 0.84,
+            "middle_0": 1.4,
+            "middle_1": 0.84
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 38.18401060232394,
+            "index_1": 20.699660899364783,
+            "middle_1": 20.503792191080546
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 48.777678202323656,
+            "index": 21.835286702439898,
+            "middle": 23.678671959389685,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.134560187678432,
+            "thumb_1": -1.4,
+            "thumb_2": -1.0503320066372142,
+            "index_0": 1.4,
+            "index_1": 0.17323195883209008,
+            "middle_0": 1.4,
+            "middle_1": 0.84
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 37.810224308780796,
+            "index_1": 21.835286702439898,
+            "middle_1": 23.678671959389685
+          }
+        }
+      }
+    },
+    {
+      "trial": 11,
+      "layout_seed": 1,
+      "layout_index": 1,
+      "cup_xy": [
+        0.4594,
+        -0.1416
+      ],
+      "coaster_xy": [
+        0.4949,
+        -0.3124
+      ],
+      "cup_yaw_deg": 28.32,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.56,
+      "lift_slip_in_hand_cm": 0.64,
+      "lift_cup_rise_cm": 6.25,
+      "cup_off_coaster_center_cm": 0.61,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 6.1,
+      "detail": {
+        "cup_final": [
+          0.4965,
+          -0.3065,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.771,
+            "ik_terminal_palm_err_cm": 0.572,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.605,
+            "ik_terminal_palm_err_cm": 0.46,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.113,
+            "ik_terminal_palm_err_cm": 0.203,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 721,
+            "path_frames": 121,
+            "ik_max_path_err_cm": 0.198,
+            "ik_terminal_palm_err_cm": 0.209,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.235,
+            "ik_terminal_palm_err_cm": 0.277,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.191,
+            "ik_terminal_palm_err_cm": 0.199,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.24,
+            "palm_err_cm": 1.24,
+            "replans": 2
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.38,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.55,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 19.92
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 28.880882577339683,
+            "index": 0.0,
+            "middle": 23.694813432147434,
+            "palm": 18.63542928560871
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.04333603995529642,
+            "thumb_1": -1.4,
+            "thumb_2": -0.9528750669669744,
+            "index_0": -0.002905158514781424,
+            "index_1": -0.0095711247164973,
+            "middle_0": 1.4,
+            "middle_1": 1.0583137193694383
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 28.880882577339683,
+            "index_1": 0.0,
+            "middle_1": 0.0
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 28.705464178638966,
+            "index": 0.0,
+            "middle": 33.14756288583538,
+            "palm": 42.90264392326698
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.061232268024656714,
+            "thumb_1": -1.4,
+            "thumb_2": -0.9903385043575467,
+            "index_0": -0.0031334125546647767,
+            "index_1": -0.0007027333532923515,
+            "middle_0": 1.4,
+            "middle_1": 1.085789698580967
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 28.705464178638966,
+            "index_1": 0.0,
+            "middle_1": 33.041713367526995
+          }
+        }
+      }
+    },
+    {
+      "trial": 12,
+      "layout_seed": 1,
+      "layout_index": 2,
+      "cup_xy": [
+        0.4625,
+        -0.1751
+      ],
+      "coaster_xy": [
+        0.4625,
+        -0.3192
+      ],
+      "cup_yaw_deg": 2.77,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.56,
+      "lift_slip_in_hand_cm": 0.59,
+      "lift_cup_rise_cm": 6.38,
+      "cup_off_coaster_center_cm": 0.14,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 5.4,
+      "detail": {
+        "cup_final": [
+          0.4635,
+          -0.3183,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.77,
+            "ik_terminal_palm_err_cm": 0.557,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.611,
+            "ik_terminal_palm_err_cm": 0.416,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.108,
+            "ik_terminal_palm_err_cm": 0.228,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.18,
+            "ik_terminal_palm_err_cm": 0.204,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.204,
+            "ik_terminal_palm_err_cm": 0.276,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.178,
+            "ik_terminal_palm_err_cm": 0.234,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.84,
+            "palm_err_cm": 1.11,
+            "replans": 3
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.47,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.65,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 20.12
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 25.480841559016156,
+            "index": 0.0,
+            "middle": 25.02942405880281,
+            "palm": 16.765090866586966
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.038274840327944655,
+            "thumb_1": -1.4,
+            "thumb_2": -0.8585633960235468,
+            "index_0": -0.0033469624516927893,
+            "index_1": -0.009484070224037779,
+            "middle_0": 1.4,
+            "middle_1": 0.8807085200502935
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 25.480841559016156,
+            "index_1": 0.0,
+            "middle_1": 25.02942405880281
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 24.60728238466142,
+            "index": 0.0,
+            "middle": 25.6661022451882,
+            "palm": 16.583202436326783
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.03799633901106562,
+            "thumb_1": -1.4,
+            "thumb_2": -0.84,
+            "index_0": -0.0030332610194881283,
+            "index_1": -0.0006875959050570772,
+            "middle_0": 1.4,
+            "middle_1": 0.9041395500763019
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 24.60728238466142,
+            "index_1": 0.0,
+            "middle_1": 25.6661022451882
+          }
+        }
+      }
+    },
+    {
+      "trial": 13,
+      "layout_seed": 1,
+      "layout_index": 3,
+      "cup_xy": [
+        0.4707,
+        -0.3341
+      ],
+      "coaster_xy": [
+        0.5079,
+        -0.1916
+      ],
+      "cup_yaw_deg": 13.28,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.544,
+      "lift_slip_in_hand_cm": 0.27,
+      "lift_cup_rise_cm": 7.95,
+      "cup_off_coaster_center_cm": 1.33,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 7.0,
+      "detail": {
+        "cup_final": [
+          0.497,
+          -0.1993,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.764,
+            "ik_terminal_palm_err_cm": 0.589,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.616,
+            "ik_terminal_palm_err_cm": 0.445,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.136,
+            "ik_terminal_palm_err_cm": 0.228,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 682,
+            "path_frames": 82,
+            "ik_max_path_err_cm": 0.15,
+            "ik_terminal_palm_err_cm": 0.11,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.189,
+            "ik_terminal_palm_err_cm": 0.155,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.205,
+            "ik_terminal_palm_err_cm": 0.238,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 1.48,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 1.23,
+            "replans": 1
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.95,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 21.54
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 68.46983679578037,
+            "index": 32.26531884930925,
+            "middle": 25.25977179977997,
+            "palm": 33.8203826017904
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.052291453774878566,
+            "thumb_1": -1.4,
+            "thumb_2": -1.0532537850865038,
+            "index_0": 1.0007622455234704,
+            "index_1": 0.84,
+            "middle_0": 1.4,
+            "middle_1": 0.9109659845362745
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 32.29058342124202,
+            "index_1": 32.26531884930925,
+            "middle_1": 25.25977179977997
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 59.78370884974184,
+            "index": 27.87328341047121,
+            "middle": 35.90458466543505,
+            "palm": 17.449697174325035
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.03997182598576133,
+            "thumb_1": -1.4,
+            "thumb_2": -1.0542878132545705,
+            "index_0": 0.9103603358527044,
+            "index_1": 0.17066378001404656,
+            "middle_0": 1.4,
+            "middle_1": 1.0524383478786878
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 32.92261165112709,
+            "index_1": 27.87328341047121,
+            "middle_1": 35.90458466543505
+          }
+        }
+      }
+    },
+    {
+      "trial": 14,
+      "layout_seed": 1,
+      "layout_index": 4,
+      "cup_xy": [
+        0.4691,
+        -0.1829
+      ],
+      "coaster_xy": [
+        0.5131,
+        -0.3098
+      ],
+      "cup_yaw_deg": -8.1,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.48,
+      "lift_slip_in_hand_cm": 0.77,
+      "lift_cup_rise_cm": 6.91,
+      "cup_off_coaster_center_cm": 1.41,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 0,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 0
+        }
+      },
+      "wall_s": 7.2,
+      "detail": {
+        "cup_final": [
+          0.525,
+          -0.3174,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.77,
+            "ik_terminal_palm_err_cm": 0.566,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.608,
+            "ik_terminal_palm_err_cm": 0.425,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.117,
+            "ik_terminal_palm_err_cm": 0.212,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 700,
+            "path_frames": 100,
+            "ik_max_path_err_cm": 0.214,
+            "ik_terminal_palm_err_cm": 0.26,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.307,
+            "ik_terminal_palm_err_cm": 0.358,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.223,
+            "ik_terminal_palm_err_cm": 0.161,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.84,
+            "palm_err_cm": 1.3,
+            "replans": 3
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.58,
+            "replans": 1
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.64,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 20.7
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 84.08954312953324,
+            "index": 23.43946195500139,
+            "middle": 21.66379756868406,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.22534982760607883,
+            "thumb_1": -1.4,
+            "thumb_2": -1.1721141753339692,
+            "index_0": 1.4,
+            "index_1": 0.84,
+            "middle_0": 1.4,
+            "middle_1": 0.86232044147882
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 34.69458608164625,
+            "index_1": 23.43946195500139,
+            "middle_1": 21.66379756868406
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 68.36512087224897,
+            "index": 28.323390448701097,
+            "middle": 28.317815170664737,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.25411240847338457,
+            "thumb_1": -1.4,
+            "thumb_2": -1.02220566015901,
+            "index_0": 1.4,
+            "index_1": 0.17512122244573108,
+            "middle_0": 1.4,
+            "middle_1": 0.9724532922983266
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 32.873327819362615,
+            "index_1": 28.323390448701097,
+            "middle_1": 28.317815170664737
+          }
+        }
+      }
+    },
+    {
+      "trial": 15,
+      "layout_seed": 1,
+      "layout_index": 5,
+      "cup_xy": [
+        0.4635,
+        -0.1379
+      ],
+      "coaster_xy": [
+        0.5192,
+        -0.2636
+      ],
+      "cup_yaw_deg": 19.87,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.512,
+      "lift_slip_in_hand_cm": 0.66,
+      "lift_cup_rise_cm": 6.57,
+      "cup_off_coaster_center_cm": 1.26,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 7.8,
+      "detail": {
+        "cup_final": [
+          0.5304,
+          -0.2694,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.771,
+            "ik_terminal_palm_err_cm": 0.576,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.607,
+            "ik_terminal_palm_err_cm": 0.469,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.132,
+            "ik_terminal_palm_err_cm": 0.187,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 697,
+            "path_frames": 97,
+            "ik_max_path_err_cm": 0.206,
+            "ik_terminal_palm_err_cm": 0.212,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.243,
+            "ik_terminal_palm_err_cm": 0.256,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.203,
+            "ik_terminal_palm_err_cm": 0.197,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 1.24,
+            "palm_err_cm": 1.24,
+            "replans": 2
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.67,
+            "replans": 1
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.52,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 20.04
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 92.49180393189575,
+            "index": 21.89812860717958,
+            "middle": 24.916107015579662,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.18214138713437622,
+            "thumb_1": -1.4,
+            "thumb_2": -1.1915482651870184,
+            "index_0": 1.0513612653710729,
+            "index_1": 0.08279323726547556,
+            "middle_0": 1.4,
+            "middle_1": 0.94195279414006
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 35.96663253391955,
+            "index_1": 14.809803839613355,
+            "middle_1": 24.916107015579662
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 68.54955071205416,
+            "index": 38.23648078948742,
+            "middle": 39.141933844923685,
+            "palm": 8.26970585673229
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.11623020491662106,
+            "thumb_1": -1.4,
+            "thumb_2": -1.082594539515633,
+            "index_0": 0.8611811233034448,
+            "index_1": 0.02535576921947235,
+            "middle_0": 1.4,
+            "middle_1": 1.0083411649826755
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 32.847309553186136,
+            "index_1": 25.229050693137857,
+            "middle_1": 39.141933844923685
+          }
+        }
+      }
+    },
+    {
+      "trial": 16,
+      "layout_seed": 1,
+      "layout_index": 6,
+      "cup_xy": [
+        0.5216,
+        -0.2853
+      ],
+      "coaster_xy": [
+        0.4509,
+        -0.143
+      ],
+      "cup_yaw_deg": -14.11,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.48,
+      "lift_slip_in_hand_cm": 0.28,
+      "lift_cup_rise_cm": 7.26,
+      "cup_off_coaster_center_cm": 0.38,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 0,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 0
+        }
+      },
+      "wall_s": 6.8,
+      "detail": {
+        "cup_final": [
+          0.4503,
+          -0.1468,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.76,
+            "ik_terminal_palm_err_cm": 0.306,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.601,
+            "ik_terminal_palm_err_cm": 0.344,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.265,
+            "ik_terminal_palm_err_cm": 0.255,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 694,
+            "path_frames": 94,
+            "ik_max_path_err_cm": 0.188,
+            "ik_terminal_palm_err_cm": 0.141,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.172,
+            "ik_terminal_palm_err_cm": 0.166,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.264,
+            "ik_terminal_palm_err_cm": 0.319,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.64,
+            "palm_err_cm": 0.59,
+            "replans": 6
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.69,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.64,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 21.18
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 90.3569807198669,
+            "index": 17.699077051774402,
+            "middle": 21.36892962645245,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.13721538066772618,
+            "thumb_1": -1.4,
+            "thumb_2": -1.2598887883599093,
+            "index_0": 1.4,
+            "index_1": 0.903709837989284,
+            "middle_0": 1.4,
+            "middle_1": 0.84
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 37.844434265649596,
+            "index_1": 17.699077051774402,
+            "middle_1": 21.36892962645245
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 79.6315035871129,
+            "index": 26.444253653000562,
+            "middle": 30.457951750122074,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.12124367317927523,
+            "thumb_1": -1.4,
+            "thumb_2": -1.0139098280553305,
+            "index_0": 1.4,
+            "index_1": 0.84,
+            "middle_0": 1.4,
+            "middle_1": 0.9675977987763017
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 30.52804240972653,
+            "index_1": 26.444253653000562,
+            "middle_1": 30.457951750122074
+          }
+        }
+      }
+    },
+    {
+      "trial": 17,
+      "layout_seed": 1,
+      "layout_index": 7,
+      "cup_xy": [
+        0.5105,
+        -0.1666
+      ],
+      "coaster_xy": [
+        0.5372,
+        -0.331
+      ],
+      "cup_yaw_deg": -23.97,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.48,
+      "lift_slip_in_hand_cm": 0.48,
+      "lift_cup_rise_cm": 6.88,
+      "cup_off_coaster_center_cm": 0.17,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 7.0,
+      "detail": {
+        "cup_final": [
+          0.5386,
+          -0.3321,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.767,
+            "ik_terminal_palm_err_cm": 0.517,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.569,
+            "ik_terminal_palm_err_cm": 0.143,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.141,
+            "ik_terminal_palm_err_cm": 0.097,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 705,
+            "path_frames": 105,
+            "ik_max_path_err_cm": 0.225,
+            "ik_terminal_palm_err_cm": 0.306,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.355,
+            "ik_terminal_palm_err_cm": 0.418,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.263,
+            "ik_terminal_palm_err_cm": 0.34,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.04,
+            "palm_err_cm": 1.07,
+            "replans": 5
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.08,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.63,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 21.4
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 75.94431607517515,
+            "index": 27.153623821812033,
+            "middle": 27.380635930269655,
+            "palm": 42.06756687641174
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.16137138662242229,
+            "thumb_1": -1.4,
+            "thumb_2": -1.2897134713956555,
+            "index_0": 1.4,
+            "index_1": 1.0963622268347462,
+            "middle_0": 1.4,
+            "middle_1": 1.1234422780355957
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 38.13579294492288,
+            "index_1": 27.153623821812033,
+            "middle_1": 27.380635930269655
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 68.30446227407717,
+            "index": 26.705130097797102,
+            "middle": 35.979011999804456,
+            "palm": 60.067478894242406
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.2630797000920865,
+            "thumb_1": -1.4,
+            "thumb_2": -1.1702613236129435,
+            "index_0": 1.4,
+            "index_1": 1.030581608788175,
+            "middle_0": 1.4,
+            "middle_1": 1.2667864311088566
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 35.73773579197737,
+            "index_1": 26.705130097797102,
+            "middle_1": 35.979011999804456
+          }
+        }
+      }
+    },
+    {
+      "trial": 18,
+      "layout_seed": 1,
+      "layout_index": 8,
+      "cup_xy": [
+        0.4897,
+        -0.1587
+      ],
+      "coaster_xy": [
+        0.475,
+        -0.3313
+      ],
+      "cup_yaw_deg": -29.45,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.48,
+      "lift_slip_in_hand_cm": 0.54,
+      "lift_cup_rise_cm": 6.7,
+      "cup_off_coaster_center_cm": 0.23,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": true,
+        "middle": true,
+        "palm": false
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 0,
+        "parts": {
+          "thumb": 20,
+          "index": 20,
+          "middle": 20,
+          "palm": 0
+        }
+      },
+      "wall_s": 7.4,
+      "detail": {
+        "cup_final": [
+          0.4773,
+          -0.3318,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.77,
+            "ik_terminal_palm_err_cm": 0.426,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.607,
+            "ik_terminal_palm_err_cm": 0.13,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.113,
+            "ik_terminal_palm_err_cm": 0.136,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 716,
+            "path_frames": 116,
+            "ik_max_path_err_cm": 0.134,
+            "ik_terminal_palm_err_cm": 0.207,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.234,
+            "ik_terminal_palm_err_cm": 0.301,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.2,
+            "ik_terminal_palm_err_cm": 0.186,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 2.44,
+            "palm_err_cm": 1.16,
+            "replans": 4
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.63,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.64,
+            "palm_err_cm": 0.66,
+            "replans": 1
+          }
+        ],
+        "sim_seconds": 21.02
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 102.32898884325925,
+            "index": 24.189394894382648,
+            "middle": 24.020337658656462,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.090010488750899,
+            "thumb_1": -1.4,
+            "thumb_2": -1.201825768033428,
+            "index_0": 1.4,
+            "index_1": 0.9831682907531907,
+            "middle_0": 1.4,
+            "middle_1": 0.9255165127426039
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 35.46558972734499,
+            "index_1": 24.189394894382648,
+            "middle_1": 24.020337658656462
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 96.723677900739,
+            "index": 24.629230922691896,
+            "middle": 26.494199556921313,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.06216059924756871,
+            "thumb_1": -1.4,
+            "thumb_2": -1.1561066087754552,
+            "index_0": 1.4,
+            "index_1": 0.84912497094762,
+            "middle_0": 1.4,
+            "middle_1": 1.0614308274127926
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": true,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 34.29474828139445,
+            "index_1": 24.629230922691896,
+            "middle_1": 26.494199556921313
+          }
+        }
+      }
+    },
+    {
+      "trial": 19,
+      "layout_seed": 1,
+      "layout_index": 9,
+      "cup_xy": [
+        0.526,
+        -0.3232
+      ],
+      "coaster_xy": [
+        0.4526,
+        -0.1429
+      ],
+      "cup_yaw_deg": -34.09,
+      "mass_kg": 0.4,
+      "success": true,
+      "failed_phase": null,
+      "reason": null,
+      "category": null,
+      "contact_closure": 0.56,
+      "lift_slip_in_hand_cm": 1.09,
+      "lift_cup_rise_cm": 6.84,
+      "cup_off_coaster_center_cm": 0.39,
+      "cup_tilt_deg": 0.0,
+      "lift_frame_contacts": {
+        "thumb": true,
+        "index": false,
+        "middle": true,
+        "palm": true
+      },
+      "lift_frame_substeps": {
+        "n": 20,
+        "grasp_contact": 20,
+        "parts": {
+          "thumb": 20,
+          "index": 0,
+          "middle": 20,
+          "palm": 20
+        }
+      },
+      "wall_s": 6.2,
+      "detail": {
+        "cup_final": [
+          0.4529,
+          -0.1469,
+          0.7914
+        ],
+        "cup_height_above_resting_cm": -0.01,
+        "fell": false,
+        "plans": [
+          {
+            "phase": "pregrasp",
+            "frames": 751,
+            "path_frames": 151,
+            "ik_max_path_err_cm": 1.76,
+            "ik_terminal_palm_err_cm": 0.326,
+            "qp_failures": 0
+          },
+          {
+            "phase": "approach",
+            "frames": 701,
+            "path_frames": 101,
+            "ik_max_path_err_cm": 0.616,
+            "ik_terminal_palm_err_cm": 0.478,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lift",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.343,
+            "ik_terminal_palm_err_cm": 0.374,
+            "qp_failures": 0
+          },
+          {
+            "phase": "transport",
+            "frames": 715,
+            "path_frames": 115,
+            "ik_max_path_err_cm": 0.188,
+            "ik_terminal_palm_err_cm": 0.142,
+            "qp_failures": 0
+          },
+          {
+            "phase": "lower",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.168,
+            "ik_terminal_palm_err_cm": 0.175,
+            "qp_failures": 0
+          },
+          {
+            "phase": "retreat",
+            "frames": 676,
+            "path_frames": 76,
+            "ik_max_path_err_cm": 0.279,
+            "ik_terminal_palm_err_cm": 0.331,
+            "qp_failures": 0
+          }
+        ],
+        "settles": [
+          {
+            "phase": "settle_pregrasp",
+            "converged": true,
+            "seconds": 3.04,
+            "palm_err_cm": 0.93,
+            "replans": 5
+          },
+          {
+            "phase": "settle_grasp",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 1.43,
+            "replans": 0
+          },
+          {
+            "phase": "settle_place",
+            "converged": true,
+            "seconds": 0.04,
+            "palm_err_cm": 0.63,
+            "replans": 0
+          }
+        ],
+        "sim_seconds": 21.0
+      },
+      "grasp_forces": {
+        "closed": {
+          "normal_force_N": {
+            "thumb": 23.845321978536866,
+            "index": 0.0,
+            "middle": 21.62311885928158,
+            "palm": 0.0
+          },
+          "finger_tau_Nm": {
+            "thumb_0": -0.019367547349720515,
+            "thumb_1": -1.4,
+            "thumb_2": -0.84,
+            "index_0": -0.0023619115780390484,
+            "index_1": -0.009739339389113286,
+            "middle_0": 1.4,
+            "middle_1": 0.84
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 23.845321978536866,
+            "index_1": 0.0,
+            "middle_1": 21.62311885928158
+          }
+        },
+        "lift": {
+          "normal_force_N": {
+            "thumb": 23.59048628474958,
+            "index": 0.0,
+            "middle": 30.342170861276635,
+            "palm": 19.11205772616539
+          },
+          "finger_tau_Nm": {
+            "thumb_0": 0.003604411819214691,
+            "thumb_1": -1.4,
+            "thumb_2": -0.84,
+            "index_0": -0.004167829693138616,
+            "index_1": 0.00018191840791937042,
+            "middle_0": 1.4,
+            "middle_1": 0.84
+          },
+          "saturated": {
+            "thumb_0": false,
+            "thumb_1": true,
+            "thumb_2": false,
+            "index_0": false,
+            "index_1": false,
+            "middle_0": true,
+            "middle_1": false
+          },
+          "touch_N": {
+            "thumb_2": 23.59048628474958,
+            "index_1": 0.0,
+            "middle_1": 29.40661088801118
+          }
+        }
+      }
+    }
+  ]
+}

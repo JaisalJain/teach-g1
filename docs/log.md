@@ -1071,3 +1071,99 @@ Each parallel run also had a parent process of 63 MB. The 16 GB cap was never ap
 - Nothing reached 18/20. L1 and L2 stayed at 0/20, and L2 made slip worse (47 mm mean). L3 fixed slip (0 of 11 over 20 mm) but moved the failure to the close-phase touch gate (9/20). The best result is 11/20 (95 % CI 0.34-0.74), which does not support "the mug is grasped repeatably".
 - The final 50-layout evaluation and the videos were not run (no rung >= 18/20). The only video is `reach_l3/reach_h074.mp4` (the L3 reach guard; gitignored).
 - The causes of the L2 slip and of the L3 close-gate misses were not measured (no fingertip force or torque logs). The spec did not ask for them, so none was built.
+
+---
+
+## Track B final — L1 + L3 with HERO's closing targets (mug_v1)
+
+**Why.** The v3 ladder was cumulative, so L3 was tested on top of L2, which had made the grip weaker (lift slip 47 mm vs 22 mm). This run tests L1 + L3 with HERO's closing targets. It is one pre-registered test, not a search. CPU only, hoi-sim. Everything is in `results/m1_grasp_fix/v3_final/` (`final.json`, `summary.md`, `runs/`, `videos.json`). Every number below was re-derived by an independent check from the per-trial rows in `runs/*.json`, with 0 mismatches.
+
+**Profile.** `sim/pick_place.py` has `GRASP_PROFILES = {"legacy": {}, "mug_v1": dict(grasp_offset="radius", closing_targets="hero", contact_model="grasp")}`. This is exactly the spec's dict, and "legacy" stays the default. mug_v1 equals L1 (radius-consistent palm target, HERO's closing targets, legacy contact) plus L3's contact model. So the only difference from the v3 L1 rung is the contact model. It differs from the v3 L3 rung in the closing targets (HERO's instead of L2's IK targets).
+
+**Instrumentation (behaviour unchanged).** `TableScene.step` stores `self.last_finger_tau = finger_tau.copy()` after the substep loop. This is the torque of the last substep after the squeeze rule, i.e. what went to `qfrc_applied`. It is a record only. `sim/m1_grasp_final.py` has `ForcePickPlace(ContactPickPlace)`, which records at two moments: (closed) the control step in which the right hand's closure first reaches 1.0; (lift) B3's lift frame. At each moment it records:
+- the normal force per part (thumb = thumb_0/1/2, index = index_0/1, middle = middle_0/1, palm): the sum of `mj_contactForce` component 0 over contacts between that part's geoms and any cup geom;
+- the 7 right finger-joint torques, with a saturation flag (|tau| >= 0.99 x effort limit);
+- the 3 touch sensors.
+All values are read after that step's last 1 ms substep. `sim/m1_grasp_ladder.py` was refactored so its machinery is reused (`run_parallel`, `process_resources`, `same_rows`, `make_task(task_cls)`). Legacy output keys are unchanged, and the ladder now writes `ladder.json` only into its own directory.
+
+**Reach test: not rerun.** mug_v1's global contact options are exactly L3's, and L3 passed the reach test (`results/m1_grasp_fix/v3/reach_l3/`: no fall, pelvis z min 0.686 m, tilt max 12.8 deg, drift 0.086 m). The reach test uses the cylinder and only the contact model, so the grasp offset and the closing targets play no role in it. The compiled contact settings of run1, r0 and the v3 L3 run are identical (`compiled_contact_settings_equal_l3 = true` in `final.json`): elliptic cone, impratio 10, noslip_iterations 3, Newton with tolerance 1e-8, condim 4 on the right palm, thumb_2, index_1 and middle_1.
+
+### Run 1 — B3's R3 (full mug from config, 0.40 kg, B3's trials 0-19 built with the legacy grasp, R3's handle yaws), mug_v1, 4 worker processes
+Layouts were asserted trial by trial against B3's R3 rows (checked again by the independent check: 0 differences). **Result: 20/20, Wilson 95 % CI 0.839-1.000, no failures.**
+
+| run | success | Wilson 95 % | failures | lift slip mean / median (mm); > 20 mm | rise mean / median (cm) | contact at lift |
+|---|---|---|---|---|---|---|
+| **Run 1 (mug_v1)** | 20/20 | 0.839-1.000 | none | 5.3 / 5.25 (n 20); 0 | 6.81 / 6.83 | 12/20 |
+| B3 R3 (ladder.json) | 0/20 | 0.000-0.161 | dropped while moving 8, slip during lift 12 | 20.75 / 20.1; 10 | 5.11 / 4.98 | 13/20 |
+| v3 L1 | 0/20 | 0.000-0.161 | dropped 5, slip 15 | 21.96 / 22.7; 12 | 4.99 / 4.96 | 14/20 |
+| v3 L2 (L1+L2) | 0/20 | 0.000-0.161 | dropped 1, slip 19 | 47.06 / 30.3; 19 | 3.21 / 4.34 | 14/20 |
+| v3 L3 (L1+L2+L3) | 11/20 | 0.342-0.742 | missed/knocked 9 | 6.8 / 6.6 (n 11); 0 | 6.87 / 6.86 | 5/20 |
+
+Contact at lift in Run 1 (B3's definition: thumb AND (index or middle) AND palm): 12/20. Parts touching at the lift frame: thumb 20, index 15, middle 20, palm 12 (of 20).
+
+### Forces, torques and touch at both moments (Run 1; 20/20 trials reached both moments)
+Normal force on the cup, mean / median (min-max), N:
+
+| part | closed | lift |
+|---|---|---|
+| thumb (3 links summed) | 68.61 / 74.81 (23.85-102.33) | 60.28 / 64.28 (23.59-96.72) |
+| index | 19.29 / 22.90 (0-35.36) | 20.44 / 26.10 (0-38.24) |
+| middle | 24.98 / 24.87 (20.18-31.63) | 29.15 / 28.40 (20.58-39.14) |
+| palm | 18.22 / 6.49 (0-57.89) | 22.67 / 17.02 (0-60.07) |
+
+Finger torques, mean / median N m; saturated = |tau| >= 0.99 x limit (limits: thumb_0 2.45, all others 1.4):
+
+| joint | closed tau | lift tau | saturated, both moments (of 20) |
+|---|---|---|---|
+| thumb_0 | -0.11 / -0.10 | -0.09 / -0.06 | 0 |
+| thumb_1 | -1.40 / -1.40 | -1.40 / -1.40 | 20 |
+| thumb_2 | -1.14 / -1.19 | -1.04 / -1.05 | 0 |
+| index_0 | 1.00 / 1.40 | 0.97 / 1.40 | 12 |
+| index_1 | 0.64 / 0.84 | 0.52 / 0.51 | 0 |
+| middle_0 | 1.40 / 1.40 | 1.40 / 1.40 | 20 |
+| middle_1 | 0.97 / 0.94 | 1.02 / 1.02 | 0 |
+
+Touch sensors, mean / median N: thumb_2 34.11 / 35.44 (closed), 31.60 / 32.86 (lift); index_1 17.16 / 21.53 and 18.45 / 24.93; middle_1 23.80 / 24.87 and 29.10 / 28.40. In every trial thumb_1 and middle_0 sit at their torque limit, and index_0 does in 12 of 20. The thumb force sums three thumb links, so it is larger than the thumb_2 touch value. A force of 0 with a contact present is possible (a contact inside the margin with no active constraint has zero force), so B3's "touching" and force > 0 can differ.
+
+### Checks
+- **R0 with mug_v1** (M1 cylinder, 0.15 kg, B3's R0 20 trials): **20/20** (Wilson 0.839-1.000), required 20/20, PASS. Lift slip 3.86 / 3.25 mm (none > 20 mm), rise 7.79 / 7.94 cm. All 20 rows are identical to v3's `L3_R0.json` in every field except wall time. On the 80 mm cylinder mug_v1 is the same physics as L3_R0 (`radius_consistent_offset(0.040)` equals `GRASP_OFFSET`, HERO's targets, "grasp" contact), so this also shows the force recording changed nothing.
+- **Legacy R0 again** (`python -m sim.m1_grasp_ladder run --rung R0 --tag after_final --out results/m1_grasp_fix/v3_final`): 20/20, identical to M1 (`results/m1_pick` + `m1_pick_extended`, random 00-19: 20/20, 0 differing fields), and identical to `b3_runs/R0.json` in every field except wall time (0 differences). Lift slip 7.8 / 6.85 mm, rise 7.28 / 7.16 cm, contact at lift 12/20. Note: the spec's literal command (without `--out`) would have written into `results/m1_grasp_fix/v3/` and rewritten `v3/ladder.json`, which was off limits, so `--out` was added. The v3/ files all have mtimes before this run (last write 23:56) and no `ladder.json` exists in v3_final.
+
+### 50 trials (decision rule: Run 1 20/20 >= 18/20, so run)
+Trials 0-49 of `sim.m1_pick_mug.trials()` with legacy-grasp layouts, R3's handle yaws, full mug 0.40 kg, mug_v1. Layouts were asserted against `results/m1_pick_mug/runs_mass0.37.json` (my check: 0 differences). **44/50, Wilson 95 % CI 0.762-0.944.**
+- Failures (M1 categories): missed/knocked cup 5 (trials 34, 38, 44, 45, 49), slip during lift 1 (trial 22). 
+- Lift slip 4.97 / 4.9 mm (n 45), none > 20 mm. Rise 6.81 / 6.85 cm. Contact at lift 29/50 (thumb 45, index 32, middle 45, palm 29 of the 45 that reached the lift).
+- Trials 0-19 reproduce Run 1 exactly (20/20 identical rows, in different worker chunks).
+- Forces over the 45 trials that reached each moment, mean / median N: thumb 63.05 / 68.47 closed, 57.84 / 62.96 lift; index 17.10 / 21.86 and 18.18 / 23.58; middle 25.55 / 24.83 and 26.81 / 27.15; palm 19.09 / 6.10 and 23.79 / 16.58. Saturated of 45 (closed / lift): thumb_1 45 / 45, middle_0 45 / 45, index_0 27 / 26, others 0.
+- **Trial 22** (cup 0.5104, -0.197 m, yaw 5.22 deg): slipped only 7 mm but rose 4.3 of 10 cm, so it failed the rise check. M1 files this under "slip during lift". Forces thumb / index / middle / palm, closed: 81.84 / 18.70 / 20.68 / 0.00 N; lift: 68.31 / 19.17 / 0.00 / 0.00 N. Torques at lift: -0.13, -1.40*, -0.98, 1.40*, 0.84, 1.40*, 0.95 (* saturated). Touch at lift: 29.32 / 19.17 / 0.00 N. At the lift frame the middle finger and palm carried no load.
+- **Trials 34, 38, 44, 45, 49**: the cup moved 2.4-4.9 cm with 0 deg tilt before any finger closed. Both settles converged in every one (palm error <= 1.43 cm), and none reached either force moment. All five are in trials 20-49, and none in Run 1. M1's cylinder succeeded on the same five layouts (matched by cup position to `results/m1_pick_extended` random_24, 28, 34, 35, 39: 5/5). The cause was not measured. mug_v1 changes both the palm target (approach direction 39.95 instead of 35.54 deg in the palm frame) and the contact model, and which one matters was not tested. The cups are at x 0.447-0.469 m and y -0.328 to -0.304 m, but other trials in that y range succeeded, so there is no clean split by position.
+- 2 videos (gitignored, rendered on Mesa EGL on the Intel iGPU): `results/m1_grasp_fix/v3_final/videos/success_trial00.mp4` and `failure_trial22.mp4`. Each was a fresh re-run of that trial, with the same outcome and identical result fields and `grasp_forces` as the batch (`videos.json`).
+
+### Reading it, without overclaiming
+- mug_v1 = 20/20 on R3, against 0/20 for L1 (the same profile with the legacy contact model) and 11/20 for L3 (on L2's IK targets). The single difference from L1 is the contact model, and from L3 the closing targets. But this is two runs in different configurations, not an ablation. I did not test the contact model alone on legacy HERO targets with the legacy offset, so I cannot say how much of the effect comes from the offset.
+- No friction, gain, torque limit, mug geometry or mug mass was changed.
+- The 'closed' moment is the first control step at closure 1.0. The finger targets slew at <= 2 rad/s, so the joints may still lag the closed pose at that step. The 0.5 s hold after it is not recorded.
+
+### What failed
+- 6 of 50 trials. 5 approach knocks (before any finger closed), 1 low lift (trial 22).
+- The approach knocks are unexplained (not measured).
+- The spec's R0 command had to be run with `--out` (see above).
+- No other failures. The reach test was not rerun, for the reason given above.
+
+### Files and cost
+- Code: `sim/pick_place.py` (GRASP_PROFILES), `sim/scene.py` (`last_finger_tau`), `sim/m1_grasp_ladder.py` (refactor), `sim/m1_grasp_final.py` (new; `run --step run1|r0_mug_v1|fifty`, `videos`, `summarize`; the fifty step refuses to run unless Run 1 >= 18/20).
+- Results: `results/m1_grasp_fix/v3_final/{final.json, summary.md, videos.json}`, `runs/{run1, r0_mug_v1, R0_after_final, fifty}.json`, `videos/{success_trial00, failure_trial22}.mp4`.
+- Runtime and peak RSS (from `final.json` `resources`; CPU only, no GPU for physics):
+
+| step | wall (s) | peak RSS (MB) |
+|---|---|---|
+| run1 | 37.0 | max process 1679, sum 6636, parent 147 |
+| r0_mug_v1 | 35.9 | max 1733, sum 6847, parent 147 |
+| legacy R0 after_final | 29.3 | max 1702, sum 6641, parent 63 |
+| fifty | 89.1 | max 1805, sum 7069, parent 149 |
+| videos | 24.8 | 1718 |
+| summarize | 0.01 | 149 |
+
+The parent RSS is 147 MB here against 63 MB in the ladder because `m1_grasp_final` sets MUJOCO_GL=egl before importing mujoco. This has no effect on physics (the r0 rows are identical to L3_R0). The libEGL warning about PCI id 10de:2d59 is Mesa skipping the NVIDIA card.
+
+(Main agent: the README.md write the checker saw during this run was mine — a brief run-commands README the user asked for, committed separately in bfdefb0. The legacy R0 re-check was run with `--out results/m1_grasp_fix/v3_final` because the literal command would have written into the frozen `v3/` folder; the ladder now writes ladder.json only into its own folder.)

@@ -135,6 +135,7 @@ class TableScene:
         self.coaster_geom = mujoco.mj_name2id(m, mujoco.mjtObj.mjOBJ_GEOM, "coaster")
         self.cup_xy, self.coaster_xy = np.array(CUP_XY), np.array(COASTER_XY)
         self.on_substep = None      # optional observer called after every 1 ms substep (it must only read data; B3 contact log)
+        self.last_finger_tau = None   # the 14 finger torques applied in the last substep of the last step() (Track B final log)
 
         cup_joint = mujoco.mj_name2id(m, mujoco.mjtObj.mjOBJ_JOINT, "cup_free")
         self.cup_qadr = int(m.jnt_qposadr[cup_joint])
@@ -336,6 +337,9 @@ class TableScene:
             mujoco.mj_step(m, d)
             if self.on_substep is not None:
                 self.on_substep()
+        # Record only (nothing reads it back into the control): the torque of the last substep, after the squeeze rule, i.e.
+        # what was written to qfrc_applied. A copy, so the record does not change with the next step.
+        self.last_finger_tau = finger_tau.copy()
 
     def cup_pose(self) -> tuple[np.ndarray, np.ndarray]:
         """Cup centre (world) and orientation (xyzw)."""

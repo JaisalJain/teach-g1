@@ -1,0 +1,58 @@
+{
+  "rule": "one success + one failure of the 50-trial run (the first of each in trial order), or two successes if nothing failed; each re-run alone with video, and its outcome must equal the batch's",
+  "videos": [
+    {
+      "label": "success_trial00",
+      "video": "results/m1_grasp_fix/v3_final/videos/success_trial00.mp4",
+      "trial": 0,
+      "batch_success": true,
+      "rerun_success": true,
+      "same_outcome": true,
+      "identical_numbers": true,
+      "compared": [
+        "success",
+        "failed_phase",
+        "reason",
+        "category",
+        "cup_off_coaster_center_cm",
+        "cup_tilt_deg",
+        "contact_closure",
+        "lift_slip_in_hand_cm",
+        "lift_cup_rise_cm",
+        "grasp_forces"
+      ],
+      "batch_category": null,
+      "rerun_category": null,
+      "wall_s": 13.1
+    },
+    {
+      "label": "failure_trial22",
+      "video": "results/m1_grasp_fix/v3_final/videos/failure_trial22.mp4",
+      "trial": 22,
+      "batch_success": false,
+      "rerun_success": false,
+      "same_outcome": true,
+      "identical_numbers": true,
+      "compared": [
+        "success",
+        "failed_phase",
+        "reason",
+        "category",
+        "cup_off_coaster_center_cm",
+        "cup_tilt_deg",
+        "contact_closure",
+        "lift_slip_in_hand_cm",
+        "lift_cup_rise_cm",
+        "grasp_forces"
+      ],
+      "batch_category": "slip during lift",
+      "rerun_category": "slip during lift",
+      "wall_s": 10.6
+    }
+  ],
+  "resources": {
+    "wall_s": 24.8,
+    "peak_rss_mb": 1718,
+    "gpu": "none for physics; rendering: Intel / Mesa Intel(R) Graphics (ARL) (EGL)"
+  }
+}

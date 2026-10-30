@@ -22,7 +22,8 @@ xy; R3's handle yaws, R0 at yaw 0). sample_layouts derives the cup positions fro
 yaws from its approach direction), so a rung's own grasp would re-sample them. Each worker asserts its trials equal B3's rows
 before running them.
 
-A run = 20 trials as 4 parallel CPU processes of 5 consecutive trials (B3 ran them one after another in one process). Each
+A run = 20 trials as 4 parallel CPU processes of 5 consecutive trials (B3 ran them one after another in one process;
+``run_parallel`` / ``run_trials``, also used by sim/m1_grasp_final.py with its own task class and reference rows). Each
 process builds its own scene, policy and planners, and every trial starts from scene.reset() + policy.reset(), so a trial
 should not depend on which trials ran before it in its process; R0 checks this against B3, field by field.
 Rows = B3's (m1_grasp_causes.trial_row). Summary = B3's run_summary: success with Wilson 95 % CI and M1's failure categories,
@@ -48,7 +49,8 @@ Run from the repo root (env -u PYTHONPATH conda run --no-capture-output -n hoi-s
    its legacy check: --heights 0.74 --video-height 0 --out results/m1_grasp_fix/v3/reach_legacy)
   run --rung R0 --tag T   -> runs/R0_T.json: the legacy check again after a change to shared code (sim/scene.py,
                              sim/pick_place.py), without replacing the earlier R0.json; ladder.json lists it under legacy_r0_rechecks
-  ladder               -> results/m1_grasp_fix/v3/ladder.json from the runs files already saved (nothing is simulated)
+                             (with --out DIR other than v3: DIR/runs/R0_T.json and no ladder.json; Track B final uses v3_final)
+  ladder              -> results/m1_grasp_fix/v3/ladder.json from the runs files already saved (nothing is simulated)
 """
 
 from __future__ import annotations
@@ -186,14 +188,16 @@ def legacy_defaults() -> dict:
     return {k: p.default for k, p in inspect.signature(PickPlace).parameters.items() if k not in ("policy", "cup_model", "cup_mass")}
 
 
-def make_task(base: str, params: dict) -> ContactPickPlace:
+def make_task(base: str, params: dict, task_cls: type = ContactPickPlace) -> ContactPickPlace:
+    """B3's object run ``base`` with PickPlace ``params``; ``task_cls`` = ContactPickPlace or a subclass that records more."""
     cfg = RUNS[base]
-    return ContactPickPlace(HeroExportPolicy(CHECKPOINTS_ROOT / "example", stand_flag=0.0), cfg["cup_model"], cfg["mass_kg"], **params)
+    return task_cls(HeroExportPolicy(CHECKPOINTS_ROOT / "example", stand_flag=0.0), cfg["cup_model"], cfg["mass_kg"], **params)
 
 
-def fixed_trials(task: PickPlace) -> list[dict]:
-    """B3's trials 0-19, built with the LEGACY grasp whatever grasp ``task`` uses (see the module docstring)."""
-    return trials(Grasp.hero_side_grasp(task.scene.cup_height))[:N_TRIALS]
+def fixed_trials(task: PickPlace, n: int = N_TRIALS) -> list[dict]:
+    """B3's trials 0-19 (the first ``n`` of trials()), built with the LEGACY grasp whatever grasp ``task`` uses (see the module
+    docstring)."""
+    return trials(Grasp.hero_side_grasp(task.scene.cup_height))[:n]
 
 
 def layout_of(t: dict, use_handle_yaw: bool) -> dict:
@@ -236,39 +240,65 @@ def peak_rss_mb() -> int:
 
 
 # ---------------------------------------------------------------------------------------------------------------- run
-def run_trials(rung: str, trial_ids: list[int]) -> dict:
-    """One worker process: build the rung's task, check its trials are B3's, run them. Also returns its wall time and peak RSS."""
+def run_trials(base: str, params: dict, trial_ids: list[int], label: str, task_cls: type = ContactPickPlace,
+               reference: list[dict] | None = None) -> dict:
+    """One worker process: build the task (B3's object run ``base`` + PickPlace ``params``), check its trials' layouts against
+    ``reference`` (rows with LAYOUT_KEYS; default: B3's rows of ``base``), run them. Also returns its wall time and peak RSS.
+    ``task_cls`` and ``reference`` let sim/m1_grasp_final.py reuse this worker (its force-recording task, its 50 trials)."""
     t0 = time.perf_counter()
-    spec = RUNGS[rung]
-    use_yaw = RUNS[spec["base"]]["use_handle_yaw"]
-    task = make_task(spec["base"], spec["params"])
-    all_trials, b3 = fixed_trials(task), b3_rows(spec["base"])
+    use_yaw = RUNS[base]["use_handle_yaw"]
+    task = make_task(base, params, task_cls)
+    ref = reference or b3_rows(base)
+    all_trials = fixed_trials(task, len(ref))
     rows = []
     for k in trial_ids:
-        mine, theirs = layout_of(all_trials[k], use_yaw), {f: b3[k][f] for f in LAYOUT_KEYS}
-        assert mine == theirs, f"trial {k}: layout {mine} is not B3's {theirs}"
+        mine, theirs = layout_of(all_trials[k], use_yaw), {f: ref[k][f] for f in LAYOUT_KEYS}
+        assert mine == theirs, f"trial {k}: layout {mine} is not the reference's {theirs}"
         rows.append(trial_row(task, all_trials[k], use_yaw))
         r = rows[-1]
-        print(f"{rung} trial {k:2d} -> " + ("SUCCESS" if r["success"] else f"FAIL {r['failed_phase']}: {r['reason']}")
+        print(f"{label} trial {k:2d} -> " + ("SUCCESS" if r["success"] else f"FAIL {r['failed_phase']}: {r['reason']}")
               + f"  lift contacts {r['lift_frame_contacts']}  ({r['wall_s']} s)", flush=True)
     return dict(trials=trial_ids, rows=rows, wall_s=round(time.perf_counter() - t0, 1), peak_rss_mb=peak_rss_mb(),
                 grasp=grasp_info(task), contact=contact_info(task.scene), mass_properties=mass_properties(task.scene),
                 cup_height_m=task.scene.cup_height)
 
 
-def same_as_b3(rows: list[dict], b3: list[dict]) -> dict:
-    """Every field of every row against B3's, including everything under "detail" (plans, settles, final cup pose, sim time);
-    only the wall time is left out."""
+def run_parallel(base: str, params: dict, n_trials: int, label: str, task_cls: type = ContactPickPlace,
+                 reference: list[dict] | None = None) -> tuple[list[list[int]], list[dict], list[dict]]:
+    """Trials 0..n_trials-1 as N_PROCESSES parallel processes of consecutive trials (``run_trials`` each). Returns the
+    chunks, each process's result and all rows in trial order."""
+    chunks = [c.tolist() for c in np.array_split(np.arange(n_trials), N_PROCESSES)]
+    k = len(chunks)
+    # fork: the parent has built nothing yet (no scene, no ONNX session), so every worker starts clean. HERO's policy runs one
+    # onnxruntime thread (intra_op_num_threads 1), so 4 workers keep 4 cores busy.
+    with ProcessPoolExecutor(N_PROCESSES, mp_context=multiprocessing.get_context("fork")) as pool:
+        parts = list(pool.map(run_trials, [base] * k, [params] * k, chunks, [label] * k, [task_cls] * k, [reference] * k))
+    rows = [r for p in parts for r in p["rows"]]
+    assert [r["trial"] for r in rows] == list(range(n_trials))
+    assert all(p["grasp"] == parts[0]["grasp"] and p["contact"] == parts[0]["contact"] for p in parts)
+    return chunks, parts, rows
+
+
+def process_resources(t0: float, parts: list[dict]) -> dict:
+    """Wall time since ``t0`` and peak RSS of the parent and of each worker process (``run_parallel``'s parts)."""
+    return dict(wall_s=round(time.perf_counter() - t0, 1), parent_peak_rss_mb=peak_rss_mb(),
+                per_process=[dict(trials=p["trials"], wall_s=p["wall_s"], peak_rss_mb=p["peak_rss_mb"]) for p in parts],
+                peak_rss_mb_sum_of_processes=sum(p["peak_rss_mb"] for p in parts), gpu="none (CPU only, onnxruntime CPU)")
+
+
+def same_rows(rows: list[dict], ref: list[dict], reference: Path, ref_name: str = "b3") -> dict:
+    """Every field of every row against the reference run's (``reference`` = its file, ``ref_name`` names it in the result),
+    including everything under "detail" (plans, settles, final cup pose, sim time); only the wall time is left out."""
     diffs = []
-    for r, o in zip(rows, b3):
+    for r, o in zip(rows, ref):
         mine = json.loads(json.dumps(r))          # as stored (tuples become lists)
         fields = [k for k in sorted(mine.keys() | o.keys()) if k not in ("wall_s", "detail") and mine.get(k) != o.get(k)]
         fields += [f"detail.{k}" for k in sorted(mine["detail"].keys() | o["detail"].keys()) if mine["detail"].get(k) != o["detail"].get(k)]
         if fields:
             diffs.append(dict(trial=r["trial"], fields=fields))
-    return dict(reference=str(B3_RUNS / "R0.json"), fields_compared="every row field except wall_s, including all of detail",
+    return dict(reference=str(reference), fields_compared="every row field except wall_s, including all of detail",
                 trials=len(rows), trials_identical=len(rows) - len(diffs), successes=sum(r["success"] for r in rows),
-                b3_successes=sum(o["success"] for o in b3[:len(rows)]), differences=diffs)
+                **{f"{ref_name}_successes": sum(o["success"] for o in ref[:len(rows)])}, differences=diffs)
 
 
 def cmd_run(args):
@@ -285,14 +315,7 @@ def cmd_run(args):
         raise SystemExit(f"the ladder stopped at {stopped[0]} (>= {STOP_SUCCESSES}/{N_TRIALS}); later rungs are not run (spec)")
     path.parent.mkdir(parents=True, exist_ok=True)
     t0 = time.perf_counter()
-    chunks = [c.tolist() for c in np.array_split(np.arange(args.trials), N_PROCESSES)]
-    # fork: the parent has built nothing yet (no scene, no ONNX session), so every worker starts clean. HERO's policy runs one
-    # onnxruntime thread (intra_op_num_threads 1), so 4 workers keep 4 cores busy.
-    with ProcessPoolExecutor(N_PROCESSES, mp_context=multiprocessing.get_context("fork")) as pool:
-        parts = list(pool.map(run_trials, [args.rung] * len(chunks), chunks))
-    rows = [r for p in parts for r in p["rows"]]
-    assert [r["trial"] for r in rows] == list(range(args.trials))
-    assert all(p["grasp"] == parts[0]["grasp"] and p["contact"] == parts[0]["contact"] for p in parts)
+    chunks, parts, rows = run_parallel(spec["base"], spec["params"], args.trials, args.rung)
     results = dict(
         rung=args.rung, tag=args.tag, base_run=spec["base"], object=cfg["object"], cup_model=cfg["cup_model"], mass_kg=cfg["mass_kg"],
         cup_yaw="each trial's handle yaw (= B3 R3)" if cfg["use_handle_yaw"] else "0 deg (round object, as in M1 and B3 R0)",
@@ -305,10 +328,8 @@ def cmd_run(args):
         cup_height_m=parts[0]["cup_height_m"],
         summary=run_summary(rows))
     if args.rung == "R0":
-        results["legacy_check"] = dict(vs_b3_r0=same_as_b3(rows, b3_rows("R0")), vs_m1=r0_vs_m1(rows))
-    results["resources"] = dict(wall_s=round(time.perf_counter() - t0, 1), parent_peak_rss_mb=peak_rss_mb(),
-                                per_process=[dict(trials=p["trials"], wall_s=p["wall_s"], peak_rss_mb=p["peak_rss_mb"]) for p in parts],
-                                peak_rss_mb_sum_of_processes=sum(p["peak_rss_mb"] for p in parts), gpu="none (CPU only, onnxruntime CPU)")
+        results["legacy_check"] = dict(vs_b3_r0=same_rows(rows, b3_rows("R0"), B3_RUNS / "R0.json"), vs_m1=r0_vs_m1(rows))
+    results["resources"] = process_resources(t0, parts)
     results["runs"] = rows
     path.write_text(json.dumps(results, indent=2))
     s = results["summary"]
@@ -319,7 +340,9 @@ def cmd_run(args):
         print(f"R0 vs B3 R0: {results['legacy_check']['vs_b3_r0']['trials_identical']}/{len(rows)} identical; "
               f"vs M1: {results['legacy_check']['vs_m1']['trials_identical']}/{len(rows)}")
     print(f"{results['resources']}; wrote {path}")
-    if args.trials == N_TRIALS:                    # a shorter (smoke) run is not a ladder result
+    # A shorter (smoke) run is not a ladder result; and ladder.json lives only in the ladder's own directory: a legacy re-check
+    # written elsewhere (Track B final: --out results/m1_grasp_fix/v3_final) must not start a ladder.json there.
+    if args.trials == N_TRIALS and args.out.resolve() == OUT_DIR.resolve():
         write_ladder(args.out)
 
 

@@ -32,6 +32,10 @@ In both, the pre-grasp is 8 cm back along palm -> cup centre, the approach direc
 ``contact_model`` (rung L3; the default is M1's behaviour): passed to ``TableScene`` -- "legacy" = MuJoCo's default contact
 solver settings, "grasp" = elliptic cones, impratio 10, 3 NoSlip iterations and condim 4 on the right fingertips and palm
 (sim/scene.py GRASP_OPTIONS). Global options: they also change the feet's contacts.
+
+``GRASP_PROFILES`` (Track B final) names whole sets of these three parameters: "legacy" = {} (every default = M1's oracle; it
+stays the default everywhere), "mug_v1" = L1's radius-consistent palm target + HERO's closing targets + L3's contact model.
+A caller opts in with ``PickPlace(..., **GRASP_PROFILES["mug_v1"])``.
 Note: ``sample_layouts`` derives the cup positions from the grasp's palm offset, so layouts that must stay fixed across grasps are
 built with the legacy grasp (sim/m1_grasp_ladder.py does).
 
@@ -124,6 +128,9 @@ MUG_OUT_DIR = Path("results/m1_pick_mug_yaw0")
 GRASP_OFFSETS = ("legacy", "radius")        # PickPlace(grasp_offset=...): GRASP_OFFSET, or radius_consistent_offset(cup radius)
 CLOSING_TARGETS = ("hero", "ik_mug")        # PickPlace(closing_targets=...): HERO's closed Dex3 pose, or L2's IK targets
 L2_TARGETS = Path(__file__).resolve().parents[1] / "results/m1_grasp_fix/v3/l2_targets.json"   # sim/l2_closing_targets.py
+# Named parameter sets (Track B final). The v3 ladder was cumulative, so L3 was only ever tested on top of L2, whose IK closing
+# targets had weakened the grip; mug_v1 is L1 + L3 with HERO's closing targets instead. "legacy" = no parameter = M1.
+GRASP_PROFILES = {"legacy": {}, "mug_v1": dict(grasp_offset="radius", closing_targets="hero", contact_model="grasp")}
 
 SETTLE_CFG = ReplanConfig(first_event="start", period_s=0.6, base_mode="current", goal_adjust=True, handover_blend_s=0.3,
                           stay_threshold_m=SETTLE_STAY_M, skip_below_m=SETTLE_STAY_M, hold_s=6.0)
