@@ -1,0 +1,104 @@
+{
+  "clip": "4e103843db",
+  "original": "data/raw/4e103843db",
+  "sample": "data/raw/sample/4e103843db",
+  "all_checks_pass": true,
+  "files": {
+    "n_files_original": 1032,
+    "n_files_sample_without_readme": 1032,
+    "same_file_list": true,
+    "missing_in_sample": [],
+    "extra_in_sample": [],
+    "sha256_mismatches": [],
+    "all_byte_identical": true,
+    "sha256": {
+      "camera_matrix.csv": "74422b1976116dde4aa15e72b26bf621029d13d6af53f473e7c626da524d32c8",
+      "imu.csv": "a56ed9554fe4fa08ec7c75663fa2067c059ce082e4328627e4e1a03bf427169e",
+      "odometry.csv": "21b3b04cc0ff8234433ff5843523e57d11b821e9df39dda0e55710350e3c5ad6",
+      "rgb.mp4": "977d1c8098c7202cae947a98a21f7e719fae534841f89b01eb182ff2b81da0bd"
+    }
+  },
+  "loaded_with_perception.stray": {
+    "n_rows_original": 514,
+    "n_rows_sample": 514,
+    "t_equal": true,
+    "t_first_last": [
+      534430.581072375,
+      534439.451385125
+    ],
+    "K_equal": true,
+    "T_wc_equal": true,
+    "rgb_size": [
+      [
+        1920,
+        1440
+      ],
+      [
+        1920,
+        1440
+      ]
+    ],
+    "depth_size": [
+      [
+        256,
+        192
+      ],
+      [
+        256,
+        192
+      ]
+    ],
+    "imu_equal": true,
+    "compared_frames": [
+      0,
+      257,
+      513
+    ],
+    "depth_equal": {
+      "0": true,
+      "257": true,
+      "513": true
+    },
+    "confidence_equal": {
+      "0": true,
+      "257": true,
+      "513": true
+    },
+    "depth_range_m_sample": {
+      "0": [
+        0.3089999854564667,
+        0.8299999833106995
+      ],
+      "257": [
+        0.17299999296665192,
+        0.8539999723434448
+      ],
+      "513": [
+        0.31200000643730164,
+        0.8650000095367432
+      ]
+    }
+  },
+  "video": {
+    "n_rows": 514,
+    "expected_decoded_frames": 513,
+    "decoded_frames_original": 513,
+    "decoded_frames_sample": 513,
+    "first_rgb_index": 1,
+    "decode_size": [
+      192,
+      144
+    ],
+    "compared_video_positions": [
+      0,
+      256,
+      512
+    ],
+    "frame_hashes_equal": true,
+    "frame_hashes_sample": {
+      "0": "eb083beb1ba758541ed5c6e7629aae17f4a71331afed70f036f72cd69fb3eab5",
+      "256": "b3b334bf7b08a6ffec07d16a0ca9340598605487d72880d5e4df47ffcc486ded",
+      "512": "06181e98f2fa54e832f69216d9f8341e460898205d661ae374fc75d1b60b5887"
+    }
+  }
+}
