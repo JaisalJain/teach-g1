@@ -1,0 +1,78 @@
+before = 6fb6537119 (/home/jaisal/hoi/tmp/base_6fb6537119); after = /home/jaisal/hoi (HEAD 5f3bfd5)
+  dumped cylinder / legacy: 117 geoms
+  dumped cylinder / grasp: 117 geoms
+  dumped mug / legacy: 120 geoms
+  dumped mug / grasp: 120 geoms
+  dumped mug_body / legacy: 117 geoms
+  dumped mug_body / grasp: 117 geoms
+  dumped cylinder / legacy: 117 geoms
+  dumped cylinder / grasp: 117 geoms
+  dumped mug / legacy: 120 geoms
+  dumped mug / grasp: 120 geoms
+  dumped mug_body / legacy: 117 geoms
+  dumped mug_body / grasp: 117 geoms
+
+PASS / FAIL per field, before (base commit) vs after (this tree), one column per cup / contact model
+                                        cylinder/legacy   cylinder/grasp       mug/legacy        mug/grasp  mug_body/legacy   mug_body/grasp
+-- geoms
+   geom_match_by_order                             PASS             PASS             PASS             PASS             PASS             PASS
+   added_geoms_visual_only                         PASS             PASS             PASS             PASS             PASS             PASS
+-- geoms (spec)
+   geom_size                                       PASS             PASS             PASS             PASS             PASS             PASS
+   geom_pos                                        PASS             PASS             PASS             PASS             PASS             PASS
+   geom_quat                                       PASS             PASS             PASS             PASS             PASS             PASS
+   geom_friction                                   PASS             PASS             PASS             PASS             PASS             PASS
+   geom_contype                                    PASS             PASS             PASS             PASS             PASS             PASS
+   geom_conaffinity                                PASS             PASS             PASS             PASS             PASS             PASS
+   geom_condim                                     PASS             PASS             PASS             PASS             PASS             PASS
+   geom_solref                                     PASS             PASS             PASS             PASS             PASS             PASS
+   geom_solimp                                     PASS             PASS             PASS             PASS             PASS             PASS
+-- geoms (extra)
+   (16 of 16 fields identical in every combination; only the failures are listed above)
+-- sites
+   site_match_by_order                             PASS             PASS             PASS             PASS             PASS             PASS
+-- sites (extra)
+   site_bodyid                                     PASS             PASS             PASS             PASS             PASS             PASS
+   site_dataid                                     PASS             PASS             PASS             PASS             PASS             PASS
+   site_group                                      PASS             PASS             PASS             PASS             PASS             PASS
+   site_pos                                        PASS             PASS             PASS             PASS             PASS             PASS
+   site_quat                                       PASS             PASS             PASS             PASS             PASS             PASS
+   site_sameframe                                  PASS             PASS             PASS             PASS             PASS             PASS
+   site_size                                       PASS             PASS             PASS             PASS             PASS             PASS
+   site_type                                       PASS             PASS             PASS             PASS             PASS             PASS
+   site_user                                       PASS             PASS             PASS             PASS             PASS             PASS
+-- bodies
+   body_names                                      PASS             PASS             PASS             PASS             PASS             PASS
+-- bodies (spec)
+   body_mass                                       PASS             PASS             PASS             PASS             PASS             PASS
+   body_inertia                                    PASS             PASS             PASS             PASS             PASS             PASS
+   body_pos                                        PASS             PASS             PASS             PASS             PASS             PASS
+   body_quat                                       PASS             PASS             PASS             PASS             PASS             PASS
+-- bodies (extra)
+   body_geomnum (+ added geoms)                    PASS             PASS             PASS             PASS             PASS             PASS
+   (22 of 22 fields identical in every combination; only the failures are listed above)
+-- opt
+   (29 of 29 fields identical in every combination; only the failures are listed above)
+-- extra: joints / sites / sensors / ...
+   (171 of 171 fields identical in every combination; only the failures are listed above)
+-- extra: contact pairs
+   pair_geom_names                                 PASS             PASS             PASS             PASS             PASS             PASS
+   pair_dim                                        PASS             PASS             PASS             PASS             PASS             PASS
+   pair_signature                                  PASS             PASS             PASS             PASS             PASS             PASS
+   pair_solref                                     PASS             PASS             PASS             PASS             PASS             PASS
+   pair_solreffriction                             PASS             PASS             PASS             PASS             PASS             PASS
+   pair_solimp                                     PASS             PASS             PASS             PASS             PASS             PASS
+   pair_margin                                     PASS             PASS             PASS             PASS             PASS             PASS
+   pair_gap                                        PASS             PASS             PASS             PASS             PASS             PASS
+   pair_friction                                   PASS             PASS             PASS             PASS             PASS             PASS
+-- dynamics (50 control steps = 1 s)
+   dyn_qpos                                        PASS             PASS             PASS             PASS             PASS             PASS
+   dyn_qvel                                        PASS             PASS             PASS             PASS             PASS             PASS
+   dyn_ncon                                        PASS             PASS             PASS             PASS             PASS             PASS
+added visual site: cup_interior_visual on body cup, size [0.036, 0.0003, 0.0], collides: False  [cylinder/legacy, cylinder/grasp]
+added visual site: cup_interior_visual on body cup, size [0.0455, 0.0003, 0.0], collides: False  [mug/legacy, mug/grasp, mug_body/legacy, mug_body/grasp]
+no geom is added: every geom array is compared in full
+
+geoms before / after: [(117, 117), (120, 120)], sites [(6, 7)]; (cameras, lights, textures, materials) before [0, 1, 2, 1], after [1, 2, 3, 6]
+
+PASS: 1656/1656 comparisons identical (6 combinations); wrote results/visual_polish/merge/check_visual_only_after_merge.json/check_visual_only.json (18.8 s)

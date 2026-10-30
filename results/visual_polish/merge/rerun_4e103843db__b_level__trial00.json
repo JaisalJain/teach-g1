@@ -1,0 +1,11 @@
+{
+  "row": "results/m4_execute/runs/4e103843db__b_level__trial00.json",
+  "run": "4e103843db__b_level__trial00",
+  "compared": "every field, recursively, except wall_s, worker_peak_rss_mb",
+  "identical": true,
+  "fields_differing": [],
+  "saved_success": false,
+  "rerun_success": false,
+  "wall_s": 15.2,
+  "peak_rss_mb": 1608
+}
