@@ -444,3 +444,36 @@ is expected without camera motion. Hand/forearm visibility is a judgement by eye
   one right-hand detection each (score 0.733 / 0.748 / 0.790); detector + WiLoR 0.559 s (incl. CUDA warm-up) / 0.156 / 0.144 s per frame;
   model load 4.5 s; **peak VRAM 2.82 GB, peak RSS 6.06 GB**. Overlays (box, WiLoR 2D keypoints, mesh with WiLoR's own demo camera) sit
   on the hand. PASS.
+
+### Track A — S1–S3 (frames, hand, masks)
+- **Shared code:** `perception/common.py` (paths, clip list + view labels, `load_config`, per-stage runner `stage_cli`: cache in
+  `data/work/<clip>/<stage>/`, skip unless `--force`, `done.json` with seconds / peak RSS / peak VRAM, a watchdog that stops a stage
+  above 16 GB RSS; each stage runs as its own process so the peaks are per stage and the GPU is freed between stages).
+  `perception/geometry.py` (upright ↔ original maps, intrinsics scaling, projection, transforms, rotations).
+  `tests/test_geometry.py`: for k = 0..3, 1000 random points projected + pixel-mapped vs rotated + projected with `upright_K` agree to
+  2.3e-13 px; pixel round trips exact; the pixel map matches what `np.rot90` does to an image. PASS.
+- **Adaptation (pixel centres):** `K_depth` uses the existing `stray.Recording.K_depth` (f·s, (c + 0.5)·s − 0.5), i.e. pixel-centre
+  consistent scaling by 256/1920; plain c·s would shift the depth grid by 0.43 depth px (~0.7 mm at 0.4 m).
+- **S1 frames** (`perception/frames.py`, all 4 clips, 6–12 s each): upright rotation k = 3 for every clip (world-up at i = 1);
+  upright full-res 1440×1920 JPEG q95 and half-res 720×960 JPEG q90 (2×2 box average); dropped frames (dt > 1.5 × median) logged, not
+  resampled: 4e103843db i = 5, 11, 14, 32, 94, 106, 110, 119, 128, 138, 151, 163, 174, 186, 199, 207, 238, 266, 273; none elsewhere.
+- **S2 hand** (`perception/hand_wilor.py`): detector conf 0.3 (WiLoR demo), right = class 1, highest score with the 0.1 IoU tie-break,
+  WiLoR on the box (demo crop), `cam_crop_to_full_K` with the real upright K (derivation in the docstring). Check on every frame: with
+  WiLoR's assumed camera (f = 37 500 px, image centre) our function reproduces WiLoR's `cam_crop_to_full` to 1.5e-13 (relative).
+  The phone reports fx = fy on every frame (upright fx = fy = 1406.9 px median, max |fx − fy|/fy = 0). Keypoint order verified in
+  `mano_wrapper.py` (`mano_to_openpose`): OpenPose hand order, wrist 0, thumb 1–4, index 5–8, middle 9–12, ring 13–16, pinky 17–20.
+  WiLoR's crop camera is near-orthographic (f = 5000 px for a 256 px crop), so kp3d + cam_t at the real focal length will not reproject
+  exactly onto WiLoR's 2D keypoints; S5's plumbing check measures this.
+- **S3 prompts** (`perception/prompts/<clip>.json`, `--grid` / `--preview` tools in `perception/masks_sam2.py`): HSV green rule
+  (H 35–90, S ≥ 60, V ≥ 25 in OpenCV units; largest blob → box + deepest interior point). The rule finds the mug, but its box covers
+  the green wall + handle and misses the white rim/interior that belongs to the body silhouette → the body box is manual in every clip;
+  the rule's interior point is used as the body positive (on the green wall) in 3 clips. **Top-down 26d4118b0c:** the largest green
+  blob is the HANDLE (the body shows its white interior), so the rule's box/point became the handle prompt (auto) and the body prompt
+  is manual. **e8825dea53: the handle is not visible at i = 1** (hidden behind the mug; checked on a brightened zoom) → no handle prompt,
+  its masks stay empty, and its body prompt has no negative handle point. Every first-frame mask was checked by eye in
+  `prompt_preview.jpg` before propagating (all correct on the first try: body = white rim + green wall without the handle, handle loop,
+  full coaster disc).
+- **S3 SAM 2** on 4e103843db: 513 frames in 125 s, peak VRAM 0.80 GB, peak RSS 9.35 GB (the 1024² float32 video lives in host RAM with
+  `offload_video_to_cpu`). Coaster mask empty in 2 frames (covered by hand + mug at t ≈ 4.7 s); body and handle never empty.
+- `third_party/WiLoR`: importing `wilor` had rewritten 4 `.pyc` files that the upstream repo tracks → restored with `git checkout`,
+  generated `__pycache__` files removed, and `wilor_loader` now sets `sys.dont_write_bytecode` (checkout clean at fcb9113 again).

@@ -43,6 +43,7 @@ RESCALE_FACTOR = 2.0       # WiLoR demo.py:22  --rescale_factor default (box enl
 
 def _add_wilor_to_path() -> None:
     os.environ.setdefault("PYOPENGL_PLATFORM", "egl")   # wilor.utils imports pyrender; never opens a window
+    sys.dont_write_bytecode = True                       # keep the third-party checkout clean (it tracks some .pyc files)
     if str(WILOR_DIR) not in sys.path:
         sys.path.insert(0, str(WILOR_DIR))
 

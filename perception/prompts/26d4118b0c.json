@@ -1,0 +1,121 @@
+{
+ "clip": "26d4118b0c",
+ "frame_i": 1,
+ "sam2_frame_j": 0,
+ "image": "upright half-res 720x960 frame data/work/26d4118b0c/frames/sam2/00000.jpg (SAM 2 frame j = 0 = canonical i = 1); coordinates are its pixels (x, y)",
+ "sources": "auto = from the HSV green rule in perception/masks_sam2.py (green_prompt: bounding box of the largest green blob, its distance-transform maximum); manual = read off a 50 px grid / 10 px zoom of the frame",
+ "hsv_rule": {
+  "hsv_low": [
+   35,
+   60,
+   25
+  ],
+  "hsv_high": [
+   90,
+   255,
+   255
+  ],
+  "green_blob_box": [
+   113,
+   266,
+   184,
+   337
+  ],
+  "interior_point": [
+   137,
+   305
+  ]
+ },
+ "objects": [
+  {
+   "obj_id": 1,
+   "name": "mug body",
+   "box": [
+    12,
+    330,
+    280,
+    580
+   ],
+   "box_source": "manual",
+   "points": [
+    [
+     135,
+     455
+    ],
+    [
+     262,
+     470
+    ],
+    [
+     137,
+     305
+    ]
+   ],
+   "labels": [
+    1,
+    1,
+    0
+   ],
+   "point_sources": [
+    "manual",
+    "manual",
+    "auto"
+   ],
+   "note": "top-down: the largest green blob is the HANDLE (the body shows its white interior + a thin green wall on the right), so the colour rule gives the handle, not the body; body prompt manual, negative = the auto handle point"
+  },
+  {
+   "obj_id": 2,
+   "name": "mug handle",
+   "box": [
+    113,
+    266,
+    184,
+    337
+   ],
+   "box_source": "auto",
+   "points": [
+    [
+     137,
+     305
+    ],
+    [
+     135,
+     455
+    ]
+   ],
+   "labels": [
+    1,
+    0
+   ],
+   "point_sources": [
+    "auto",
+    "manual"
+   ],
+   "note": "the green blob = the handle seen from above; negative on the white body interior"
+  },
+  {
+   "obj_id": 3,
+   "name": "coaster",
+   "box": [
+    342,
+    360,
+    540,
+    554
+   ],
+   "box_source": "manual",
+   "points": [
+    [
+     440,
+     455
+    ]
+   ],
+   "labels": [
+    1
+   ],
+   "point_sources": [
+    "manual"
+   ],
+   "note": ""
+  }
+ ]
+}

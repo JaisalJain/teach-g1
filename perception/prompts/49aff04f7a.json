@@ -1,0 +1,127 @@
+{
+ "clip": "49aff04f7a",
+ "frame_i": 1,
+ "sam2_frame_j": 0,
+ "image": "upright half-res 720x960 frame data/work/49aff04f7a/frames/sam2/00000.jpg (SAM 2 frame j = 0 = canonical i = 1); coordinates are its pixels (x, y)",
+ "sources": "auto = from the HSV green rule in perception/masks_sam2.py (green_prompt: bounding box of the largest green blob, its distance-transform maximum); manual = read off a 50 px grid / 10 px zoom of the frame",
+ "hsv_rule": {
+  "hsv_low": [
+   35,
+   60,
+   25
+  ],
+  "hsv_high": [
+   90,
+   255,
+   255
+  ],
+  "green_blob_box": [
+   133,
+   433,
+   422,
+   552
+  ],
+  "interior_point": [
+   305,
+   527
+  ]
+ },
+ "objects": [
+  {
+   "obj_id": 1,
+   "name": "mug body",
+   "box": [
+    195,
+    308,
+    432,
+    580
+   ],
+   "box_source": "manual",
+   "points": [
+    [
+     305,
+     527
+    ],
+    [
+     310,
+     400
+    ],
+    [
+     143,
+     477
+    ]
+   ],
+   "labels": [
+    1,
+    1,
+    0
+   ],
+   "point_sources": [
+    "auto",
+    "manual",
+    "manual"
+   ],
+   "note": "green blob box includes the handle and misses the white rim/interior -> manual body box; auto interior point lies on the green wall; negative on the handle"
+  },
+  {
+   "obj_id": 2,
+   "name": "mug handle",
+   "box": [
+    130,
+    428,
+    245,
+    535
+   ],
+   "box_source": "manual",
+   "points": [
+    [
+     143,
+     477
+    ],
+    [
+     187,
+     440
+    ],
+    [
+     305,
+     527
+    ]
+   ],
+   "labels": [
+    1,
+    1,
+    0
+   ],
+   "point_sources": [
+    "manual",
+    "manual",
+    "auto"
+   ],
+   "note": "negative = the auto body point"
+  },
+  {
+   "obj_id": 3,
+   "name": "coaster",
+   "box": [
+    430,
+    305,
+    618,
+    452
+   ],
+   "box_source": "manual",
+   "points": [
+    [
+     525,
+     380
+    ]
+   ],
+   "labels": [
+    1
+   ],
+   "point_sources": [
+    "manual"
+   ],
+   "note": ""
+  }
+ ]
+}

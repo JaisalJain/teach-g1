@@ -1,0 +1,95 @@
+{
+ "clip": "e8825dea53",
+ "frame_i": 1,
+ "sam2_frame_j": 0,
+ "image": "upright half-res 720x960 frame data/work/e8825dea53/frames/sam2/00000.jpg (SAM 2 frame j = 0 = canonical i = 1); coordinates are its pixels (x, y)",
+ "sources": "auto = from the HSV green rule in perception/masks_sam2.py (green_prompt: bounding box of the largest green blob, its distance-transform maximum); manual = read off a 50 px grid / 10 px zoom of the frame",
+ "hsv_rule": {
+  "hsv_low": [
+   35,
+   60,
+   25
+  ],
+  "hsv_high": [
+   90,
+   255,
+   255
+  ],
+  "green_blob_box": [
+   88,
+   331,
+   254,
+   462
+  ],
+  "interior_point": [
+   156,
+   401
+  ]
+ },
+ "objects": [
+  {
+   "obj_id": 1,
+   "name": "mug body",
+   "box": [
+    75,
+    255,
+    262,
+    468
+   ],
+   "box_source": "manual",
+   "points": [
+    [
+     156,
+     401
+    ],
+    [
+     165,
+     300
+    ]
+   ],
+   "labels": [
+    1,
+    1
+   ],
+   "point_sources": [
+    "auto",
+    "manual"
+   ],
+   "note": "green blob = the body wall only (box misses the white rim/interior -> manual box). The handle is NOT visible in this frame (hidden behind the mug, checked on a brightened zoom), so there is no negative handle point"
+  },
+  {
+   "obj_id": 2,
+   "name": "mug handle",
+   "box": null,
+   "box_source": null,
+   "points": [],
+   "labels": [],
+   "point_sources": [],
+   "note": "handle not visible at i = 1 -> no prompt; its masks stay empty (S6 then marks the yaw invalid)"
+  },
+  {
+   "obj_id": 3,
+   "name": "coaster",
+   "box": [
+    255,
+    488,
+    436,
+    643
+   ],
+   "box_source": "manual",
+   "points": [
+    [
+     345,
+     565
+    ]
+   ],
+   "labels": [
+    1
+   ],
+   "point_sources": [
+    "manual"
+   ],
+   "note": ""
+  }
+ ]
+}
