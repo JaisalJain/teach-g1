@@ -1,0 +1,24 @@
+{
+  "command": "run",
+  "items": 2160,
+  "workers": 8,
+  "paths": "v2",
+  "diagnostics": [
+    "sim.m4_execute:collision_diagnostic"
+  ],
+  "wall_s": 4283.1,
+  "parent_peak_rss_mb": 69,
+  "per_process_peak_rss_mb": [
+    1568,
+    1576,
+    1577,
+    1603,
+    1626,
+    1637,
+    1639,
+    1646
+  ],
+  "errors": [],
+  "successes": 1538,
+  "gpu": "none (CPU only, onnxruntime CPU)"
+}

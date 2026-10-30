@@ -1,0 +1,401 @@
+{
+  "what": "M5 Step 2 candidate rollouts on the training layouts (policy/m5.py candidates)",
+  "d1": {
+    "runs": 2160,
+    "exceptions": 0,
+    "exception_runs": [],
+    "fraction": 0.0,
+    "stop_above": 0.05,
+    "branch": "continue"
+  },
+  "layouts": 120,
+  "candidates": [
+    {
+      "clip": "26d4118b0c",
+      "candidate": "phih",
+      "phi_deg": 81.93991346704513,
+      "departure_deg": 0.0,
+      "successes": 41,
+      "n": 120,
+      "rate": 0.3416666666666667,
+      "wilson95": [
+        0.263,
+        0.43
+      ],
+      "text": "41/120 (0.26-0.43)",
+      "category_v2": {
+        "palm could not reach the target": 60,
+        "pushed mug before close": 12,
+        "released but not on the coaster": 6,
+        "dropped while moving": 1
+      }
+    },
+    {
+      "clip": "26d4118b0c",
+      "candidate": "75",
+      "phi_deg": 75.0,
+      "departure_deg": 6.93991346704513,
+      "successes": 62,
+      "n": 120,
+      "rate": 0.5166666666666667,
+      "wilson95": [
+        0.428,
+        0.604
+      ],
+      "text": "62/120 (0.43-0.60)",
+      "category_v2": {
+        "palm could not reach the target": 24,
+        "pushed mug before close": 23,
+        "released but not on the coaster": 10,
+        "slip during lift": 1
+      }
+    },
+    {
+      "clip": "26d4118b0c",
+      "candidate": "65",
+      "phi_deg": 65.0,
+      "departure_deg": 16.93991346704513,
+      "successes": 112,
+      "n": 120,
+      "rate": 0.9333333333333333,
+      "wilson95": [
+        0.874,
+        0.966
+      ],
+      "text": "112/120 (0.87-0.97)",
+      "category_v2": {
+        "released but not on the coaster": 5,
+        "slip during lift": 2,
+        "pushed mug before close": 1
+      }
+    },
+    {
+      "clip": "26d4118b0c",
+      "candidate": "55",
+      "phi_deg": 55.00000000000001,
+      "departure_deg": 26.939913467045127,
+      "successes": 111,
+      "n": 120,
+      "rate": 0.925,
+      "wilson95": [
+        0.864,
+        0.96
+      ],
+      "text": "111/120 (0.86-0.96)",
+      "category_v2": {
+        "pushed mug before close": 8,
+        "slip during lift": 1
+      }
+    },
+    {
+      "clip": "26d4118b0c",
+      "candidate": "45",
+      "phi_deg": 45.00000000000001,
+      "departure_deg": 36.93991346704513,
+      "successes": 111,
+      "n": 120,
+      "rate": 0.925,
+      "wilson95": [
+        0.864,
+        0.96
+      ],
+      "text": "111/120 (0.86-0.96)",
+      "category_v2": {
+        "pushed mug before close": 8,
+        "slip during lift": 1
+      }
+    },
+    {
+      "clip": "4e103843db",
+      "candidate": "phih",
+      "phi_deg": 85.84558610023504,
+      "departure_deg": 0.0,
+      "successes": 31,
+      "n": 120,
+      "rate": 0.25833333333333336,
+      "wilson95": [
+        0.188,
+        0.343
+      ],
+      "text": "31/120 (0.19-0.34)",
+      "category_v2": {
+        "palm could not reach the target": 83,
+        "pushed mug before close": 4,
+        "released but not on the coaster": 2
+      }
+    },
+    {
+      "clip": "4e103843db",
+      "candidate": "75",
+      "phi_deg": 75.0,
+      "departure_deg": 10.84558610023503,
+      "successes": 52,
+      "n": 120,
+      "rate": 0.43333333333333335,
+      "wilson95": [
+        0.348,
+        0.523
+      ],
+      "text": "52/120 (0.35-0.52)",
+      "category_v2": {
+        "palm could not reach the target": 47,
+        "pushed mug before close": 16,
+        "released but not on the coaster": 4,
+        "slip during lift": 1
+      }
+    },
+    {
+      "clip": "4e103843db",
+      "candidate": "65",
+      "phi_deg": 65.0,
+      "departure_deg": 20.845586100235032,
+      "successes": 94,
+      "n": 120,
+      "rate": 0.7833333333333333,
+      "wilson95": [
+        0.701,
+        0.848
+      ],
+      "text": "94/120 (0.70-0.85)",
+      "category_v2": {
+        "palm could not reach the target": 19,
+        "pushed mug before close": 3,
+        "slip during lift": 3,
+        "released but not on the coaster": 1
+      }
+    },
+    {
+      "clip": "4e103843db",
+      "candidate": "55",
+      "phi_deg": 55.00000000000001,
+      "departure_deg": 30.845586100235025,
+      "successes": 103,
+      "n": 120,
+      "rate": 0.8583333333333333,
+      "wilson95": [
+        0.785,
+        0.91
+      ],
+      "text": "103/120 (0.78-0.91)",
+      "category_v2": {
+        "pushed mug before close": 8,
+        "palm could not reach the target": 6,
+        "slip during lift": 3
+      }
+    },
+    {
+      "clip": "4e103843db",
+      "candidate": "45",
+      "phi_deg": 45.00000000000001,
+      "departure_deg": 40.845586100235025,
+      "successes": 115,
+      "n": 120,
+      "rate": 0.9583333333333334,
+      "wilson95": [
+        0.906,
+        0.982
+      ],
+      "text": "115/120 (0.91-0.98)",
+      "category_v2": {
+        "pushed mug before close": 3,
+        "palm could not reach the target": 1,
+        "dropped while moving": 1
+      }
+    },
+    {
+      "clip": "49aff04f7a",
+      "candidate": "phih",
+      "phi_deg": 81.67776196222137,
+      "departure_deg": 0.0,
+      "successes": 35,
+      "n": 120,
+      "rate": 0.2916666666666667,
+      "wilson95": [
+        0.218,
+        0.378
+      ],
+      "text": "35/120 (0.22-0.38)",
+      "category_v2": {
+        "palm could not reach the target": 33,
+        "pushed mug before close": 29,
+        "released but not on the coaster": 18,
+        "slip during lift": 4,
+        "missed/knocked cup": 1
+      }
+    },
+    {
+      "clip": "49aff04f7a",
+      "candidate": "75",
+      "phi_deg": 75.0,
+      "departure_deg": 6.677761962221369,
+      "successes": 58,
+      "n": 120,
+      "rate": 0.48333333333333334,
+      "wilson95": [
+        0.396,
+        0.572
+      ],
+      "text": "58/120 (0.40-0.57)",
+      "category_v2": {
+        "pushed mug before close": 24,
+        "released but not on the coaster": 21,
+        "palm could not reach the target": 10,
+        "slip during lift": 7
+      }
+    },
+    {
+      "clip": "49aff04f7a",
+      "candidate": "65",
+      "phi_deg": 65.0,
+      "departure_deg": 16.67776196222137,
+      "successes": 97,
+      "n": 120,
+      "rate": 0.8083333333333333,
+      "wilson95": [
+        0.729,
+        0.869
+      ],
+      "text": "97/120 (0.73-0.87)",
+      "category_v2": {
+        "released but not on the coaster": 16,
+        "slip during lift": 6,
+        "pushed mug before close": 1
+      }
+    },
+    {
+      "clip": "49aff04f7a",
+      "candidate": "55",
+      "phi_deg": 55.00000000000001,
+      "departure_deg": 26.677761962221364,
+      "successes": 100,
+      "n": 120,
+      "rate": 0.8333333333333334,
+      "wilson95": [
+        0.757,
+        0.889
+      ],
+      "text": "100/120 (0.76-0.89)",
+      "category_v2": {
+        "released but not on the coaster": 14,
+        "pushed mug before close": 4,
+        "slip during lift": 2
+      }
+    },
+    {
+      "clip": "49aff04f7a",
+      "candidate": "45",
+      "phi_deg": 45.00000000000001,
+      "departure_deg": 36.67776196222137,
+      "successes": 111,
+      "n": 120,
+      "rate": 0.925,
+      "wilson95": [
+        0.864,
+        0.96
+      ],
+      "text": "111/120 (0.86-0.96)",
+      "category_v2": {
+        "pushed mug before close": 6,
+        "released but not on the coaster": 2,
+        "slip during lift": 1
+      }
+    },
+    {
+      "clip": "e8825dea53",
+      "candidate": "phih",
+      "phi_deg": 61.69248416329159,
+      "departure_deg": 0.0,
+      "successes": 96,
+      "n": 120,
+      "rate": 0.8,
+      "wilson95": [
+        0.72,
+        0.862
+      ],
+      "text": "96/120 (0.72-0.86)",
+      "category_v2": {
+        "released but not on the coaster": 19,
+        "slip during lift": 3,
+        "pushed mug before close": 2
+      }
+    },
+    {
+      "clip": "e8825dea53",
+      "candidate": "55",
+      "phi_deg": 55.00000000000001,
+      "departure_deg": 6.692484163291583,
+      "successes": 97,
+      "n": 120,
+      "rate": 0.8083333333333333,
+      "wilson95": [
+        0.729,
+        0.869
+      ],
+      "text": "97/120 (0.73-0.87)",
+      "category_v2": {
+        "released but not on the coaster": 16,
+        "pushed mug before close": 7
+      }
+    },
+    {
+      "clip": "e8825dea53",
+      "candidate": "45",
+      "phi_deg": 45.00000000000001,
+      "departure_deg": 16.692484163291585,
+      "successes": 112,
+      "n": 120,
+      "rate": 0.9333333333333333,
+      "wilson95": [
+        0.874,
+        0.966
+      ],
+      "text": "112/120 (0.87-0.97)",
+      "category_v2": {
+        "pushed mug before close": 6,
+        "released but not on the coaster": 2
+      }
+    }
+  ],
+  "ceiling": {
+    "layouts_with_a_success": 120,
+    "n": 120,
+    "wilson95": [
+      0.969,
+      1.0
+    ],
+    "text": "120/120 (0.97-1.00)"
+  },
+  "fixed_best": {
+    "clip": "4e103843db",
+    "candidate": "45",
+    "phi_deg": 45.00000000000001,
+    "text": "115/120 (0.91-0.98)",
+    "rule": "highest training success; ties -> larger phi; then table order"
+  },
+  "resources": [
+    {
+      "command": "run",
+      "items": 2160,
+      "workers": 8,
+      "paths": "v2",
+      "diagnostics": [
+        "sim.m4_execute:collision_diagnostic"
+      ],
+      "wall_s": 4283.1,
+      "parent_peak_rss_mb": 69,
+      "per_process_peak_rss_mb": [
+        1568,
+        1576,
+        1577,
+        1603,
+        1626,
+        1637,
+        1639,
+        1646
+      ],
+      "errors": [],
+      "successes": 1538,
+      "gpu": "none (CPU only, onnxruntime CPU)"
+    }
+  ]
+}
