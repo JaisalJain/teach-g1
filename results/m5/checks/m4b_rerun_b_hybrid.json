@@ -1,0 +1,11 @@
+{
+  "row": "results/m4b/runs/e8825dea53__b_hybrid__trial03.json",
+  "run": "e8825dea53__b_hybrid__trial03",
+  "compared": "every field, recursively, except wall_s, worker_peak_rss_mb",
+  "identical": true,
+  "fields_differing": [],
+  "saved_success": true,
+  "rerun_success": true,
+  "wall_s": 10.3,
+  "peak_rss_mb": 1858
+}

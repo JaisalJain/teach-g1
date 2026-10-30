@@ -396,10 +396,11 @@ def save_path(path: dict, file: Path) -> None:
 
 # ---------------------------------------------------------------------------------------------------------------- M4b hybrid
 HYBRID_VARIANTS = ("b_hybrid", "b_hybrid_h45")
+PHI_VARIANT = "b_hybrid_phi"    # M5: b_hybrid with the grasp heading set to a given phi
 HYBRID_TOL_M = 1e-12            # b_hybrid self-check: its approach vs M3's b_level approach + w (PG - G)
 
 
-def hybrid_grasp(variant: str, cup_xy, human: dict, oracle: dict) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def hybrid_grasp(variant: str, cup_xy, human: dict, oracle: dict, phi: float | None = None) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """(G, R_G, q) of a hybrid variant. b_hybrid = b_level's grasp (grasp_pose: my heading phi_h, my height h_frac_h).
     b_hybrid_h45 = the same q (my height) with the oracle's rotation R_ora: grasp_pose's b_level formula with my heading
     replaced by the oracle's, R = R_z(0) R_ora = R_ora (asserted bit for bit)."""
@@ -409,12 +410,14 @@ def hybrid_grasp(variant: str, cup_xy, human: dict, oracle: dict) -> tuple[np.nd
         G, R, q = grasp_pose("b_level", cup_xy, dict(human, phi_h=oracle["phi_ora"]), oracle)
         assert np.array_equal(R, oracle["R_ora"]), "R_z(0) R_ora is not R_ora"
         return G, R, q
-    raise ValueError(f"variant must be one of {HYBRID_VARIANTS}")
+    if variant == PHI_VARIANT:          # M5: grasp_pose's b_level formula with my heading replaced by phi [rad]
+        return grasp_pose("b_level", cup_xy, dict(human, phi_h=float(phi)), oracle)
+    raise ValueError(f"variant must be one of {HYBRID_VARIANTS + (PHI_VARIANT,)}")
 
 
-def hybrid_path(clip: str, variant: str, layout: dict, p_s, q_now_wxyz, *, oracle: dict | None = None) -> dict:
-    """M4b: the v2 path with a robot-specific final approach (``b_hybrid``, ``b_hybrid_h45``). Same arguments and return
-    format as v2_path.
+def hybrid_path(clip: str, variant: str, layout: dict, p_s, q_now_wxyz, *, oracle: dict | None = None, phi: float | None = None) -> dict:
+    """M4b: the v2 path with a robot-specific final approach (``b_hybrid``, ``b_hybrid_h45``; M5: ``b_hybrid_phi``, the grasp
+    heading set to ``phi`` [rad], everything else b_hybrid's). Same arguments and return format as v2_path.
 
     Grasp G, R_G from ``hybrid_grasp``; u = M3's horizontal unit vector of (q - G) (warp.object_aware_path's u, which is also
     the oracle's approach_dir definition: palm -> cup axis); pre-grasp point PG = G - PREGRASP_BACKOFF u.
@@ -430,8 +433,10 @@ def hybrid_path(clip: str, variant: str, layout: dict, p_s, q_now_wxyz, *, oracl
     the warp is linear in its end point, so the approach must equal M3's b_level approach samples + w (PG - G) (PG - G is
     horizontal, so the z clamp is unchanged); the prelude and everything from the close on must be v2 b_level's, bit for bit.
     """
-    if variant not in HYBRID_VARIANTS:
-        raise ValueError(f"variant must be one of {HYBRID_VARIANTS}")
+    if variant not in HYBRID_VARIANTS + (PHI_VARIANT,):
+        raise ValueError(f"variant must be one of {HYBRID_VARIANTS + (PHI_VARIANT,)}")
+    if (phi is None) != (variant != PHI_VARIANT):
+        raise ValueError(f"phi is given exactly for {PHI_VARIANT}")
     demo = _demo(clip)
     h = float(layout["cup_height"])
     oracle = oracle or default_oracle(h)
@@ -445,7 +450,7 @@ def hybrid_path(clip: str, variant: str, layout: dict, p_s, q_now_wxyz, *, oracl
     k = ts["k"]
 
     cup_xy, coaster_xy = np.asarray(layout["cup_xy"], float), np.asarray(layout["coaster_xy"], float)
-    G, R_G, q = hybrid_grasp(variant, cup_xy, human, oracle)
+    G, R_G, q = hybrid_grasp(variant, cup_xy, human, oracle, phi)
     quat_G = quat_of(R_G)
     u = (q - G) * np.array([1.0, 1.0, 0.0])
     u /= np.linalg.norm(u)
@@ -519,6 +524,8 @@ def hybrid_path(clip: str, variant: str, layout: dict, p_s, q_now_wxyz, *, oracl
         frames=dict(prelude=i_prelude_end + 1, approach1=s1["frames"] - 1, final_approach=i_G - i_pause, close=n_c,
                     transport1=s3["frames"] - 1, transport2=s4["frames"] - 1, total=len(out["palm_pos"])),
         v2=dict(T_R_s=T_R, j_peak=j_peak, peak_z_m=float(tr[j_peak, 2]), segments=[s1, s3, s4]))
+    if phi is not None:
+        out["info"]["phi_rad"] = float(phi)
     if variant == "b_hybrid":
         out["info"]["check_against_b_level"] = _check_against_b_level(out, clip, layout, p_s, q_now_wxyz, oracle, PG, G, app)
     return out

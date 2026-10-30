@@ -120,7 +120,10 @@ MUG_MASS_KG = 0.40                 # spec: the mug from config at 0.40 kg (asser
 CLIPS = run_m3.CLIPS
 M4_VARIANTS = ("b_level", "b_tilt", "naive")
 HYBRID = paths_v2.HYBRID_VARIANTS              # M4b: ("b_hybrid", "b_hybrid_h45")
-VARIANTS = M4_VARIANTS + HYBRID
+PHI = paths_v2.PHI_VARIANT                     # M5: "b_hybrid_phi", one run per (clip, candidate heading, layout)
+VARIANTS = M4_VARIANTS + HYBRID + (PHI,)
+CANDIDATE_LABELS = ("phih", "75", "65", "55", "45")      # M5 candidate headings: my phi_h, or the oracle's heading + (label - 45) deg
+M5_TRAIN_LAYOUTS = Path("results/m5/train_layouts.json")  # M5 Step 1 (layouts train000...)
 M3_VARIANT = {"b_level": "b_level", "b_tilt": "b_tilt", "naive": "a_naive"}     # M3's name for each variant
 PATH_SOURCES = ("v2", "m3")
 N_TRIALS = 50                      # layouts trial00-trial49
@@ -212,7 +215,7 @@ class Execute(PickPlace):
             if variant == "naive":
                 self._naive(result)
             else:
-                self._object_aware(cup0, result, hybrid=variant in HYBRID)
+                self._object_aware(cup0, result, hybrid=variant in HYBRID or variant == PHI)
             result.update(self.evaluate())
         except Failure as f:
             result.update(success=False, failed_phase=f.phase, reason=f.reason)
@@ -379,10 +382,14 @@ def m4_layouts(demo: dict, human: dict, oracle: dict, cup_height: float) -> dict
     return out
 
 
-def variant_layout(variant: str, layout: dict) -> dict:
+def variant_layout(variant: str, layout: dict, yaw: str = "own") -> dict:
     """The layout a variant runs on. b_hybrid_h45 grasps at the oracle's heading, so its handle yaw is the trial's own
-    (handle_yaw_deg of trials(), the oracle's) instead of trial + (phi_h - phi_ora); every other variant: ``layout`` as it is."""
-    if variant != "b_hybrid_h45":
+    (handle_yaw_deg of trials(), the oracle's) instead of trial + (phi_h - phi_ora); every other variant: ``layout`` as it is.
+    M5's b_hybrid_phi: one handle yaw per layout whatever the grasp, the layout's own (trials: handle_yaw_deg of trials();
+    training layouts: their drawn yaw); yaw="m4" keeps the M4 layout's yaw instead (only for M5 Step 0's check against b_hybrid)."""
+    if variant == PHI and yaw == "m4":
+        return layout
+    if variant not in ("b_hybrid_h45", PHI):
         return layout
     if layout.get("trial_handle_yaw_deg") is None:
         raise ValueError("b_hybrid_h45 runs only on the trial layouts")
@@ -397,7 +404,7 @@ def layout_names(spec: list[str]) -> list[str]:
         out += [f"trial{k:02d}" for k in range(int(m[1]), int(m[2]) + 1)] if m else [s]
     for s in out:
         m = re.fullmatch(r"trial(\d+)", s)
-        if not (s in ("recorded", "recorded_v2") or (m and int(m[1]) < N_TRIALS)):
+        if not (s in ("recorded", "recorded_v2") or (m and int(m[1]) < N_TRIALS) or re.fullmatch(r"train\d{3}", s)):
             raise ValueError(f"unknown layout {s!r}")
     return out
 
@@ -409,11 +416,13 @@ def build_path(source: str, clip: str, variant: str, ctx: dict, layout: dict, p_
     the oracle reference built from this task's compiled mug."""
     demo, oracle, layouts = ctx["demo"], ctx["oracle"], ctx["layouts"]
     if source == "m3":
-        if variant in HYBRID:
+        if variant in HYBRID or variant == PHI:
             raise ValueError("the hybrid variants exist only with v2 paths")
         return run_m3.build_path(M3_VARIANT[variant], demo, layouts, layout, oracle, p_s, q_now)
     if source == "v2" and variant in HYBRID:
         return paths_v2.hybrid_path(clip, variant, layout, p_s, q_now, oracle=oracle)
+    if source == "v2" and variant == PHI:
+        return paths_v2.hybrid_path(clip, variant, layout, p_s, q_now, oracle=oracle, phi=layout["phi"])
     if source == "v2":
         return paths_v2.v2_path(clip, variant, layout, p_s, q_now, oracle=oracle)
     raise ValueError(f"path source must be one of {PATH_SOURCES}")
@@ -445,12 +454,45 @@ def clip_context(clip: str) -> dict:
         demo = load_demo(clip)
         oracle = oracle_reference(task.scene)
         human = human_at_grasp(demo, oracle["h"])
-        _WORKER[clip] = dict(demo=demo, oracle=oracle, human=human, layouts=m4_layouts(demo, human, oracle, task.scene.cup_height))
+        layouts = m4_layouts(demo, human, oracle, task.scene.cup_height)
+        layouts.update(train_layouts(task.scene.cup_height))
+        _WORKER[clip] = dict(demo=demo, oracle=oracle, human=human, layouts=layouts)
     return _WORKER[clip]
 
 
-def run_name(clip: str, variant: str, layout: str) -> str:
+def train_layouts(cup_height: float) -> dict[str, dict]:
+    """M5's training layouts (results/m5/train_layouts.json, if it exists) in the layout format; each has its own handle yaw."""
+    if not M5_TRAIN_LAYOUTS.exists():
+        return {}
+    out = {}
+    for t in json.loads(M5_TRAIN_LAYOUTS.read_text())["layouts"]:
+        out[t["name"]] = dict(name=t["name"], cup_xy=np.asarray(t["cup_xy"], float), coaster_xy=np.asarray(t["coaster_xy"], float),
+                              handle_yaw=math.radians(t["handle_yaw_deg"]), trial_handle_yaw_deg=t["handle_yaw_deg"],
+                              handle_yaw_source="M5 training layout's own yaw", cup_height=cup_height, train_index=t["index"],
+                              layout_seed=t["layout_seed"], layout_index=t["index"])
+    return out
+
+
+def candidate_phi(label: str, ctx: dict) -> float:
+    """An M5 candidate heading [rad]: "phih" = my phi_h; "45" = the oracle's heading phi_ora exactly (so that it reproduces
+    b_hybrid_h45; phi_ora is 45 deg to within 1 ulp); "55" / "65" / "75" = phi_ora + 10 / 20 / 30 deg, as the M4b heading sweep
+    turned the grasp."""
+    if label == "phih":
+        return float(ctx["human"]["phi_h"])
+    if label not in CANDIDATE_LABELS:
+        raise ValueError(f"candidate must be one of {CANDIDATE_LABELS}")
+    return float(ctx["oracle"]["phi_ora"]) + math.radians(int(label) - 45)
+
+
+def run_name(clip: str, variant: str, layout: str, candidate: str | None = None, tag: str | None = None) -> str:
+    if variant == PHI:
+        return f"{clip}__phi{candidate}__{layout}" + (f"__{tag}" if tag else "")
     return f"{clip}__{variant}__{layout}"
+
+
+def m5_kwargs(item: dict) -> dict:
+    """run_one's M5 keyword arguments stored in an item or a saved row (none for the earlier variants)."""
+    return {k: item[k] for k in ("candidate", "yaw", "path_xy", "tag") if item.get(k) is not None} if item.get("variant") == PHI else {}
 
 
 def resolve(spec: str):
@@ -464,7 +506,7 @@ def collision_diagnostic(task: Execute, ctx: dict) -> dict:
     PickPlace.run setup, which is bit-identical to the run's, then M3's single plan). naive: None (Step 3 is for b runs)."""
     if ctx["variant"] == "naive" or ctx["path"] is None:
         return dict(collision_min=None)
-    if ctx["variant"] in HYBRID:
+    if ctx["variant"] in HYBRID or ctx["variant"] == PHI:
         # M4b: the window ends 1 cm of arc before PG (collision_min reads the window's end from i_G); PG -> G is the oracle's leg
         out = collision_min(task, ctx["layout"], dict(ctx["path"], i_G=ctx["path"]["i_pause"]))
         out["window_end"] = "1 cm of path arc before PG (path frame i_pause; the field i_G above is that frame); PG -> G is the oracle's leg"
@@ -473,7 +515,8 @@ def collision_diagnostic(task: Execute, ctx: dict) -> dict:
 
 
 def run_one(clip: str, variant: str, layout: str, *, paths: str = "v2", diagnostics: tuple[str, ...] = (COLLISION_DIAGNOSTIC,),
-            video_path: Path | None = None, video_info: dict | None = None) -> dict:
+            video_path: Path | None = None, video_info: dict | None = None, candidate: str | None = None, yaw: str = "own",
+            path_xy: dict | None = None, tag: str | None = None) -> dict:
     """One run: (clip, variant, layout name) -> its row. Row = sim/m1_pick_mug.py's row fields (trial, layout_seed,
     layout_index, cup_xy, coaster_xy, handle_yaw_deg, mass_kg, RESULT_KEYS, wall_s, detail) + run, clip, variant, layout,
     paths, settles (top level) and the diagnostics' fields. ``diagnostics`` = "module:function" names (default: the Step 3
@@ -482,26 +525,41 @@ def run_one(clip: str, variant: str, layout: str, *, paths: str = "v2", diagnost
     layouts) and returns a dict merged into the row (it may change the simulator state: the run is over).
     ``video_path`` (default None = no video; only ``videos`` sets it) renders the run; ``video_info``, if given, receives
     ``control_steps`` = the number of control steps the video's log saw (one frame is written per 2 of them). Neither
-    touches the row."""
+    touches the row.
+    M5 (b_hybrid_phi only): ``candidate`` = the heading label (candidate_phi); ``yaw`` = variant_layout's yaw mode; ``path_xy``
+    = dict(cup_xy, coaster_xy) to build the path from instead of the true layout (the noisy-execution test: the scene keeps
+    the true layout); ``tag`` = a suffix of the run name. The row gets ``candidate``, ``yaw``, ``path_xy`` and ``tag``."""
     t0 = time.perf_counter()
     task, ctx = worker_task(), clip_context(clip)
-    lay = variant_layout(variant, ctx["layouts"][layout])
+    if (variant == PHI) != (candidate is not None) or (variant != PHI and (path_xy is not None or tag is not None or yaw != "own")):
+        raise ValueError(f"candidate / path_xy / tag / yaw are only for {PHI}, and {PHI} needs a candidate")
+    lay = variant_layout(variant, ctx["layouts"][layout], yaw)
+    path_lay = lay
+    if variant == PHI:
+        path_lay = dict(lay, phi=candidate_phi(candidate, ctx))
+        if path_xy is not None:
+            path_lay.update(cup_xy=np.asarray(path_xy["cup_xy"], float), coaster_xy=np.asarray(path_xy["coaster_xy"], float))
     made = {}
 
     def make_path(p_s, q_now):
-        made.update(p_s=p_s, q_now=q_now, path=build_path(paths, clip, variant, ctx, lay, p_s, q_now))
+        made.update(p_s=p_s, q_now=q_now, path=build_path(paths, clip, variant, ctx, path_lay, p_s, q_now))
         return made["path"]
 
     r = task.run_variant(variant, lay, make_path, video_path)
     if video_info is not None and video_path is not None:
         video_info["control_steps"] = task.log.video.n          # read now: the diagnostics below replace task.log
     path = made.get("path")
-    row = dict(run=run_name(clip, variant, layout), clip=clip, variant=variant, layout=layout, paths=paths, profile=PROFILE,
+    row = dict(run=run_name(clip, variant, layout, candidate, tag), clip=clip, variant=variant, layout=layout, paths=paths, profile=PROFILE,
                trial=lay.get("trial"), layout_seed=lay.get("layout_seed"), layout_index=lay.get("layout_index"),
                cup_xy=r["cup_xy"], coaster_xy=r["coaster_xy"], handle_yaw_deg=round(math.degrees(lay["handle_yaw"]), 2),
                trial_handle_yaw_deg=None if lay.get("trial_handle_yaw_deg") is None else round(lay["trial_handle_yaw_deg"], 2),
                mass_kg=task.scene.cup_mass, **{k: r.get(k) for k in RESULT_KEYS}, settles=r["settles"],
                diagnostics_run=list(diagnostics))
+    if variant == PHI:
+        phi, phi_h = path_lay["phi"], float(ctx["human"]["phi_h"])
+        row.update(candidate=candidate, phi_deg=math.degrees(phi), phi_h_deg=math.degrees(phi_h), departure_deg=math.degrees(phi_h - phi),
+                   yaw=yaw, path_xy=None if path_xy is None else {k: [float(v) for v in path_xy[k]] for k in ("cup_xy", "coaster_xy")}, tag=tag,
+                   train_index=lay.get("train_index"))
     detail = {k: v for k, v in r.items() if k not in row}
     if path is not None:
         detail["path"] = dict(source=paths, T=len(path["palm_pos"]), sha256=path_sha256(path),
@@ -520,9 +578,9 @@ def run_one(clip: str, variant: str, layout: str, *, paths: str = "v2", diagnost
 def run_item(item: dict, paths: str, runs_dir: str, diagnostics: tuple[str, ...]) -> dict:
     """Worker: one item -> its row file, written as soon as the run ends. An exception becomes an error row (the batch goes
     on; ``run`` reports it and exits non-zero)."""
-    name = run_name(item["clip"], item["variant"], item["layout"])
+    name = run_name(item["clip"], item["variant"], item["layout"], item.get("candidate"), item.get("tag"))
     try:
-        row = run_one(item["clip"], item["variant"], item["layout"], paths=paths, diagnostics=diagnostics)
+        row = run_one(item["clip"], item["variant"], item["layout"], paths=paths, diagnostics=diagnostics, **m5_kwargs(item))
     except Exception:
         row = dict(run=name, **item, paths=paths, success=None, error=traceback.format_exc(), worker_peak_rss_mb=peak_rss_mb())
     (Path(runs_dir) / f"{name}.json").write_text(json.dumps(row, indent=2))
@@ -544,7 +602,7 @@ def cmd_run(args):
         layout_names([it["layout"]])
     runs_dir = args.out / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
-    exists = [it for it in items if (runs_dir / f"{run_name(it['clip'], it['variant'], it['layout'])}.json").exists()]
+    exists = [it for it in items if (runs_dir / f"{run_name(it['clip'], it['variant'], it['layout'], it.get('candidate'), it.get('tag'))}.json").exists()]
     if exists and args.skip_existing:
         items = [it for it in items if it not in exists]
     elif exists and not args.overwrite:
@@ -597,7 +655,8 @@ def row_differences(a, b, prefix: str = "") -> list[str]:
 def cmd_rerun(args):
     saved = json.loads(args.row.read_text())
     t0 = time.perf_counter()
-    again = run_one(saved["clip"], saved["variant"], saved["layout"], paths=saved["paths"], diagnostics=tuple(saved.get("diagnostics_run", ())))
+    again = run_one(saved["clip"], saved["variant"], saved["layout"], paths=saved["paths"], diagnostics=tuple(saved.get("diagnostics_run", ())),
+                    **m5_kwargs(saved))
     differing = row_differences(json.loads(json.dumps(again)), saved)
     report = dict(row=str(args.row), run=saved["run"], compared="every field, recursively, except " + ", ".join(VOLATILE),
                   identical=not differing, fields_differing=differing, saved_success=saved.get("success"), rerun_success=again["success"],
@@ -815,7 +874,7 @@ def cmd_render(args):
         saved = json.loads(src.read_text())
         video, info = args.out / f"{saved['run']}.mp4", {}
         again = run_one(saved["clip"], saved["variant"], saved["layout"], paths=saved["paths"],
-                        diagnostics=tuple(saved.get("diagnostics_run", ())), video_path=video, video_info=info)
+                        diagnostics=tuple(saved.get("diagnostics_run", ())), video_path=video, video_info=info, **m5_kwargs(saved))
         differing = row_differences(json.loads(json.dumps(again)), saved)
         report["videos"].append(dict(run=saved["run"], video=str(video), saved_row=str(src), saved_success=saved["success"],
                                      saved_category=saved["category"], rerun_success=again["success"], rerun_category=again["category"],

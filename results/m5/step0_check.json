@@ -1,0 +1,133 @@
+{
+  "what": "M5 Step 0: b_hybrid_phi reproduces b_hybrid (phi = phi_h) and b_hybrid_h45 (phi = 45 deg = phi_ora)",
+  "candidate_45": "phi_ora exactly (0.7853981633974484 rad = 45 deg + 1 ulp), so that it is b_hybrid_h45's R_ora bit for bit",
+  "identity_fields_left_out": {
+    "row": [
+      "run",
+      "variant",
+      "candidate",
+      "phi_deg",
+      "phi_h_deg",
+      "departure_deg",
+      "yaw",
+      "path_xy",
+      "tag",
+      "train_index"
+    ],
+    "path_info": [
+      "variant",
+      "phi_rad",
+      "check_against_b_level"
+    ]
+  },
+  "paths": [
+    {
+      "clip": "26d4118b0c",
+      "layout": "trial00",
+      "phih_vs_b_hybrid": {
+        "arrays_identical": true,
+        "indices_identical": true,
+        "info_identical": true,
+        "identical": true
+      },
+      "45_vs_b_hybrid_h45": {
+        "arrays_identical": true,
+        "indices_identical": true,
+        "info_identical": true,
+        "identical": true
+      }
+    },
+    {
+      "clip": "4e103843db",
+      "layout": "trial00",
+      "phih_vs_b_hybrid": {
+        "arrays_identical": true,
+        "indices_identical": true,
+        "info_identical": true,
+        "identical": true
+      },
+      "45_vs_b_hybrid_h45": {
+        "arrays_identical": true,
+        "indices_identical": true,
+        "info_identical": true,
+        "identical": true
+      }
+    },
+    {
+      "clip": "49aff04f7a",
+      "layout": "trial00",
+      "phih_vs_b_hybrid": {
+        "arrays_identical": true,
+        "indices_identical": true,
+        "info_identical": true,
+        "identical": true
+      },
+      "45_vs_b_hybrid_h45": {
+        "arrays_identical": true,
+        "indices_identical": true,
+        "info_identical": true,
+        "identical": true
+      }
+    },
+    {
+      "clip": "e8825dea53",
+      "layout": "trial00",
+      "phih_vs_b_hybrid": {
+        "arrays_identical": true,
+        "indices_identical": true,
+        "info_identical": true,
+        "identical": true
+      },
+      "45_vs_b_hybrid_h45": {
+        "arrays_identical": true,
+        "indices_identical": true,
+        "info_identical": true,
+        "identical": true
+      }
+    }
+  ],
+  "reruns": [
+    {
+      "run": "26d4118b0c__phiphih__trial00",
+      "saved_row": "results/m4b/runs/26d4118b0c__b_hybrid__trial00.json",
+      "handle_yaw_deg": -1.42,
+      "saved_handle_yaw_deg": -1.42,
+      "success": false,
+      "saved_success": false,
+      "fields_differing": [],
+      "identical": true
+    },
+    {
+      "run": "26d4118b0c__phiphih__trial01",
+      "saved_row": "results/m4b/runs/26d4118b0c__b_hybrid__trial01.json",
+      "handle_yaw_deg": 40.07,
+      "saved_handle_yaw_deg": 40.07,
+      "success": false,
+      "saved_success": false,
+      "fields_differing": [],
+      "identical": true
+    },
+    {
+      "run": "26d4118b0c__phi45__trial00",
+      "saved_row": "results/m4b/runs/26d4118b0c__b_hybrid_h45__trial00.json",
+      "handle_yaw_deg": -38.36,
+      "saved_handle_yaw_deg": -38.36,
+      "success": true,
+      "saved_success": true,
+      "fields_differing": [],
+      "identical": true
+    },
+    {
+      "run": "26d4118b0c__phi45__trial01",
+      "saved_row": "results/m4b/runs/26d4118b0c__b_hybrid_h45__trial01.json",
+      "handle_yaw_deg": 3.13,
+      "saved_handle_yaw_deg": 3.13,
+      "success": true,
+      "saved_success": true,
+      "fields_differing": [],
+      "identical": true
+    }
+  ],
+  "passed": true,
+  "wall_s": 14.8
+}
