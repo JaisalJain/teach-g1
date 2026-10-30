@@ -895,3 +895,51 @@ v1 and v2 results stay untouched; v3 writes to `results/m1_grasp_fix/v3/` and `r
 - **G3** becomes information only (palm reprojection in px and in mm at the hand: monocular hand-model limitation, orthographic model vs a
   35–45 cm perspective camera). **G6** stays reported with unchanged thresholds, marked "known bias +6–7 mm, cause unresolved"; downstream
   positions are validated by G7 and the sim uses the label geometry.
+
+### M2 v3 — Track A: final perception fixes (all numbers: `results/m2_perception_v3/summary.md`, `<clip>/gates.json`, `<clip>/stages/`)
+**How it was built.** Contract fixed before results (closed-form palm-centroid shift; re-measured residual = v2's rule; A2v3 running
+near-min uses each frame's own minimum, 5 consecutive metric_valid frames including k; D_min strictly before t_rise). Three groups in a
+workflow: A1v3 and A2v3 implemented by opus agents, schema 4 / gates v3 / summary / run_clip by a sonnet agent, one opus reviewer each,
+fixers. The v2 scale / fit stages were deleted (git history keeps them). A clean `run_clip` (45 s; S1–S4, S6 cached) reproduced every
+gate and cross-view value exactly; an independent verification workflow (sonnet, own code per clip + schema-4 audit) found **no mismatch**.
+
+**A1v3 — palm placement (s = 1).** Per metric_valid frame: t = ((u_x − cx) P_z / fx − P_x, (u_y − cy) P_z / fy − P_y, 0), P = mean of the
+5 S5-shifted palm keypoints, u = mean of their WiLoR kp2d; asserted to 1e-6 px (float64: ~3e-13 px). Median |t| 5.6 / 12.1 / 14.9 / 4.4 mm.
+**A2v3 — contact rule** (near = d_axis ≤ r + 8 cm; t_rise = first near frame with z ≥ running near-min + 3 cm for 5 valid frames; D_min
+before t_rise; contact = first frame ≤ D_min + 1 cm). Events (frame index; clip time of t_rise):
+
+| clip | t_rise | D_min (frame) | contact | grasp g | lift | place | release | z_grasp |
+|---|---|---|---|---|---|---|---|---|
+| 26d4118b0c top-down | 89 (2.97 s) | 106.7 mm (68) | 60 | 84 | 87 | 156 | 189 | 50.0 mm |
+| 4e103843db 90° | 217 (3.88 s) | 96.9 mm (215) | 162 | 211 | 214 | 345 | 414 | 44.6 mm |
+| 49aff04f7a 45° | 186 (3.10 s) | 98.3 mm (164) | 147 | 179 | 182 | 284 | 356 | 62.4 mm |
+| e8825dea53 45° | 145 (2.42 s) | 94.5 mm (144) | 107 | 140 | 143 | 267 | 333 | 62.7 mm |
+
+Contact comes before g on every clip. Remaining quirk (information, no rule changed): t_rise is a 3 cm rise and the lift a 1.5 cm rise, so
+t_rise follows the lift by 2–4 frames and D_min can still fall in [lift, t_rise): 4e103843db (D_min 215, lift 214) and e8825dea53 (144, 143);
+contact is unaffected. On e8825dea53 the near-minimum is set at the first near frame (d_axis 0.2 mm inside r + 8 cm) while the hand still
+reaches in.
+
+**Gates v3:**
+
+| gate | 26d4118b0c top-down | 4e103843db 90° | 49aff04f7a 45° | e8825dea53 45° |
+|---|---|---|---|---|
+| G1 coverage | ✔ 100 % | ✔ 100 % | ✔ 99.2 % | ✔ 99.7 % |
+| G2 LiDAR residual (placed hand) | ✔ 0.47 cm | ✔ 0.57 cm | ✔ 0.47 cm (2 frames without residual) | ✔ 0.76 cm |
+| G3 (information) palm reprojection | 34.75 px = 8.18 mm | 43.09 px = 10.94 mm | 51.72 px = 13.48 mm | 14.17 px = 3.52 mm |
+| G4 jitter | ✔ 0.07 cm | ✔ 0.07 cm | N/A | N/A (longest slow run 0.267 s) |
+| G5 z_grasp | ✔ 50.0 mm | ✔ 44.6 mm | ✔ 62.4 mm | ✔ 62.7 mm (v2 ✘) |
+| G6 mug fit (known bias) | ✘ Ø 105.1 | ✘ Ø 105.7 | ✘ Ø 106.1 | ✘ Ø 105.8 |
+| G7 placement | ✔ 0.81 cm | ✔ 2.15 cm | ✔ 1.04 cm | ✔ 0.54 cm |
+| G8 table frame | ✔ x 1.3° | ✔ x 1.5° | ✔ x 15.7° | ✔ x 7.6° |
+
+(G3 "mm" = median over frames of px × z_c / fx; G3 label per the user: monocular hand-model limitation, orthographic model vs a 35–45 cm
+perspective camera — the verifier notes the measured palm depth is ~31–33 cm median. G9 removed; the v2 scale results remain the
+documented negative result.) v2 → v3: G5 on e8825dea53 fail → pass (events back in order); G2 / G3 values moved slightly with the new
+placement (palm px vs v2's scale fit: lower on 1 clip, higher on 3; vs the S5 hand before placement: lower on all 4 — 46.5 → 34.7,
+46.0 → 43.1, 58.9 → 51.7, 19.4 → 14.2 px, from hand_place done.json); everything else unchanged.
+
+**Runtime / memory:** hand_place 0.8–1.5 s (≤ 0.2 GB); table_frame / events / palm / demo < 1.5 s; report 3.6–6.9 s; whole S5→S11 v3
+pass 45 s. GPU: none in v3 (S2/S3/A4 caches).
+**Process notes:** sub-agents ran no git in v3 Track A (per their reports); the demo field `t_rise` is on the odometry clock (like
+`t_contact`), the cross-view column uses clip time.
