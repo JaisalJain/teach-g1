@@ -1,0 +1,2078 @@
+{
+  "question": "With the palm against an upright cylinder of diameter D, can the thumb and the fingers reach far enough around it to oppose the palm's push? (kinematics only)",
+  "method": {
+    "model": "TableScene(0.74, cup_model='mug') from sim/scene.py: the sim's compiled model (URDF g1_29dof_with_hand_rev_1_0, same collision geoms and pairs); its body cylinder 'cup_geom' is resized per D, the handle geoms are never queried; only finger joints are set; mj_kinematics + mj_geomDistance (signed, convex hulls); no time stepping",
+    "hand": "right",
+    "palm_frame": "right_hand_palm_link (origin = HERO palm point = wrist_yaw_link + (0.0415, -0.003, 0)); x along the fingers, z = finger hinge axis (index +z, middle -z), +y = palm side",
+    "palm_contact_geom": "hand_contact_right_hand_palm_link_8",
+    "palm_normal": "+y of the palm frame: the side the fingers flex toward; the palm mesh's thinnest principal axis is 3.21 deg from it",
+    "palm_normal_anchor_palm_frame_m": [
+      0.04232,
+      -0.00106,
+      -2e-05
+    ],
+    "palm_normal_anchor": "centre of the palm collision geom (MuJoCo puts a mesh geom's frame at the mesh centroid); not fixed by the spec: see open_questions[0] and anchor_sensitivity",
+    "palm_side_max_y_m": {
+      "palm": 0.02032,
+      "thumb_0_link": 0.0283
+    },
+    "palm_side_max_y_note": "largest palm-frame y of the palm geom and of the thumb's base link geom (all joints 0): the thumb base stands out above the palm face, next to the palm normal",
+    "cylinder_axis": "parallel to palm z (= world up in the oracle's side grasp), crossing the palm normal line; slid along the normal until mj_geomDistance(palm, cylinder) = 0 (bisection, < 1e-7 m)",
+    "grasp_height": "palm origin 0.065 m above the table (sim/pick_place.py GRASP_Z_ABOVE_TABLE); cylinder base on the table; cylinder height = config height_m = 0.091 m for every D",
+    "diameters_mm": [
+      60.0,
+      65.0,
+      70.0,
+      75.0,
+      80.0,
+      85.0,
+      90.0,
+      95.0,
+      99.0,
+      100.0,
+      105.0,
+      110.0
+    ],
+    "diameters_note": "60-110 mm in 5 mm steps + the M1 cylinder's 80 mm (sim/scene.py CUP_RADIUS x 2; already on the grid; height 0.091 m like every D, not the M1 cylinder's 0.10 m: this row varies the diameter only) + 99 mm (mug label)",
+    "grid": "21 values per joint, np.linspace over the joint range (ends included); other digits at 0. phi_max is a lower bound of the continuous maximum (a finer grid containing this one can only raise it); joint steps are range / 20 (4.5-6 deg)",
+    "digits": {
+      "thumb": {
+        "joints": [
+          "right_hand_thumb_0_joint",
+          "right_hand_thumb_1_joint",
+          "right_hand_thumb_2_joint"
+        ],
+        "ranges_rad": [
+          [
+            -1.047198,
+            1.047198
+          ],
+          [
+            -1.047198,
+            0.724312
+          ],
+          [
+            -1.745329,
+            0.0
+          ]
+        ],
+        "fingertip_geom": "hand_contact_right_hand_thumb_2_link_11",
+        "digit_geoms": [
+          "hand_contact_right_hand_thumb_0_link_9",
+          "hand_contact_right_hand_thumb_1_link_10",
+          "hand_contact_right_hand_thumb_2_link_11"
+        ],
+        "base_x_palm_frame_m": 0.0255,
+        "positive_phi": "clockwise about palm +z (thumb curls from +y toward +x)"
+      },
+      "index": {
+        "joints": [
+          "right_hand_index_0_joint",
+          "right_hand_index_1_joint"
+        ],
+        "ranges_rad": [
+          [
+            0.0,
+            1.570796
+          ],
+          [
+            0.0,
+            1.745329
+          ]
+        ],
+        "fingertip_geom": "hand_contact_right_hand_index_1_link_15",
+        "digit_geoms": [
+          "hand_contact_right_hand_index_0_link_14",
+          "hand_contact_right_hand_index_1_link_15"
+        ],
+        "base_x_palm_frame_m": 0.0777,
+        "positive_phi": "counter-clockwise about palm +z (fingers flex from +x toward +y)"
+      },
+      "middle": {
+        "joints": [
+          "right_hand_middle_0_joint",
+          "right_hand_middle_1_joint"
+        ],
+        "ranges_rad": [
+          [
+            0.0,
+            1.570796
+          ],
+          [
+            0.0,
+            1.745329
+          ]
+        ],
+        "fingertip_geom": "hand_contact_right_hand_middle_1_link_13",
+        "digit_geoms": [
+          "hand_contact_right_hand_middle_0_link_12",
+          "hand_contact_right_hand_middle_1_link_13"
+        ],
+        "base_x_palm_frame_m": 0.0777,
+        "positive_phi": "counter-clockwise about palm +z (fingers flex from +x toward +y)"
+      }
+    },
+    "touch": "fingertip geom distance in [0, 3] mm AND every collision geom of the digit >= -1 mm",
+    "phi": "angle about the cylinder axis of the fingertip's closest point on the cylinder (mj_geomDistance fromto), from the palm contact point (0 deg), positive toward the digit's own side (fixed per digit by the hand, WRAP_SIGN), wrapped to [-180, 180]",
+    "closest_point_surface": "side / top cap / bottom cap, or 'top rim edge' / 'bottom rim edge' when the point is at radius r AND at a cap height (within 0.1 mm)",
+    "phi_finger_max": "max over index and middle",
+    "verdict": "comfortable if both maxima >= 90 deg; marginal if both >= 90 - atan(mu); infeasible otherwise (a digit with no touching configuration counts as infeasible)"
+  },
+  "mu": {
+    "value": 1.0625,
+    "source": "model.pair_friction[0] of the explicit pairs cup_geom x fingertip geom in the compiled scene (sim/scene.py: CUP_FRICTION['hand'] = HERO's glazed-ceramic prior); explicit pairs replace the geoms' max-friction mixing (hand geoms 1.5, cup 0.35)",
+    "pairs": {
+      "thumb": {
+        "pair": "cup__hand_contact_right_hand_thumb_2_link_11",
+        "friction": [
+          1.0625,
+          1.0625,
+          0.00425,
+          0.0001,
+          0.0001
+        ],
+        "condim": 4
+      },
+      "index": {
+        "pair": "cup__hand_contact_right_hand_index_1_link_15",
+        "friction": [
+          1.0625,
+          1.0625,
+          0.00425,
+          0.0001,
+          0.0001
+        ],
+        "condim": 4
+      },
+      "middle": {
+        "pair": "cup__hand_contact_right_hand_middle_1_link_13",
+        "friction": [
+          1.0625,
+          1.0625,
+          0.00425,
+          0.0001,
+          0.0001
+        ],
+        "condim": 4
+      }
+    },
+    "contact_check_at_99mm": {
+      "index": {
+        "n_contacts": 1,
+        "friction": [
+          1.0625
+        ],
+        "dim": [
+          4
+        ],
+        "depth_mm": [
+          0.491
+        ]
+      },
+      "middle": {
+        "n_contacts": 2,
+        "friction": [
+          1.0625
+        ],
+        "dim": [
+          4
+        ],
+        "depth_mm": [
+          0.5,
+          0.478
+        ]
+      }
+    },
+    "contact_check": "each fingertip at its 99 mm argmax configuration pushed 0.5 mm into the cylinder, mj_forward, all contacts between that fingertip geom and the cylinder (digits without a touching configuration: none)",
+    "pyramidal_cone_info": {
+      "mu_over_sqrt2": 0.7513,
+      "marginal_threshold_deg": 53.0824,
+      "note": "information only, not used: MuJoCo's pyramidal cone is inscribed in the friction cone, so between its edges the tangential limit drops to mu/sqrt(2)"
+    },
+    "solver": {
+      "cone": "pyramidal",
+      "impratio": 1.0,
+      "noslip_iterations": 0
+    }
+  },
+  "thresholds_deg": {
+    "comfortable": 90.0,
+    "marginal": 43.2643
+  },
+  "rows": [
+    {
+      "D_mm": 60.0,
+      "is_old_cylinder": false,
+      "is_mug": false,
+      "phi_thumb_max_deg": null,
+      "phi_finger_max_deg": 115.296,
+      "best_finger": "index",
+      "verdict": "infeasible",
+      "cylinder": {
+        "radius_m": 0.03,
+        "height_m": 0.091,
+        "axis_palm_frame_m": [
+          0.04232,
+          0.05023,
+          -0.0195
+        ],
+        "palm_gap_mm": 0.000538,
+        "palm_contact_point_palm_frame_m": [
+          0.04296,
+          0.02024,
+          -0.00437
+        ],
+        "palm_contact_off_normal_deg": 1.223,
+        "table_plane_z_palm_frame_m": -0.065,
+        "wrist_yaw_geom_distance_mm": 21.405
+      },
+      "digits": {
+        "thumb": {
+          "n_configs": 9261,
+          "n_tip_within_0_3mm": 240,
+          "n_touching": 0,
+          "phi_max_deg": null,
+          "argmax": null,
+          "largest_distance_over_grid_mm": {
+            "thumb_0_link": -6.168,
+            "thumb_1_link": -3.198,
+            "thumb_2_link": 12.811
+          }
+        },
+        "index": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 14,
+          "n_touching": 9,
+          "phi_max_deg": 115.296,
+          "argmax": {
+            "joints": {
+              "right_hand_index_0_joint": 1.099557424,
+              "right_hand_index_1_joint": 1.1344640125
+            },
+            "grid_index": [
+              14,
+              13
+            ],
+            "tip_gap_mm": 1.057,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.06917,
+              0.06362,
+              0.026
+            ],
+            "closest_point_surface": "top rim edge",
+            "closest_point_height_above_table_m": 0.091,
+            "min_digit_geom_distance_mm": 1.057
+          },
+          "largest_distance_over_grid_mm": {
+            "index_0_link": 25.777,
+            "index_1_link": 59.999
+          }
+        },
+        "middle": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 14,
+          "n_touching": 9,
+          "phi_max_deg": 115.271,
+          "argmax": {
+            "joints": {
+              "right_hand_middle_0_joint": 1.099557424,
+              "right_hand_middle_1_joint": 1.1344640125
+            },
+            "grid_index": [
+              14,
+              13
+            ],
+            "tip_gap_mm": 0.976,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.06917,
+              0.06361,
+              -0.02893
+            ],
+            "closest_point_surface": "side",
+            "closest_point_height_above_table_m": 0.03607,
+            "min_digit_geom_distance_mm": 0.976
+          },
+          "largest_distance_over_grid_mm": {
+            "middle_0_link": 25.777,
+            "middle_1_link": 59.319
+          }
+        }
+      }
+    },
+    {
+      "D_mm": 65.0,
+      "is_old_cylinder": false,
+      "is_mug": false,
+      "phi_thumb_max_deg": null,
+      "phi_finger_max_deg": 111.464,
+      "best_finger": "index",
+      "verdict": "infeasible",
+      "cylinder": {
+        "radius_m": 0.0325,
+        "height_m": 0.091,
+        "axis_palm_frame_m": [
+          0.04232,
+          0.05273,
+          -0.0195
+        ],
+        "palm_gap_mm": 0.000268,
+        "palm_contact_point_palm_frame_m": [
+          0.04299,
+          0.02024,
+          -0.00298
+        ],
+        "palm_contact_off_normal_deg": 1.176,
+        "table_plane_z_palm_frame_m": -0.065,
+        "wrist_yaw_geom_distance_mm": 20.329
+      },
+      "digits": {
+        "thumb": {
+          "n_configs": 9261,
+          "n_tip_within_0_3mm": 155,
+          "n_touching": 0,
+          "phi_max_deg": null,
+          "argmax": null,
+          "largest_distance_over_grid_mm": {
+            "thumb_0_link": -6.347,
+            "thumb_1_link": -4.469,
+            "thumb_2_link": 10.186
+          }
+        },
+        "index": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 12,
+          "n_touching": 10,
+          "phi_max_deg": 111.464,
+          "argmax": {
+            "joints": {
+              "right_hand_index_0_joint": 1.099557424,
+              "right_hand_index_1_joint": 1.04719755
+            },
+            "grid_index": [
+              14,
+              12
+            ],
+            "tip_gap_mm": 0.527,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.07232,
+              0.06524,
+              0.026
+            ],
+            "closest_point_surface": "top rim edge",
+            "closest_point_height_above_table_m": 0.091,
+            "min_digit_geom_distance_mm": 0.527
+          },
+          "largest_distance_over_grid_mm": {
+            "index_0_link": 25.351,
+            "index_1_link": 58.878
+          }
+        },
+        "middle": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 13,
+          "n_touching": 10,
+          "phi_max_deg": 111.457,
+          "argmax": {
+            "joints": {
+              "right_hand_middle_0_joint": 1.099557424,
+              "right_hand_middle_1_joint": 1.04719755
+            },
+            "grid_index": [
+              14,
+              12
+            ],
+            "tip_gap_mm": 0.447,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.07232,
+              0.06524,
+              -0.02894
+            ],
+            "closest_point_surface": "side",
+            "closest_point_height_above_table_m": 0.03606,
+            "min_digit_geom_distance_mm": 0.447
+          },
+          "largest_distance_over_grid_mm": {
+            "middle_0_link": 25.351,
+            "middle_1_link": 58.196
+          }
+        }
+      }
+    },
+    {
+      "D_mm": 70.0,
+      "is_old_cylinder": false,
+      "is_mug": false,
+      "phi_thumb_max_deg": null,
+      "phi_finger_max_deg": 107.497,
+      "best_finger": "index",
+      "verdict": "infeasible",
+      "cylinder": {
+        "radius_m": 0.035,
+        "height_m": 0.091,
+        "axis_palm_frame_m": [
+          0.04232,
+          0.05523,
+          -0.0195
+        ],
+        "palm_gap_mm": 0.000106,
+        "palm_contact_point_palm_frame_m": [
+          0.04302,
+          0.02024,
+          -0.00284
+        ],
+        "palm_contact_off_normal_deg": 1.148,
+        "table_plane_z_palm_frame_m": -0.065,
+        "wrist_yaw_geom_distance_mm": 19.332
+      },
+      "digits": {
+        "thumb": {
+          "n_configs": 9261,
+          "n_tip_within_0_3mm": 103,
+          "n_touching": 0,
+          "phi_max_deg": null,
+          "argmax": null,
+          "largest_distance_over_grid_mm": {
+            "thumb_0_link": -6.495,
+            "thumb_1_link": -5.578,
+            "thumb_2_link": 7.723
+          }
+        },
+        "index": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 16,
+          "n_touching": 12,
+          "phi_max_deg": 107.497,
+          "argmax": {
+            "joints": {
+              "right_hand_index_0_joint": 1.099557424,
+              "right_hand_index_1_joint": 0.9599310875
+            },
+            "grid_index": [
+              14,
+              11
+            ],
+            "tip_gap_mm": 0.074,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.07549,
+              0.06642,
+              0.026
+            ],
+            "closest_point_surface": "top rim edge",
+            "closest_point_height_above_table_m": 0.091,
+            "min_digit_geom_distance_mm": 0.074
+          },
+          "largest_distance_over_grid_mm": {
+            "index_0_link": 24.951,
+            "index_1_link": 57.802
+          }
+        },
+        "middle": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 14,
+          "n_touching": 10,
+          "phi_max_deg": 106.825,
+          "argmax": {
+            "joints": {
+              "right_hand_middle_0_joint": 0.942477792,
+              "right_hand_middle_1_joint": 1.221730475
+            },
+            "grid_index": [
+              12,
+              14
+            ],
+            "tip_gap_mm": 0.868,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.07561,
+              0.06603,
+              -0.02888
+            ],
+            "closest_point_surface": "side",
+            "closest_point_height_above_table_m": 0.03612,
+            "min_digit_geom_distance_mm": 0.868
+          },
+          "largest_distance_over_grid_mm": {
+            "middle_0_link": 24.951,
+            "middle_1_link": 57.119
+          }
+        }
+      }
+    },
+    {
+      "D_mm": 75.0,
+      "is_old_cylinder": false,
+      "is_mug": false,
+      "phi_thumb_max_deg": null,
+      "phi_finger_max_deg": 103.801,
+      "best_finger": "middle",
+      "verdict": "infeasible",
+      "cylinder": {
+        "radius_m": 0.0375,
+        "height_m": 0.091,
+        "axis_palm_frame_m": [
+          0.04232,
+          0.05773,
+          -0.0195
+        ],
+        "palm_gap_mm": 0.000963,
+        "palm_contact_point_palm_frame_m": [
+          0.04303,
+          0.02024,
+          -0.00284
+        ],
+        "palm_contact_off_normal_deg": 1.079,
+        "table_plane_z_palm_frame_m": -0.065,
+        "wrist_yaw_geom_distance_mm": 18.406
+      },
+      "digits": {
+        "thumb": {
+          "n_configs": 9261,
+          "n_tip_within_0_3mm": 76,
+          "n_touching": 0,
+          "phi_max_deg": null,
+          "argmax": null,
+          "largest_distance_over_grid_mm": {
+            "thumb_0_link": -6.619,
+            "thumb_1_link": -6.546,
+            "thumb_2_link": 5.355
+          }
+        },
+        "index": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 13,
+          "n_touching": 11,
+          "phi_max_deg": 103.719,
+          "argmax": {
+            "joints": {
+              "right_hand_index_0_joint": 0.942477792,
+              "right_hand_index_1_joint": 1.1344640125
+            },
+            "grid_index": [
+              12,
+              13
+            ],
+            "tip_gap_mm": 1.055,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.07858,
+              0.06731,
+              0.026
+            ],
+            "closest_point_surface": "top rim edge",
+            "closest_point_height_above_table_m": 0.091,
+            "min_digit_geom_distance_mm": 1.055
+          },
+          "largest_distance_over_grid_mm": {
+            "index_0_link": 24.593,
+            "index_1_link": 56.751
+          }
+        },
+        "middle": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 13,
+          "n_touching": 11,
+          "phi_max_deg": 103.801,
+          "argmax": {
+            "joints": {
+              "right_hand_middle_0_joint": 0.942477792,
+              "right_hand_middle_1_joint": 1.1344640125
+            },
+            "grid_index": [
+              12,
+              13
+            ],
+            "tip_gap_mm": 0.959,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.07857,
+              0.06736,
+              -0.0289
+            ],
+            "closest_point_surface": "side",
+            "closest_point_height_above_table_m": 0.0361,
+            "min_digit_geom_distance_mm": 0.959
+          },
+          "largest_distance_over_grid_mm": {
+            "middle_0_link": 24.593,
+            "middle_1_link": 56.064
+          }
+        }
+      }
+    },
+    {
+      "D_mm": 80.0,
+      "is_old_cylinder": true,
+      "is_mug": false,
+      "phi_thumb_max_deg": null,
+      "phi_finger_max_deg": 100.064,
+      "best_finger": "middle",
+      "verdict": "infeasible",
+      "cylinder": {
+        "radius_m": 0.04,
+        "height_m": 0.091,
+        "axis_palm_frame_m": [
+          0.04232,
+          0.06023,
+          -0.0195
+        ],
+        "palm_gap_mm": 0.000953,
+        "palm_contact_point_palm_frame_m": [
+          0.04307,
+          0.02024,
+          -0.00285
+        ],
+        "palm_contact_off_normal_deg": 1.066,
+        "table_plane_z_palm_frame_m": -0.065,
+        "wrist_yaw_geom_distance_mm": 17.544
+      },
+      "digits": {
+        "thumb": {
+          "n_configs": 9261,
+          "n_tip_within_0_3mm": 25,
+          "n_touching": 0,
+          "phi_max_deg": null,
+          "argmax": null,
+          "largest_distance_over_grid_mm": {
+            "thumb_0_link": -6.726,
+            "thumb_1_link": -7.406,
+            "thumb_2_link": 3.13
+          }
+        },
+        "index": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 12,
+          "n_touching": 8,
+          "phi_max_deg": 99.821,
+          "argmax": {
+            "joints": {
+              "right_hand_index_0_joint": 0.942477792,
+              "right_hand_index_1_joint": 1.04719755
+            },
+            "grid_index": [
+              12,
+              12
+            ],
+            "tip_gap_mm": 1.206,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.0816,
+              0.06779,
+              0.026
+            ],
+            "closest_point_surface": "top rim edge",
+            "closest_point_height_above_table_m": 0.091,
+            "min_digit_geom_distance_mm": 1.206
+          },
+          "largest_distance_over_grid_mm": {
+            "index_0_link": 24.262,
+            "index_1_link": 55.741
+          }
+        },
+        "middle": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 11,
+          "n_touching": 7,
+          "phi_max_deg": 100.064,
+          "argmax": {
+            "joints": {
+              "right_hand_middle_0_joint": 0.942477792,
+              "right_hand_middle_1_joint": 1.04719755
+            },
+            "grid_index": [
+              12,
+              12
+            ],
+            "tip_gap_mm": 1.118,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.08157,
+              0.06795,
+              -0.02892
+            ],
+            "closest_point_surface": "side",
+            "closest_point_height_above_table_m": 0.03608,
+            "min_digit_geom_distance_mm": 1.118
+          },
+          "largest_distance_over_grid_mm": {
+            "middle_0_link": 24.262,
+            "middle_1_link": 55.051
+          }
+        }
+      }
+    },
+    {
+      "D_mm": 85.0,
+      "is_old_cylinder": false,
+      "is_mug": false,
+      "phi_thumb_max_deg": null,
+      "phi_finger_max_deg": 97.143,
+      "best_finger": "middle",
+      "verdict": "infeasible",
+      "cylinder": {
+        "radius_m": 0.0425,
+        "height_m": 0.091,
+        "axis_palm_frame_m": [
+          0.04232,
+          0.06273,
+          -0.0195
+        ],
+        "palm_gap_mm": 0.000914,
+        "palm_contact_point_palm_frame_m": [
+          0.0431,
+          0.02024,
+          -0.00286
+        ],
+        "palm_contact_off_normal_deg": 1.054,
+        "table_plane_z_palm_frame_m": -0.065,
+        "wrist_yaw_geom_distance_mm": 16.702
+      },
+      "digits": {
+        "thumb": {
+          "n_configs": 9261,
+          "n_tip_within_0_3mm": 16,
+          "n_touching": 0,
+          "phi_max_deg": null,
+          "argmax": null,
+          "largest_distance_over_grid_mm": {
+            "thumb_0_link": -6.817,
+            "thumb_1_link": -8.25,
+            "thumb_2_link": 1.026
+          }
+        },
+        "index": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 13,
+          "n_touching": 11,
+          "phi_max_deg": 96.895,
+          "argmax": {
+            "joints": {
+              "right_hand_index_0_joint": 0.863937976,
+              "right_hand_index_1_joint": 1.1344640125
+            },
+            "grid_index": [
+              11,
+              13
+            ],
+            "tip_gap_mm": 0.384,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.08441,
+              0.06861,
+              0.026
+            ],
+            "closest_point_surface": "top rim edge",
+            "closest_point_height_above_table_m": 0.091,
+            "min_digit_geom_distance_mm": 0.384
+          },
+          "largest_distance_over_grid_mm": {
+            "index_0_link": 23.939,
+            "index_1_link": 54.781
+          }
+        },
+        "middle": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 13,
+          "n_touching": 11,
+          "phi_max_deg": 97.143,
+          "argmax": {
+            "joints": {
+              "right_hand_middle_0_joint": 0.863937976,
+              "right_hand_middle_1_joint": 1.1344640125
+            },
+            "grid_index": [
+              11,
+              13
+            ],
+            "tip_gap_mm": 0.28,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.08439,
+              0.06879,
+              -0.02888
+            ],
+            "closest_point_surface": "side",
+            "closest_point_height_above_table_m": 0.03612,
+            "min_digit_geom_distance_mm": 0.28
+          },
+          "largest_distance_over_grid_mm": {
+            "middle_0_link": 23.939,
+            "middle_1_link": 54.09
+          }
+        }
+      }
+    },
+    {
+      "D_mm": 90.0,
+      "is_old_cylinder": false,
+      "is_mug": false,
+      "phi_thumb_max_deg": null,
+      "phi_finger_max_deg": 93.813,
+      "best_finger": "index",
+      "verdict": "infeasible",
+      "cylinder": {
+        "radius_m": 0.045,
+        "height_m": 0.091,
+        "axis_palm_frame_m": [
+          0.04232,
+          0.06523,
+          -0.0195
+        ],
+        "palm_gap_mm": 0.000919,
+        "palm_contact_point_palm_frame_m": [
+          0.04314,
+          0.02024,
+          -0.00287
+        ],
+        "palm_contact_off_normal_deg": 1.043,
+        "table_plane_z_palm_frame_m": -0.065,
+        "wrist_yaw_geom_distance_mm": 15.86
+      },
+      "digits": {
+        "thumb": {
+          "n_configs": 9261,
+          "n_tip_within_0_3mm": 0,
+          "n_touching": 0,
+          "phi_max_deg": null,
+          "argmax": null,
+          "largest_distance_over_grid_mm": {
+            "thumb_0_link": -6.898,
+            "thumb_1_link": -9.093,
+            "thumb_2_link": -0.956
+          }
+        },
+        "index": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 12,
+          "n_touching": 10,
+          "phi_max_deg": 93.813,
+          "argmax": {
+            "joints": {
+              "right_hand_index_0_joint": 0.863937976,
+              "right_hand_index_1_joint": 1.04719755
+            },
+            "grid_index": [
+              11,
+              12
+            ],
+            "tip_gap_mm": 0.904,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.08716,
+              0.06904,
+              0.026
+            ],
+            "closest_point_surface": "top rim edge",
+            "closest_point_height_above_table_m": 0.091,
+            "min_digit_geom_distance_mm": 0.904
+          },
+          "largest_distance_over_grid_mm": {
+            "index_0_link": 23.631,
+            "index_1_link": 53.863
+          }
+        },
+        "middle": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 12,
+          "n_touching": 10,
+          "phi_max_deg": 93.784,
+          "argmax": {
+            "joints": {
+              "right_hand_middle_0_joint": 0.863937976,
+              "right_hand_middle_1_joint": 1.04719755
+            },
+            "grid_index": [
+              11,
+              12
+            ],
+            "tip_gap_mm": 0.808,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.08716,
+              0.06902,
+              -0.0289
+            ],
+            "closest_point_surface": "side",
+            "closest_point_height_above_table_m": 0.0361,
+            "min_digit_geom_distance_mm": 0.808
+          },
+          "largest_distance_over_grid_mm": {
+            "middle_0_link": 23.631,
+            "middle_1_link": 53.171
+          }
+        }
+      }
+    },
+    {
+      "D_mm": 95.0,
+      "is_old_cylinder": false,
+      "is_mug": false,
+      "phi_thumb_max_deg": null,
+      "phi_finger_max_deg": 90.96,
+      "best_finger": "middle",
+      "verdict": "infeasible",
+      "cylinder": {
+        "radius_m": 0.0475,
+        "height_m": 0.091,
+        "axis_palm_frame_m": [
+          0.04232,
+          0.06773,
+          -0.0195
+        ],
+        "palm_gap_mm": 0.000182,
+        "palm_contact_point_palm_frame_m": [
+          0.0433,
+          0.02024,
+          -0.0029
+        ],
+        "palm_contact_off_normal_deg": 1.173,
+        "table_plane_z_palm_frame_m": -0.065,
+        "wrist_yaw_geom_distance_mm": 15.018
+      },
+      "digits": {
+        "thumb": {
+          "n_configs": 9261,
+          "n_tip_within_0_3mm": 0,
+          "n_touching": 0,
+          "phi_max_deg": null,
+          "argmax": null,
+          "largest_distance_over_grid_mm": {
+            "thumb_0_link": -6.968,
+            "thumb_1_link": -9.936,
+            "thumb_2_link": -2.798
+          }
+        },
+        "index": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 10,
+          "n_touching": 9,
+          "phi_max_deg": 90.728,
+          "argmax": {
+            "joints": {
+              "right_hand_index_0_joint": 0.78539816,
+              "right_hand_index_1_joint": 1.1344640125
+            },
+            "grid_index": [
+              10,
+              13
+            ],
+            "tip_gap_mm": 0.422,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.0898,
+              0.06931,
+              0.026
+            ],
+            "closest_point_surface": "top rim edge",
+            "closest_point_height_above_table_m": 0.091,
+            "min_digit_geom_distance_mm": 0.422
+          },
+          "largest_distance_over_grid_mm": {
+            "index_0_link": 23.346,
+            "index_1_link": 52.972
+          }
+        },
+        "middle": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 11,
+          "n_touching": 10,
+          "phi_max_deg": 90.96,
+          "argmax": {
+            "joints": {
+              "right_hand_middle_0_joint": 0.78539816,
+              "right_hand_middle_1_joint": 1.1344640125
+            },
+            "grid_index": [
+              10,
+              13
+            ],
+            "tip_gap_mm": 0.313,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.08979,
+              0.0695,
+              -0.02886
+            ],
+            "closest_point_surface": "side",
+            "closest_point_height_above_table_m": 0.03614,
+            "min_digit_geom_distance_mm": 0.313
+          },
+          "largest_distance_over_grid_mm": {
+            "middle_0_link": 23.346,
+            "middle_1_link": 52.278
+          }
+        }
+      }
+    },
+    {
+      "D_mm": 99.0,
+      "is_old_cylinder": false,
+      "is_mug": true,
+      "phi_thumb_max_deg": null,
+      "phi_finger_max_deg": 88.174,
+      "best_finger": "index",
+      "verdict": "infeasible",
+      "cylinder": {
+        "radius_m": 0.0495,
+        "height_m": 0.091,
+        "axis_palm_frame_m": [
+          0.04232,
+          0.06973,
+          -0.0195
+        ],
+        "palm_gap_mm": 0.00019,
+        "palm_contact_point_palm_frame_m": [
+          0.04334,
+          0.02024,
+          -0.00291
+        ],
+        "palm_contact_off_normal_deg": 1.173,
+        "table_plane_z_palm_frame_m": -0.065,
+        "wrist_yaw_geom_distance_mm": 14.367
+      },
+      "digits": {
+        "thumb": {
+          "n_configs": 9261,
+          "n_tip_within_0_3mm": 0,
+          "n_touching": 0,
+          "phi_max_deg": null,
+          "argmax": null,
+          "largest_distance_over_grid_mm": {
+            "thumb_0_link": -7.019,
+            "thumb_1_link": -10.61,
+            "thumb_2_link": -4.212
+          }
+        },
+        "index": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 11,
+          "n_touching": 10,
+          "phi_max_deg": 88.174,
+          "argmax": {
+            "joints": {
+              "right_hand_index_0_joint": 0.78539816,
+              "right_hand_index_1_joint": 1.04719755
+            },
+            "grid_index": [
+              10,
+              12
+            ],
+            "tip_gap_mm": 1.761,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.09182,
+              0.06917,
+              0.026
+            ],
+            "closest_point_surface": "top rim edge",
+            "closest_point_height_above_table_m": 0.091,
+            "min_digit_geom_distance_mm": 1.761
+          },
+          "largest_distance_over_grid_mm": {
+            "index_0_link": 23.138,
+            "index_1_link": 52.277
+          }
+        },
+        "middle": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 12,
+          "n_touching": 10,
+          "phi_max_deg": 88.146,
+          "argmax": {
+            "joints": {
+              "right_hand_middle_0_joint": 0.78539816,
+              "right_hand_middle_1_joint": 1.04719755
+            },
+            "grid_index": [
+              10,
+              12
+            ],
+            "tip_gap_mm": 1.664,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.09182,
+              0.06914,
+              -0.02888
+            ],
+            "closest_point_surface": "side",
+            "closest_point_height_above_table_m": 0.03612,
+            "min_digit_geom_distance_mm": 1.664
+          },
+          "largest_distance_over_grid_mm": {
+            "middle_0_link": 23.138,
+            "middle_1_link": 51.58
+          }
+        }
+      }
+    },
+    {
+      "D_mm": 100.0,
+      "is_old_cylinder": false,
+      "is_mug": false,
+      "phi_thumb_max_deg": null,
+      "phi_finger_max_deg": 87.616,
+      "best_finger": "index",
+      "verdict": "infeasible",
+      "cylinder": {
+        "radius_m": 0.05,
+        "height_m": 0.091,
+        "axis_palm_frame_m": [
+          0.04232,
+          0.07023,
+          -0.0195
+        ],
+        "palm_gap_mm": 0.000186,
+        "palm_contact_point_palm_frame_m": [
+          0.04335,
+          0.02024,
+          -0.00291
+        ],
+        "palm_contact_off_normal_deg": 1.173,
+        "table_plane_z_palm_frame_m": -0.065,
+        "wrist_yaw_geom_distance_mm": 14.21
+      },
+      "digits": {
+        "thumb": {
+          "n_configs": 9261,
+          "n_tip_within_0_3mm": 0,
+          "n_touching": 0,
+          "phi_max_deg": null,
+          "argmax": null,
+          "largest_distance_over_grid_mm": {
+            "thumb_0_link": -7.031,
+            "thumb_1_link": -10.779,
+            "thumb_2_link": -4.552
+          }
+        },
+        "index": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 13,
+          "n_touching": 11,
+          "phi_max_deg": 87.616,
+          "argmax": {
+            "joints": {
+              "right_hand_index_0_joint": 0.78539816,
+              "right_hand_index_1_joint": 1.04719755
+            },
+            "grid_index": [
+              10,
+              12
+            ],
+            "tip_gap_mm": 1.271,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.09231,
+              0.06918,
+              0.026
+            ],
+            "closest_point_surface": "top rim edge",
+            "closest_point_height_above_table_m": 0.091,
+            "min_digit_geom_distance_mm": 1.271
+          },
+          "largest_distance_over_grid_mm": {
+            "index_0_link": 23.088,
+            "index_1_link": 52.106
+          }
+        },
+        "middle": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 12,
+          "n_touching": 10,
+          "phi_max_deg": 87.586,
+          "argmax": {
+            "joints": {
+              "right_hand_middle_0_joint": 0.78539816,
+              "right_hand_middle_1_joint": 1.04719755
+            },
+            "grid_index": [
+              10,
+              12
+            ],
+            "tip_gap_mm": 1.172,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.09231,
+              0.06915,
+              -0.02888
+            ],
+            "closest_point_surface": "side",
+            "closest_point_height_above_table_m": 0.03612,
+            "min_digit_geom_distance_mm": 1.172
+          },
+          "largest_distance_over_grid_mm": {
+            "middle_0_link": 23.088,
+            "middle_1_link": 51.41
+          }
+        }
+      }
+    },
+    {
+      "D_mm": 105.0,
+      "is_old_cylinder": false,
+      "is_mug": false,
+      "phi_thumb_max_deg": null,
+      "phi_finger_max_deg": 85.107,
+      "best_finger": "middle",
+      "verdict": "infeasible",
+      "cylinder": {
+        "radius_m": 0.0525,
+        "height_m": 0.091,
+        "axis_palm_frame_m": [
+          0.04232,
+          0.07273,
+          -0.0195
+        ],
+        "palm_gap_mm": 0.00086,
+        "palm_contact_point_palm_frame_m": [
+          0.04324,
+          0.02024,
+          -0.00289
+        ],
+        "palm_contact_off_normal_deg": 0.998,
+        "table_plane_z_palm_frame_m": -0.065,
+        "wrist_yaw_geom_distance_mm": 13.45
+      },
+      "digits": {
+        "thumb": {
+          "n_configs": 9261,
+          "n_tip_within_0_3mm": 0,
+          "n_touching": 0,
+          "phi_max_deg": null,
+          "argmax": null,
+          "largest_distance_over_grid_mm": {
+            "thumb_0_link": -7.087,
+            "thumb_1_link": -11.622,
+            "thumb_2_link": -6.168
+          }
+        },
+        "index": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 11,
+          "n_touching": 8,
+          "phi_max_deg": 84.854,
+          "argmax": {
+            "joints": {
+              "right_hand_index_0_joint": 0.78539816,
+              "right_hand_index_1_joint": 0.9599310875
+            },
+            "grid_index": [
+              10,
+              11
+            ],
+            "tip_gap_mm": 2.164,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.09469,
+              0.06894,
+              0.026
+            ],
+            "closest_point_surface": "top rim edge",
+            "closest_point_height_above_table_m": 0.091,
+            "min_digit_geom_distance_mm": 2.164
+          },
+          "largest_distance_over_grid_mm": {
+            "index_0_link": 22.846,
+            "index_1_link": 51.275
+          }
+        },
+        "middle": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 11,
+          "n_touching": 8,
+          "phi_max_deg": 85.107,
+          "argmax": {
+            "joints": {
+              "right_hand_middle_0_joint": 0.78539816,
+              "right_hand_middle_1_joint": 0.9599310875
+            },
+            "grid_index": [
+              10,
+              11
+            ],
+            "tip_gap_mm": 2.075,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.0947,
+              0.06917,
+              -0.0289
+            ],
+            "closest_point_surface": "side",
+            "closest_point_height_above_table_m": 0.0361,
+            "min_digit_geom_distance_mm": 2.075
+          },
+          "largest_distance_over_grid_mm": {
+            "middle_0_link": 22.846,
+            "middle_1_link": 50.576
+          }
+        }
+      }
+    },
+    {
+      "D_mm": 110.0,
+      "is_old_cylinder": false,
+      "is_mug": false,
+      "phi_thumb_max_deg": null,
+      "phi_finger_max_deg": 82.544,
+      "best_finger": "middle",
+      "verdict": "infeasible",
+      "cylinder": {
+        "radius_m": 0.055,
+        "height_m": 0.091,
+        "axis_palm_frame_m": [
+          0.04232,
+          0.07523,
+          -0.0195
+        ],
+        "palm_gap_mm": 0.000863,
+        "palm_contact_point_palm_frame_m": [
+          0.04327,
+          0.02024,
+          -0.00289
+        ],
+        "palm_contact_off_normal_deg": 0.986,
+        "table_plane_z_palm_frame_m": -0.065,
+        "wrist_yaw_geom_distance_mm": 12.737
+      },
+      "digits": {
+        "thumb": {
+          "n_configs": 9261,
+          "n_tip_within_0_3mm": 0,
+          "n_touching": 0,
+          "phi_max_deg": null,
+          "argmax": null,
+          "largest_distance_over_grid_mm": {
+            "thumb_0_link": -7.137,
+            "thumb_1_link": -12.465,
+            "thumb_2_link": -6.304
+          }
+        },
+        "index": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 10,
+          "n_touching": 8,
+          "phi_max_deg": 82.465,
+          "argmax": {
+            "joints": {
+              "right_hand_index_0_joint": 0.706858344,
+              "right_hand_index_1_joint": 1.04719755
+            },
+            "grid_index": [
+              9,
+              12
+            ],
+            "tip_gap_mm": 2.239,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.09696,
+              0.06896,
+              0.026
+            ],
+            "closest_point_surface": "top rim edge",
+            "closest_point_height_above_table_m": 0.091,
+            "min_digit_geom_distance_mm": 2.239
+          },
+          "largest_distance_over_grid_mm": {
+            "index_0_link": 22.613,
+            "index_1_link": 50.486
+          }
+        },
+        "middle": {
+          "n_configs": 441,
+          "n_tip_within_0_3mm": 12,
+          "n_touching": 10,
+          "phi_max_deg": 82.544,
+          "argmax": {
+            "joints": {
+              "right_hand_middle_0_joint": 0.863937976,
+              "right_hand_middle_1_joint": 0.7853981625
+            },
+            "grid_index": [
+              11,
+              9
+            ],
+            "tip_gap_mm": 0.388,
+            "closest_point_on_cylinder_palm_frame_m": [
+              0.09697,
+              0.06904,
+              -0.02894
+            ],
+            "closest_point_surface": "side",
+            "closest_point_height_above_table_m": 0.03606,
+            "min_digit_geom_distance_mm": 0.388
+          },
+          "largest_distance_over_grid_mm": {
+            "middle_0_link": 22.613,
+            "middle_1_link": 49.786
+          }
+        }
+      }
+    }
+  ],
+  "verdict_99mm": "infeasible",
+  "verdict_99mm_condition": "with the palm normal drawn through the palm centre (x 0.0423 m); depends on that choice, see open_questions[0]",
+  "open_questions": [
+    {
+      "question": "Where along the palm (palm-frame x) should the palm normal be drawn? The spec fixes its direction, the contact (distance 0) and the grasp height, not its point on the palm.",
+      "used": "the palm centre (palm collision geom centroid, x 0.0423 m)",
+      "alternative": "the oracle's grasp position (GRASP_OFFSET x = 0.077 m, sim/pick_place.py), where the oracle puts the cup axis",
+      "effect": "the verdict depends on it. 99 mm: infeasible at the palm centre, marginal at the oracle position; by anchor: x 0.0000-0.0550: infeasible; x 0.0600-0.0850: marginal. M1 cylinder (80 mm): infeasible at the palm centre, marginal at the oracle position; by anchor: x 0.0000-0.0550: infeasible; x 0.0600-0.0650: comfortable; x 0.0700-0.0770: marginal; x 0.0800-0.0800: comfortable; x 0.0850-0.0850: marginal. Numbers: anchor_sensitivity.",
+      "b4_gate": "B4 (STOP Track B if 99 mm is infeasible) follows from verdict_99mm, so it inherits this choice: confirm the anchor with the user before treating B5 as ruled out"
+    }
+  ],
+  "anchor_sensitivity": {
+    "note": "information for open question 1 only; the verdict above uses the palm centre. Same placement, grid, touch test and thresholds; only the point on the palm where the normal is drawn moves. 0.077 = GRASP_OFFSET x in sim/pick_place.py (its palm frame = wrist_yaw_link axes = right_hand_palm_link axes, URDF right_hand_palm_joint rpy 0 0 0). The M1 cylinder is included because the oracle grasps it reliably (B3 R0): a check on which anchor matches the dynamics.",
+    "anchors_x_m": [
+      0.0,
+      0.005,
+      0.01,
+      0.015,
+      0.02,
+      0.025,
+      0.03,
+      0.035,
+      0.04,
+      0.04232,
+      0.045,
+      0.05,
+      0.055,
+      0.06,
+      0.065,
+      0.07,
+      0.075,
+      0.077,
+      0.08,
+      0.085
+    ],
+    "verdict_runs": {
+      "80mm": "x 0.0000-0.0550: infeasible; x 0.0600-0.0650: comfortable; x 0.0700-0.0770: marginal; x 0.0800-0.0800: comfortable; x 0.0850-0.0850: marginal",
+      "99mm": "x 0.0000-0.0550: infeasible; x 0.0600-0.0850: marginal"
+    },
+    "rows": [
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.0,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 4.368,
+        "wrist_yaw_geom_distance_mm": -7.2,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 104.159,
+        "best_finger": "index",
+        "n_touching": {
+          "thumb": 0,
+          "index": 6,
+          "middle": 6
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.005,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 2.657,
+        "wrist_yaw_geom_distance_mm": -5.74,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 106.08,
+        "best_finger": "index",
+        "n_touching": {
+          "thumb": 0,
+          "index": 7,
+          "middle": 7
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.01,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.328,
+        "wrist_yaw_geom_distance_mm": -3.823,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 109.381,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 7,
+          "middle": 9
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.015,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.229,
+        "wrist_yaw_geom_distance_mm": -1.392,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 109.258,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 7,
+          "middle": 8
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.02,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.39,
+        "wrist_yaw_geom_distance_mm": 1.469,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 108.258,
+        "best_finger": "index",
+        "n_touching": {
+          "thumb": 0,
+          "index": 9,
+          "middle": 9
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.025,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.321,
+        "wrist_yaw_geom_distance_mm": 4.698,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 106.509,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 11,
+          "middle": 11
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.03,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.218,
+        "wrist_yaw_geom_distance_mm": 8.212,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 104.81,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 11,
+          "middle": 10
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.035,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.21,
+        "wrist_yaw_geom_distance_mm": 11.959,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 103.922,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 13,
+          "middle": 13
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.04,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.172,
+        "wrist_yaw_geom_distance_mm": 15.772,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 101.532,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 11,
+          "middle": 11
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.04232,
+        "anchor": "palm centre (the verdict's anchor)",
+        "palm_contact_off_normal_deg": 1.066,
+        "wrist_yaw_geom_distance_mm": 17.544,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 100.064,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 8,
+          "middle": 7
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.045,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.032,
+        "wrist_yaw_geom_distance_mm": 19.601,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 98.897,
+        "best_finger": "index",
+        "n_touching": {
+          "thumb": 0,
+          "index": 11,
+          "middle": 11
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.05,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -2.31,
+        "wrist_yaw_geom_distance_mm": 23.496,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 99.442,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 9,
+          "middle": 9
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.055,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -5.855,
+        "wrist_yaw_geom_distance_mm": 27.312,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 99.456,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 9,
+          "middle": 9
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.06,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -5.715,
+        "wrist_yaw_geom_distance_mm": 31.218,
+        "phi_thumb_max_deg": 112.795,
+        "phi_finger_max_deg": 95.744,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 38,
+          "index": 7,
+          "middle": 7
+        },
+        "verdict": "comfortable"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.065,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -5.963,
+        "wrist_yaw_geom_distance_mm": 35.258,
+        "phi_thumb_max_deg": 115.805,
+        "phi_finger_max_deg": 92.399,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 191,
+          "index": 8,
+          "middle": 8
+        },
+        "verdict": "comfortable"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.07,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -5.868,
+        "wrist_yaw_geom_distance_mm": 39.41,
+        "phi_thumb_max_deg": 118.963,
+        "phi_finger_max_deg": 88.694,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 316,
+          "index": 6,
+          "middle": 6
+        },
+        "verdict": "marginal"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.075,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -10.988,
+        "wrist_yaw_geom_distance_mm": 43.588,
+        "phi_thumb_max_deg": 116.549,
+        "phi_finger_max_deg": 88.555,
+        "best_finger": "index",
+        "n_touching": {
+          "thumb": 368,
+          "index": 8,
+          "middle": 8
+        },
+        "verdict": "marginal"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.077,
+        "anchor": "oracle grasp position",
+        "palm_contact_off_normal_deg": -13.886,
+        "wrist_yaw_geom_distance_mm": 45.215,
+        "phi_thumb_max_deg": 113.354,
+        "phi_finger_max_deg": 89.936,
+        "best_finger": "index",
+        "n_touching": {
+          "thumb": 354,
+          "index": 7,
+          "middle": 7
+        },
+        "verdict": "marginal"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.08,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -18.361,
+        "wrist_yaw_geom_distance_mm": 47.606,
+        "phi_thumb_max_deg": 110.488,
+        "phi_finger_max_deg": 91.797,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 335,
+          "index": 4,
+          "middle": 4
+        },
+        "verdict": "comfortable"
+      },
+      {
+        "D_mm": 80.0,
+        "anchor_x_m": 0.085,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -21.32,
+        "wrist_yaw_geom_distance_mm": 51.539,
+        "phi_thumb_max_deg": 109.841,
+        "phi_finger_max_deg": 89.846,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 300,
+          "index": 3,
+          "middle": 3
+        },
+        "verdict": "marginal"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.0,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 3.528,
+        "wrist_yaw_geom_distance_mm": -7.288,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 97.79,
+        "best_finger": "index",
+        "n_touching": {
+          "thumb": 0,
+          "index": 9,
+          "middle": 9
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.005,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 2.147,
+        "wrist_yaw_geom_distance_mm": -6.084,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 98.85,
+        "best_finger": "index",
+        "n_touching": {
+          "thumb": 0,
+          "index": 9,
+          "middle": 9
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.01,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.259,
+        "wrist_yaw_geom_distance_mm": -4.521,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 98.788,
+        "best_finger": "index",
+        "n_touching": {
+          "thumb": 0,
+          "index": 10,
+          "middle": 10
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.015,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.312,
+        "wrist_yaw_geom_distance_mm": -2.503,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 98.882,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 10,
+          "middle": 11
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.02,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.26,
+        "wrist_yaw_geom_distance_mm": -0.079,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 97.003,
+        "best_finger": "index",
+        "n_touching": {
+          "thumb": 0,
+          "index": 10,
+          "middle": 10
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.025,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.289,
+        "wrist_yaw_geom_distance_mm": 2.694,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 95.41,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 8,
+          "middle": 10
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.03,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.206,
+        "wrist_yaw_geom_distance_mm": 5.774,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 94.426,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 10,
+          "middle": 11
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.035,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.167,
+        "wrist_yaw_geom_distance_mm": 9.105,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 92.229,
+        "best_finger": "index",
+        "n_touching": {
+          "thumb": 0,
+          "index": 10,
+          "middle": 10
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.04,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.196,
+        "wrist_yaw_geom_distance_mm": 12.654,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 89.409,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 11,
+          "middle": 10
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.04232,
+        "anchor": "palm centre (the verdict's anchor)",
+        "palm_contact_off_normal_deg": 1.173,
+        "wrist_yaw_geom_distance_mm": 14.367,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 88.174,
+        "best_finger": "index",
+        "n_touching": {
+          "thumb": 0,
+          "index": 10,
+          "middle": 10
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.045,
+        "anchor": "",
+        "palm_contact_off_normal_deg": 1.158,
+        "wrist_yaw_geom_distance_mm": 16.386,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 86.478,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 9,
+          "middle": 9
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.05,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -1.866,
+        "wrist_yaw_geom_distance_mm": 20.127,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 86.798,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 11,
+          "middle": 10
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.055,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -5.848,
+        "wrist_yaw_geom_distance_mm": 23.64,
+        "phi_thumb_max_deg": null,
+        "phi_finger_max_deg": 87.324,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 0,
+          "index": 9,
+          "middle": 11
+        },
+        "verdict": "infeasible"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.06,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -5.883,
+        "wrist_yaw_geom_distance_mm": 27.187,
+        "phi_thumb_max_deg": 96.76,
+        "phi_finger_max_deg": 85.484,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 2,
+          "index": 8,
+          "middle": 9
+        },
+        "verdict": "marginal"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.065,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -5.914,
+        "wrist_yaw_geom_distance_mm": 30.891,
+        "phi_thumb_max_deg": 100.816,
+        "phi_finger_max_deg": 81.94,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 52,
+          "index": 10,
+          "middle": 10
+        },
+        "verdict": "marginal"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.07,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -5.865,
+        "wrist_yaw_geom_distance_mm": 34.733,
+        "phi_thumb_max_deg": 104.38,
+        "phi_finger_max_deg": 77.993,
+        "best_finger": "index",
+        "n_touching": {
+          "thumb": 168,
+          "index": 9,
+          "middle": 9
+        },
+        "verdict": "marginal"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.075,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -8.885,
+        "wrist_yaw_geom_distance_mm": 38.658,
+        "phi_thumb_max_deg": 103.869,
+        "phi_finger_max_deg": 76.819,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 249,
+          "index": 6,
+          "middle": 6
+        },
+        "verdict": "marginal"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.077,
+        "anchor": "oracle grasp position",
+        "palm_contact_off_normal_deg": -11.19,
+        "wrist_yaw_geom_distance_mm": 40.197,
+        "phi_thumb_max_deg": 101.85,
+        "phi_finger_max_deg": 77.79,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 281,
+          "index": 6,
+          "middle": 6
+        },
+        "verdict": "marginal"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.08,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -14.746,
+        "wrist_yaw_geom_distance_mm": 42.466,
+        "phi_thumb_max_deg": 99.855,
+        "phi_finger_max_deg": 79.079,
+        "best_finger": "middle",
+        "n_touching": {
+          "thumb": 304,
+          "index": 5,
+          "middle": 5
+        },
+        "verdict": "marginal"
+      },
+      {
+        "D_mm": 99.0,
+        "anchor_x_m": 0.085,
+        "anchor": "",
+        "palm_contact_off_normal_deg": -19.86,
+        "wrist_yaw_geom_distance_mm": 46.15,
+        "phi_thumb_max_deg": 97.637,
+        "phi_finger_max_deg": 79.91,
+        "best_finger": "index",
+        "n_touching": {
+          "thumb": 338,
+          "index": 4,
+          "middle": 4
+        },
+        "verdict": "marginal"
+      }
+    ]
+  },
+  "mujoco": "3.13.0",
+  "runtime_s": 5.8,
+  "peak_rss_mb": 975,
+  "gpu": "none (CPU only)"
+}

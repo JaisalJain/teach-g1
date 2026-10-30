@@ -662,3 +662,152 @@ agrees with the label within ruler resolution; label values stay authoritative).
 - **hoi-sim preflight:** `pip install matplotlib==3.11.2 -c envs/hoi-sim.constraints.txt` (B2 asks for a plot; hoi-sim had no plotting
   library). 9 wheels (matplotlib + contourpy, cycler, fonttools, kiwisolver, pyparsing, python-dateutil, six, tzdata); numpy stays 1.26.4,
   `pip check` clean; lock regenerated (the diff is exactly those 9 lines).
+
+### Track B v2 — grasp feasibility and fix
+
+Track B ran on the CPU only (hoi-sim, MuJoCo 3.13.0). Workflow: implementer → reviewers → fixer (re-ran B2 and B3) → an independent checker. The checker re-derived every number below from `results/m1_grasp_fix/`:
+- B2 verdicts from the per-D maxima and μ;
+- B3 statistics and Wilson CIs from the per-trial rows;
+- R0 against M1, trial by trial.
+
+**No mismatch.** All 80 B3 trials of the final runs equal the pre-fix runs in every field except the new substep counts and wall time (checker, against scratch copies; not a saved result).
+
+**B1 — facts from the code** (`b1_facts.md`, with file:line for each fact). Compiled values are in `b1_model.json`, written by `sim/grasp_fix_b1.py`. That script only runs mj_kinematics / mj_forward / mj_geomDistance; simulated time never advances.
+- **Old cylinder:** D 0.080 m, h 0.100 m, 0.15 kg (`sim/scene.py:54`). Geom friction (0.35, 0.0028, 0.0001), condim 4, solref (0.008, 1).
+- **Palm standoff is hard-coded.** The cup centre sits at palm + R·(0.077, 0.055, 0) m in the palm frame (`pick_place.py:58`), HERO's one Dex3 side-grasp constant. No radius is used anywhere in the oracle. Palm point to cup axis: 94.63 mm for every object. Along the palm normal: 55 − r = 15.0 mm (cylinder), 5.5 mm (mug).
+- **The planned palm pose is already inside the object.** At the nominal grasp (hand open) the palm hull is at −2.15 mm on the cylinder and −11.65 mm on the mug. The proximal index/middle links are at +7.05 mm (cylinder) and −2.45 mm (mug).
+- **The pre-grasp is hard-coded too:** 0.08 m back along palm → cup. That direction is (0.8137, 0.5812) in the palm frame, −9.46° in world.
+- **Grasp height:** the palm point is 0.065 m above the table:
+  - cylinder: +0.015 m above its centre (65 % of h);
+  - mug: +0.0195 m above its centre (71 %).
+  - The index finger spans 0.0804–0.1064 m above the table. It overlaps only the lowest 10.6 mm of the mug wall (19.6 mm on the cylinder).
+- **Finger targets** (thumb_0, thumb_1, thumb_2, index_0, index_1, middle_0, middle_1):
+  - open [0, 0.7, 0, 0, 0, 0, 0] rad;
+  - closed (HERO demo grip) [0, 0, −1.2, 1.57, 1.2, 1.2, 1.2] rad.
+- **Finger PD:** kp 1.2 (×3 = 3.6 while closing), kd 0.04. Torque limits: 2.45 N·m for thumb_0, 1.4 N·m for the rest. A blocked flexion joint squeezes with ≥ 0.84 N·m at full closure.
+- **Contacts:**
+  - Hand geoms: friction 1.5, condim 3, solref 0.02.
+  - Cup–hand explicit pairs: μ 1.0625, torsional 0.00425 m, condim 4, solref 0.014.
+  - Check with the hand closed: 15 contacts on the cylinder and 19 on the mug, all carrying the pair's parameters. So the **effective fingertip–mug μ = 1.0625**.
+- **Global options:** cone pyramidal, impratio 1.0, noslip_iterations 0, Newton solver, Euler integrator, dt 0.001 s, solref/solimp override off. These are all MuJoCo defaults.
+- **Dex3 right-hand ranges (rad):**
+  - thumb_0 [−1.0472, 1.0472], thumb_1 [−1.0472, 0.7243], thumb_2 [−1.7453, 0];
+  - index_0 / middle_0 [0, 1.5708];
+  - index_1 / middle_1 [0, 1.7453].
+
+**B2 — Dex3 capacity check** (`b2_capacity.json`, `b2_capacity.png`).
+- μ = 1.0625, so the thresholds are 90° (comfortable) and 90° − atan(μ) = 43.26° (marginal).
+- The palm normal is drawn through the palm centre (centroid of the palm collision geom, palm-frame x 0.0423 m).
+- The cylinder is 0.091 m tall for every D, including 80 mm.
+
+| D (mm) | φ_thumb_max | φ_finger_max (best finger) | verdict |
+|---|---|---|---|
+| 60 | none (0 of 9261 touching) | 115.30 (index) | infeasible |
+| 65 | none | 111.46 (index) | infeasible |
+| 70 | none | 107.50 (index) | infeasible |
+| 75 | none | 103.80 (middle) | infeasible |
+| 80 (M1 cylinder) | none | 100.06 (middle) | infeasible |
+| 85 | none | 97.14 (middle) | infeasible |
+| 90 | none | 93.81 (index) | infeasible |
+| 95 | none | 90.96 (middle) | infeasible |
+| **99 (mug)** | none | 88.17 (index) | **infeasible** |
+| 100 | none | 87.62 (index) | infeasible |
+| 105 | none | 85.11 (middle) | infeasible |
+| 110 | none | 82.54 (middle) | infeasible |
+
+- **Verdict for 99 mm: infeasible.** This is the literal reading, with the palm-centre anchor.
+- **Why: the thumb never counts as touching, at any D.**
+  - Its base link stands 8 mm proud of the palm face (palm-frame y 0.0283 m vs 0.0203 m).
+  - So once the cylinder touches the palm centre, thumb_0 is 6.2–7.1 mm inside it in all 9261 configurations, and thumb_1 is 3.2–12.5 mm inside. Both exceed the 1 mm limit.
+  - The thumb tip does reach the 0–3 mm band (240 configurations at 60 mm, 25 at 80 mm, none from 90 mm up), but never without that base penetration.
+- **The fingers alone reach 88.17° at 99 mm.** The index tip gets there over the top rim edge; the middle reaches 88.15° on the side.
+- **The same check rates the M1 80 mm cylinder infeasible**, yet the oracle grasps it 20/20 (R0). At this anchor the kinematic check and the dynamics disagree.
+- **Anchor sensitivity** (`anchor_sensitivity`, information only: the normal moves along the palm, everything else stays the same):
+  - 99 mm is infeasible for x 0.000–0.055 m and marginal for x 0.060–0.085 m.
+  - At the oracle's own grasp position (x 0.077 m): 99 mm gets thumb 101.85° (281 touching) and finger 77.79° (middle), so marginal. 80 mm gets thumb 113.35° and finger 89.94°, also marginal.
+  - At both anchors the 80 mm and 99 mm cylinders get the same rating.
+  - Side effects at other anchors: from x 0.05 m on, the palm contact point moves up to 21.3° off the normal. For x ≤ 0.015 m the cylinder overlaps the wrist_yaw link (−1.39 to −7.29 mm).
+
+**B3 — cause separation** (`b3_causes.json`, `b3_causes.md`; raw runs in `b3_runs/R0–R3.json`).
+- The oracle is unchanged. Trials 0–19 of `results/m1_pick_mug` use the same layouts (asserted).
+- R3 uses the same handle yaws (asserted); R0–R2 run at yaw 0.
+
+| run | change | success (Wilson 95 %) | failures | lift slip, mm: mean / median [n]; trials > 20 mm | rise, cm: mean / median [n] | thumb + finger + palm at lift frame | thumb / index / middle / palm touching |
+|---|---|---|---|---|---|---|---|
+| R0 M1 cylinder, 0.15 kg | baseline | **20/20** (84–100 %) | – | 7.8 / 6.85 [20]; 0 | 7.28 / 7.16 [20] | 12/20 = 0.60 | 20 / 15 / 20 / 12 (of 20) |
+| R1 cylinder 99 × 91 mm, no handle, 0.15 kg | size | **5/20** (11–47 %) | dropped while moving 9, slip during lift 5, missed/knocked cup 1 | 22.68 / 17.0 [19]; 5 | 5.76 / 6.06 [19] | 14/20 = 0.70 | 19 / 4 / 19 / 14 (of 19) |
+| R2 same cylinder, 0.40 kg | mass | **0/20** (0–16 %) | slip during lift 17, dropped while moving 3 | 22.24 / 20.9 [20]; 14 | 4.93 / 4.94 [20] | 14/20 = 0.70 | 20 / 8 / 20 / 14 (of 20) |
+| R3 full mug (handle 0.06 × 0.010 m), 0.40 kg | handle | **0/20** (0–16 %) | slip during lift 12, dropped while moving 8 | 20.75 / 20.1 [20]; 10 | 5.11 / 4.98 [20] | 13/20 = 0.65 | 20 / 6 / 20 / 13 (of 20) |
+
+What the runs show:
+- **R0 = M1.** 20/20, and every trial is identical to M1's in success, grasp numbers, final cup pose and sim time (`r0_vs_m1`).
+- **Size (R0 → R1): 20/20 → 5/20.**
+  - Median lift slip 6.85 → 17.0 mm. Trials over the oracle's 20 mm slip limit: 0/20 → 5/19.
+  - The R1 mean (22.68 mm) is pulled up by trials 5 and 10, which slipped 69.5 / 68.1 mm and rose only 1.50 / 1.85 cm.
+  - The index finger touches at the lift frame in 15/20 → 4/19 trials.
+  - R1 trial 0 knocked the cup on the approach (it moved 2.0 cm).
+- **Mass (R1 → R2): 5/20 → 0/20.**
+  - Median slip 17.0 → 20.9 mm; trials over the limit 5 → 14.
+  - Median rise 6.06 → 4.94 cm, below the 5 cm the oracle requires.
+  - Lift failures 5 → 17.
+- **Handle (R2 → R3): no visible effect on success.** R2 is already 0/20, so there is nothing left to lose.
+  - Median slip 20.9 → 20.1 mm; median rise 4.94 → 4.98 cm.
+  - Failures shift from lift to transport: lift/transport 17/3 → 12/8.
+- **Size causes the largest single drop, and the mass removes what is left.** Each step is one 20-trial run.
+- **The contact measure does not predict success.** R0 succeeds 20/20 with thumb + finger + palm contact in only 12/20 trials. In R1–R3, 10, 14 and 13 failed trials had that contact.
+- **Substep sensitivity** (information only):
+  - Grasp contact in the last / any / all of the lift frame's 20 substeps: R0 12/12/12, R1 14/16/11, R2 14/14/11, R3 13/14/12.
+  - Index finger, last / any substep: R0 15/18, R1 4/6, R2 8/10, R3 6/9.
+
+**B4 decision: STOP** (main agent: applied literally; the anchor question below goes to the user before any B5 work). B2 rates 99 mm "infeasible", so Track B stops after B3, as the spec says. No B5 rung was implemented or run.
+- This verdict depends on where the palm normal is drawn (open question 1). At the oracle's grasp position, 99 mm would be "marginal" and B5 would run.
+
+**Ladder (B5) and B6:** not run, because of the B4 stop. There is no `ladder.json`, no final 50-layout evaluation and no videos.
+- No friction coefficient, PD gain, torque limit, mug geometry or mass was changed. Track B v2 has no code that sets cone, impratio or noslip.
+- Legacy check: R0 with the legacy settings = 20/20, identical to M1.
+
+**What failed or is limited:**
+- **B2 as specified does not separate the objects.** At the palm-centre anchor every D from 60 to 110 mm is infeasible, because the thumb base sits inside the cylinder. That includes the 80 mm cylinder the oracle grasps 20/20.
+- **The oracle's planned palm pose is inside the mug** (−11.65 mm, vs −2.15 mm for the cylinder). In a run the palm presses on the mug or stops short.
+- **φ_max is a lower bound**, because the grid has 21 values per joint.
+- **μ was used as the literal pair value.** With the pyramidal cone, the friction limit between the cone's edges is about μ/√2 = 0.75, which would give a 53.08° threshold. This is saved as information only.
+- **`sim/m1_pick_mug.py` and the new config (fixed by the main agent):** its MAIN_MASS read the config, now 0.40 kg, so the v1
+  commands looked for `runs_mass0.40.json` and a default `run` would have written into the frozen v1 folder. MAIN_MASS is now pinned to
+  the v1 protocol's 0.37 kg (comment in the file); `summarize` on copies of the v1 runs files reproduces the v1 success table exactly.
+  (The v1 mug geometry used a 12 mm handle; the current config's 10 mm handle only matters if v1 trials are re-run.)
+- **A sub-agent ran two read-only git commands** (`git status --short`, `git diff sim/scene.py`) before noticing the no-git rule. Nothing changed.
+
+**Files.**
+- Results (`results/m1_grasp_fix/`): `b1_facts.md`, `b1_model.json`, `b2_capacity.json`, `b2_capacity.png`, `b3_causes.json`, `b3_causes.md`, `b3_runs/R0.json`–`R3.json`.
+- Code:
+  - new: `sim/grasp_fix_b1.py`, `sim/b2_capacity.py`, `sim/m1_grasp_causes.py`;
+  - changed: `sim/scene.py` (the `mug_config()` skip, `cup_model="mug_body"`, the `on_substep` hook).
+
+**Runtime / memory** (CPU only, no GPU):
+- B2: 5.8 s, peak RSS 975 MB.
+- B3 (four parallel processes): R0 100.4 s / 1825 MB, R1 85.4 s / 1660 MB, R2 77.0 s / 1651 MB, R3 81.4 s / 1688 MB.
+- B1: runtime and RSS were not saved to a results file.
+
+**Adaptations** (logged; no definition changed):
+- `mug_config()` skips config entries without a `value`, such as `ruler_check`.
+- New `cup_model="mug_body"`: the mug's body cylinder at its config size, without the handle (for R1/R2). The "cylinder" model still builds the M1 cup unchanged.
+- `TableScene.on_substep`: an optional read-only observer, None by default. R0 = M1 shows that behaviour is unchanged.
+- B2 uses the sim's compiled `TableScene(cup_model="mug")` and resizes its body cylinder for each D. The 80 mm row uses h 0.091 m, so only the diameter varies.
+- B2: the φ sign is fixed per digit by the hand (`WRAP_SIGN`), and closest points are labelled side / cap / rim edge.
+- B3's "first 20 layout seeds" = trials 0–19 of `results/m1_pick_mug`, i.e. M1's layouts from seeds 0 and 1, as in v1.
+- Information-only extras, beyond the spec's list (none changes a headline number; can be dropped):
+  - B2 `anchor_sensitivity`;
+  - B3 substep counts, slip medians and over-limit counts;
+  - `sim/grasp_fix_b1.py` + `b1_model.json`.
+
+**Open questions (for the user):**
+1. **B2 anchor:** where along the palm should the palm normal be drawn?
+   - At the palm centre (used): 99 mm is infeasible, so Track B stops.
+   - At the oracle's grasp position (x 0.077 m): 99 mm is marginal, so B5 would run.
+   - This decides B4.
+2. **B2 μ:** the literal pair value 1.0625 was used. With the pyramidal cone the limit between the cone's edges is about μ/√2.
+3. **B3 "at the lift frame":** the last 1 ms substep (used), any substep, or all 20 substeps?
+4. **If B5 runs, L1 "same palm-to-surface clearance":** which clearance should stay the same, and in which direction should the grasp shift?
+   - Candidates for the clearance: the palm hull at −2.15 mm, 54.63 mm along the approach line, or 15.0 mm along the palm normal.
+   - Also: should B5/B6 keep the R0 cup and coaster positions fixed? `sample_layouts` derives cup positions from GRASP_OFFSET, so changing the offset changes the layouts.
+5. **Keep or drop** `sim/grasp_fix_b1.py` and the information-only extras?

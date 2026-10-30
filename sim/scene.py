@@ -15,9 +15,10 @@ Choices (see docs/log.md, 2026-10-28):
 - touch sensors: one MuJoCo ``touch`` sensor per distal finger link (thumb_2, index_1, middle_1), sized to the link's
   collision geometry;
 - cup model (``cup_model``): "mug" (default) = my real mug from config/objects.yaml -- a solid cylinder body plus a D-shaped
-  handle of 3 capsules on the body's +x side; "cylinder" = the plain 8 x 10 cm M1 cup, kept so the M1 results reproduce.
-  Both are one free body named "cup" whose frame origin is the centre of the (body) cylinder, so "cup centre" means the
-  same thing for both; every cup geom gets the same contact parameters and pairs.
+  handle of 3 capsules on the body's +x side; "cylinder" = the plain 8 x 10 cm M1 cup, kept so the M1 results reproduce;
+  "mug_body" = the mug's body cylinder alone (config diameter and height, no handle), so size, mass and handle can be
+  changed one at a time (Track B, B3). All are one free body named "cup" whose frame origin is the centre of the (body)
+  cylinder, so "cup centre" means the same thing for all; every cup geom gets the same contact parameters and pairs.
 
 Units: metres, radians, seconds. World frame: z up, x forward from the robot. Public quaternions are xyzw (HERO's sim2sim
 convention); MuJoCo's own qpos / xquat are wxyz.
@@ -51,7 +52,7 @@ TABLE_THICKNESS = 0.035
 
 # "cylinder" cup (M1): solid cylinder, 8 cm diameter, 10 cm tall, 150 g. Coaster: thin static disc on the table.
 CUP_RADIUS, CUP_HEIGHT, CUP_MASS = 0.04, 0.10, 0.15
-CUP_MODELS = ("cylinder", "mug")
+CUP_MODELS = ("cylinder", "mug", "mug_body")
 OBJECTS_YAML = Path(__file__).resolve().parents[1] / "config" / "objects.yaml"
 COASTER_RADIUS, COASTER_THICKNESS = 0.05, 0.006
 CUP_XY = (0.45, 0.18)        # left half of the table, out of the way of the right hand in M1
@@ -68,16 +69,19 @@ FLEXION_JOINT = np.array([f not in ("thumb_0", "thumb_1") for f in FINGER_SUFFIX
 
 
 def mug_config() -> dict[str, float]:
-    """The mug entries of config/objects.yaml as plain numbers (the ``value`` fields; source tags dropped)."""
+    """The mug entries of config/objects.yaml as plain numbers (the ``value`` fields; source tags dropped).
+
+    Entries without a ``value`` (e.g. ``ruler_check``, a note on how the label was checked) are not model parameters: skipped.
+    """
     mug = yaml.safe_load(OBJECTS_YAML.read_text())["mug"]
-    return {k: float(v["value"]) for k, v in mug.items() if isinstance(v, dict)}
+    return {k: float(v["value"]) for k, v in mug.items() if isinstance(v, dict) and "value" in v}
 
 
 class TableScene:
     """A standing G1 in front of a table with a cup and a coaster. Use ``step(q_body)`` so the fingers are controlled.
 
-    ``cup_model`` = "mug" (config/objects.yaml) or "cylinder" (M1 cup); ``cup_mass`` overrides its mass (None = the model's own:
-    config mass_kg for the mug, 0.15 kg for the cylinder).
+    ``cup_model`` = "mug" (config/objects.yaml), "mug_body" (the mug without its handle) or "cylinder" (M1 cup); ``cup_mass``
+    overrides its mass (None = the model's own: config mass_kg for the mug and the mug body, 0.15 kg for the cylinder).
     """
 
     def __init__(self, table_height: float, kp, kd, effort_limit, default_dof_pos, cup_model: str = "mug", cup_mass: float | None = None):
@@ -87,7 +91,7 @@ class TableScene:
             raise ValueError(f"cup_model must be one of {CUP_MODELS}")
         self.table_height = float(table_height)
         self.cup_model = cup_model
-        self.mug = mug_config() if cup_model == "mug" else None
+        self.mug = mug_config() if cup_model in ("mug", "mug_body") else None
         self.cup_height = self.mug["height_m"] if self.mug else CUP_HEIGHT
         self.cup_mass = float(cup_mass) if cup_mass is not None else (self.mug["mass_kg"] if self.mug else CUP_MASS)
         self.cup_yaw = 0.0
@@ -108,6 +112,7 @@ class TableScene:
         self.closing_direction = np.sign(np.concatenate([HAND_CLOSED[s] - HAND_OPEN[s] for s in SIDES]))
         self.coaster_geom = mujoco.mj_name2id(m, mujoco.mjtObj.mjOBJ_GEOM, "coaster")
         self.cup_xy, self.coaster_xy = np.array(CUP_XY), np.array(COASTER_XY)
+        self.on_substep = None      # optional observer called after every 1 ms substep (it must only read data; B3 contact log)
 
         cup_joint = mujoco.mj_name2id(m, mujoco.mjtObj.mjOBJ_JOINT, "cup_free")
         self.cup_qadr = int(m.jnt_qposadr[cup_joint])
@@ -179,6 +184,9 @@ class TableScene:
         if self.cup_model == "cylinder":
             cup_geoms = [cup.add_geom(name="cup_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, size=[CUP_RADIUS, CUP_HEIGHT / 2, 0],
                                       mass=self.cup_mass, **contact)]
+        elif self.cup_model == "mug_body":      # same geom as the cylinder, at the mug's label size
+            r, h = self.mug["body_outer_diameter_m"] / 2, self.mug["height_m"]
+            cup_geoms = [cup.add_geom(name="cup_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, size=[r, h / 2, 0], mass=self.cup_mass, **contact)]
         else:
             cup_geoms = _add_mug_geoms(cup, self.mug, self.cup_mass, contact)
 
@@ -276,6 +284,8 @@ class TableScene:
             d.qfrc_applied[p.dof_vadr] = p.pd_torque(body_qtarget)
             d.qfrc_applied[self.finger_vadr] = finger_tau
             mujoco.mj_step(m, d)
+            if self.on_substep is not None:
+                self.on_substep()
 
     def cup_pose(self) -> tuple[np.ndarray, np.ndarray]:
         """Cup centre (world) and orientation (xyzw)."""

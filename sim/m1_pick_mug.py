@@ -8,7 +8,7 @@ config/objects.yaml (sim/scene.py, cup_model="mug") instead of the 8 x 10 cm cyl
 - handle yaw: the oracle grasps the body and ignores the handle; the handle points away from the palm (along the oracle's
   approach direction ``Grasp.approach_dir``, palm -> cup) give or take U(-45, +45) deg, drawn once for all 50 trials with
   np.random.default_rng(2026). Trial k gets the same yaw at every mass.
-- mass: config mass_kg (0.37 kg, an unverified guess) for the 50 trials; sensitivity: trials 0-19 at 0.25 and 0.45 kg
+- mass: 0.37 kg (config mass_kg when this ran; frozen in MAIN_MASS since config moved to 0.40 kg) for the 50 trials; sensitivity: trials 0-19 at 0.25 and 0.45 kg
   (0.37 kg reuses trials 0-19 of the main run, not rerun).
 The cylinder baseline differs in more than shape (mass, size, no handle); summarize says so next to the paired comparison.
 
@@ -52,7 +52,8 @@ N_TRIALS = sum(n for _, n in LAYOUT_SETS)
 CYLINDER_RESULTS = (Path("results/m1_pick/pick_results.json"), Path("results/m1_pick_extended/pick_results.json"))
 YAW_SEED = 2026
 YAW_SPREAD_DEG = 45.0
-MAIN_MASS = mug_config()["mass_kg"]
+MAIN_MASS = 0.37            # the v1 protocol's mass (config mass_kg at the time; config now says 0.40): frozen, so this
+                            # script keeps reproducing results/m1_pick_mug/ -- the 0.40 kg runs are sim/m1_grasp_causes.py
 SWEEP_MASSES, SWEEP_TRIALS = (0.25, 0.45), 20
 # Per-trial fields copied from PickPlace.run (None when the run stopped before that phase); the rest goes under "detail".
 GRASP_KEYS = ("contact_closure", "lift_slip_in_hand_cm", "lift_cup_rise_cm", "cup_off_coaster_center_cm")

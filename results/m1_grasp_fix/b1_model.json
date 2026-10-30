@@ -1,0 +1,1798 @@
+{
+  "mujoco": "3.13.0",
+  "table_height_m": 0.74,
+  "grasp": {
+    "cup_centre_in_palm_frame_xy_m": [
+      0.077,
+      0.055
+    ],
+    "palm_above_table_m": 0.065,
+    "palm_point_to_cup_axis_m": 0.09463,
+    "approach_dir_in_palm_frame": [
+      0.8137,
+      0.5812
+    ],
+    "pregrasp_backoff_m": 0.08
+  },
+  "finger_control": {
+    "kp": 1.2,
+    "kd": 0.04,
+    "grip_kp_scale": 3.0,
+    "kp_while_closing": 3.5999999999999996,
+    "squeeze_fraction": 0.6
+  },
+  "cups": {
+    "cylinder": {
+      "mass_kg": 0.15,
+      "inertia_diag_kgm2": [
+        0.000185,
+        0.000185,
+        0.00012
+      ],
+      "com_offset_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "height_m": 0.1,
+      "body_radius_m": 0.04,
+      "geoms": [
+        {
+          "geom": "cup_geom",
+          "body": "cup",
+          "type": "mjGEOM_CYLINDER",
+          "friction": [
+            0.35,
+            0.0028,
+            0.0001
+          ],
+          "condim": 4,
+          "solref": [
+            0.008,
+            1.0
+          ],
+          "solimp": [
+            0.9,
+            0.95,
+            0.001,
+            0.5,
+            2.0
+          ],
+          "solmix": 1.0,
+          "priority": 0,
+          "margin": 0.0,
+          "gap": 0.0
+        }
+      ],
+      "pairs": {
+        "right_hand": {
+          "n_pairs": 8,
+          "distinct_params": [
+            {
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solreffriction": [
+                0.0,
+                0.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "margin": 0.0,
+              "gap": 0.0
+            }
+          ]
+        },
+        "table_top": {
+          "n_pairs": 1,
+          "distinct_params": [
+            {
+              "friction": [
+                0.35,
+                0.35,
+                0.0028,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solreffriction": [
+                0.0,
+                0.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "margin": 0.0,
+              "gap": 0.0
+            }
+          ]
+        },
+        "coaster": {
+          "n_pairs": 1,
+          "distinct_params": [
+            {
+              "friction": [
+                0.5,
+                0.5,
+                0.004,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solreffriction": [
+                0.0,
+                0.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "margin": 0.0,
+              "gap": 0.0
+            }
+          ]
+        }
+      },
+      "nominal_grasp": {
+        "clearance_open_mm": {
+          "right_hand_palm_link": -2.15,
+          "right_hand_thumb_0_link": 10.69,
+          "right_hand_thumb_1_link": 20.48,
+          "right_hand_thumb_2_link": 36.51,
+          "right_hand_middle_0_link": 7.05,
+          "right_hand_middle_1_link": 26.25,
+          "right_hand_index_0_link": 7.05,
+          "right_hand_index_1_link": 26.42,
+          "right_wrist_roll_link": 109.07,
+          "right_wrist_pitch_link": 60.91,
+          "right_wrist_yaw_link": 44.32
+        },
+        "clearance_closed_mm": {
+          "right_hand_palm_link": -2.15,
+          "right_hand_thumb_0_link": 10.69,
+          "right_hand_thumb_1_link": 5.0,
+          "right_hand_thumb_2_link": -16.53,
+          "right_hand_middle_0_link": -28.36,
+          "right_hand_middle_1_link": -47.32,
+          "right_hand_index_0_link": -19.4,
+          "right_hand_index_1_link": -19.6
+        },
+        "contacts_hand_closed": {
+          "n_contacts": 15,
+          "all_match_explicit_pair": true,
+          "contacts": [
+            {
+              "body": "right_hand_palm_link",
+              "dist_mm": -2.15,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_thumb_2_link",
+              "dist_mm": -16.53,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_thumb_2_link",
+              "dist_mm": -16.53,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_middle_0_link",
+              "dist_mm": -28.36,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_middle_0_link",
+              "dist_mm": -28.36,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_middle_1_link",
+              "dist_mm": -47.32,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_middle_1_link",
+              "dist_mm": -47.32,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_0_link",
+              "dist_mm": -19.4,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_0_link",
+              "dist_mm": -19.4,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_0_link",
+              "dist_mm": -19.4,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_0_link",
+              "dist_mm": -19.4,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_1_link",
+              "dist_mm": -19.6,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_1_link",
+              "dist_mm": -19.6,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_1_link",
+              "dist_mm": -19.6,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_1_link",
+              "dist_mm": -19.6,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            }
+          ]
+        },
+        "hand_geom_z_above_table_m": {
+          "right_hand_palm_link": [
+            0.0211,
+            0.1089
+          ],
+          "right_hand_thumb_0_link": [
+            0.0555,
+            0.0745
+          ],
+          "right_hand_thumb_1_link": [
+            0.055,
+            0.075
+          ],
+          "right_hand_thumb_2_link": [
+            0.0521,
+            0.0781
+          ],
+          "right_hand_middle_0_link": [
+            0.0236,
+            0.0493
+          ],
+          "right_hand_middle_1_link": [
+            0.0234,
+            0.0494
+          ],
+          "right_hand_index_0_link": [
+            0.0806,
+            0.1063
+          ],
+          "right_hand_index_1_link": [
+            0.0804,
+            0.1064
+          ]
+        }
+      }
+    },
+    "mug": {
+      "mass_kg": 0.4,
+      "inertia_diag_kgm2": [
+        0.00055509,
+        0.00052117,
+        0.00051552
+      ],
+      "com_offset_m": [
+        0.00129,
+        0.0,
+        0.0
+      ],
+      "height_m": 0.091,
+      "body_radius_m": 0.0495,
+      "geoms": [
+        {
+          "geom": "cup_geom",
+          "body": "cup",
+          "type": "mjGEOM_CYLINDER",
+          "friction": [
+            0.35,
+            0.0028,
+            0.0001
+          ],
+          "condim": 4,
+          "solref": [
+            0.008,
+            1.0
+          ],
+          "solimp": [
+            0.9,
+            0.95,
+            0.001,
+            0.5,
+            2.0
+          ],
+          "solmix": 1.0,
+          "priority": 0,
+          "margin": 0.0,
+          "gap": 0.0
+        },
+        {
+          "geom": "cup_handle_lower",
+          "body": "cup",
+          "type": "mjGEOM_CAPSULE",
+          "friction": [
+            0.35,
+            0.0028,
+            0.0001
+          ],
+          "condim": 4,
+          "solref": [
+            0.008,
+            1.0
+          ],
+          "solimp": [
+            0.9,
+            0.95,
+            0.001,
+            0.5,
+            2.0
+          ],
+          "solmix": 1.0,
+          "priority": 0,
+          "margin": 0.0,
+          "gap": 0.0
+        },
+        {
+          "geom": "cup_handle_upper",
+          "body": "cup",
+          "type": "mjGEOM_CAPSULE",
+          "friction": [
+            0.35,
+            0.0028,
+            0.0001
+          ],
+          "condim": 4,
+          "solref": [
+            0.008,
+            1.0
+          ],
+          "solimp": [
+            0.9,
+            0.95,
+            0.001,
+            0.5,
+            2.0
+          ],
+          "solmix": 1.0,
+          "priority": 0,
+          "margin": 0.0,
+          "gap": 0.0
+        },
+        {
+          "geom": "cup_handle_outer",
+          "body": "cup",
+          "type": "mjGEOM_CAPSULE",
+          "friction": [
+            0.35,
+            0.0028,
+            0.0001
+          ],
+          "condim": 4,
+          "solref": [
+            0.008,
+            1.0
+          ],
+          "solimp": [
+            0.9,
+            0.95,
+            0.001,
+            0.5,
+            2.0
+          ],
+          "solmix": 1.0,
+          "priority": 0,
+          "margin": 0.0,
+          "gap": 0.0
+        }
+      ],
+      "pairs": {
+        "right_hand": {
+          "n_pairs": 32,
+          "distinct_params": [
+            {
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solreffriction": [
+                0.0,
+                0.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "margin": 0.0,
+              "gap": 0.0
+            }
+          ]
+        },
+        "table_top": {
+          "n_pairs": 4,
+          "distinct_params": [
+            {
+              "friction": [
+                0.35,
+                0.35,
+                0.0028,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solreffriction": [
+                0.0,
+                0.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "margin": 0.0,
+              "gap": 0.0
+            }
+          ]
+        },
+        "coaster": {
+          "n_pairs": 4,
+          "distinct_params": [
+            {
+              "friction": [
+                0.5,
+                0.5,
+                0.004,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solreffriction": [
+                0.0,
+                0.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "margin": 0.0,
+              "gap": 0.0
+            }
+          ]
+        }
+      },
+      "nominal_grasp": {
+        "clearance_open_mm": {
+          "right_hand_palm_link": -11.65,
+          "right_hand_thumb_0_link": 1.19,
+          "right_hand_thumb_1_link": 10.98,
+          "right_hand_thumb_2_link": 27.01,
+          "right_hand_middle_0_link": -2.45,
+          "right_hand_middle_1_link": 16.75,
+          "right_hand_index_0_link": -2.45,
+          "right_hand_index_1_link": 17.52,
+          "right_wrist_roll_link": 99.57,
+          "right_wrist_pitch_link": 51.41,
+          "right_wrist_yaw_link": 34.82
+        },
+        "clearance_closed_mm": {
+          "right_hand_palm_link": -11.65,
+          "right_hand_thumb_0_link": 1.19,
+          "right_hand_thumb_1_link": -4.5,
+          "right_hand_thumb_2_link": -26.03,
+          "right_hand_middle_0_link": -37.86,
+          "right_hand_middle_1_link": -49.4,
+          "right_hand_index_0_link": -10.4,
+          "right_hand_index_1_link": -10.6
+        },
+        "contacts_hand_closed": {
+          "n_contacts": 19,
+          "all_match_explicit_pair": true,
+          "contacts": [
+            {
+              "body": "right_hand_palm_link",
+              "dist_mm": -11.65,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_thumb_1_link",
+              "dist_mm": -4.5,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_thumb_1_link",
+              "dist_mm": -4.5,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_thumb_2_link",
+              "dist_mm": -26.03,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_thumb_2_link",
+              "dist_mm": -26.03,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_middle_0_link",
+              "dist_mm": -37.86,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_middle_0_link",
+              "dist_mm": -37.86,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_middle_1_link",
+              "dist_mm": -49.4,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_middle_1_link",
+              "dist_mm": -49.4,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_middle_1_link",
+              "dist_mm": -49.4,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_middle_1_link",
+              "dist_mm": -49.4,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_0_link",
+              "dist_mm": -10.4,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_0_link",
+              "dist_mm": -10.4,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_0_link",
+              "dist_mm": -10.4,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_0_link",
+              "dist_mm": -10.4,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_1_link",
+              "dist_mm": -10.6,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_1_link",
+              "dist_mm": -10.6,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_1_link",
+              "dist_mm": -10.6,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            },
+            {
+              "body": "right_hand_index_1_link",
+              "dist_mm": -10.6,
+              "friction": [
+                1.0625,
+                1.0625,
+                0.00425,
+                0.0001,
+                0.0001
+              ],
+              "condim": 4,
+              "solref": [
+                0.014,
+                1.0
+              ],
+              "solimp": [
+                0.9,
+                0.95,
+                0.001,
+                0.5,
+                2.0
+              ],
+              "matches_explicit_pair": true
+            }
+          ]
+        },
+        "hand_geom_z_above_table_m": {
+          "right_hand_palm_link": [
+            0.0211,
+            0.1089
+          ],
+          "right_hand_thumb_0_link": [
+            0.0555,
+            0.0745
+          ],
+          "right_hand_thumb_1_link": [
+            0.055,
+            0.075
+          ],
+          "right_hand_thumb_2_link": [
+            0.0521,
+            0.0781
+          ],
+          "right_hand_middle_0_link": [
+            0.0236,
+            0.0493
+          ],
+          "right_hand_middle_1_link": [
+            0.0234,
+            0.0494
+          ],
+          "right_hand_index_0_link": [
+            0.0806,
+            0.1063
+          ],
+          "right_hand_index_1_link": [
+            0.0804,
+            0.1064
+          ]
+        }
+      }
+    }
+  },
+  "options": {
+    "timestep": 0.001,
+    "integrator": "mjINT_EULER",
+    "solver": "mjSOL_NEWTON",
+    "iterations": 100,
+    "ls_iterations": 50,
+    "tolerance": 1e-08,
+    "cone": "mjCONE_PYRAMIDAL",
+    "impratio": 1.0,
+    "noslip_iterations": 0,
+    "noslip_tolerance": 1e-06,
+    "o_solref": [
+      0.02,
+      1.0
+    ],
+    "o_solimp": [
+      0.9,
+      0.95,
+      0.001,
+      0.5,
+      2.0
+    ],
+    "override_enabled": false,
+    "enableflags": 0,
+    "disableflags": 0
+  },
+  "right_hand_joints": [
+    {
+      "joint": "right_hand_thumb_0_joint",
+      "range_rad": [
+        -1.047198,
+        1.047198
+      ],
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "open_rad": 0.0,
+      "closed_rad": 0.0,
+      "closed_used_rad": 0.0,
+      "closing_direction": 0,
+      "squeezed_when_blocked": false,
+      "effort_limit_nm": 2.45,
+      "armature": 0.001,
+      "damping": 0.01,
+      "frictionloss": 0.0
+    },
+    {
+      "joint": "right_hand_thumb_1_joint",
+      "range_rad": [
+        -1.047198,
+        0.724312
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "open_rad": 0.7,
+      "closed_rad": 0.0,
+      "closed_used_rad": 0.0,
+      "closing_direction": -1,
+      "squeezed_when_blocked": false,
+      "effort_limit_nm": 1.4,
+      "armature": 0.001,
+      "damping": 0.01,
+      "frictionloss": 0.0
+    },
+    {
+      "joint": "right_hand_thumb_2_joint",
+      "range_rad": [
+        -1.745329,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "open_rad": 0.0,
+      "closed_rad": -1.2,
+      "closed_used_rad": -1.2,
+      "closing_direction": -1,
+      "squeezed_when_blocked": true,
+      "effort_limit_nm": 1.4,
+      "armature": 0.001,
+      "damping": 0.01,
+      "frictionloss": 0.0
+    },
+    {
+      "joint": "right_hand_index_0_joint",
+      "range_rad": [
+        0.0,
+        1.570796
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "open_rad": 0.0,
+      "closed_rad": 1.57,
+      "closed_used_rad": 1.57,
+      "closing_direction": 1,
+      "squeezed_when_blocked": true,
+      "effort_limit_nm": 1.4,
+      "armature": 0.001,
+      "damping": 0.01,
+      "frictionloss": 0.0
+    },
+    {
+      "joint": "right_hand_index_1_joint",
+      "range_rad": [
+        0.0,
+        1.745329
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "open_rad": 0.0,
+      "closed_rad": 1.2,
+      "closed_used_rad": 1.2,
+      "closing_direction": 1,
+      "squeezed_when_blocked": true,
+      "effort_limit_nm": 1.4,
+      "armature": 0.001,
+      "damping": 0.01,
+      "frictionloss": 0.0
+    },
+    {
+      "joint": "right_hand_middle_0_joint",
+      "range_rad": [
+        0.0,
+        1.570796
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "open_rad": 0.0,
+      "closed_rad": 1.2,
+      "closed_used_rad": 1.2,
+      "closing_direction": 1,
+      "squeezed_when_blocked": true,
+      "effort_limit_nm": 1.4,
+      "armature": 0.001,
+      "damping": 0.01,
+      "frictionloss": 0.0
+    },
+    {
+      "joint": "right_hand_middle_1_joint",
+      "range_rad": [
+        0.0,
+        1.745329
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "open_rad": 0.0,
+      "closed_rad": 1.2,
+      "closed_used_rad": 1.2,
+      "closing_direction": 1,
+      "squeezed_when_blocked": true,
+      "effort_limit_nm": 1.4,
+      "armature": 0.001,
+      "damping": 0.01,
+      "frictionloss": 0.0
+    }
+  ],
+  "right_hand_geoms": [
+    {
+      "geom": "hand_contact_right_hand_palm_link_8",
+      "body": "right_hand_palm_link",
+      "type": "mjGEOM_MESH",
+      "friction": [
+        1.5,
+        0.005,
+        0.0001
+      ],
+      "condim": 3,
+      "solref": [
+        0.02,
+        1.0
+      ],
+      "solimp": [
+        0.9,
+        0.95,
+        0.001,
+        0.5,
+        2.0
+      ],
+      "solmix": 1.0,
+      "priority": 0,
+      "margin": 0.0,
+      "gap": 0.0
+    },
+    {
+      "geom": "hand_contact_right_hand_thumb_0_link_9",
+      "body": "right_hand_thumb_0_link",
+      "type": "mjGEOM_MESH",
+      "friction": [
+        1.5,
+        0.005,
+        0.0001
+      ],
+      "condim": 3,
+      "solref": [
+        0.02,
+        1.0
+      ],
+      "solimp": [
+        0.9,
+        0.95,
+        0.001,
+        0.5,
+        2.0
+      ],
+      "solmix": 1.0,
+      "priority": 0,
+      "margin": 0.0,
+      "gap": 0.0
+    },
+    {
+      "geom": "hand_contact_right_hand_thumb_1_link_10",
+      "body": "right_hand_thumb_1_link",
+      "type": "mjGEOM_BOX",
+      "friction": [
+        1.5,
+        0.005,
+        0.0001
+      ],
+      "condim": 3,
+      "solref": [
+        0.02,
+        1.0
+      ],
+      "solimp": [
+        0.9,
+        0.95,
+        0.001,
+        0.5,
+        2.0
+      ],
+      "solmix": 1.0,
+      "priority": 0,
+      "margin": 0.0,
+      "gap": 0.0
+    },
+    {
+      "geom": "hand_contact_right_hand_thumb_2_link_11",
+      "body": "right_hand_thumb_2_link",
+      "type": "mjGEOM_MESH",
+      "friction": [
+        1.5,
+        0.005,
+        0.0001
+      ],
+      "condim": 3,
+      "solref": [
+        0.02,
+        1.0
+      ],
+      "solimp": [
+        0.9,
+        0.95,
+        0.001,
+        0.5,
+        2.0
+      ],
+      "solmix": 1.0,
+      "priority": 0,
+      "margin": 0.0,
+      "gap": 0.0
+    },
+    {
+      "geom": "hand_contact_right_hand_middle_0_link_12",
+      "body": "right_hand_middle_0_link",
+      "type": "mjGEOM_MESH",
+      "friction": [
+        1.5,
+        0.005,
+        0.0001
+      ],
+      "condim": 3,
+      "solref": [
+        0.02,
+        1.0
+      ],
+      "solimp": [
+        0.9,
+        0.95,
+        0.001,
+        0.5,
+        2.0
+      ],
+      "solmix": 1.0,
+      "priority": 0,
+      "margin": 0.0,
+      "gap": 0.0
+    },
+    {
+      "geom": "hand_contact_right_hand_middle_1_link_13",
+      "body": "right_hand_middle_1_link",
+      "type": "mjGEOM_MESH",
+      "friction": [
+        1.5,
+        0.005,
+        0.0001
+      ],
+      "condim": 3,
+      "solref": [
+        0.02,
+        1.0
+      ],
+      "solimp": [
+        0.9,
+        0.95,
+        0.001,
+        0.5,
+        2.0
+      ],
+      "solmix": 1.0,
+      "priority": 0,
+      "margin": 0.0,
+      "gap": 0.0
+    },
+    {
+      "geom": "hand_contact_right_hand_index_0_link_14",
+      "body": "right_hand_index_0_link",
+      "type": "mjGEOM_MESH",
+      "friction": [
+        1.5,
+        0.005,
+        0.0001
+      ],
+      "condim": 3,
+      "solref": [
+        0.02,
+        1.0
+      ],
+      "solimp": [
+        0.9,
+        0.95,
+        0.001,
+        0.5,
+        2.0
+      ],
+      "solmix": 1.0,
+      "priority": 0,
+      "margin": 0.0,
+      "gap": 0.0
+    },
+    {
+      "geom": "hand_contact_right_hand_index_1_link_15",
+      "body": "right_hand_index_1_link",
+      "type": "mjGEOM_MESH",
+      "friction": [
+        1.5,
+        0.005,
+        0.0001
+      ],
+      "condim": 3,
+      "solref": [
+        0.02,
+        1.0
+      ],
+      "solimp": [
+        0.9,
+        0.95,
+        0.001,
+        0.5,
+        2.0
+      ],
+      "solmix": 1.0,
+      "priority": 0,
+      "margin": 0.0,
+      "gap": 0.0
+    }
+  ],
+  "right_wrist_geoms": [
+    {
+      "geom": "",
+      "body": "right_wrist_roll_link",
+      "type": "mjGEOM_MESH",
+      "friction": [
+        1.0,
+        0.005,
+        0.0001
+      ],
+      "condim": 3,
+      "solref": [
+        0.02,
+        1.0
+      ],
+      "solimp": [
+        0.9,
+        0.95,
+        0.001,
+        0.5,
+        2.0
+      ],
+      "solmix": 1.0,
+      "priority": 0,
+      "margin": 0.0,
+      "gap": 0.0
+    },
+    {
+      "geom": "",
+      "body": "right_wrist_pitch_link",
+      "type": "mjGEOM_MESH",
+      "friction": [
+        1.0,
+        0.005,
+        0.0001
+      ],
+      "condim": 3,
+      "solref": [
+        0.02,
+        1.0
+      ],
+      "solimp": [
+        0.9,
+        0.95,
+        0.001,
+        0.5,
+        2.0
+      ],
+      "solmix": 1.0,
+      "priority": 0,
+      "margin": 0.0,
+      "gap": 0.0
+    },
+    {
+      "geom": "",
+      "body": "right_wrist_yaw_link",
+      "type": "mjGEOM_MESH",
+      "friction": [
+        1.0,
+        0.005,
+        0.0001
+      ],
+      "condim": 3,
+      "solref": [
+        0.02,
+        1.0
+      ],
+      "solimp": [
+        0.9,
+        0.95,
+        0.001,
+        0.5,
+        2.0
+      ],
+      "solmix": 1.0,
+      "priority": 0,
+      "margin": 0.0,
+      "gap": 0.0
+    }
+  ],
+  "right_wrist_geoms_with_cup_pair": []
+}
