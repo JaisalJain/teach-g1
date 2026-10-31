@@ -1,8 +1,8 @@
-# Clean-clone check (M7): git clone of 63ad110 into a temp dir, third_party/ symlinked in, existing conda envs; then bash scripts/reproduce.sh
+# Clean-clone check (M7): git clone of b8ba44c into a temp dir, third_party/ symlinked in, existing conda envs; then bash scripts/reproduce.sh (second run, after the README fixes; the first run at 63ad110 also matched in 33.09 s)
 
 == 1. oracle trial 0
 oracle_recheck trial  0 -> SUCCESS  lift contacts {'thumb': True, 'index': True, 'middle': True, 'palm': True}  (4.9 s)
-oracle trials 0-0: 1/1 identical to fifty.json (differences []); Execute setup = PickPlace setup: True; wrote /tmp/tmp.ZvwQ2Up6yW/determinism_checks.json (7.6 s)
+oracle trials 0-0: 1/1 identical to fifty.json (differences []); Execute setup = PickPlace setup: True; wrote /tmp/tmp.114TY4Peb4/determinism_checks.json (7.7 s)
 == 2. b_hybrid_h45 e8825dea53 trial00
 e8825dea53__b_hybrid_h45__trial00: rerun identical True
 == 3. R2 (ONNX selector) on test trial 0
@@ -13,5 +13,5 @@ M4b summary.md matches
 M5 summary matches
 ALL MATCH
 
-	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:33.09
-	Maximum resident set size (kbytes): 2661032
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:33.32
+	Maximum resident set size (kbytes): 2595672
