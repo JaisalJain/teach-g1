@@ -7,9 +7,11 @@
 #   4. one R2 trial: the selector's choice on test trial 0 recomputed from results/m5/selector.onnx, then that run vs its row
 #   5. the M4, M4b, M5 and own-yaw summaries regenerated from the saved rows; their .md / .json must equal the committed files
 # Needs the hoi-sim conda env and third_party/HERO (docs/INSTALL.md). Run from anywhere: bash scripts/reproduce.sh
+# Another env name: HOI_SIM_ENV=<env> bash scripts/reproduce.sh (default hoi-sim).
 set -uo pipefail
 cd "$(dirname "$0")/.."
-S="env -u PYTHONPATH conda run --no-capture-output -n hoi-sim python"
+S="env -u PYTHONPATH conda run --no-capture-output -n ${HOI_SIM_ENV:-hoi-sim} python"
+echo "conda env: ${HOI_SIM_ENV:-hoi-sim}"
 TMP="$(mktemp -d)"
 fail=0
 step() { echo; echo "== $1"; }
