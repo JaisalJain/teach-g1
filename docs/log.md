@@ -1822,3 +1822,35 @@ arm. So each step is tested only as the bundle of changes it makes, and the rank
   - The hoi-sim env's HERO is an editable install from this machine's `third_party/HERO`.
 - **Hygiene** (`scripts/hygiene.py` -> `results/final/hygiene_report.md`): one tracked file over 10 MB (the sample's rgb.mp4, 10.68 MB),
   no secret-looking strings, no README link to an untracked file, no top-level LICENSE (left for the owner).
+
+## Polish (Sat 31 Oct, evening): one handle-yaw convention, README restructure, licence, raw clips, fresh-env check
+
+### Step 1 — naive, b_level and b_tilt at each layout's own handle yaw
+- **Why:** M4 ran naive / b_level / b_tilt (and M4b ran b_hybrid) with handle yaw = trial yaw + (phi_h - phi_ora): the handle turned
+  with my heading. The oracle, b_hybrid_h45 and every M5 row use the trial's own yaw, so the README's table mixed two conventions.
+- **Code:** `sim/m4_execute.py`: `run --own-yaw` / `run_one(..., own_yaw=True)` for the three M4 variants only. It goes through
+  `variant_layout`'s existing own-yaw line (the one b_hybrid_h45 and M5 use). Rows get `own_yaw: true` and keep M4's run names, so
+  they live in their own folder. `m5_kwargs` became `item_kwargs` (it also passes own_yaw to `rerun` / `render`). The path code does
+  not read the handle yaw; only the mug's handle direction in the scene changes.
+- **Default unchanged:** 3 saved M4 rows (e88 b_level trial00, 49aff b_tilt trial00, 4e naive trial00) re-run identical in every
+  field (`results/final/own_yaw/checks/`); one M5 noisy row (e88 phi55 trial00 noisy) too (not saved).
+- **Batch:** 600 runs (3 variants x 4 clips x trials 0-49) on 8 workers in 795.8 s, peak RSS 1557-1626 MB per worker, 0 exceptions:
+  **E1 not taken** (limit 1 %).
+- **Results** (`python -m retarget.own_yaw_summary` -> `results/final/own_yaw/summary.md` / `.json`):
+
+| variant | 26d | 4e | 49aff | e88 | pool, own yaw | pool, M4 (turned) |
+|---|---|---|---|---|---|---|
+| naive | 0 | 0 | 0 | 0 | 0/200 (0.00-0.02) | 0/200 |
+| b_level | 0 | 0 | 0 | 25 | 25/200 (0.09-0.18) | 23/200 |
+| b_tilt | 5 | 0 | 17 | 17 | 39/200 (0.15-0.26) | 39/200 |
+
+- **Paired with M4 (same trials):** b_level 2 layouts won only at the own yaw (e88 trials 18, 26), 0 only turned; b_tilt 1 / 1
+  (26d trial 2 / 49aff trial 4); naive 0 / 0. So the handle convention barely matters for these three; for b_hybrid it did (M4b
+  112/200 turned vs M5's 98/200 own).
+- **Paired with the oracle (pooled):** layouts won only by the variant / only by the oracle: naive 0 / 176, b_level 1 / 152 (e88
+  trial 22), b_tilt 4 / 141.
+- **Failures (category_v2):** b_level 175 failures, 131 "pushed mug before close", 44 reach; b_tilt 161 failures, 89 pushed, 66
+  reach, 3 slip during lift, 1 released off the coaster, 1 knock, 1 dropped. M4 had no lift slip in any b run; at the own yaw
+  b_tilt has 3 (49aff 2, e88 1).
+- **reproduce.sh:** now also re-runs `e8825dea53__b_level__trial00` from `results/final/own_yaw/runs/` and regenerates the own-yaw
+  summary into a temp folder, comparing summary.md and summary.json byte for byte.

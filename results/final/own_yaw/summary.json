@@ -1,0 +1,1327 @@
+{
+  "what": "Polish Step 1: naive / b_level / b_tilt at each layout's own handle yaw (retarget/own_yaw_summary.py)",
+  "E1": {
+    "rows": 600,
+    "exceptions": 0,
+    "exception_runs": [],
+    "fraction": 0.0,
+    "stop_above": 0.01,
+    "branch": "continue"
+  },
+  "checks": {
+    "rows": 600,
+    "every_row": "own_yaw true; handle_yaw_deg = trial_handle_yaw_deg = the oracle's cup_yaw_deg; cup and coaster xy = the oracle's and the M4 row's; paths v2, profile mug_v1, mass 0.4 kg (asserted)",
+    "m4_turn_deg": {
+      "26d4118b0c": [
+        36.9
+      ],
+      "4e103843db": [
+        40.8,
+        40.9
+      ],
+      "49aff04f7a": [
+        36.7
+      ],
+      "e8825dea53": [
+        16.7
+      ]
+    }
+  },
+  "oracle": {
+    "successes": 44,
+    "n": 50,
+    "wilson95": [
+      0.762,
+      0.944
+    ],
+    "text": "44/50 (0.76-0.94)",
+    "category": {
+      "missed/knocked cup": 5,
+      "slip during lift": 1
+    },
+    "category_v2": {
+      "pushed mug before close": 5,
+      "slip during lift": 1
+    }
+  },
+  "own_yaw": {
+    "b_level": {
+      "26d4118b0c": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "palm could not reach the target": 50
+        },
+        "category_v2": {
+          "pushed mug before close": 31,
+          "palm could not reach the target": 19
+        }
+      },
+      "4e103843db": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "palm could not reach the target": 50
+        },
+        "category_v2": {
+          "pushed mug before close": 25,
+          "palm could not reach the target": 25
+        }
+      },
+      "49aff04f7a": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "palm could not reach the target": 46,
+          "missed/knocked cup": 4
+        },
+        "category_v2": {
+          "pushed mug before close": 50
+        }
+      },
+      "e8825dea53": {
+        "successes": 25,
+        "n": 50,
+        "wilson95": [
+          0.366,
+          0.634
+        ],
+        "text": "25/50 (0.37-0.63)",
+        "category": {
+          "palm could not reach the target": 20,
+          "missed/knocked cup": 5
+        },
+        "category_v2": {
+          "pushed mug before close": 25
+        }
+      },
+      "pool": {
+        "successes": 25,
+        "n": 200,
+        "wilson95": [
+          0.086,
+          0.178
+        ],
+        "text": "25/200 (0.09-0.18)",
+        "category": {
+          "palm could not reach the target": 166,
+          "missed/knocked cup": 9
+        },
+        "category_v2": {
+          "pushed mug before close": 131,
+          "palm could not reach the target": 44
+        }
+      }
+    },
+    "b_tilt": {
+      "26d4118b0c": {
+        "successes": 5,
+        "n": 50,
+        "wilson95": [
+          0.043,
+          0.214
+        ],
+        "text": "5/50 (0.04-0.21)",
+        "category": {
+          "palm could not reach the target": 45
+        },
+        "category_v2": {
+          "pushed mug before close": 27,
+          "palm could not reach the target": 18
+        }
+      },
+      "4e103843db": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "palm could not reach the target": 49,
+          "missed/knocked cup": 1
+        },
+        "category_v2": {
+          "pushed mug before close": 41,
+          "palm could not reach the target": 9
+        }
+      },
+      "49aff04f7a": {
+        "successes": 17,
+        "n": 50,
+        "wilson95": [
+          0.224,
+          0.478
+        ],
+        "text": "17/50 (0.22-0.48)",
+        "category": {
+          "palm could not reach the target": 28,
+          "slip during lift": 2,
+          "missed/knocked cup": 2,
+          "released but not on the coaster": 1
+        },
+        "category_v2": {
+          "pushed mug before close": 21,
+          "palm could not reach the target": 8,
+          "slip during lift": 2,
+          "released but not on the coaster": 1,
+          "missed/knocked cup": 1
+        }
+      },
+      "e8825dea53": {
+        "successes": 17,
+        "n": 50,
+        "wilson95": [
+          0.224,
+          0.478
+        ],
+        "text": "17/50 (0.22-0.48)",
+        "category": {
+          "palm could not reach the target": 31,
+          "slip during lift": 1,
+          "dropped while moving": 1
+        },
+        "category_v2": {
+          "palm could not reach the target": 31,
+          "slip during lift": 1,
+          "dropped while moving": 1
+        }
+      },
+      "pool": {
+        "successes": 39,
+        "n": 200,
+        "wilson95": [
+          0.146,
+          0.255
+        ],
+        "text": "39/200 (0.15-0.26)",
+        "category": {
+          "palm could not reach the target": 153,
+          "missed/knocked cup": 3,
+          "slip during lift": 3,
+          "released but not on the coaster": 1,
+          "dropped while moving": 1
+        },
+        "category_v2": {
+          "pushed mug before close": 89,
+          "palm could not reach the target": 66,
+          "slip during lift": 3,
+          "released but not on the coaster": 1,
+          "missed/knocked cup": 1,
+          "dropped while moving": 1
+        }
+      }
+    },
+    "naive": {
+      "26d4118b0c": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "released but not on the coaster": 50
+        },
+        "category_v2": {
+          "released but not on the coaster": 50
+        }
+      },
+      "4e103843db": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "released but not on the coaster": 50
+        },
+        "category_v2": {
+          "released but not on the coaster": 50
+        }
+      },
+      "49aff04f7a": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "released but not on the coaster": 50
+        },
+        "category_v2": {
+          "released but not on the coaster": 50
+        }
+      },
+      "e8825dea53": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "released but not on the coaster": 50
+        },
+        "category_v2": {
+          "released but not on the coaster": 50
+        }
+      },
+      "pool": {
+        "successes": 0,
+        "n": 200,
+        "wilson95": [
+          0.0,
+          0.019
+        ],
+        "text": "0/200 (0.00-0.02)",
+        "category": {
+          "released but not on the coaster": 200
+        },
+        "category_v2": {
+          "released but not on the coaster": 200
+        }
+      }
+    }
+  },
+  "m4_turned_yaw": {
+    "b_level": {
+      "26d4118b0c": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "palm could not reach the target": 50
+        },
+        "category_v2": {
+          "pushed mug before close": 31,
+          "palm could not reach the target": 19
+        }
+      },
+      "4e103843db": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "palm could not reach the target": 50
+        },
+        "category_v2": {
+          "pushed mug before close": 25,
+          "palm could not reach the target": 25
+        }
+      },
+      "49aff04f7a": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "palm could not reach the target": 46,
+          "missed/knocked cup": 4
+        },
+        "category_v2": {
+          "pushed mug before close": 50
+        }
+      },
+      "e8825dea53": {
+        "successes": 23,
+        "n": 50,
+        "wilson95": [
+          0.33,
+          0.596
+        ],
+        "text": "23/50 (0.33-0.60)",
+        "category": {
+          "palm could not reach the target": 23,
+          "missed/knocked cup": 4
+        },
+        "category_v2": {
+          "pushed mug before close": 26,
+          "palm could not reach the target": 1
+        }
+      },
+      "pool": {
+        "successes": 23,
+        "n": 200,
+        "wilson95": [
+          0.078,
+          0.167
+        ],
+        "text": "23/200 (0.08-0.17)",
+        "category": {
+          "palm could not reach the target": 169,
+          "missed/knocked cup": 8
+        },
+        "category_v2": {
+          "pushed mug before close": 132,
+          "palm could not reach the target": 45
+        }
+      }
+    },
+    "b_tilt": {
+      "26d4118b0c": {
+        "successes": 4,
+        "n": 50,
+        "wilson95": [
+          0.032,
+          0.188
+        ],
+        "text": "4/50 (0.03-0.19)",
+        "category": {
+          "palm could not reach the target": 45,
+          "missed/knocked cup": 1
+        },
+        "category_v2": {
+          "pushed mug before close": 28,
+          "palm could not reach the target": 18
+        }
+      },
+      "4e103843db": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "palm could not reach the target": 50
+        },
+        "category_v2": {
+          "pushed mug before close": 43,
+          "palm could not reach the target": 7
+        }
+      },
+      "49aff04f7a": {
+        "successes": 18,
+        "n": 50,
+        "wilson95": [
+          0.241,
+          0.499
+        ],
+        "text": "18/50 (0.24-0.50)",
+        "category": {
+          "palm could not reach the target": 29,
+          "missed/knocked cup": 3
+        },
+        "category_v2": {
+          "pushed mug before close": 21,
+          "palm could not reach the target": 11
+        }
+      },
+      "e8825dea53": {
+        "successes": 17,
+        "n": 50,
+        "wilson95": [
+          0.224,
+          0.478
+        ],
+        "text": "17/50 (0.22-0.48)",
+        "category": {
+          "palm could not reach the target": 31,
+          "dropped while moving": 2
+        },
+        "category_v2": {
+          "palm could not reach the target": 31,
+          "dropped while moving": 2
+        }
+      },
+      "pool": {
+        "successes": 39,
+        "n": 200,
+        "wilson95": [
+          0.146,
+          0.255
+        ],
+        "text": "39/200 (0.15-0.26)",
+        "category": {
+          "palm could not reach the target": 155,
+          "missed/knocked cup": 4,
+          "dropped while moving": 2
+        },
+        "category_v2": {
+          "pushed mug before close": 92,
+          "palm could not reach the target": 67,
+          "dropped while moving": 2
+        }
+      }
+    },
+    "naive": {
+      "26d4118b0c": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "released but not on the coaster": 50
+        },
+        "category_v2": {
+          "released but not on the coaster": 50
+        }
+      },
+      "4e103843db": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "released but not on the coaster": 50
+        },
+        "category_v2": {
+          "released but not on the coaster": 50
+        }
+      },
+      "49aff04f7a": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "released but not on the coaster": 50
+        },
+        "category_v2": {
+          "released but not on the coaster": 50
+        }
+      },
+      "e8825dea53": {
+        "successes": 0,
+        "n": 50,
+        "wilson95": [
+          0.0,
+          0.071
+        ],
+        "text": "0/50 (0.00-0.07)",
+        "category": {
+          "released but not on the coaster": 50
+        },
+        "category_v2": {
+          "released but not on the coaster": 50
+        }
+      },
+      "pool": {
+        "successes": 0,
+        "n": 200,
+        "wilson95": [
+          0.0,
+          0.019
+        ],
+        "text": "0/200 (0.00-0.02)",
+        "category": {
+          "released but not on the coaster": 200
+        },
+        "category_v2": {
+          "released but not on the coaster": 200
+        }
+      }
+    }
+  },
+  "paired_vs_oracle": {
+    "b_level": {
+      "26d4118b0c": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 44,
+        "neither": 6,
+        "first_only_trials": [],
+        "second_only_trials": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          35,
+          36,
+          37,
+          39,
+          40,
+          41,
+          42,
+          43,
+          46,
+          47,
+          48
+        ]
+      },
+      "4e103843db": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 44,
+        "neither": 6,
+        "first_only_trials": [],
+        "second_only_trials": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          35,
+          36,
+          37,
+          39,
+          40,
+          41,
+          42,
+          43,
+          46,
+          47,
+          48
+        ]
+      },
+      "49aff04f7a": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 44,
+        "neither": 6,
+        "first_only_trials": [],
+        "second_only_trials": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          35,
+          36,
+          37,
+          39,
+          40,
+          41,
+          42,
+          43,
+          46,
+          47,
+          48
+        ]
+      },
+      "e8825dea53": {
+        "both": 24,
+        "first_only": 1,
+        "second_only": 20,
+        "neither": 5,
+        "first_only_trials": [
+          22
+        ],
+        "second_only_trials": [
+          2,
+          3,
+          6,
+          7,
+          9,
+          10,
+          13,
+          14,
+          20,
+          24,
+          31,
+          32,
+          33,
+          35,
+          36,
+          39,
+          41,
+          42,
+          47,
+          48
+        ]
+      },
+      "pool": {
+        "both": 24,
+        "first_only": 1,
+        "second_only": 152,
+        "neither": 23
+      }
+    },
+    "b_tilt": {
+      "26d4118b0c": {
+        "both": 5,
+        "first_only": 0,
+        "second_only": 39,
+        "neither": 6,
+        "first_only_trials": [],
+        "second_only_trials": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          23,
+          24,
+          25,
+          26,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          35,
+          36,
+          39,
+          40,
+          41,
+          42,
+          43,
+          47,
+          48
+        ]
+      },
+      "4e103843db": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 44,
+        "neither": 6,
+        "first_only_trials": [],
+        "second_only_trials": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          35,
+          36,
+          37,
+          39,
+          40,
+          41,
+          42,
+          43,
+          46,
+          47,
+          48
+        ]
+      },
+      "49aff04f7a": {
+        "both": 16,
+        "first_only": 1,
+        "second_only": 28,
+        "neither": 5,
+        "first_only_trials": [
+          22
+        ],
+        "second_only_trials": [
+          0,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          13,
+          16,
+          17,
+          18,
+          19,
+          23,
+          24,
+          25,
+          28,
+          29,
+          31,
+          32,
+          33,
+          35,
+          36,
+          40,
+          43,
+          47,
+          48
+        ]
+      },
+      "e8825dea53": {
+        "both": 14,
+        "first_only": 3,
+        "second_only": 30,
+        "neither": 3,
+        "first_only_trials": [
+          38,
+          44,
+          49
+        ],
+        "second_only_trials": [
+          0,
+          1,
+          2,
+          5,
+          8,
+          9,
+          11,
+          12,
+          13,
+          14,
+          15,
+          17,
+          18,
+          19,
+          20,
+          21,
+          24,
+          25,
+          26,
+          27,
+          28,
+          30,
+          31,
+          32,
+          37,
+          39,
+          40,
+          43,
+          46,
+          48
+        ]
+      },
+      "pool": {
+        "both": 35,
+        "first_only": 4,
+        "second_only": 141,
+        "neither": 20
+      }
+    },
+    "naive": {
+      "26d4118b0c": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 44,
+        "neither": 6,
+        "first_only_trials": [],
+        "second_only_trials": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          35,
+          36,
+          37,
+          39,
+          40,
+          41,
+          42,
+          43,
+          46,
+          47,
+          48
+        ]
+      },
+      "4e103843db": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 44,
+        "neither": 6,
+        "first_only_trials": [],
+        "second_only_trials": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          35,
+          36,
+          37,
+          39,
+          40,
+          41,
+          42,
+          43,
+          46,
+          47,
+          48
+        ]
+      },
+      "49aff04f7a": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 44,
+        "neither": 6,
+        "first_only_trials": [],
+        "second_only_trials": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          35,
+          36,
+          37,
+          39,
+          40,
+          41,
+          42,
+          43,
+          46,
+          47,
+          48
+        ]
+      },
+      "e8825dea53": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 44,
+        "neither": 6,
+        "first_only_trials": [],
+        "second_only_trials": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          35,
+          36,
+          37,
+          39,
+          40,
+          41,
+          42,
+          43,
+          46,
+          47,
+          48
+        ]
+      },
+      "pool": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 176,
+        "neither": 24
+      }
+    }
+  },
+  "paired_vs_m4": {
+    "b_level": {
+      "26d4118b0c": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 0,
+        "neither": 50,
+        "first_only_trials": [],
+        "second_only_trials": []
+      },
+      "4e103843db": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 0,
+        "neither": 50,
+        "first_only_trials": [],
+        "second_only_trials": []
+      },
+      "49aff04f7a": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 0,
+        "neither": 50,
+        "first_only_trials": [],
+        "second_only_trials": []
+      },
+      "e8825dea53": {
+        "both": 23,
+        "first_only": 2,
+        "second_only": 0,
+        "neither": 25,
+        "first_only_trials": [
+          18,
+          26
+        ],
+        "second_only_trials": []
+      },
+      "pool": {
+        "both": 23,
+        "first_only": 2,
+        "second_only": 0,
+        "neither": 175
+      }
+    },
+    "b_tilt": {
+      "26d4118b0c": {
+        "both": 4,
+        "first_only": 1,
+        "second_only": 0,
+        "neither": 45,
+        "first_only_trials": [
+          2
+        ],
+        "second_only_trials": []
+      },
+      "4e103843db": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 0,
+        "neither": 50,
+        "first_only_trials": [],
+        "second_only_trials": []
+      },
+      "49aff04f7a": {
+        "both": 17,
+        "first_only": 0,
+        "second_only": 1,
+        "neither": 32,
+        "first_only_trials": [],
+        "second_only_trials": [
+          4
+        ]
+      },
+      "e8825dea53": {
+        "both": 17,
+        "first_only": 0,
+        "second_only": 0,
+        "neither": 33,
+        "first_only_trials": [],
+        "second_only_trials": []
+      },
+      "pool": {
+        "both": 38,
+        "first_only": 1,
+        "second_only": 1,
+        "neither": 160
+      }
+    },
+    "naive": {
+      "26d4118b0c": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 0,
+        "neither": 50,
+        "first_only_trials": [],
+        "second_only_trials": []
+      },
+      "4e103843db": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 0,
+        "neither": 50,
+        "first_only_trials": [],
+        "second_only_trials": []
+      },
+      "49aff04f7a": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 0,
+        "neither": 50,
+        "first_only_trials": [],
+        "second_only_trials": []
+      },
+      "e8825dea53": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 0,
+        "neither": 50,
+        "first_only_trials": [],
+        "second_only_trials": []
+      },
+      "pool": {
+        "both": 0,
+        "first_only": 0,
+        "second_only": 0,
+        "neither": 200
+      }
+    }
+  },
+  "resources": [
+    {
+      "command": "run",
+      "items": 600,
+      "workers": 8,
+      "paths": "v2",
+      "diagnostics": [
+        "sim.m4_execute:collision_diagnostic"
+      ],
+      "wall_s": 795.8,
+      "parent_peak_rss_mb": 65,
+      "per_process_peak_rss_mb": [
+        1557,
+        1586,
+        1587,
+        1591,
+        1591,
+        1606,
+        1623,
+        1626
+      ],
+      "errors": [],
+      "successes": 64,
+      "gpu": "none (CPU only, onnxruntime CPU)"
+    }
+  ],
+  "wilson": "Wilson score interval, z = 1.96; the pooled one treats the 200 runs as independent (they reuse the same 50 layouts)"
+}
