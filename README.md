@@ -2,16 +2,17 @@
 
 ![My hand (left) and the G1 (right)](results/extra/hand_to_robot.gif)
 
-*Left: my clip `e8825dea53` with the perception overlay. Right: the G1 runs the path built from it on a new layout (my clip is time-warped to match).*
+*Left: my clip `e8825dea53` with the perception overlay. Right: the G1 runs the `b_hybrid` path built from it on a new layout (an M4b run).*
 
 I recorded four iPhone LiDAR clips of my right hand moving my mug onto a coaster. The pipeline turns them into a palm path
 relative to the mug and the coaster, and a Unitree G1 that balances on its own legs (HERO whole-body controller, MuJoCo) runs it on
 50 random layouts it never saw. Simulation only.
 
 Copying my hand exactly fails: replaying my palm path succeeds on 0/200 runs and following my whole approach on 25/200. The
-Dex3's open fingers reach about 8 cm past the palm and sweep through the mug. Replacing only my last 8 cm with a straight robot move
-fixes that (`b_hybrid`, 98/200). My palm heading only transfers below about 65 deg (the scripted grasp turned to 65 deg succeeds on
-20/20 layouts, at 75 deg on 13/20), and three of my clips grasp at 82-86 deg, so turning the grasp to 45 deg gets 179/200.
+Dex3's open index and middle fingers reach about 12 cm past the palm point HERO tracks and sweep through the mug. Replacing my last
+8 cm with the robot's own settle and straight move brings it to 98/200 (`b_hybrid`). My palm heading only transfers up to about
+65 deg (the scripted grasp turned to 65 deg succeeds on 20/20 layouts, at 75 deg on 13/20), and three of my clips grasp at 82-86
+deg, so turning the grasp to 45 deg gets 179/200.
 
 The best rule (R2, a human-first selector) succeeds on 49/50 test layouts and keeps my own heading on 35/50. A single fixed choice
 with no learning gets 46/50, and the scripted grasp with no human data 44/50. So my data decides how the robot moves (approach
@@ -31,7 +32,7 @@ do that.
 | F: one fixed choice | `b_hybrid_h45` of clip `4e103843db` on every layout | 46/50 (0.81-0.97) |
 | R1: selector, highest predicted success | per layout, a clip and a heading (never my own) | 47/50 (0.84-0.98) |
 | R2: selector, human-first | per layout, the clip and heading closest to mine among those predicted to succeed | 49/50 (0.90-1.00) |
-| R2, noisy layout | as R2, with the path built from a layout perturbed by 1 cm / 10 deg | 44/50 (0.76-0.94) |
+| R2, noisy layout | as R2, with the path built from mug and coaster positions perturbed by 1 cm | 44/50 (0.76-0.94) |
 | F, noisy layout | as F, with the same noise | 38/50 (0.63-0.86) |
 
 *Every row runs the same 50 test layouts, each with its own handle direction. The /200 rows pool my four clips, which reuse those
@@ -84,10 +85,12 @@ on the test layouts, sized by how often it chose them. My four headings are 61.7
 
 ## What worked and what didn't
 
-- **Copying my last centimetres knocks the mug.** The Dex3 fingertips sit about 8 cm ahead of the palm point HERO tracks, so my
-  final approach sweeps them through the mug: 131 of the 175 `b_level` failures pushed the mug more than 2 cm before the hand
-  closed. The robot's straight last 8 cm fixed it (25/200 -> 98/200).
-- **My heading transfers only up to about 65 deg.** The scripted grasp holds 20/20 up to 65 deg and drops to 13/20 at 75 deg. On
+- **Copying my last centimetres knocks the mug.** The Dex3's index and middle fingers sit about 12 cm ahead of the palm point
+  HERO tracks, so my final approach sweeps them through the mug: 131 of the 175 `b_level` failures pushed the mug more than 2 cm
+  before the hand closed. The robot's own final approach took it from 25/200 to 98/200, and pushed-mug failures from 131 to 16
+  (it bundles three changes: where the palm settles, a re-warped approach, the straight last leg; which one matters is untested).
+- **My heading transfers only up to about 65 deg.** The scripted grasp (its handle turned with it) holds 20/20 up to 65 deg and
+  drops to 13/20 at 75 deg. On
   the 120 training layouts my three high-heading clips succeed on 31-41/120 at their own heading and on 111-115/120 at 45 deg.
 - **Learning ties the fixed choice.** In cross-validation the selector's best pick (R1) and the fixed candidate F both succeed on
   115 of 120 held-out layouts. On the test layouts R2 and F differ on only 5 layouts (4 vs 1).
@@ -98,9 +101,7 @@ on the test layouts, sized by how often it chose them. My four headings are 61.7
 - **Per-digit finger IK made the grip worse.** Mean lift slip 47 mm against 22 mm without it (0/20 grasps either way), so the
   Dex3 uses HERO's own closing targets.
 - **No grip margin.** In the final grasp three finger joints sit at their torque limit (thumb_1 and middle_0 in 20 of 20 grasps,
-  index_0 in 12 of 20).
-
-Sources and longer notes: [docs/details.md](docs/details.md); [docs/log.md](docs/log.md) has every step.
+  index_0 in 12 of 20). Sources and longer notes for all of these: [docs/details.md](docs/details.md).
 
 ## How to run
 
@@ -121,7 +122,6 @@ P="env -u PYTHONPATH conda run --no-capture-output -n hoi-perception python"
 S="env -u PYTHONPATH conda run --no-capture-output -n hoi-sim python"
 $P -m perception.run_clip                                          # my 4 clips -> data/demos/*.npz
 $S -m sim.m4_execute run --own-yaw --workers 8 --out /tmp/own_yaw  # naive, b_level, b_tilt x 4 clips x 50 layouts
-$S -m sim.m4_execute run --variants b_hybrid_h45 --workers 8 --out /tmp/m4b
 $S -m policy.m5 summarize                                          # selector results from the saved rows
 $S -m retarget.own_yaw_summary                                     # own-yaw results from the saved rows
 ```
@@ -131,8 +131,8 @@ The full command list is in [docs/details.md](docs/details.md#how-to-run).
 ## Limitations
 
 - **Simulation only.** There is no real robot.
-- **The mug's mass and the coaster's size are estimates**, and the contact settings come from MuJoCo Menagerie's hand models, not
-  from a measurement of my mug.
+- **The mug's mass and the coaster's size are estimates**, and the anti-slip contact settings come from MuJoCo Menagerie's hand
+  models (impratio) and the MuJoCo docs' range (noslip iterations), not from a measurement of my mug.
 - **Privileged place correction.** For the oracle and every `b` variant, the place pose uses the mug's true pose in the hand, read
   from the simulator; perception does not provide it. Apart from the noisy runs, the robot also gets exact mug and coaster positions.
 - **Small workspace.** Layouts keep the palm inside x 0.35-0.45 m and y -0.32 to -0.12 m in front of the robot.
@@ -168,6 +168,6 @@ licence files and everything else: [docs/details.md](docs/details.md#third-party
 | | |
 |---|---|
 | ![R2 success](results/m5/r2_success.gif) | ![b_hybrid success](results/m4b/b_hybrid_success.gif) |
-| **The selector (R2)** on test layout trial00: it picked `e8825dea53` at 55 deg | **`b_hybrid`**: my heading and approach, the robot's final 8 cm, my transport (`e8825dea53`, trial00, an M4b run) |
+| **The selector (R2)** on test layout trial00: it picked `e8825dea53` at 55 deg | **`b_hybrid`**: my heading and approach, the robot's final 8 cm, my transport (`e8825dea53`, trial00, an M4b run: handle turned with the grasp) |
 | ![oracle success](results/final/oracle_success.gif) | ![b_level failure](results/final/b_level_failure.gif) |
 | **Scripted oracle** (no human data), trial 0 | **`b_level` failure**: following my whole approach, the open fingers push the mug away before the grasp (an M4 run) |

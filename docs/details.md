@@ -14,7 +14,9 @@ only difference is where the handle points in the scene.
 
 For one consistent table, `naive`, `b_level` and `b_tilt` were re-run at each layout's own yaw, and `b_hybrid` at the own yaw comes
 from M5. The README uses only these own-yaw numbers. The turned-handle numbers (M4: `naive` 0/200, `b_level` 23/200, `b_tilt`
-39/200; M4b: `b_hybrid` 112/200) are what those runs measured; below they are always marked "turned handle". Sources:
+39/200; M4b: `b_hybrid` 112/200) are what those runs measured; below they are marked "turned handle". Three more places use the
+turned handle: the heading sweep (the whole scripted grasp, handle included, turned to each heading), the `b_hybrid` GIFs (M4b
+runs), and the M5 summary's `naive` and `b_level` rows (copied from M4, so `b_level` shows 23/200 there, not 25/200). Sources:
 [own-yaw summary](../results/final/own_yaw/summary.md), [M4 summary](../results/m4_execute/summary.md),
 [M4b summary](../results/m4b/summary.md), [M5 summary](../results/m5/summary.md).
 
@@ -50,7 +52,8 @@ Sources: [results/m2_views/table.md](../results/m2_views/table.md) (axis, rate, 
   crop camera), so each frame the hand is moved along its viewing ray to the median LiDAR depth under it, then slid parallel to the
   image so its palm projects onto WiLoR's own 2D palm keypoints (hand scale fixed at 1). Median LiDAR residual on the placed hand:
   0.47-0.76 cm per clip.
-- **Objects:** SAM 2.1 tracks masks of the mug body, the handle and the coaster from prompts I clicked on the first frame. The mug's
+- **Objects:** SAM 2.1 tracks masks of the mug body, the handle and the coaster from first-frame prompts (an HSV colour rule plus
+  boxes set by hand, every first mask checked by eye; `perception/prompts/`). The mug's
   label-size cylinder is fitted to the masks (the glossy mug's own depth is unreliable); the coaster gets a circle fit.
 - **Table frame:** RANSAC plane through the LiDAR points; z up, origin at the mug's initial base centre, x = my forward direction
   (perpendicular to the desk's long edge, found in the depth image).
@@ -105,8 +108,8 @@ Sources: `sim/pick_place.py` (thresholds, palm box), [results/m1_grasp_fix/b1_fa
 
 ### 4. The fix (M4b): a robot-specific final approach
 `b_hybrid` is `b_level` with one change at the end of the approach: my approach is warped to end at a pre-grasp point 8 cm straight
-back from the grasp, the palm settles there, and the robot does the scripted straight 2 s move to the grasp. Everything from the
-close on is bit-identical to `b_level`. `b_hybrid_h45` is the same with the grasp turned from my heading to the scripted 45 deg.
+back from the grasp, the palm settles there, and the robot does the scripted straight 2 s move to the grasp. The planned path from
+the close on is bit-identical to `b_level`'s. `b_hybrid_h45` is the same with the grasp turned from my heading to the scripted 45 deg.
 (Details: [log.md](log.md), section M4b.)
 
 ### 5. The learned grasp selector (M5)
@@ -215,8 +218,8 @@ Source: [results/m2_perception_v3/summary.md](../results/m2_perception_v3/summar
   35-45 cm.
 - **Negative result, dropped:** a per-clip hand-scale fit (v2) gave scales from 0.847 to 1.154 depending on the view. It absorbed
   that camera mismatch instead of measuring my hand, so the scale is now fixed at 1.
-- **Fixed along the way:** v1 lost every event on the top-down clip, because a contact threshold set before seeing data (0.100 m
-  from the mug axis) was never reached (closest approach 0.102 m); contact is now relative to each clip's own closest approach.
+- **Fixed along the way:** v1 lost every event on the top-down clip, because a contact threshold set before seeing data (r + 5 cm,
+  about 0.10 m from the mug axis) was never reached (closest approach 0.102 m); contact is now relative to each clip's own closest approach.
   v1's desk-edge rule counted gaps between line fragments as length and turned the `49aff04f7a` table frame by 23.9 deg
   ([v1 summary](../results/m2_perception/summary.md)).
 - **Still weak:** on `e8825dea53` the handle is hidden at the start, so its handle direction is invalid; the static-jitter gate is
@@ -240,8 +243,8 @@ more than 2 cm before the hand closed ("pushed mug before close"); of the 161 `b
 
 Diagnosed from M4's saved runs (turned handle), with no new simulation ([M4 summary](../results/m4_execute/summary.md),
 [M4b summary](../results/m4b/summary.md)):
-- **The open fingers sweep through the mug.** The Dex3 fingertips sit about 8 cm in front of the palm point HERO tracks
-  ([palm_axes.json](../results/m3_retarget/palm_axes.json)). Following my last centimetres of approach drives them through the mug:
+- **The open fingers sweep through the mug.** The Dex3's index and middle fingers sit about 12 cm in front of the palm point HERO
+  tracks (8 cm averaged with the thumb; [palm_axes.json](../results/m3_retarget/palm_axes.json)). Following my last centimetres of approach drives them through the mug:
   on the planned approach the hand overlaps the mug in all 177 failed `b_level` runs (median deepest overlap 37.2 mm), while the
   scripted straight approach clears it (median 5.6 mm, 0 of 10 overlapping). This is a kinematic diagnostic, not a physics
   measurement, and overlap alone does not mean failure: 21 of 23 `b_level` successes also overlap (median -2.1 mm), and because
@@ -279,8 +282,9 @@ All numbers here are M4b's own runs (`b_hybrid` with the turned handle) ([M4b su
 Source: [M5 summary](../results/m5/summary.md) (tables "Paired comparisons" and "R2 by the clip it chose").
 - **Worked.** R2 reached 49/50 on the test layouts while using my heading on 35/50. Paired with F (always `4e103843db` at 45 deg):
   both succeed on 45, only R2 on 4, only F on 1.
-- **Robustness.** With the path built from a layout perturbed by 1 cm / 10 deg noise, R2 dropped to 44/50 and F to 38/50. The
-  failures added are mostly "pushed mug before close".
+- **Robustness.** With the path built from mug and coaster positions perturbed by 1 cm (the 10 deg yaw noise reaches only the
+  selector), R2 dropped to 44/50 and F to 38/50. R2's added failures: 4 pushed mugs and 1 lift slip; F's: 3 pushed mugs, 3 drops in
+  transport and 2 lift slips.
 - **Didn't.** In cross-validation, learning did not beat the fixed best choice (R1 115 = F 115 of 120: branch D2). The test gain of
   R1 over F is small (47 vs 46).
 - **Where R2's heading comes from.** On the 41 layouts where R2 chose `e8825dea53`, it used that clip's own heading on 33 (55 deg
