@@ -1,0 +1,11 @@
+{
+  "row": "results/m4_execute/runs/49aff04f7a__b_tilt__trial00.json",
+  "run": "49aff04f7a__b_tilt__trial00",
+  "compared": "every field, recursively, except wall_s, worker_peak_rss_mb",
+  "identical": true,
+  "fields_differing": [],
+  "saved_success": false,
+  "rerun_success": false,
+  "wall_s": 10.8,
+  "peak_rss_mb": 1735
+}

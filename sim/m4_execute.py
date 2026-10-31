@@ -64,6 +64,9 @@ M4b additions (Execute, ``variant_layout``, ``cmd_render``): the variants b_hybr
 hybrid_path: my approach ends at the pre-grasp point PG, then the oracle's settle there and its own final approach move PG -> G;
 the rest is the b executor's steps 3-6); b_hybrid_h45 runs with the trial's own handle yaw. Their collision window ends 1 cm before
 PG. ``render`` re-runs saved rows with video for M4b (compared with the rows like ``videos``).
+Own yaw (polish, ``run --own-yaw``): naive / b_level / b_tilt at the trial's own handle yaw, the yaw b_hybrid_h45 and M5 use, instead
+of trial + (phi_h - phi_ora). Only the mug's handle direction in the scene changes (these paths do not read the handle yaw). The
+rows carry own_yaw: true and keep M4's run names, so they go to their own folder (results/final/own_yaw/runs/).
 Rendering: only ``videos`` and ``render`` write video. It needs MUJOCO_GL=egl and __EGL_VENDOR_LIBRARY_FILENAMES (Mesa's, so rendering stays off the
 NVIDIA GPU), both set on the command line, as for sim/m1_pick_mug.py videos.
 
@@ -382,17 +385,18 @@ def m4_layouts(demo: dict, human: dict, oracle: dict, cup_height: float) -> dict
     return out
 
 
-def variant_layout(variant: str, layout: dict, yaw: str = "own") -> dict:
+def variant_layout(variant: str, layout: dict, yaw: str = "own", own_yaw: bool = False) -> dict:
     """The layout a variant runs on. b_hybrid_h45 grasps at the oracle's heading, so its handle yaw is the trial's own
     (handle_yaw_deg of trials(), the oracle's) instead of trial + (phi_h - phi_ora); every other variant: ``layout`` as it is.
     M5's b_hybrid_phi: one handle yaw per layout whatever the grasp, the layout's own (trials: handle_yaw_deg of trials();
-    training layouts: their drawn yaw); yaw="m4" keeps the M4 layout's yaw instead (only for M5 Step 0's check against b_hybrid)."""
+    training layouts: their drawn yaw); yaw="m4" keeps the M4 layout's yaw instead (only for M5 Step 0's check against b_hybrid).
+    own_yaw=True (naive / b_level / b_tilt only, checked in run_one): the same own yaw as b_hybrid_h45, from the same line."""
     if variant == PHI and yaw == "m4":
         return layout
-    if variant not in ("b_hybrid_h45", PHI):
+    if variant not in ("b_hybrid_h45", PHI) and not own_yaw:
         return layout
     if layout.get("trial_handle_yaw_deg") is None:
-        raise ValueError("b_hybrid_h45 runs only on the trial layouts")
+        raise ValueError(f"{variant} at the trial's own handle yaw runs only on the trial layouts")
     return dict(layout, handle_yaw=math.radians(layout["trial_handle_yaw_deg"]), handle_yaw_source="trials() handle_yaw_deg (the oracle's)")
 
 
@@ -490,9 +494,12 @@ def run_name(clip: str, variant: str, layout: str, candidate: str | None = None,
     return f"{clip}__{variant}__{layout}"
 
 
-def m5_kwargs(item: dict) -> dict:
-    """run_one's M5 keyword arguments stored in an item or a saved row (none for the earlier variants)."""
-    return {k: item[k] for k in ("candidate", "yaw", "path_xy", "tag") if item.get(k) is not None} if item.get("variant") == PHI else {}
+def item_kwargs(item: dict) -> dict:
+    """run_one's keyword arguments stored in an item or a saved row besides clip, variant and layout: M5's (b_hybrid_phi), or
+    own_yaw=True for an own-yaw naive / b_level / b_tilt row; none for every other row."""
+    if item.get("variant") == PHI:
+        return {k: item[k] for k in ("candidate", "yaw", "path_xy", "tag") if item.get(k) is not None}
+    return {"own_yaw": True} if item.get("own_yaw") else {}
 
 
 def resolve(spec: str):
@@ -516,7 +523,7 @@ def collision_diagnostic(task: Execute, ctx: dict) -> dict:
 
 def run_one(clip: str, variant: str, layout: str, *, paths: str = "v2", diagnostics: tuple[str, ...] = (COLLISION_DIAGNOSTIC,),
             video_path: Path | None = None, video_info: dict | None = None, candidate: str | None = None, yaw: str = "own",
-            path_xy: dict | None = None, tag: str | None = None) -> dict:
+            path_xy: dict | None = None, tag: str | None = None, own_yaw: bool = False) -> dict:
     """One run: (clip, variant, layout name) -> its row. Row = sim/m1_pick_mug.py's row fields (trial, layout_seed,
     layout_index, cup_xy, coaster_xy, handle_yaw_deg, mass_kg, RESULT_KEYS, wall_s, detail) + run, clip, variant, layout,
     paths, settles (top level) and the diagnostics' fields. ``diagnostics`` = "module:function" names (default: the Step 3
@@ -528,12 +535,16 @@ def run_one(clip: str, variant: str, layout: str, *, paths: str = "v2", diagnost
     touches the row.
     M5 (b_hybrid_phi only): ``candidate`` = the heading label (candidate_phi); ``yaw`` = variant_layout's yaw mode; ``path_xy``
     = dict(cup_xy, coaster_xy) to build the path from instead of the true layout (the noisy-execution test: the scene keeps
-    the true layout); ``tag`` = a suffix of the run name. The row gets ``candidate``, ``yaw``, ``path_xy`` and ``tag``."""
+    the true layout); ``tag`` = a suffix of the run name. The row gets ``candidate``, ``yaw``, ``path_xy`` and ``tag``.
+    ``own_yaw`` (naive / b_level / b_tilt only): run at the trial's own handle yaw (variant_layout) instead of M4's trial +
+    (phi_h - phi_ora); the row gets own_yaw = True. The run name stays M4's, so these rows live in their own folder."""
     t0 = time.perf_counter()
     task, ctx = worker_task(), clip_context(clip)
     if (variant == PHI) != (candidate is not None) or (variant != PHI and (path_xy is not None or tag is not None or yaw != "own")):
         raise ValueError(f"candidate / path_xy / tag / yaw are only for {PHI}, and {PHI} needs a candidate")
-    lay = variant_layout(variant, ctx["layouts"][layout], yaw)
+    if own_yaw and variant not in M4_VARIANTS:
+        raise ValueError(f"own_yaw is only for {M4_VARIANTS} (b_hybrid_h45 and {PHI} already run at the trial's own yaw)")
+    lay = variant_layout(variant, ctx["layouts"][layout], yaw, own_yaw)
     path_lay = lay
     if variant == PHI:
         path_lay = dict(lay, phi=candidate_phi(candidate, ctx))
@@ -555,6 +566,8 @@ def run_one(clip: str, variant: str, layout: str, *, paths: str = "v2", diagnost
                trial_handle_yaw_deg=None if lay.get("trial_handle_yaw_deg") is None else round(lay["trial_handle_yaw_deg"], 2),
                mass_kg=task.scene.cup_mass, **{k: r.get(k) for k in RESULT_KEYS}, settles=r["settles"],
                diagnostics_run=list(diagnostics))
+    if own_yaw:
+        row["own_yaw"] = True
     if variant == PHI:
         phi, phi_h = path_lay["phi"], float(ctx["human"]["phi_h"])
         row.update(candidate=candidate, phi_deg=math.degrees(phi), phi_h_deg=math.degrees(phi_h), departure_deg=math.degrees(phi_h - phi),
@@ -580,7 +593,7 @@ def run_item(item: dict, paths: str, runs_dir: str, diagnostics: tuple[str, ...]
     on; ``run`` reports it and exits non-zero)."""
     name = run_name(item["clip"], item["variant"], item["layout"], item.get("candidate"), item.get("tag"))
     try:
-        row = run_one(item["clip"], item["variant"], item["layout"], paths=paths, diagnostics=diagnostics, **m5_kwargs(item))
+        row = run_one(item["clip"], item["variant"], item["layout"], paths=paths, diagnostics=diagnostics, **item_kwargs(item))
     except Exception:
         row = dict(run=name, **item, paths=paths, success=None, error=traceback.format_exc(), worker_peak_rss_mb=peak_rss_mb())
     (Path(runs_dir) / f"{name}.json").write_text(json.dumps(row, indent=2))
@@ -596,9 +609,11 @@ def cmd_run(args):
     if args.items:
         items = json.loads(args.items.read_text())
     else:
-        items = [dict(clip=c, variant=v, layout=l) for c in args.clips for v in args.variants for l in layout_names(args.layouts)]
+        items = [dict(clip=c, variant=v, layout=l, **({"own_yaw": True} if args.own_yaw else {}))
+                 for c in args.clips for v in args.variants for l in layout_names(args.layouts)]
     for it in items:                    # validate before any worker starts
         assert it["clip"] in CLIPS and it["variant"] in VARIANTS, it
+        assert not it.get("own_yaw") or it["variant"] in M4_VARIANTS, f"own_yaw is only for {M4_VARIANTS}: {it}"
         layout_names([it["layout"]])
     runs_dir = args.out / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
@@ -656,7 +671,7 @@ def cmd_rerun(args):
     saved = json.loads(args.row.read_text())
     t0 = time.perf_counter()
     again = run_one(saved["clip"], saved["variant"], saved["layout"], paths=saved["paths"], diagnostics=tuple(saved.get("diagnostics_run", ())),
-                    **m5_kwargs(saved))
+                    **item_kwargs(saved))
     differing = row_differences(json.loads(json.dumps(again)), saved)
     report = dict(row=str(args.row), run=saved["run"], compared="every field, recursively, except " + ", ".join(VOLATILE),
                   identical=not differing, fields_differing=differing, saved_success=saved.get("success"), rerun_success=again["success"],
@@ -874,7 +889,7 @@ def cmd_render(args):
         saved = json.loads(src.read_text())
         video, info = args.out / f"{saved['run']}.mp4", {}
         again = run_one(saved["clip"], saved["variant"], saved["layout"], paths=saved["paths"],
-                        diagnostics=tuple(saved.get("diagnostics_run", ())), video_path=video, video_info=info, **m5_kwargs(saved))
+                        diagnostics=tuple(saved.get("diagnostics_run", ())), video_path=video, video_info=info, **item_kwargs(saved))
         differing = row_differences(json.loads(json.dumps(again)), saved)
         report["videos"].append(dict(run=saved["run"], video=str(video), saved_row=str(src), saved_success=saved["success"],
                                      saved_category=saved["category"], rerun_success=again["success"], rerun_category=again["category"],
@@ -908,6 +923,8 @@ def main():
     run.add_argument("--out", type=Path, default=OUT_DIR)
     run.add_argument("--overwrite", action="store_true")
     run.add_argument("--skip-existing", action="store_true")
+    run.add_argument("--own-yaw", action="store_true", help="naive / b_level / b_tilt at the trial's own handle yaw (rows get own_yaw: true; "
+                     "the run names are M4's, so give them their own --out)")
     rerun = sub.add_parser("rerun", help="re-run one saved row and compare it field by field")
     rerun.add_argument("--row", type=Path, required=True)
     rerun.add_argument("--report", type=Path, default=None)
