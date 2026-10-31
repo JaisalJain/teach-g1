@@ -8,8 +8,9 @@ file once. [log.md](log.md) is the running record of every step, including what 
 
 Each test layout (trials 0-49) fixes the mug position, the coaster position and the direction of the mug's handle (its yaw). M4 ran
 `naive`, `b_level` and `b_tilt`, and M4b ran `b_hybrid`, with the handle turned along with my grasp heading: handle yaw = layout
-yaw + (phi_h - 45 deg), a turn of 36.9, 40.8, 36.7 and 16.7 deg for the four clips. The scripted oracle, `b_hybrid_h45` and every M5 run use the
-layout's own yaw. The palm paths do not read the handle yaw, so the only difference is where the handle points in the scene.
+yaw + (phi_h - 45 deg), a turn of 36.9, 40.8, 36.7 and 16.7 deg for `26d4118b0c`, `4e103843db`, `49aff04f7a` and `e8825dea53`.
+The scripted oracle, `b_hybrid_h45` and every M5 run use the layout's own yaw. The palm paths do not read the handle yaw, so the
+only difference is where the handle points in the scene.
 
 For one consistent table, `naive`, `b_level` and `b_tilt` were re-run at each layout's own yaw, and `b_hybrid` at the own yaw comes
 from M5. The README uses only these own-yaw numbers. The turned-handle numbers (M4: `naive` 0/200, `b_level` 23/200, `b_tilt`
