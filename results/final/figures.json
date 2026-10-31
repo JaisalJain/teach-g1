@@ -1,6 +1,7 @@
 {
   "what": "retarget/final_figures.py",
   "sources": [
+    "results/final/own_yaw/summary.json",
     "results/m5/summary.json",
     "results/m4b/summary.json",
     "results/m5/choices.json",
