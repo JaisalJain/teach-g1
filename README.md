@@ -6,7 +6,7 @@
 
 I recorded four iPhone LiDAR clips of my right hand moving my mug onto a coaster. The pipeline turns them into a palm path
 relative to the mug and the coaster, and a Unitree G1 that balances on its own legs (HERO whole-body controller, MuJoCo) runs it on
-50 random layouts it never saw. Simulation only.
+50 random layouts, different from the ones I recorded. Simulation only.
 
 Copying my hand exactly fails: replaying my palm path succeeds on 0/200 runs and following my whole approach on 25/200. The
 Dex3's open index and middle fingers reach about 12 cm past the palm point HERO tracks and sweep through the mug. Replacing my last
@@ -112,9 +112,9 @@ SAM 2, GPU; `env -u PYTHONPATH` keeps a ROS install on my machine out of them). 
 bash scripts/reproduce.sh
 ```
 
-It uses committed files only (no GPU, no weights). It re-runs one scripted-oracle trial, one `b_hybrid_h45` trial, one own-yaw
-`b_level` trial and one R2 trial (its choice recomputed from the ONNX selector) and compares each with its saved row, field by
-field. Then it regenerates the M4, M4b, M5 and own-yaw summaries and compares them with the committed files. It prints ALL MATCH
+It needs only the hoi-sim env and HERO cloned as in INSTALL.md (no GPU, no perception models). It re-runs one scripted-oracle
+trial, one `b_hybrid_h45` trial, one own-yaw `b_level` trial and one R2 trial (its choice recomputed from the ONNX selector) and
+compares each with its saved row, field by field. Then it regenerates the M4, M4b, M5 and own-yaw summaries and compares them with the committed files. It prints ALL MATCH
 when everything matches. On my laptop it took 47 s ([output](results/final/reproduce_check.txt)). In a fresh clone with a fresh
 env installed from INSTALL.md it also printed ALL MATCH (47 s), its `pip freeze` equals the lock, and all four raw clips parse
 like the originals ([fresh_env_check.txt](results/final/fresh_env_check.txt), [raw_clips_check.json](results/final/raw_clips_check.json)).

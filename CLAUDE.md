@@ -71,7 +71,7 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
 
    **Dropped:** the stretch comparison (the same policy trained on a hand-coded straight-down grasp).
 
-7. **Dropped:** live mode (webcam → MediaPipe → the same retargeting → G1). Not built; `live/` is an empty placeholder.
+7. **Dropped:** live mode (webcam → MediaPipe → the same retargeting → G1). Not built.
 
 ### HERO (whole-body controller) — key facts, VERIFIED from code at commit `416c4e0` (details in docs/log.md, 2026-10-28)
 
@@ -126,7 +126,6 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
   retarget/             # table frame, object-centric palm paths, summaries and figures
   sim/                  # MuJoCo scene (G1 + table + cup + coaster), HERO wrapper, grasp logic, executor
   policy/               # M5 grasp selector: layouts, features, rules, training, evaluation
-  live/                 # empty placeholder (live mode was dropped)
   config/objects.yaml   # mug, coaster and desk geometry
   scripts/              # reproduce.sh (re-runs a few results), hygiene.py
   tests/
