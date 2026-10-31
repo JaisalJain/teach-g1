@@ -1,0 +1,29 @@
+# bash scripts/reproduce.sh on this laptop (existing hoi-sim env, ~/hoi checkout), run before the Step 1 commit 6ae9b40
+# command: (time bash scripts/reproduce.sh) > log 2>&1; libEGL warnings removed
+
+== 1. oracle trial 0
+oracle_recheck trial  0 -> SUCCESS  lift contacts {'thumb': True, 'index': True, 'middle': True, 'palm': True}  (5.2 s)
+oracle trials 0-0: 1/1 identical to fifty.json (differences []); Execute setup = PickPlace setup: True; wrote /tmp/tmp.UwVE08esxT/determinism_checks.json (8.2 s)
+
+== 2. b_hybrid_h45 e8825dea53 trial00
+e8825dea53__b_hybrid_h45__trial00: rerun identical True
+
+== 3. own-yaw b_level e8825dea53 trial00
+e8825dea53__b_level__trial00: rerun identical True
+
+== 4. R2 (ONNX selector) on test trial 0
+R2 trial 0: choice e8825dea53 55 matches choices.json: True; re-run matches results/m5/eval/runs/e8825dea53__phi55__trial00.json: True
+
+== 5. summaries from the saved rows
+M4 summary.md matches
+M4b summary.md matches
+M5 summary matches
+own-yaw summary.md matches
+own-yaw summary.json matches
+
+ALL MATCH
+
+real	0m46.961s
+user	1m0.744s
+sys	0m24.528s
+exit 0
