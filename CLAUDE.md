@@ -119,7 +119,7 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
   README.md
   third_party/          # cloned repos (HERO, WiLoR, ...) — gitignored; record each repo's exact commit hash in docs/log.md and the README so judges can reproduce
   data/
-    raw/                # Stray Scanner recordings (only a small sample committed)
+    raw/                # my four Stray Scanner recordings (all committed; data/raw/README.md)
     demos/              # extracted .npz, one per demo
   perception/           # Stray Scanner parsing, hand + object extraction, viz overlays
   retarget/             # table frame, object-centric palm paths, summaries and figures

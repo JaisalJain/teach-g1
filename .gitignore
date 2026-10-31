@@ -2,10 +2,15 @@
 third_party/*
 !third_party/.gitkeep
 
-# Raw Stray Scanner recordings. Only a small hand-picked sample under data/raw/sample/ is committed.
+# Raw Stray Scanner recordings: exactly the four clips of this project are committed (see data/raw/README.md); anything else
+# in data/raw/ (for example the app's zip exports) stays ignored.
 data/raw/*
 !data/raw/.gitkeep
-!data/raw/sample/
+!data/raw/README.md
+!data/raw/26d4118b0c/
+!data/raw/4e103843db/
+!data/raw/49aff04f7a/
+!data/raw/e8825dea53/
 *.r3d
 
 # Model weights / checkpoints
@@ -27,6 +32,11 @@ weights/
 *.avi
 *.mkv
 *.webm
+# ...except the four raw clips' own videos (committed on purpose, see data/raw/README.md)
+!data/raw/26d4118b0c/rgb.mp4
+!data/raw/4e103843db/rgb.mp4
+!data/raw/49aff04f7a/rgb.mp4
+!data/raw/e8825dea53/rgb.mp4
 
 # Python
 __pycache__/

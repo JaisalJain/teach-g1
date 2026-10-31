@@ -9,8 +9,8 @@ machine. The two locks in `envs/` were compared with the live environments on 20
 - Simulation (retargeting, HERO, MuJoCo): `hoi-sim` only, CPU only. The four demo files `data/demos/*.npz` are committed, so the
   simulation part runs without the raw clips, `hoi-perception` or any weights.
 - Perception (WiLoR + SAM 2 on my clips): `hoi-perception`, an NVIDIA GPU (the code uses `"cuda"`; peak VRAM 2.8 GB for WiLoR and 0.8 GB
-  for SAM 2), the weights and MANO below, and all four raw clips in `data/raw/<id>/` (only `4e103843db` is committed, as
-  `data/raw/sample/4e103843db/`; one clip is not enough to finish the pipeline, see `perception/run_clip.py`).
+  for SAM 2), the weights and MANO below, and the four raw clips in `data/raw/<id>/` (all four are committed; see
+  `data/raw/README.md`).
 - Tested on: Ubuntu 24.04, RTX 5060 Laptop (Blackwell, 8 GB), NVIDIA driver 580.178.04, conda, ffmpeg 6.1.1. `perception/stray.py`
   needs the `ffmpeg` and `ffprobe` binaries on PATH (`sudo apt install ffmpeg`).
 
@@ -124,9 +124,10 @@ $P tests/test_geometry.py                                                       
 $S tests/test_retarget_grasp.py                                                   # grasp mapping (needs HERO; not run for this doc)
 $S -m sim.m1_reach_test --heights 0.74 --out /tmp/teach_g1/reach                  # G1 stands and reaches (README)
 ```
-To try the WiLoR / SAM 2 smoke test on the committed sample, copy it to where the code looks for raw clips and run S1 first
-(`perception/common.py` has `RAW = data/raw`): `cp -r data/raw/sample/4e103843db data/raw/` then
-`$P -m perception.frames --clip 4e103843db` and `$P -m perception.wilor_smoke` **(unverified as a sequence)**. The full pipeline is `$P -m perception.run_clip` (README).
+The raw clips are committed where the code looks for them (`perception/common.py` has `RAW = data/raw`). WiLoR / SAM 2 smoke test:
+`$P -m perception.frames --clip 4e103843db`, then `$P -m perception.wilor_smoke` **(unverified as a sequence)**. The full pipeline is
+`$P -m perception.run_clip` (README); re-running it from a fresh clone was not tested. That the committed clips parse like the
+originals (same rows, same frame alignment) was checked in a fresh clone: `results/final/raw_clips_check.json`.
 
 ## 7. Videos (MuJoCo rendering)
 Only the commands that write video render (for example `sim.m4_execute videos`, `sim.m1_pick_mug videos`, `retarget.run_m3 videos`). They need
@@ -147,6 +148,7 @@ The `.mp4` files are gitignored (`*.mp4` in `.gitignore`); GIFs are not.
 - SAM 2 code: Apache 2.0 (`third_party/sam2/LICENSE`); the checkpoint is downloaded from Meta.
 
 ## 9. Not covered
-- `hoi-policy` (LeRobot, Python 3.12) from CLAUDE.md was never created: there is no lock for it in `envs/`. The M5 selector in
-  `policy/train_selector.py` says it runs in `hoi-perception` (PyTorch) and exports ONNX for `hoi-sim`; whether `torch.onnx.export` needs the `onnx` package
-  (not in the lock) is **unverified**.
+- `hoi-policy` (LeRobot, Python 3.12) from CLAUDE.md was never created: there is no lock for it in `envs/`. The M5 selector
+  (`policy/train_selector.py`) trains in `hoi-perception` (PyTorch) and exports ONNX for `hoi-sim`. The export needs the `onnx`
+  package; it was added to `hoi-perception` on 2026-10-31 (onnx 1.23.2, ml_dtypes 0.6.0, protobuf 7.36.2) and is in its lock and
+  constraints (log, M5 "Environment change").
