@@ -1,0 +1,375 @@
+# Polish Step 7: fresh conda env + fresh git clone check
+#
+# Part 1 (install.sh): docs/INSTALL.md section 3 (hoi-sim) run as written with the env name hoi-sim-fresh, and section 2's HERO
+#   clone + checkout into a new temporary folder (not ~/hoi/third_party/HERO). conda and pip used this machine's package caches,
+#   so this is a fresh environment, not a fresh machine. 'conda create' was run with stdin closed; it printed its
+#   'Proceed ([y]/n)?' prompt and went ahead.
+# Part 2 (check.sh): git clone of ~/hoi at commit 4383aa29dd4a46bc4ae41196b901eeb1c895b27e into a new temporary folder; its third_party/HERO is a symlink
+#   to the fresh HERO clone; then HOI_SIM_ENV=hoi-sim-fresh bash scripts/reproduce.sh, the raw-clip check
+#   (perception/check_data_sample.py, run in hoi-sim-fresh, copies in the clone vs the originals in ~/hoi/data/raw), and
+#   pip freeze --exclude-editable of hoi-sim-fresh against envs/hoi-sim.lock.txt.
+# Every command is echoed with its exit code and wall time. libEGL warnings and conda's package-download progress bars
+# are removed; nothing else is.
+#
+# The scripts that produced this (kept outside the repo, in the temporary folder): install.sh, check.sh.
+
+################ install.sh
+== start 2026-10-31T19:14:52+05:30
+
+$ git clone https://github.com/RunpeiDong/HERO third_party/HERO
+Cloning into 'third_party/HERO'...
+[exit 0, 6.807561304 s]
+
+$ git -C third_party/HERO checkout 416c4e0
+Note: switching to '416c4e0'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 416c4e0 Code release
+[exit 0, .197441146 s]
+
+$ git -C third_party/HERO rev-parse HEAD
+416c4e007e2254524322a1771f267a57b6a69994
+[exit 0, .003539194 s]
+
+$ conda create -n hoi-sim-fresh python=3.11
+2 channel Terms of Service accepted
+Retrieving notices: - done
+Channels:
+ - defaults
+Platform: linux-64
+Collecting package metadata (repodata.json): | / - \ | / - \ | / - \ | / - \ | / done
+Solving environment: \ done
+
+
+==> WARNING: A newer version of conda exists. <==
+    current version: 26.1.1
+    latest version: 26.9.4
+
+Please update conda by running
+
+    $ conda update -n base -c defaults conda
+
+
+
+## Package Plan ##
+
+  environment location: /home/jaisal/miniconda3/envs/hoi-sim-fresh
+
+  added / updated specs:
+    - python=3.11
+
+
+The following packages will be downloaded:
+
+    package                    |            build
+    ---------------------------|-----------------
+    setuptools-84.2.1          |  py311h06a4308_0         1.3 MB
+    ------------------------------------------------------------
+                                           Total:         1.3 MB
+
+The following NEW packages will be INSTALLED:
+
+  _libgcc_mutex      pkgs/main/linux-64::_libgcc_mutex-0.1-main 
+  _openmp_mutex      pkgs/main/linux-64::_openmp_mutex-5.1-52_gnu 
+  bzip2              pkgs/main/linux-64::bzip2-1.0.8-h5eee18b_6 
+  ca-certificates    pkgs/main/linux-64::ca-certificates-2026.10.20-h06a4308_0 
+  ld_impl_linux-64   pkgs/main/linux-64::ld_impl_linux-64-2.44-h9e0c5a2_3 
+  libexpat           pkgs/main/linux-64::libexpat-2.9.0-h7354ed3_0 
+  libffi             pkgs/main/linux-64::libffi-3.4.8-h06d3fd0_3 
+  libgcc             pkgs/main/linux-64::libgcc-15.2.0-h69a1729_8 
+  libgcc-ng          pkgs/main/linux-64::libgcc-ng-15.2.0-h166f726_8 
+  libnsl             pkgs/main/linux-64::libnsl-2.0.0-h5eee18b_0 
+  libstdcxx          pkgs/main/linux-64::libstdcxx-15.2.0-h39759b7_8 
+  libuuid            pkgs/main/linux-64::libuuid-1.41.5-h5eee18b_0 
+  libxcb             pkgs/main/linux-64::libxcb-1.17.0-h9b100fa_0 
+  libzlib            pkgs/main/linux-64::libzlib-1.3.2-h47b2149_0 
+  ncurses            pkgs/main/linux-64::ncurses-6.6-hfaaeb4e_0 
+  openssl            pkgs/main/linux-64::openssl-3.5.9-h1b28b03_0 
+  packaging          pkgs/main/linux-64::packaging-26.3-py311h06a4308_0 
+  pip                pkgs/main/noarch::pip-26.2.2-pyhc872135_0 
+  pthread-stubs      pkgs/main/linux-64::pthread-stubs-0.3-h47b2149_2 
+  python             pkgs/main/linux-64::python-3.11.18-hd9cb797_0 
+  readline           pkgs/main/linux-64::readline-8.3-hc2a1206_0 
+  setuptools         pkgs/main/linux-64::setuptools-84.2.1-py311h06a4308_0 
+  sqlite             pkgs/main/linux-64::sqlite-3.53.4-h795bf6d_0 
+  tk                 pkgs/main/linux-64::tk-8.6.15-h54e0aa7_0 
+  tzdata             pkgs/main/noarch::tzdata-2026c-he532380_0 
+  wheel              pkgs/main/linux-64::wheel-0.48.0-py311h06a4308_0 
+  xorg-libx11        pkgs/main/linux-64::xorg-libx11-1.8.14-h65de747_0 
+  xorg-libxau        pkgs/main/linux-64::xorg-libxau-1.0.12-h9b100fa_0 
+  xorg-libxdmcp      pkgs/main/linux-64::xorg-libxdmcp-1.1.5-h9b100fa_0 
+  xorg-xorgproto     pkgs/main/linux-64::xorg-xorgproto-2025.1-h47b2149_0 
+  xz                 pkgs/main/linux-64::xz-5.8.4-h140a991_0 
+  zlib               pkgs/main/linux-64::zlib-1.3.2-h47b2149_0 
+
+
+Proceed ([y]/n)? 
+
+Preparing transaction: / - done
+Verifying transaction: | / - \ | / - \ | / - \ | done
+Executing transaction: - \ | / - \ | / - \ | / - \ | / done
+#
+# To activate this environment, use
+#
+#     $ conda activate hoi-sim-fresh
+#
+# To deactivate an active environment, use
+#
+#     $ conda deactivate
+
+[exit 0, 8.396541263 s]
+
+$ env -u PYTHONPATH conda run --no-capture-output -n hoi-sim-fresh python -m pip install -r envs/hoi-sim.lock.txt
+Collecting absl-py==2.5.1 (from -r envs/hoi-sim.lock.txt (line 1))
+  Using cached absl_py-2.5.1-py3-none-any.whl.metadata (3.3 kB)
+Collecting contourpy==1.3.3 (from -r envs/hoi-sim.lock.txt (line 2))
+  Using cached contourpy-1.3.3-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (5.5 kB)
+Collecting cycler==0.12.1 (from -r envs/hoi-sim.lock.txt (line 3))
+  Using cached cycler-0.12.1-py3-none-any.whl.metadata (3.8 kB)
+Collecting daqp==0.10.3 (from -r envs/hoi-sim.lock.txt (line 4))
+  Using cached daqp-0.10.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (1.4 kB)
+Collecting etils==1.14.0 (from -r envs/hoi-sim.lock.txt (line 5))
+  Using cached etils-1.14.0-py3-none-any.whl.metadata (6.5 kB)
+Collecting flatbuffers==25.12.19 (from -r envs/hoi-sim.lock.txt (line 6))
+  Using cached flatbuffers-25.12.19-py2.py3-none-any.whl.metadata (1.0 kB)
+Collecting fonttools==4.68.0 (from -r envs/hoi-sim.lock.txt (line 7))
+  Using cached fonttools-4.68.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (139 kB)
+Collecting fsspec==2026.9.0 (from -r envs/hoi-sim.lock.txt (line 8))
+  Using cached fsspec-2026.9.0-py3-none-any.whl.metadata (10 kB)
+Collecting glfw==2.11.0 (from -r envs/hoi-sim.lock.txt (line 9))
+  Using cached glfw-2.11.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (5.5 kB)
+Collecting ImageIO==2.38.1 (from -r envs/hoi-sim.lock.txt (line 10))
+  Using cached imageio-2.38.1-py3-none-any.whl.metadata (9.7 kB)
+Collecting imageio-ffmpeg==0.7.0 (from -r envs/hoi-sim.lock.txt (line 11))
+  Using cached imageio_ffmpeg-0.7.0-py3-none-manylinux2014_x86_64.whl.metadata (1.5 kB)
+Collecting iniconfig==2.3.1 (from -r envs/hoi-sim.lock.txt (line 12))
+  Using cached iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+Collecting kiwisolver==1.5.1 (from -r envs/hoi-sim.lock.txt (line 13))
+  Using cached kiwisolver-1.5.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (5.2 kB)
+Collecting matplotlib==3.11.2 (from -r envs/hoi-sim.lock.txt (line 14))
+  Using cached matplotlib-3.11.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (80 kB)
+Collecting mink==1.3.0 (from -r envs/hoi-sim.lock.txt (line 15))
+  Using cached mink-1.3.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (6.4 kB)
+Collecting mujoco==3.13.0 (from -r envs/hoi-sim.lock.txt (line 16))
+  Using cached mujoco-3.13.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (232 kB)
+Collecting numpy==1.26.4 (from -r envs/hoi-sim.lock.txt (line 17))
+  Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (61 kB)
+Collecting onnxruntime==1.31.1 (from -r envs/hoi-sim.lock.txt (line 18))
+  Using cached onnxruntime-1.31.1-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (5.8 kB)
+Requirement already satisfied: packaging==26.3 in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from -r envs/hoi-sim.lock.txt (line 19)) (26.3)
+Collecting pillow==13.0.0 (from -r envs/hoi-sim.lock.txt (line 20))
+  Using cached pillow-13.0.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.1 kB)
+Collecting pluggy==1.7.0 (from -r envs/hoi-sim.lock.txt (line 21))
+  Using cached pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+Collecting protobuf==7.36.2 (from -r envs/hoi-sim.lock.txt (line 22))
+  Using cached protobuf-7.36.2-cp310-abi3-manylinux2014_x86_64.whl.metadata (595 bytes)
+Collecting psutil==7.2.2 (from -r envs/hoi-sim.lock.txt (line 23))
+  Using cached psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl.metadata (22 kB)
+Collecting Pygments==2.21.0 (from -r envs/hoi-sim.lock.txt (line 24))
+  Using cached pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting PyOpenGL==3.1.10 (from -r envs/hoi-sim.lock.txt (line 25))
+  Using cached pyopengl-3.1.10-py3-none-any.whl.metadata (3.3 kB)
+Collecting pyparsing==3.3.3 (from -r envs/hoi-sim.lock.txt (line 26))
+  Using cached pyparsing-3.3.3-py3-none-any.whl.metadata (5.9 kB)
+Collecting pytest==9.2.0 (from -r envs/hoi-sim.lock.txt (line 27))
+  Using cached pytest-9.2.0-py3-none-any.whl.metadata (7.9 kB)
+Collecting python-dateutil==3.0.0 (from -r envs/hoi-sim.lock.txt (line 28))
+  Using cached python_dateutil-3.0.0-py2.py3-none-any.whl.metadata (8.2 kB)
+Collecting PyYAML==6.0.3 (from -r envs/hoi-sim.lock.txt (line 29))
+  Using cached pyyaml-6.0.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Collecting qpsolvers==4.13.0 (from -r envs/hoi-sim.lock.txt (line 30))
+  Using cached qpsolvers-4.13.0-py3-none-any.whl.metadata (14 kB)
+Collecting scipy==1.17.1 (from -r envs/hoi-sim.lock.txt (line 31))
+  Using cached scipy-1.17.1-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+Collecting six==1.17.0 (from -r envs/hoi-sim.lock.txt (line 32))
+  Using cached six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+Collecting typing_extensions==4.16.0 (from -r envs/hoi-sim.lock.txt (line 33))
+  Using cached typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting tzdata==2026.6 (from -r envs/hoi-sim.lock.txt (line 34))
+  Using cached tzdata-2026.6-py2.py3-none-any.whl.metadata (1.4 kB)
+Collecting zipp==4.1.2 (from -r envs/hoi-sim.lock.txt (line 35))
+  Using cached zipp-4.1.2-py3-none-any.whl.metadata (3.6 kB)
+Using cached absl_py-2.5.1-py3-none-any.whl (137 kB)
+Using cached contourpy-1.3.3-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (355 kB)
+Using cached cycler-0.12.1-py3-none-any.whl (8.3 kB)
+Using cached daqp-0.10.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (1.1 MB)
+Using cached etils-1.14.0-py3-none-any.whl (172 kB)
+Using cached flatbuffers-25.12.19-py2.py3-none-any.whl (26 kB)
+Using cached fonttools-4.68.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.5 MB)
+Using cached fsspec-2026.9.0-py3-none-any.whl (221 kB)
+Using cached glfw-2.11.0-py2.py3-none-manylinux_2_28_x86_64.whl (248 kB)
+Using cached imageio-2.38.1-py3-none-any.whl (328 kB)
+Using cached imageio_ffmpeg-0.7.0-py3-none-manylinux2014_x86_64.whl (29.5 MB)
+Using cached iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+Using cached kiwisolver-1.5.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.4 MB)
+Using cached matplotlib-3.11.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (9.9 MB)
+Using cached mink-1.3.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (83 kB)
+Using cached mujoco-3.13.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (20.2 MB)
+Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (18.3 MB)
+Using cached onnxruntime-1.31.1-cp311-cp311-manylinux_2_28_x86_64.whl (23.8 MB)
+Using cached pillow-13.0.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (7.1 MB)
+Using cached pluggy-1.7.0-py3-none-any.whl (27 kB)
+Using cached protobuf-7.36.2-cp310-abi3-manylinux2014_x86_64.whl (343 kB)
+Using cached psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl (155 kB)
+Using cached pygments-2.21.0-py3-none-any.whl (1.3 MB)
+Using cached pyopengl-3.1.10-py3-none-any.whl (3.2 MB)
+Using cached pyparsing-3.3.3-py3-none-any.whl (126 kB)
+Using cached pytest-9.2.0-py3-none-any.whl (411 kB)
+Using cached python_dateutil-3.0.0-py2.py3-none-any.whl (94 kB)
+Using cached pyyaml-6.0.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (806 kB)
+Using cached qpsolvers-4.13.0-py3-none-any.whl (107 kB)
+Using cached scipy-1.17.1-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.3 MB)
+Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+Using cached typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Using cached tzdata-2026.6-py2.py3-none-any.whl (348 kB)
+Using cached zipp-4.1.2-py3-none-any.whl (10 kB)
+Installing collected packages: PyOpenGL, glfw, flatbuffers, daqp, zipp, tzdata, typing_extensions, six, PyYAML, pyparsing, Pygments, psutil, protobuf, pluggy, pillow, numpy, kiwisolver, iniconfig, imageio-ffmpeg, fsspec, fonttools, etils, cycler, absl-py, scipy, python-dateutil, pytest, onnxruntime, ImageIO, contourpy, qpsolvers, matplotlib, mujoco, mink
+
+Successfully installed ImageIO-2.38.1 PyOpenGL-3.1.10 PyYAML-6.0.3 Pygments-2.21.0 absl-py-2.5.1 contourpy-1.3.3 cycler-0.12.1 daqp-0.10.3 etils-1.14.0 flatbuffers-25.12.19 fonttools-4.68.0 fsspec-2026.9.0 glfw-2.11.0 imageio-ffmpeg-0.7.0 iniconfig-2.3.1 kiwisolver-1.5.1 matplotlib-3.11.2 mink-1.3.0 mujoco-3.13.0 numpy-1.26.4 onnxruntime-1.31.1 pillow-13.0.0 pluggy-1.7.0 protobuf-7.36.2 psutil-7.2.2 pyparsing-3.3.3 pytest-9.2.0 python-dateutil-3.0.0 qpsolvers-4.13.0 scipy-1.17.1 six-1.17.0 typing_extensions-4.16.0 tzdata-2026.6 zipp-4.1.2
+[exit 0, 18.214619462 s]
+
+$ env -u PYTHONPATH conda run --no-capture-output -n hoi-sim-fresh python -m pip install -e /tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/third_party/HERO[bench] -c envs/hoi-sim.constraints.txt
+Obtaining file:///tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/third_party/HERO
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: numpy<2,>=1.24 in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from hero-isaacsim==0.1.0) (1.26.4)
+Requirement already satisfied: scipy>=1.10 in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from hero-isaacsim==0.1.0) (1.17.1)
+Requirement already satisfied: mujoco<4,>=3.3 in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from hero-isaacsim==0.1.0) (3.13.0)
+Requirement already satisfied: mink<2,>=1.3 in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from hero-isaacsim==0.1.0) (1.3.0)
+Requirement already satisfied: daqp>=0.6 in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from hero-isaacsim==0.1.0) (0.10.3)
+Requirement already satisfied: onnxruntime<2,>=1.18 in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from hero-isaacsim==0.1.0) (1.31.1)
+Requirement already satisfied: qpsolvers>=4.12.0 in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from qpsolvers[daqp]>=4.12.0->mink<2,>=1.3->hero-isaacsim==0.1.0) (4.13.0)
+Requirement already satisfied: typing_extensions in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from mink<2,>=1.3->hero-isaacsim==0.1.0) (4.16.0)
+Requirement already satisfied: absl-py in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from mujoco<4,>=3.3->hero-isaacsim==0.1.0) (2.5.1)
+Requirement already satisfied: etils[epath] in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from mujoco<4,>=3.3->hero-isaacsim==0.1.0) (1.14.0)
+Requirement already satisfied: glfw in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from mujoco<4,>=3.3->hero-isaacsim==0.1.0) (2.11.0)
+Requirement already satisfied: pyopengl in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from mujoco<4,>=3.3->hero-isaacsim==0.1.0) (3.1.10)
+Requirement already satisfied: flatbuffers in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from onnxruntime<2,>=1.18->hero-isaacsim==0.1.0) (25.12.19)
+Requirement already satisfied: packaging in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from onnxruntime<2,>=1.18->hero-isaacsim==0.1.0) (26.3)
+Requirement already satisfied: protobuf>=4.25.8 in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from onnxruntime<2,>=1.18->hero-isaacsim==0.1.0) (7.36.2)
+Requirement already satisfied: fsspec in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from etils[epath]->mujoco<4,>=3.3->hero-isaacsim==0.1.0) (2026.9.0)
+Requirement already satisfied: zipp in /home/jaisal/miniconda3/envs/hoi-sim-fresh/lib/python3.11/site-packages (from etils[epath]->mujoco<4,>=3.3->hero-isaacsim==0.1.0) (4.1.2)
+Building wheels for collected packages: hero-isaacsim
+  Building editable for hero-isaacsim (pyproject.toml): started
+  Building editable for hero-isaacsim (pyproject.toml): finished with status 'done'
+  Created wheel for hero-isaacsim: filename=hero_isaacsim-0.1.0-0.editable-py3-none-any.whl size=10288 sha256=f84684aa151283979dd62e642851e27ca249fb6d3ef3b21c665ed8c6079f25a5
+  Stored in directory: /tmp/pip-ephem-wheel-cache-uy34z190/wheels/99/69/8d/df16946519f916f6ac3170ca91cc7467ee5d638829317d37aa
+Successfully built hero-isaacsim
+Installing collected packages: hero-isaacsim
+Successfully installed hero-isaacsim-0.1.0
+[exit 0, 3.497013928 s]
+
+$ env -u PYTHONPATH conda run --no-capture-output -n hoi-sim-fresh python -m pip check
+No broken requirements found.
+[exit 0, 1.341327682 s]
+== end 2026-10-31T19:15:30+05:30
+
+################ check.sh
+== start 2026-10-31T19:35:52+05:30; repo commit 4383aa29dd4a46bc4ae41196b901eeb1c895b27e
+
+$ git clone -q /home/jaisal/hoi /tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/clone_4383aa2
+[exit 0, .483113730 s]
+
+$ git -C /tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/clone_4383aa2 log --oneline -1
+4383aa2 README/details: fixes from an independent number check (finger reach ~12 cm not 8, b_hybrid's three bundled changes, heading 'up to' 65 deg, noisy runs perturb only mug/coaster xy, sweep and GIFs use the turned handle, contact-setting sources, prompts, planned-path identity)
+[exit 0, .002769349 s]
+
+$ ln -s /tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/third_party/HERO /tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/clone_4383aa2/third_party/HERO
+[exit 0, .001923055 s]
+
+# which code the env imports (from the clone's folder):
+hero_isaacsim /tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/third_party/HERO/hero_isaacsim/__init__.py
+sim2sim /tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/third_party/HERO/sim2sim/__init__.py
+sim /tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/clone_4383aa2/sim/__init__.py
+retarget /tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/clone_4383aa2/retarget/__init__.py
+policy /tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/clone_4383aa2/policy/__init__.py
+
+$ env HOI_SIM_ENV=hoi-sim-fresh bash scripts/reproduce.sh
+conda env: hoi-sim-fresh
+
+== 1. oracle trial 0
+oracle_recheck trial  0 -> SUCCESS  lift contacts {'thumb': True, 'index': True, 'middle': True, 'palm': True}  (5.2 s)
+oracle trials 0-0: 1/1 identical to fifty.json (differences []); Execute setup = PickPlace setup: True; wrote /tmp/tmp.6ThVOaZ26x/determinism_checks.json (8.1 s)
+
+== 2. b_hybrid_h45 e8825dea53 trial00
+e8825dea53__b_hybrid_h45__trial00: rerun identical True
+
+== 3. own-yaw b_level e8825dea53 trial00
+e8825dea53__b_level__trial00: rerun identical True
+
+== 4. R2 (ONNX selector) on test trial 0
+R2 trial 0: choice e8825dea53 55 matches choices.json: True; re-run matches results/m5/eval/runs/e8825dea53__phi55__trial00.json: True
+
+== 5. summaries from the saved rows
+M4 summary.md matches
+M4b summary.md matches
+M5 summary matches
+own-yaw summary.md matches
+own-yaw summary.json matches
+
+ALL MATCH
+[exit 0, 47.213116123 s]
+
+$ env -u PYTHONPATH conda run --no-capture-output -n hoi-sim-fresh python -m perception.check_data_sample --orig-root /home/jaisal/hoi/data/raw --copy-root /tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/clone_4383aa2/data/raw --out /tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/clone_4383aa2/results/final/raw_clips_check.json
+{
+  "all_checks_pass": true,
+  "26d4118b0c": {
+    "pass": true,
+    "n_rows": 250,
+    "decoded_frames": 249,
+    "byte_identical": true
+  },
+  "4e103843db": {
+    "pass": true,
+    "n_rows": 514,
+    "decoded_frames": 513,
+    "byte_identical": true
+  },
+  "49aff04f7a": {
+    "pass": true,
+    "n_rows": 479,
+    "decoded_frames": 478,
+    "byte_identical": true
+  },
+  "e8825dea53": {
+    "pass": true,
+    "n_rows": 474,
+    "decoded_frames": 473,
+    "byte_identical": true
+  },
+  "out": "/tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/clone_4383aa2/results/final/raw_clips_check.json"
+}
+[exit 0, 8.650370343 s]
+
+# git status of the clone after the checks (raw_clips_check.json is the only new file expected):
+?? results/final/raw_clips_check.json
+
+# pip freeze --exclude-editable of hoi-sim-fresh vs envs/hoi-sim.lock.txt (diff; empty = identical):
+(no difference)
+
+# editable installs:
+Package       Version Editable project location
+------------- ------- --------------------------------------------------------------------------------------------------------
+hero-isaacsim 0.1.0   /tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/third_party/HERO
+Python 3.11.18
+== end 2026-10-31T19:36:51+05:30

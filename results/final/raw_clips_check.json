@@ -1,0 +1,424 @@
+{
+  "what": "committed copies of the Stray Scanner recordings vs the originals (perception/check_data_sample.py)",
+  "orig_root": "/home/jaisal/hoi/data/raw",
+  "copy_root": "/tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/clone_4383aa2/data/raw",
+  "all_checks_pass": true,
+  "clips": {
+    "26d4118b0c": {
+      "clip": "26d4118b0c",
+      "original": "/home/jaisal/hoi/data/raw/26d4118b0c",
+      "copy": "/tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/clone_4383aa2/data/raw/26d4118b0c",
+      "all_checks_pass": true,
+      "files": {
+        "n_files_original": 504,
+        "n_files_copy": 504,
+        "same_file_list": true,
+        "missing_in_copy": [],
+        "extra_in_copy": [],
+        "sha256_mismatches": [],
+        "all_byte_identical": true,
+        "sha256": {
+          "camera_matrix.csv": "da9685caa63fb0088ddc2c096ae70a2c661392d18a1592182099b2cef29a5b51",
+          "imu.csv": "e2c72e43fa861ca1750b89d7de80a7c9701a610c6ba20bae766a739bb39d55ef",
+          "odometry.csv": "fc4cbe7dafea33c7f1c371ff71bd0b5ccd8c630edd17555a85990a30aab62e7a",
+          "rgb.mp4": "93fe85e6aa281b43019624d999995e623f86a87a424a49b81e1505a3b73308ca"
+        }
+      },
+      "loaded_with_perception.stray": {
+        "n_rows_original": 250,
+        "n_rows_copy": 250,
+        "t_equal": true,
+        "t_first_last": [
+          535783.309809,
+          535791.609977458
+        ],
+        "K_equal": true,
+        "T_wc_equal": true,
+        "rgb_size": [
+          [
+            1920,
+            1440
+          ],
+          [
+            1920,
+            1440
+          ]
+        ],
+        "depth_size": [
+          [
+            256,
+            192
+          ],
+          [
+            256,
+            192
+          ]
+        ],
+        "imu_equal": true,
+        "compared_frames": [
+          0,
+          125,
+          249
+        ],
+        "depth_equal": {
+          "0": true,
+          "125": true,
+          "249": true
+        },
+        "confidence_equal": {
+          "0": true,
+          "125": true,
+          "249": true
+        },
+        "depth_range_m_copy": {
+          "0": [
+            0.31700000166893005,
+            0.4580000042915344
+          ],
+          "125": [
+            0.21199999749660492,
+            0.4480000138282776
+          ],
+          "249": [
+            0.28700000047683716,
+            0.5040000081062317
+          ]
+        }
+      },
+      "video": {
+        "n_rows": 250,
+        "expected_decoded_frames": 249,
+        "decoded_frames_original": 249,
+        "decoded_frames_copy": 249,
+        "first_rgb_index": 1,
+        "decode_size": [
+          192,
+          144
+        ],
+        "compared_video_positions": [
+          0,
+          124,
+          248
+        ],
+        "frame_hashes_equal": true,
+        "frame_hashes_copy": {
+          "0": "d35c7055ef283e70341f9c5212e872291bdacb89cbbd2edaae2906ae51f324c4",
+          "124": "ae1c0dd34e5e56283ddab7035b1e338fc458b80f81cc7bb42a08ec379bb4e471",
+          "248": "35c3f94037b502b1de35a47882a9c14a16a3905feb6816b506eecc2a155d1448"
+        }
+      }
+    },
+    "4e103843db": {
+      "clip": "4e103843db",
+      "original": "/home/jaisal/hoi/data/raw/4e103843db",
+      "copy": "/tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/clone_4383aa2/data/raw/4e103843db",
+      "all_checks_pass": true,
+      "files": {
+        "n_files_original": 1032,
+        "n_files_copy": 1032,
+        "same_file_list": true,
+        "missing_in_copy": [],
+        "extra_in_copy": [],
+        "sha256_mismatches": [],
+        "all_byte_identical": true,
+        "sha256": {
+          "camera_matrix.csv": "74422b1976116dde4aa15e72b26bf621029d13d6af53f473e7c626da524d32c8",
+          "imu.csv": "a56ed9554fe4fa08ec7c75663fa2067c059ce082e4328627e4e1a03bf427169e",
+          "odometry.csv": "21b3b04cc0ff8234433ff5843523e57d11b821e9df39dda0e55710350e3c5ad6",
+          "rgb.mp4": "977d1c8098c7202cae947a98a21f7e719fae534841f89b01eb182ff2b81da0bd"
+        }
+      },
+      "loaded_with_perception.stray": {
+        "n_rows_original": 514,
+        "n_rows_copy": 514,
+        "t_equal": true,
+        "t_first_last": [
+          534430.581072375,
+          534439.451385125
+        ],
+        "K_equal": true,
+        "T_wc_equal": true,
+        "rgb_size": [
+          [
+            1920,
+            1440
+          ],
+          [
+            1920,
+            1440
+          ]
+        ],
+        "depth_size": [
+          [
+            256,
+            192
+          ],
+          [
+            256,
+            192
+          ]
+        ],
+        "imu_equal": true,
+        "compared_frames": [
+          0,
+          257,
+          513
+        ],
+        "depth_equal": {
+          "0": true,
+          "257": true,
+          "513": true
+        },
+        "confidence_equal": {
+          "0": true,
+          "257": true,
+          "513": true
+        },
+        "depth_range_m_copy": {
+          "0": [
+            0.3089999854564667,
+            0.8299999833106995
+          ],
+          "257": [
+            0.17299999296665192,
+            0.8539999723434448
+          ],
+          "513": [
+            0.31200000643730164,
+            0.8650000095367432
+          ]
+        }
+      },
+      "video": {
+        "n_rows": 514,
+        "expected_decoded_frames": 513,
+        "decoded_frames_original": 513,
+        "decoded_frames_copy": 513,
+        "first_rgb_index": 1,
+        "decode_size": [
+          192,
+          144
+        ],
+        "compared_video_positions": [
+          0,
+          256,
+          512
+        ],
+        "frame_hashes_equal": true,
+        "frame_hashes_copy": {
+          "0": "eb083beb1ba758541ed5c6e7629aae17f4a71331afed70f036f72cd69fb3eab5",
+          "256": "b3b334bf7b08a6ffec07d16a0ca9340598605487d72880d5e4df47ffcc486ded",
+          "512": "06181e98f2fa54e832f69216d9f8341e460898205d661ae374fc75d1b60b5887"
+        }
+      }
+    },
+    "49aff04f7a": {
+      "clip": "49aff04f7a",
+      "original": "/home/jaisal/hoi/data/raw/49aff04f7a",
+      "copy": "/tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/clone_4383aa2/data/raw/49aff04f7a",
+      "all_checks_pass": true,
+      "files": {
+        "n_files_original": 962,
+        "n_files_copy": 962,
+        "same_file_list": true,
+        "missing_in_copy": [],
+        "extra_in_copy": [],
+        "sha256_mismatches": [],
+        "all_byte_identical": true,
+        "sha256": {
+          "camera_matrix.csv": "db7e96cc8bc46cf387e9cc42dd66f7d4192225ef8cb75aa28c6ebc9652579a4f",
+          "imu.csv": "39c4257b472ffc3dc53d40b067ec0d7e4bb3ea80623e3acddb7e97a29edbdbe2",
+          "odometry.csv": "6f012b02a186bb167e085ac7c907ab2437c61dd5373b02e871214884bb5e0980",
+          "rgb.mp4": "a41faacda1835b81adc0b29d968661cafa7fbfa7872c161aee26560e3b8891a1"
+        }
+      },
+      "loaded_with_perception.stray": {
+        "n_rows_original": 479,
+        "n_rows_copy": 479,
+        "t_equal": true,
+        "t_first_last": [
+          534600.892178,
+          534608.862121166
+        ],
+        "K_equal": true,
+        "T_wc_equal": true,
+        "rgb_size": [
+          [
+            1920,
+            1440
+          ],
+          [
+            1920,
+            1440
+          ]
+        ],
+        "depth_size": [
+          [
+            256,
+            192
+          ],
+          [
+            256,
+            192
+          ]
+        ],
+        "imu_equal": true,
+        "compared_frames": [
+          0,
+          239,
+          478
+        ],
+        "depth_equal": {
+          "0": true,
+          "239": true,
+          "478": true
+        },
+        "confidence_equal": {
+          "0": true,
+          "239": true,
+          "478": true
+        },
+        "depth_range_m_copy": {
+          "0": [
+            0.28700000047683716,
+            0.6349999904632568
+          ],
+          "239": [
+            0.25200000405311584,
+            0.906000018119812
+          ],
+          "478": [
+            0.28299999237060547,
+            0.6349999904632568
+          ]
+        }
+      },
+      "video": {
+        "n_rows": 479,
+        "expected_decoded_frames": 478,
+        "decoded_frames_original": 478,
+        "decoded_frames_copy": 478,
+        "first_rgb_index": 1,
+        "decode_size": [
+          192,
+          144
+        ],
+        "compared_video_positions": [
+          0,
+          239,
+          477
+        ],
+        "frame_hashes_equal": true,
+        "frame_hashes_copy": {
+          "0": "8acc962f3c41fc52e66f47d0dcf12877d8f91d3a48687e40ad1146c1fb3941d0",
+          "239": "87d0d7f60b55ab5d723e33051a9c1b6e28e2289d9eb36bf8d78e6432cae1670f",
+          "477": "6af7f1b4925843e5f9b0bc49f5818a16e160b13a46f151ebdd05dd6a154fd999"
+        }
+      }
+    },
+    "e8825dea53": {
+      "clip": "e8825dea53",
+      "original": "/home/jaisal/hoi/data/raw/e8825dea53",
+      "copy": "/tmp/claude-1000/-home-jaisal-hoi/fcf2b710-e276-4add-8e6a-abe9131e6ac8/scratchpad/fresh/clone_4383aa2/data/raw/e8825dea53",
+      "all_checks_pass": true,
+      "files": {
+        "n_files_original": 952,
+        "n_files_copy": 952,
+        "same_file_list": true,
+        "missing_in_copy": [],
+        "extra_in_copy": [],
+        "sha256_mismatches": [],
+        "all_byte_identical": true,
+        "sha256": {
+          "camera_matrix.csv": "3144f68c19655c19782d2396025e629b83c7c4660d314f73dcb0d150d126a8e8",
+          "imu.csv": "3dd1075681930c382b8d64370fda314985f3cd5c6d407ea168a55155e49f35dc",
+          "odometry.csv": "2ac099d26380af18257cc686f8b0e776977d1c4aa1c8e545e23066d4507dbee5",
+          "rgb.mp4": "e685e6cc51f21107c2f8135a6e870bffe8688bb5b57f12ac38bfff4b0368a89b"
+        }
+      },
+      "loaded_with_perception.stray": {
+        "n_rows_original": 474,
+        "n_rows_copy": 474,
+        "t_equal": true,
+        "t_first_last": [
+          534783.19359625,
+          534791.080172125
+        ],
+        "K_equal": true,
+        "T_wc_equal": true,
+        "rgb_size": [
+          [
+            1920,
+            1440
+          ],
+          [
+            1920,
+            1440
+          ]
+        ],
+        "depth_size": [
+          [
+            256,
+            192
+          ],
+          [
+            256,
+            192
+          ]
+        ],
+        "imu_equal": true,
+        "compared_frames": [
+          0,
+          237,
+          473
+        ],
+        "depth_equal": {
+          "0": true,
+          "237": true,
+          "473": true
+        },
+        "confidence_equal": {
+          "0": true,
+          "237": true,
+          "473": true
+        },
+        "depth_range_m_copy": {
+          "0": [
+            0.29100000858306885,
+            0.9890000224113464
+          ],
+          "237": [
+            0.18299999833106995,
+            1.1030000448226929
+          ],
+          "473": [
+            0.29600000381469727,
+            1.8339999914169312
+          ]
+        }
+      },
+      "video": {
+        "n_rows": 474,
+        "expected_decoded_frames": 473,
+        "decoded_frames_original": 473,
+        "decoded_frames_copy": 473,
+        "first_rgb_index": 1,
+        "decode_size": [
+          192,
+          144
+        ],
+        "compared_video_positions": [
+          0,
+          236,
+          472
+        ],
+        "frame_hashes_equal": true,
+        "frame_hashes_copy": {
+          "0": "f39f83f78fe8da9f3a2dae1dc1acf3d3bb6abf6b9b00248e5be5b4bfda8c7e7f",
+          "236": "3751da09fee595d44042468ff03346385a6b480207a216253652489c979ac3fc",
+          "472": "6867930c7234d5d24f674b49045cef2dfca3e966bc670783eaa89fdf86793751"
+        }
+      }
+    }
+  }
+}

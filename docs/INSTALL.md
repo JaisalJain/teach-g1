@@ -37,7 +37,8 @@ git clone https://github.com/RunpeiDong/HERO third_party/HERO              && gi
 git clone https://github.com/rolpotamias/WiLoR third_party/WiLoR           && git -C third_party/WiLoR checkout fcb9113
 git clone https://github.com/facebookresearch/sam2 third_party/sam2        && git -C third_party/sam2 checkout 2b90b9f
 ```
-(The clone and checkout lines are plain git on the recorded commits; the log does not record how the clones were first made.)
+(The clone and checkout lines are plain git on the recorded commits; the log does not record how the clones were first made. The
+HERO line was run as written into a new folder for the fresh-env check on 2026-10-31.)
 
 - HERO's example policy (`checkpoints/example/model.onnx` and `model_hero.json`, 5.5 MB) is inside the HERO git repo. Nothing to download.
 - **No `patches/` directory exists, and nothing in third-party code was modified.** `git status` in HERO, SAM 2 and stray-scanner is
@@ -48,7 +49,9 @@ git clone https://github.com/facebookresearch/sam2 third_party/sam2        && gi
 
 ## 3. `hoi-sim` (Python 3.11; `numpy<2`, `mujoco==3.13.0`, CPU `onnxruntime`, no torch)
 What the log did on 2026-10-29: `conda create -n hoi-sim python=3.11`, then `pip install -e third_party/HERO[bench] mujoco==3.13.0 pytest imageio[ffmpeg]`.
-`pyyaml` and `matplotlib` were added later with `-c envs/hoi-sim.constraints.txt`. From the lock **(unverified on a fresh env)**:
+`pyyaml` and `matplotlib` were added later with `-c envs/hoi-sim.constraints.txt`. From the lock (run as written on a fresh env,
+`hoi-sim-fresh`, on 2026-10-31; its `pip freeze` equals the lock and `scripts/reproduce.sh` printed ALL MATCH in a fresh clone:
+`results/final/fresh_env_check.txt`):
 ```bash
 conda create -n hoi-sim python=3.11
 env -u PYTHONPATH conda run --no-capture-output -n hoi-sim python -m pip install -r envs/hoi-sim.lock.txt

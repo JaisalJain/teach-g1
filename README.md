@@ -115,7 +115,9 @@ bash scripts/reproduce.sh
 It uses committed files only (no GPU, no weights). It re-runs one scripted-oracle trial, one `b_hybrid_h45` trial, one own-yaw
 `b_level` trial and one R2 trial (its choice recomputed from the ONNX selector) and compares each with its saved row, field by
 field. Then it regenerates the M4, M4b, M5 and own-yaw summaries and compares them with the committed files. It prints ALL MATCH
-when everything matches. On my laptop it took 47 s ([output](results/final/reproduce_check.txt)).
+when everything matches. On my laptop it took 47 s ([output](results/final/reproduce_check.txt)). In a fresh clone with a fresh
+env installed from INSTALL.md it also printed ALL MATCH (47 s), its `pip freeze` equals the lock, and all four raw clips parse
+like the originals ([fresh_env_check.txt](results/final/fresh_env_check.txt), [raw_clips_check.json](results/final/raw_clips_check.json)).
 
 ```bash
 P="env -u PYTHONPATH conda run --no-capture-output -n hoi-perception python"

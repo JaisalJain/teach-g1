@@ -1886,3 +1886,34 @@ arm. So each step is tested only as the bundle of changes it makes, and the rank
 - Tracked files over 10 MB: `data/raw/4e103843db/rgb.mp4` (10.68 MB) only. No secret-looking strings.
 - Links in README.md and docs/*.md: 48 relative links, none to an untracked or missing file.
 - Fresh local clone of HEAD: 341.9 MB (working tree 198.4 MB, of which the raw clips 72.8 MB and results/ about 120 MB; .git 143.4 MB).
+
+### Independent check of README.md and docs/details.md (agent, read only)
+- It recomputed every number against results/ and found no wrong count or interval. It flagged wording that the sources do not
+  support, fixed in `4383aa2`:
+  - the fingers reach about 12 cm past the palm point (index / middle distal links at 0.1235 m), not 8 cm (8 cm is the mean with
+    the thumb);
+  - b_hybrid bundles three changes, so "replacing my last 8 cm fixes it" became "brings it to 98/200";
+  - the heading transfers "up to" 65 deg (20/20 at 65);
+  - the noisy runs perturb only the mug / coaster xy of the path (the yaw noise reaches only the selector);
+  - the heading sweep and the b_hybrid GIFs use the turned handle, and the M5 summary's naive / b_level rows are M4's;
+  - noslip_iterations 3 is from the MuJoCo docs' range, not Menagerie;
+  - the SAM 2 prompts were an HSV rule plus manual boxes, not clicks;
+  - "bit-identical from the close on" holds for the planned path.
+
+### Step 7 — fresh environment + fresh clone (`results/final/fresh_env_check.txt`, `results/final/raw_clips_check.json`)
+- **Install:** docs/INSTALL.md section 3 run as written with the env name `hoi-sim-fresh`, and section 2's HERO clone + checkout
+  416c4e0 into a new temporary folder.
+  - All steps exit 0 in 38 s (pip and conda caches of this machine were used). `pip check`: no broken requirements.
+  - `pip freeze --exclude-editable` equals `envs/hoi-sim.lock.txt` exactly. Python 3.11.18, as in hoi-sim.
+  - `conda create` without `-y` printed its prompt and went ahead with stdin closed.
+  - **E2 not taken.**
+- **Clone:** `git clone ~/hoi` at `4383aa2`, its `third_party/HERO` a symlink to the fresh HERO clone (the env imports HERO from
+  there and our packages from the clone, printed in the record).
+  - `HOI_SIM_ENV=hoi-sim-fresh bash scripts/reproduce.sh`: **ALL MATCH** in 47.2 s. **E3 not taken.**
+  - Earlier runs at `cd8f6eb` and `7f8f583` also matched.
+- **Raw clips:** `perception/check_data_sample.py` in hoi-sim-fresh on the clone's `data/raw` vs `~/hoi/data/raw`.
+  - All four clips byte-identical (504 / 1032 / 962 / 952 files).
+  - Same rows and decoded frames: 250/249, 514/513, 479/478, 474/473 (N rows, N - 1 frames).
+- **INSTALL.md:** the hoi-sim section's "(unverified)" mark is replaced by this record; the perception section stays marked.
+  `hoi-sim-fresh` is left installed; its HERO is an editable install from the temporary folder. Remove it with
+  `conda env remove -n hoi-sim-fresh`.
