@@ -1791,11 +1791,16 @@ arm. So each step is tested only as the bundle of changes it makes, and the rank
 - **R2's choices:**
   - It keeps my own heading on 35/50 layouts (e88 phi_h 33, 26d phi_h 2); mean departure 3.4 deg, max 36.7.
   - By clip: e88 41, 26d 5, 49aff 4, 4e 0. It fell back to R1 on 2 layouts (no p >= 0.8).
-- **Reading:**
-  - Most of R2's success comes from choosing the clip whose own heading the arm can execute (e88), not from a fine per-layout
-    heading. Turning the other clips toward 45 deg does the rest.
-  - b_hybrid at the layout's own yaw (98/200) is lower than M4b's b_hybrid (112/200), which turned the handle with the grasp, so
-    the handle yaw relative to the hand matters.
+- **Reading** (corrected after the independent check; numbers in summary.md "R2 by the clip it chose"):
+  - On the 41 layouts where R2 chose e88, it used e88's own heading on 33 (55 deg on 5, 45 deg on 3). F and the oracle also succeed
+    on 39 of those 41, so choosing e88 is what lets R2 keep my heading, not what produces the success.
+  - R2's edge over the oracle and over F comes mostly from its 9 picks of other clips, all successes: 26d 65 / 75 / own heading; 49aff
+    45 / 75. These include 4 of its 6 wins over the oracle (trials 34, 44, 45, 49, the oracle's knock layouts) and 2 of its 4 wins over
+    F. Its 75 deg and own-heading picks there come from candidates that succeed on only 26-52 % of the training layouts.
+  - Learning does not beat the fixed best choice in CV (D2). On the test layouts, R2 vs F is 4 vs 1 discordant and R1 vs F 2 vs 1,
+    too few to separate.
+  - b_hybrid at the layout's own yaw (98/200) is lower than M4b's b_hybrid (112/200), which turned the handle with the grasp. So
+    M4b's 112 and its "e88 beats the oracle" (49 vs 44) depend on that handle convention: at its own yaw e88 b_hybrid is 44/50.
 - **Noisy path:** only the PATH is built from the noisy layout. The scene is true, and the place correction stays privileged (it
   reads the true cup pose in the hand and the true coaster).
 

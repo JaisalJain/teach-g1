@@ -464,8 +464,17 @@ def cmd_summarize(args):
     r2_succ = [r["run"] for r in groups["R2_clean"] if r["success"]]
     r2_fail = [r["run"] for r in groups["R2_clean"] if not r["success"]]
     choice_clips = {rule: dict(Counter(c[rule]["clip"] for c in ch["choices"]).most_common()) for rule in ("R1", "R2", "F")}
+    choice_hist = {rule: dict(sorted(Counter(f"{c[rule]['clip']} {c[rule]['candidate']}" for c in ch["choices"]).items())) for rule in ("R1", "R2", "F")}
+    # R2 by the clip it chose: on those layouts, how R2, F and the oracle did, and R2's wins over the oracle and over F
+    r2_by_clip = {}
+    for clip in sorted({c["R2"]["clip"] for c in ch["choices"]}):
+        ts = [t for t, c in enumerate(ch["choices"]) if c["R2"]["clip"] == clip]
+        r2s, fs, os_ = ([bool(groups[g][t]["success"]) for t in ts] for g in ("R2_clean", "F_clean", "oracle"))
+        r2_by_clip[clip] = dict(layouts=len(ts), candidates=dict(sorted(Counter(ch["choices"][t]["R2"]["candidate"] for t in ts).items())),
+                                R2_successes=sum(r2s), F_successes=sum(fs), oracle_successes=sum(os_),
+                                R2_wins_over_oracle=[t for t, a, b in zip(ts, r2s, os_) if a and not b], R2_wins_over_F=[t for t, a, b in zip(ts, r2s, fs) if a and not b])
     summary = dict(what="M5 Step 5 summary (policy/m5.py summarize)", ablation=abl, per_clip=per_clip, paired=paired, r2_choices=r2_choice,
-                   choice_clips=choice_clips,
+                   choice_clips=choice_clips, choice_histogram=choice_hist, r2_by_clip=r2_by_clip,
                    cv=dict(auc=cv["auc"], brier=cv["brier"], base_rate=cv["base_rate"], selection=cv["selection"], n_layouts=cv["n_layouts"]),
                    candidates=dict(rows=[{k: x[k] for k in ("clip", "candidate", "phi_deg", "departure_deg", "text", "rate")} for x in cj["candidates"]],
                                    ceiling=cj["ceiling"], fixed_best=cj["fixed_best"]),
@@ -475,9 +484,13 @@ def cmd_summarize(args):
                    confounds=["the 4-clip pooled rows (naive, b_level, b_hybrid, b_hybrid_h45) reuse the same 50 layouts 4 times, so their Wilson "
                               "intervals (which treat the 200 runs as independent) are too narrow",
                               "the place correction reads privileged simulator state (the cup's true pose in the hand) in every variant, the "
-                              "selector rules and the oracle alike; in the noisy runs only the PATH is built from the noisy layout",
+                              "selector rules and the oracle alike; in the noisy runs only the PATH is built from the noisy layout's cup and "
+                              "coaster xy (the noisy handle yaw feeds only the selector's features; the scene keeps the true layout)",
                               "the 50 eval layouts were also used in M4 / M4b (to compare variants), but never to train, select or set a "
-                              "threshold here: the selector, F and the h45 clip come from the 120 training layouts only",
+                              "threshold here: the selector, F and the h45 clip come from the 120 training layouts only. The candidate SET was "
+                              "designed from results on these layouts, though: the b_hybrid motion from M4's failures on trials 0-49, the 45-75 "
+                              "deg heading grid from the M4b sweep on trials 0-19",
+                              "'F, noisy path' and 'b_hybrid_h45 4e103843db noisy' are the same 50 runs (F is 4e103843db at 45 deg)",
                               "b_hybrid_h45 (M4b rows) and b_hybrid at the original yaw use the trial's own handle yaw, as do the selector runs"],
                    videos=json.loads((OUT / "videos" / "videos.json").read_text()) if (OUT / "videos" / "videos.json").exists() else None)
     (args.out / "summary.json").write_text(json.dumps(summary, indent=2))
@@ -507,7 +520,12 @@ def render_summary(s: dict) -> str:
     L += ["", "## R2's choices (from noisy inputs)", "", f"Mean departure from my heading {c['mean_departure_deg']:.1f} deg (max {c['max_departure_deg']:.1f}); "
           f"my own heading chosen in {c['chose_my_heading']}/50 trials; no candidate with p >= 0.8 (fell back to R1) in {c['fell_back_to_R1']}/50.", "",
           "| clip candidate | trials |", "|---|---|"] + [f"| {k} | {v} |" for k, v in c["histogram"].items()] + \
-         ["", "Layouts per chosen clip: " + "; ".join(f"{rule}: " + ", ".join(f"{k} {v}" for k, v in d.items()) for rule, d in s["choice_clips"].items())]
+         ["", "Layouts per chosen clip: " + "; ".join(f"{rule}: " + ", ".join(f"{k} {v}" for k, v in d.items()) for rule, d in s["choice_clips"].items()),
+          "", "Choices per rule (clip candidate: layouts): " + "; ".join(f"{rule}: " + ", ".join(f"{k} {v}" for k, v in d.items()) for rule, d in s["choice_histogram"].items()),
+          "", "R2 by the clip it chose (on those layouts):", "", "| chosen clip | layouts | candidates | R2 successes | F successes | oracle successes | R2 wins over oracle (trials) | R2 wins over F (trials) |",
+          "|---|---|---|---|---|---|---|---|"] + \
+         [f"| {k} | {v['layouts']} | " + ", ".join(f"{a} {b}" for a, b in v["candidates"].items()) + f" | {v['R2_successes']} | {v['F_successes']} | {v['oracle_successes']} | "
+          f"{v['R2_wins_over_oracle']} | {v['R2_wins_over_F']} |" for k, v in s["r2_by_clip"].items()]
     cv = s["cv"]
     L += ["", f"## Cross-validation (5 folds by layout, {cv['n_layouts']} training layouts, noisy held-out inputs)", "",
           f"AUC {cv['auc']:.3f}, Brier {cv['brier']:.3f} (base rate {cv['base_rate']:.3f}). Held-out selection success: " +

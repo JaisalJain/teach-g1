@@ -47,6 +47,16 @@ Mean departure from my heading 3.4 deg (max 36.7); my own heading chosen in 35/5
 
 Layouts per chosen clip: R1: 26d4118b0c 24, e8825dea53 11, 4e103843db 8, 49aff04f7a 7; R2: e8825dea53 41, 26d4118b0c 5, 49aff04f7a 4; F: 4e103843db 50
 
+Choices per rule (clip candidate: layouts): R1: 26d4118b0c 45 21, 26d4118b0c 65 2, 26d4118b0c 75 1, 49aff04f7a 45 6, 49aff04f7a 75 1, 4e103843db 45 8, e8825dea53 45 9, e8825dea53 55 2; R2: 26d4118b0c 65 1, 26d4118b0c 75 2, 26d4118b0c phih 2, 49aff04f7a 45 1, 49aff04f7a 75 3, e8825dea53 45 3, e8825dea53 55 5, e8825dea53 phih 33; F: 4e103843db 45 50
+
+R2 by the clip it chose (on those layouts):
+
+| chosen clip | layouts | candidates | R2 successes | F successes | oracle successes | R2 wins over oracle (trials) | R2 wins over F (trials) |
+|---|---|---|---|---|---|---|---|
+| 26d4118b0c | 5 | 65 1, 75 2, phih 2 | 5 | 3 | 3 | [34, 44] | [34, 44] |
+| 49aff04f7a | 4 | 45 1, 75 3 | 4 | 4 | 2 | [45, 49] | [] |
+| e8825dea53 | 41 | 45 3, 55 5, phih 33 | 40 | 39 | 39 | [22, 38] | [36, 38] |
+
 ## Cross-validation (5 folds by layout, 120 training layouts, noisy held-out inputs)
 
 AUC 0.916, Brier 0.102 (base rate 0.712). Held-out selection success: R1 115/120, R2 109/120, F 115/120, CEIL 120/120.
@@ -85,8 +95,9 @@ Candidate-oracle ceiling: 120/120 (0.97-1.00). Fixed-best F: 4e103843db 45. b_hy
 ## Confounds
 
 - the 4-clip pooled rows (naive, b_level, b_hybrid, b_hybrid_h45) reuse the same 50 layouts 4 times, so their Wilson intervals (which treat the 200 runs as independent) are too narrow
-- the place correction reads privileged simulator state (the cup's true pose in the hand) in every variant, the selector rules and the oracle alike; in the noisy runs only the PATH is built from the noisy layout
-- the 50 eval layouts were also used in M4 / M4b (to compare variants), but never to train, select or set a threshold here: the selector, F and the h45 clip come from the 120 training layouts only
+- the place correction reads privileged simulator state (the cup's true pose in the hand) in every variant, the selector rules and the oracle alike; in the noisy runs only the PATH is built from the noisy layout's cup and coaster xy (the noisy handle yaw feeds only the selector's features; the scene keeps the true layout)
+- the 50 eval layouts were also used in M4 / M4b (to compare variants), but never to train, select or set a threshold here: the selector, F and the h45 clip come from the 120 training layouts only. The candidate SET was designed from results on these layouts, though: the b_hybrid motion from M4's failures on trials 0-49, the 45-75 deg heading grid from the M4b sweep on trials 0-19
+- 'F, noisy path' and 'b_hybrid_h45 4e103843db noisy' are the same 50 runs (F is 4e103843db at 45 deg)
 - b_hybrid_h45 (M4b rows) and b_hybrid at the original yaw use the trial's own handle yaw, as do the selector runs
 
 ## Videos

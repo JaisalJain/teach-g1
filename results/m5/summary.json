@@ -437,6 +437,86 @@
       "4e103843db": 50
     }
   },
+  "choice_histogram": {
+    "R1": {
+      "26d4118b0c 45": 21,
+      "26d4118b0c 65": 2,
+      "26d4118b0c 75": 1,
+      "49aff04f7a 45": 6,
+      "49aff04f7a 75": 1,
+      "4e103843db 45": 8,
+      "e8825dea53 45": 9,
+      "e8825dea53 55": 2
+    },
+    "R2": {
+      "26d4118b0c 65": 1,
+      "26d4118b0c 75": 2,
+      "26d4118b0c phih": 2,
+      "49aff04f7a 45": 1,
+      "49aff04f7a 75": 3,
+      "e8825dea53 45": 3,
+      "e8825dea53 55": 5,
+      "e8825dea53 phih": 33
+    },
+    "F": {
+      "4e103843db 45": 50
+    }
+  },
+  "r2_by_clip": {
+    "26d4118b0c": {
+      "layouts": 5,
+      "candidates": {
+        "65": 1,
+        "75": 2,
+        "phih": 2
+      },
+      "R2_successes": 5,
+      "F_successes": 3,
+      "oracle_successes": 3,
+      "R2_wins_over_oracle": [
+        34,
+        44
+      ],
+      "R2_wins_over_F": [
+        34,
+        44
+      ]
+    },
+    "49aff04f7a": {
+      "layouts": 4,
+      "candidates": {
+        "45": 1,
+        "75": 3
+      },
+      "R2_successes": 4,
+      "F_successes": 4,
+      "oracle_successes": 2,
+      "R2_wins_over_oracle": [
+        45,
+        49
+      ],
+      "R2_wins_over_F": []
+    },
+    "e8825dea53": {
+      "layouts": 41,
+      "candidates": {
+        "45": 3,
+        "55": 5,
+        "phih": 33
+      },
+      "R2_successes": 40,
+      "F_successes": 39,
+      "oracle_successes": 39,
+      "R2_wins_over_oracle": [
+        22,
+        38
+      ],
+      "R2_wins_over_F": [
+        36,
+        38
+      ]
+    }
+  },
   "cv": {
     "auc": 0.9158258731638784,
     "brier": 0.10231807107421123,
@@ -641,8 +721,9 @@
   },
   "confounds": [
     "the 4-clip pooled rows (naive, b_level, b_hybrid, b_hybrid_h45) reuse the same 50 layouts 4 times, so their Wilson intervals (which treat the 200 runs as independent) are too narrow",
-    "the place correction reads privileged simulator state (the cup's true pose in the hand) in every variant, the selector rules and the oracle alike; in the noisy runs only the PATH is built from the noisy layout",
-    "the 50 eval layouts were also used in M4 / M4b (to compare variants), but never to train, select or set a threshold here: the selector, F and the h45 clip come from the 120 training layouts only",
+    "the place correction reads privileged simulator state (the cup's true pose in the hand) in every variant, the selector rules and the oracle alike; in the noisy runs only the PATH is built from the noisy layout's cup and coaster xy (the noisy handle yaw feeds only the selector's features; the scene keeps the true layout)",
+    "the 50 eval layouts were also used in M4 / M4b (to compare variants), but never to train, select or set a threshold here: the selector, F and the h45 clip come from the 120 training layouts only. The candidate SET was designed from results on these layouts, though: the b_hybrid motion from M4's failures on trials 0-49, the 45-75 deg heading grid from the M4b sweep on trials 0-19",
+    "'F, noisy path' and 'b_hybrid_h45 4e103843db noisy' are the same 50 runs (F is 4e103843db at 45 deg)",
     "b_hybrid_h45 (M4b rows) and b_hybrid at the original yaw use the trial's own handle yaw, as do the selector runs"
   ],
   "videos": {
