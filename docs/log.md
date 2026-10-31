@@ -1868,3 +1868,21 @@ arm. So each step is tested only as the bundle of changes it makes, and the rank
   Links cut to one source per paragraph or table; the sample links point at `data/raw/README.md`.
 - New `README.md` (173 lines) in the order of the step prompt. Every number checked against its saved file before the commit.
 - `results/final/reproduce_check.txt`: the reproduce.sh run behind the README's "47 s" (ALL MATCH).
+
+### Step 4 — licence and cleanups
+- `LICENSE`: MIT, "Copyright (c) 2026 Jaisal Jain", for the code. Recordings: CC BY 4.0 (stated in `data/raw/README.md`).
+- `.gitignore` comment: Stray Scanner, not Record3D.
+- `CLAUDE.md` describes what was built: dropped are the per-digit finger IK mapping, the ACT / Diffusion Policy / LeRobot plan, the
+  stretch comparison and live webcam mode; the milestone list is now what happened each day; conventions and working rules kept.
+
+### Step 5 — the four raw clips committed
+- Sizes: 26d 10.3 MB (504 files), 4e 21.7 MB (1032), 49aff 20.0 MB (962), e88 20.8 MB (952); 72.8 MB in total, largest file
+  `4e103843db/rgb.mp4` 10.7 MB. **E4 not taken** (limits: 50 MB per file, 120 MB in total).
+- `.gitignore` un-ignores exactly the four folders and their `rgb.mp4`. `data/raw/sample/` (a byte-identical copy of 4e103843db)
+  is removed; its README became `data/raw/README.md` (four clips, licence). `perception/check_data_sample.py` now takes clip ids
+  and an original root; the M5 sample check (`results/m5/data_sample_check.json`) is kept as it was.
+
+### Step 6 — hygiene (`python3 scripts/hygiene.py` -> `results/final/hygiene_report.md`)
+- Tracked files over 10 MB: `data/raw/4e103843db/rgb.mp4` (10.68 MB) only. No secret-looking strings.
+- Links in README.md and docs/*.md: 48 relative links, none to an untracked or missing file.
+- Fresh local clone of HEAD: 341.9 MB (working tree 198.4 MB, of which the raw clips 72.8 MB and results/ about 120 MB; .git 143.4 MB).
