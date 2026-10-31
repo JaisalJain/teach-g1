@@ -2,7 +2,7 @@
      replaces README.md, drop one "../" from every link and turn "log.md" / "INSTALL.md" into "docs/log.md" / "docs/INSTALL.md".
      All open slots (M5, M6, M7) are filled. -->
 
-# teach-g1: a standing Unitree G1 learns my mug pick-and-place from four iPhone clips
+# teach-g1: a standing Unitree G1 picks and places my mug using motion from four iPhone clips of my hand
 
 I filmed my own right hand picking up my mug and putting it on a coaster, four times, with an iPhone's LiDAR camera. From those
 clips the pipeline extracts a metric 3D hand path relative to the mug and the coaster, retargets it to a Unitree G1 humanoid that
@@ -11,14 +11,20 @@ the ones in my clips. Simulation only, no real robot. On [50](../results/m4b/sum
 keeps my palm heading, my approach up to the last [8 cm](log.md), my grasp height, my transport and my timing succeeds in
 [112/200](../results/m4b/summary.md) runs (four clips x [50](../results/m4b/summary.md) layouts); the variant that also turns the grasp to the scripted
 [45 deg](../results/m3_retarget/summary.md) heading succeeds in [179/200](../results/m4b/summary.md). A hand-scripted grasp with no
-human data succeeds in [44/50](../results/m1_grasp_fix/v3_final/summary.md) on the same layouts. My first attempt, which followed my
-whole approach, failed almost everywhere; [What worked and what didn't](#what-worked-and-what-didnt) says why.
+human data succeeds in [44/50](../results/m1_grasp_fix/v3_final/summary.md) on the same layouts. For the first variant this is not
+like for like: its runs turned the mug's handle with the grasp (handle yaw = layout yaw + phi_h - [45 deg](log.md)), so only the mug
+and coaster positions match the oracle's; at each layout's own handle yaw it succeeds in [98/200](../results/m5/summary.md). My first
+attempt, which followed my whole approach, failed almost everywhere; [What worked and what didn't](#what-worked-and-what-didnt) says why.
 
 **M5, the learned grasp selector.** A small network trained only on [120](../results/m5/train_layouts.json) training layouts
 picks, per layout, which of my four clips to use and how far to turn the grasp away from my heading. Its "human-first" rule R2
 succeeds on [49/50 (0.90-1.00)](../results/m5/summary.md) test layouts, and on [44/50 (0.76-0.94)](../results/m5/summary.md) when the robot's path is built from a
 noisy layout. It keeps my own palm heading on [35/50](../results/m5/summary.md) layouts. The scripted grasp gets [44/50](../results/m5/summary.md) on the same layouts, but
 R2's edge over it rests on [7](../results/m5/summary.md) layouts where only one of the two succeeds ([6](../results/m5/summary.md) vs [1](../results/m5/summary.md)), too few to call R2 better.
+A single fixed candidate with no learned model, F (`4e103843db` at [45 deg](../results/m5/summary.md), the best one on the training
+layouts), gets [46/50](../results/m5/summary.md); R2 and F differ on only [4](../results/m5/summary.md) vs
+[1](../results/m5/summary.md) layouts. In cross-validation on the training layouts, learning did not beat F: R1
+[115/120](../results/m5/summary.md) = F [115/120](../results/m5/summary.md) (branch [D2](../results/m5/summary.md)).
 
 ![My hand (left) and the G1 (right)](../results/extra/hand_to_robot.gif)
 
@@ -84,9 +90,13 @@ mine was.*
 - **Object-centric grasp:** the robot's grasp is built in the mug's frame: the mug axis at a fixed offset from the robot's palm,
   the palm turned to my palm heading at my grasp frame (phi_h, [61.7-85.8 deg](../results/m3_retarget/summary.md) across the clips;
   the scripted grasp uses [45 deg](../results/m3_retarget/summary.md)), at my grasp height as a fraction of the mug height.
-- **Object-aware warps** (the idea is OKAMI's, CoRL 2024): my approach is bent with a smooth-step blend so it starts where the
-  robot's hand is and ends at that grasp; my transport is bent from the grasp to the place pose above the coaster. Only the ends
-  move; the shape in between is mine.
+- **Object-aware warps** (the idea is OKAMI's, CoRL 2024): my approach is bent so it starts where the robot's hand is and ends at
+  that grasp. Every frame gets (1 - w) x the start offset + w x the end offset, with w a min-jerk blend from 0 to 1 over the
+  approach, so every frame moves, not only the ends; then the palm is kept at least [3 cm](../retarget/warp.py) above the table. My
+  transport is bent the same way (with a linear blend) from the grasp to the place pose above the coaster, and its rise above the
+  straight grasp-to-place line is scaled down to at most [10 cm](../retarget/warp.py). In both, the palm orientation is held
+  at the grasp orientation, so my wrist rotation is not used. My path's shape is kept, plus a smooth shift that changes from
+  the start offset to the end offset.
 - **Timing:** my hand moves faster than the scripted grasp, so time is stretched by
   [k = max(1, my 95th-percentile palm speed / the scripted peak speed)](log.md), [1.09-1.74](../results/m3_retarget/summary.md) per
   clip; each segment is then re-timed to start and end at rest.
@@ -126,9 +136,12 @@ mine was.*
 grasp turned from my heading to the scripted [45 deg](../results/m3_retarget/summary.md).
 
 ### 5. The learned grasp selector (M5)
-The original plan (ACT / Diffusion Policy in LeRobot) was replaced: M4b showed that my heading only transfers to this arm up to about
-[65 deg](../results/m4b/summary.md), so the useful thing to learn is, per layout, which of my clips to use and how far to turn the
-grasp away from my heading.
+The original plan (ACT / Diffusion Policy in LeRobot) was replaced: M4b's heading sweep, run on the scripted grasp turned about the
+mug axis (not on my paths), held up to about [65 deg](../results/m4b/summary.md) and dropped above it, so the useful thing to learn
+is, per layout, which of my clips to use and how far to turn the grasp away from my heading. The M5 candidate rollouts below then
+measured the same limit on my own paths, on the training layouts: `4e103843db`, for example, succeeds on
+[31/120](../results/m5/candidates.md) at its own [85.8 deg](../results/m5/candidates.md), [94/120](../results/m5/candidates.md) at
+65 deg and [115/120](../results/m5/candidates.md) at 45 deg.
 - **Candidates:** [18](../results/m5/rollout_items.json) (clip, heading) pairs: each clip at its own phi_h, plus
   [75, 65, 55 and 45 deg](../results/m5/rollout_items.json) where they lie below it (the
   [61.7 deg](../results/m3_retarget/summary.md) clip only gets [55 and 45](../results/m5/rollout_items.json)). The motion is always
@@ -162,7 +175,8 @@ grasp away from my heading.
 Success on the same [50](../results/m4_execute/summary.md) test layouts. The "pool" column adds the four clips' runs; its Wilson
 [95 %](../results/m4b/summary.md) interval treats the [200](../results/m4b/summary.md) runs as independent, but they reuse the same
 layouts, so the real uncertainty is larger ([caveat 1](../results/m4_execute/summary.md)). Per-clip columns are out of
-[50](../results/m4_execute/summary.md).
+[50](../results/m4_execute/summary.md): successes, except in the R1, R2 and F rows, where "chosen" is the number of layouts on
+which that clip was picked.
 
 | variant (milestone) | what comes from my clips | pool (Wilson 95 %) | top-down | 90 deg | 45 deg `49aff` | 45 deg `e8825` |
 |---|---|---|---|---|---|---|
@@ -172,9 +186,9 @@ layouts, so the real uncertainty is larger ([caveat 1](../results/m4_execute/sum
 | (b) `b_hybrid` (M4b) | as `b_level` minus my last [8 cm](log.md) of approach | [112/200 (0.49-0.63)](../results/m4b/summary.md) | [22](../results/m4b/summary.md) | [14](../results/m4b/summary.md) | [27](../results/m4b/summary.md) | [49](../results/m4b/summary.md) |
 | `b_hybrid_h45` (M4b) | as `b_hybrid` minus my heading | [179/200 (0.84-0.93)](../results/m4b/summary.md) | [43](../results/m4b/summary.md) | [46](../results/m4b/summary.md) | [46](../results/m4b/summary.md) | [44](../results/m4b/summary.md) |
 | scripted oracle | nothing | [44/50 (0.762-0.944)](../results/m1_grasp_fix/v3_final/summary.md) | | | | |
-| (c) selector R1 (M5), clean | heading candidate + clip; approach, height, transport | [47/50 (0.84-0.98)](../results/m5/summary.md) | chosen [24](../results/m5/summary.md) | chosen [8](../results/m5/summary.md) | chosen [7](../results/m5/summary.md) | chosen [11](../results/m5/summary.md) |
-| (c) selector R2 human-first (M5), clean | as R1, preferring my heading | [49/50 (0.90-1.00)](../results/m5/summary.md) | [5](../results/m5/summary.md) | [0](../results/m5/summary.md) | [4](../results/m5/summary.md) | [41](../results/m5/summary.md) |
-| fixed-best candidate F (M5), clean | one candidate (`4e103843db` at 45 deg) | [46/50 (0.81-0.97)](../results/m5/summary.md) | | [50](../results/m5/summary.md) | | |
+| (c) selector R1 (M5), clean | clip + heading candidate, never my own heading ([0/50](../results/m5/summary.md); 45 deg on [44/50](../results/m5/summary.md)); approach, height, transport | [47/50 (0.84-0.98)](../results/m5/summary.md) | chosen [24](../results/m5/summary.md) | chosen [8](../results/m5/summary.md) | chosen [7](../results/m5/summary.md) | chosen [11](../results/m5/summary.md) |
+| (c) selector R2 human-first (M5), clean | clip + heading candidate, preferring my own heading; approach, height, transport | [49/50 (0.90-1.00)](../results/m5/summary.md) | chosen [5](../results/m5/summary.md) | chosen [0](../results/m5/summary.md) | chosen [4](../results/m5/summary.md) | chosen [41](../results/m5/summary.md) |
+| fixed-best candidate F (M5), clean | one candidate (`4e103843db` at 45 deg) | [46/50 (0.81-0.97)](../results/m5/summary.md) | | chosen [50](../results/m5/summary.md) | | |
 | R2, noisy path (M5) | as R2 | [44/50 (0.76-0.94)](../results/m5/summary.md) | | | | |
 | F = `b_hybrid_h45` `4e103843db`, noisy path (M5) | as F | [38/50 (0.63-0.86)](../results/m5/summary.md) | | | | |
 | `b_hybrid` at each layout's own handle yaw (M5) | as `b_hybrid` | [98/200 (0.42-0.56)](../results/m5/summary.md) | [22](../results/m5/summary.md) | [11](../results/m5/summary.md) | [21](../results/m5/summary.md) | [44](../results/m5/summary.md) |
@@ -249,7 +263,9 @@ simulation:
   hand overlaps the mug in all [177](../results/m4b/summary.md) failed `b_level` runs (median deepest overlap
   [37.2 mm](../results/m4b/summary.md)), while the scripted straight approach clears it (median
   [5.6 mm](../results/m4_execute/summary.md), [0 of 10](../results/m4_execute/summary.md) overlapping). This is a kinematic
-  diagnostic, not a physics measurement.
+  diagnostic, not a physics measurement, and overlap alone does not mean failure: [21 of 23](../results/m4b/summary.md) `b_level`
+  successes also overlap (median [-2.1 mm](../results/m4b/summary.md)), and because the window stops
+  [1 cm](../results/m4_execute/summary.md) before the grasp, a late overlap can be the intended grasp contact as well as a knock.
 - **The failure label hid it.** The executor settles the palm at the grasp before it checks whether the mug moved (the oracle's
   order), so a pushed mug whose palm then ends more than [3 cm](../sim/pick_place.py) from the target is filed as "reach". Re-filed by
   the mug's final position, [132 of 177](../results/m4b/summary.md) `b_level` failures had pushed the mug more than
@@ -270,7 +286,9 @@ simulation:
   [81.7-85.8 deg](../results/m3_retarget/summary.md) (layouts won only by `b_hybrid_h45`: [22, 32, 21](../results/m4b/summary.md);
   only by `b_hybrid`: [1, 0, 2](../results/m4b/summary.md)). On `e8825dea53` ([61.7 deg](../results/m3_retarget/summary.md)) keeping
   my heading is better: [49/50](../results/m4b/summary.md) against [44/50](../results/m4b/summary.md), and against the oracle
-  [5](../results/m4b/summary.md) layouts won, [0](../results/m4b/summary.md) lost.
+  [5](../results/m4b/summary.md) layouts won, [0](../results/m4b/summary.md) lost. But these `b_hybrid` runs turned the handle
+  with the grasp (see the intro); at its own handle yaw `e8825dea53` `b_hybrid` is [44/50](../results/m5/summary.md), so this edge
+  depends on that handle convention.
 - **Not tested: which factor is larger.** The steps are sequential (`b_level` -> `b_hybrid` -> `b_hybrid_h45`), not factorial; there
   is no "`b_level` at [45 deg](../results/m3_retarget/summary.md)" arm.
 - **Tested on the scripted oracle alone:** success falls between [65 and 75 deg](../results/m4b/summary.md)
@@ -279,8 +297,8 @@ simulation:
   ([49](../results/m4b/summary.md)) or place ([20](../results/m4b/summary.md)) settle, as at [85 deg](../results/m4b/summary.md) in
   the sweep (pre-grasp [5](../results/m4b/summary.md), place [3](../results/m4b/summary.md)). All [49](../results/m4b/summary.md)
   pre-grasp failures overlap the mug on the way to the pre-grasp point (median [-36.9 mm](../results/m4b/summary.md)), against
-  [0 of 179](../results/m4b/summary.md) `b_hybrid_h45` successes; yet the log notes that none of them pushed the mug more than
-  [2 cm](log.md), and in M4 the [81.7 deg](../results/m3_retarget/summary.md) clip had [0](../results/m4_execute/summary.md)
+  [0 of 179](../results/m4b/summary.md) `b_hybrid_h45` successes; but [40 of 112](../results/m4b/summary.md) `b_hybrid` successes
+  overlap too, none of those pre-grasp failures moved the mug more than [2 cm](log.md), and in M4 the [81.7 deg](../results/m3_retarget/summary.md) clip had [0](../results/m4_execute/summary.md)
   pre-grasp failures. Arm reach and contact on the way in are both possible causes; they are not separated.
 - **What my data still does.** Both hybrids drop my final ~[8 cm](log.md) of approach. `b_hybrid_h45` also drops my heading; it keeps
   my approach shape up to the pre-grasp point, my grasp height, my transport and my timing. `b_hybrid` keeps my heading too, and it
@@ -294,11 +312,25 @@ simulation:
   [38/50](../results/m5/summary.md). The failures added are mostly "pushed mug before close" ([summary](../results/m5/summary.md)).
 - **Didn't.** In cross-validation, learning did not beat the fixed best choice (R1 [115](../results/m5/summary.md) = F [115](../results/m5/summary.md) of 120: branch D2).
   The test gain of R1 over F is small ([47](../results/m5/summary.md) vs [46](../results/m5/summary.md)).
-- **Honest reading.** Most of R2's success comes from choosing the clip whose own heading the arm can execute (`e8825dea53`,
-  [41/50](../results/m5/summary.md) layouts), not from learning a fine-grained heading per layout. For the other clips, turning the grasp toward 45 deg
-  does the work ([candidates](../results/m5/candidates.md)).
+- **Honest reading** (numbers from "R2 by the clip it chose" in the [summary](../results/m5/summary.md)). On the
+  [41](../results/m5/summary.md) layouts where R2 chose `e8825dea53`, it used that clip's own heading on
+  [33](../results/m5/summary.md) (55 deg on [5](../results/m5/summary.md), 45 deg on [3](../results/m5/summary.md)). F and the
+  oracle also succeed on [39](../results/m5/summary.md) of those layouts, so choosing `e8825dea53` is what lets R2 keep my heading, not
+  what produces the success. R2's edge comes mostly from its other-clip picks (`26d4118b0c` on [5](../results/m5/summary.md),
+  `49aff04f7a` on [4](../results/m5/summary.md)), all successes. They include [4](../results/m5/summary.md) of its
+  [6](../results/m5/summary.md) wins over the oracle (trials [34, 44, 45, 49](../results/m5/summary.md)) and
+  [2](../results/m5/summary.md) of its [4](../results/m5/summary.md) wins over F.
 - **Confounds.**
-  - The test layouts were also used in M4 / M4b (to compare variants), but never to train or select here.
+  - The test layouts were also used in M4 / M4b (to compare variants), but never to train, select or set a threshold here: the
+    selector and F come from the training layouts only and the [0.8](../policy/rules.py) threshold was fixed in advance, so none
+    of them saw the test layouts. The candidate set was
+    designed from results on the test layouts, though: the `b_hybrid` motion from M4's failures on trials
+    [0-49](../results/m5/summary.md), the [45-75 deg](../results/m5/summary.md) heading grid from the M4b sweep on trials
+    [0-19](../results/m5/summary.md).
+  - "F, noisy path" and "`b_hybrid_h45` `4e103843db` noisy" are the same [50](../results/m5/summary.md) runs (F is `4e103843db` at
+    45 deg), one result, not two.
+  - In the noisy runs only the cup and coaster xy that the path is built from are noisy; the noisy handle yaw feeds only the
+    selector's inputs, and the scene keeps the true layout ([summary](../results/m5/summary.md)).
   - The place correction reads privileged simulator state ([summary](../results/m5/summary.md)).
 
 ## How to run
@@ -344,19 +376,25 @@ On a fresh `git clone` (with `third_party/` linked in) everything matched, in
   mug.
 - **Privileged place correction.** For the oracle and every `b` variant, the place pose is corrected with the mug's true pose in the
   hand, read from the simulator at the top of the transport. Perception does not provide this. The robot also gets the exact mug and
-  coaster positions; only M5's noisy runs perturb them ([1 cm](../policy/features.py), [10 deg](../policy/features.py)).
+  coaster positions; only M5's noisy runs perturb the mug and coaster xy that the path is built from
+  ([1 cm](../policy/features.py)). Their handle-yaw noise ([10 deg](../policy/features.py)) feeds only the selector, and the scene
+  keeps the true layout.
 - **Small workspace.** Layouts keep the palm inside x [0.35-0.45 m](../sim/pick_place.py), y [-0.32 to -0.12 m](../sim/pick_place.py).
   In a wider box (x [0.28-0.55 m](../results/m1_pick_stress/pick_results.json), y
   [-0.45 to -0.02 m](../results/m1_pick_stress/pick_results.json)) even the M1 scripted grasp on the easy cylinder succeeded in only
   [12/20](../results/m1_pick_stress/pick_results.json).
 - **Layout reuse.** The same [50](../results/m4_execute/summary.md) test layouts are used in M4, M4b and M5, and the M4b fix was
   designed after looking at M4's failures on them. M5 trains on [120](../results/m5/train_layouts.json) disjoint layouts and keeps the
-  test layouts for testing only. The four clips run the same layouts, so pooled intervals are too narrow.
+  test layouts for testing only (the selector, F and the threshold never saw them), but its candidate set was designed from results
+  on the test layouts: the `b_hybrid` motion from M4's failures on trials [0-49](../results/m5/summary.md), the
+  [45-75 deg](../results/m5/summary.md) heading grid from the M4b sweep on trials [0-19](../results/m5/summary.md). The four clips run the same layouts, so pooled intervals are too narrow.
 - **[n = 4](../results/m2_perception_v3/summary.md) clips**, with viewpoint and execution confounded: the "how does the viewpoint
   matter" question cannot be answered from this data. The clip that did best in M4 (`e8825dea53`) is also the one whose heading is
   closest to the robot's comfortable range.
 - **What my data controls is limited.** No finger angles; in the best variants not my final approach; in `b_hybrid_h45` not my
-  heading. The heading limit was measured on the scripted grasp, not on my paths.
+  heading. The heading limit was first measured on the scripted grasp (M4b sweep); the M5 rollouts then
+  measured it on my paths, on the training layouts: at their own headings my three high-heading clips succeed on
+  [31-41/120](../results/m5/candidates.md), at 45 deg on [111-115/120](../results/m5/candidates.md).
 - **Perception gates:** the mug fit (G6) fails on all clips and the hand reprojection (G3) is
   [14.17-51.72 px](../results/m2_perception_v3/summary.md); the `49aff04f7a` table frame is
   [15.7 deg](../results/m2_perception_v3/summary.md) off. Running perception needs all four raw clips; only one is committed.

@@ -1796,7 +1796,7 @@ arm. So each step is tested only as the bundle of changes it makes, and the rank
     on 39 of those 41, so choosing e88 is what lets R2 keep my heading, not what produces the success.
   - R2's edge over the oracle and over F comes mostly from its 9 picks of other clips, all successes: 26d 65 / 75 / own heading; 49aff
     45 / 75. These include 4 of its 6 wins over the oracle (trials 34, 44, 45, 49, the oracle's knock layouts) and 2 of its 4 wins over
-    F. Its 75 deg and own-heading picks there come from candidates that succeed on only 26-52 % of the training layouts.
+    F. Its 75 deg and own-heading picks there come from candidates that succeed on only 34-52 % of the training layouts (26d own heading 41/120, 26d 75 62/120, 49aff 75 58/120).
   - Learning does not beat the fixed best choice in CV (D2). On the test layouts, R2 vs F is 4 vs 1 discordant and R1 vs F 2 vs 1,
     too few to separate.
   - b_hybrid at the layout's own yaw (98/200) is lower than M4b's b_hybrid (112/200), which turned the handle with the grasp. So
