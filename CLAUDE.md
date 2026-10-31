@@ -50,27 +50,28 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
 ## The approach
 
 1. **Record:** iPhone (LiDAR) + **Stray Scanner** app (Record3D is paywalled) gives RGB video + LiDAR depth + confidence + intrinsics + camera odometry + IMU. Third-person view; in frame: mug, coaster, my hand and forearm. The data set is the 4 existing clips (see "Recorded data" above).
-2. **Perceive** (`hoi-perception` env): WiLoR for 3D hand pose (MANO), shifted to metric depth with the LiDAR; SAM 2 masks for the mug body, mug handle and coaster; RANSAC plane fit for the table; the known mug geometry (`config/objects.yaml`) fitted to the masks (the glossy mug's depth only initialises the fit). Output: one `.npz` per demo (schema v2).
+2. **Perceive** (`hoi-perception` env): WiLoR for 3D hand pose (MANO), shifted to metric depth with the LiDAR; SAM 2 masks for the mug body, mug handle and coaster; RANSAC plane fit for the table; the known mug geometry (`config/objects.yaml`) fitted to the masks (the glossy mug's depth only initialises the fit). Output: one `.npz` per demo (schema v4, see below).
 3. **Retarget** (`hoi-sim` env):
    - Build a **table frame** (z up, origin on the table plane).
    - Express the wrist trajectory **relative to the cup** (approach/grasp/lift) and **relative to the coaster** (transport/place). This object-centric step is what lets the motion generalize to new layouts (the idea comes from OKAMI, CoRL 2024).
-   - Map fingers to the Dex3 joints by **fingertip IK with `mink` on the same MuJoCo Dex3 hand model**: human thumb → thumb, index → index, middle (+ring/pinky) → middle. Fallback: `dex-retargeting` run offline in `hoi-perception`, joint angles passed via the `.npz`.
+   - **Dropped: the per-digit finger mapping** (fingertip IK with `mink`, fallback `dex-retargeting`). Per-digit IK closing targets were tried in the grasp-fix ladder (Track B L2) and made the grip worse; the Dex3 closes with HERO's own closing targets until the fingertips touch (profile `mug_v1`). No human finger angles are used.
 4. **Execute:**
-   - **HERO** whole-body controller drives the G1's 29 body joints; the G1 balances itself. HERO tracks a **reference clip**, not a palm target: we build the clip from **our retargeted palm path** (replacing the smooth-path step of HERO's `BenchReplanner`, reusing its IK → FK → `ClipReference` code). HERO's point-to-point replanner is the fallback and an ablation baseline.
+   - **HERO** whole-body controller drives the G1's 29 body joints; the G1 balances itself. HERO tracks a **reference clip**, not a palm target: we build the clip from **our retargeted palm path** (replacing the smooth-path step of HERO's `BenchReplanner`, reusing its IK → FK → `ClipReference` code). The scripted oracle (`sim/pick_place.py`, profile `mug_v1`) is the baseline with no human data.
    - We drive the Dex3 fingers ourselves (own finger PD loop on HERO's movable-finger model).
    - MuJoCo touch sensors (added by us) on the fingertips confirm the grasp before the lift.
-5. **Learn (M5 plan change: a learned grasp selector, not ACT / Diffusion / LeRobot):** per layout, choose which of my clips and which grasp heading phi (my phi_h, 75, 65, 55 or 45 deg) the robot uses with the b_hybrid motion.
+5. **Learn (M5 plan change: a learned grasp selector; the ACT / Diffusion Policy / LeRobot plan is dropped):** per layout, choose which of my clips and which grasp heading phi (my phi_h, 75, 65, 55 or 45 deg) the robot uses with the b_hybrid motion.
    - Training data: 18 candidates on 120 disjoint training layouts in `hoi-sim` (2160 rollouts).
    - Model: one pre-registered MLP predicting success, trained with PyTorch in `hoi-perception`, exported to ONNX and run with onnxruntime in `hoi-sim`.
    - Why: M4b showed my heading transfers only up to about 65 deg on this arm.
-6. **Prove it:** success rate over 50 random layouts for three variants:
-   - (a) naive kinematic replay
-   - (b) object-aware replay + contact grasp
-   - (c) learned policy
+6. **Prove it (as built):** success over the 50 test layouts (trials 0-49), every row at each layout's own handle yaw:
+   - (a) naive kinematic replay; object-aware `b_level` and `b_tilt` (`results/final/own_yaw/`)
+   - (b) `b_hybrid` (robot-specific final approach) and `b_hybrid_h45` (also turned to 45 deg) (`results/m5/`, `results/m4b/`)
+   - (c) the selector rules R1, R2 and the fixed choice F (`results/m5/`)
+   - the scripted oracle (no human data) as the reference line.
 
-   **Stretch:** the same policy trained on a hand-coded straight-down grasp instead of my motion, to test whether my data matters.
+   **Dropped:** the stretch comparison (the same policy trained on a hand-coded straight-down grasp).
 
-7. **Bonus:** live mode — webcam → MediaPipe → the same retargeting → G1.
+7. **Dropped:** live mode (webcam → MediaPipe → the same retargeting → G1). Not built; `live/` is an empty placeholder.
 
 ### HERO (whole-body controller) — key facts, VERIFIED from code at commit `416c4e0` (details in docs/log.md, 2026-10-28)
 
@@ -84,7 +85,7 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
 - Robot model: trained with **fixed** Dex3 fingers (`g1_29dof_dex3fixed_hero.urdf`) and **capsule feet** (`sonic_train`). We use `g1_29dof_with_hand_rev_1_0.urdf` (same masses/geometry, 14 movable finger joints) with capsule feet; box sole (`sonic_box`) only if standing is unstable.
 - Object inputs (h17–h19) only activate for ~0.30 m boxes near the floor → we feed zeros (as HERO's own table demo does). No touch sensors in HERO's models — we add them. HERO's benchmark has no table collision.
 - Has a MuJoCo benchmark (`scripts/hero_bench.py`) and `sim2sim/` code. Brand new repo (few stars). Expect rough edges.
-- **Fallback, if HERO isn't working by end of Day 1:** LeRobot's Unitree G1 MuJoCo sim with `GrootLocomotionController` or `HolosomaLocomotionController` handling the lower body; arms via IK (`mink`). Docs: https://huggingface.co/docs/lerobot/en/unitree_g1
+- **Fallback (not needed: HERO worked on Day 1):** LeRobot's Unitree G1 MuJoCo sim with `GrootLocomotionController` or `HolosomaLocomotionController` handling the lower body; arms via IK (`mink`). Docs: https://huggingface.co/docs/lerobot/en/unitree_g1
 
 ---
 
@@ -121,10 +122,13 @@ Organizers value **repeatable end-to-end task completion over bold but flaky att
     raw/                # Stray Scanner recordings (only a small sample committed)
     demos/              # extracted .npz, one per demo
   perception/           # Stray Scanner parsing, hand + object extraction, viz overlays
-  retarget/             # table frame, object-centric wrist, finger mapping
-  sim/                  # MuJoCo scene (G1 + table + cup + coaster), HERO wrapper, grasp logic
-  policy/               # randomized demo generation, training, closed-loop eval
-  live/                 # webcam teleop bonus
+  retarget/             # table frame, object-centric palm paths, summaries and figures
+  sim/                  # MuJoCo scene (G1 + table + cup + coaster), HERO wrapper, grasp logic, executor
+  policy/               # M5 grasp selector: layouts, features, rules, training, evaluation
+  live/                 # empty placeholder (live mode was dropped)
+  config/objects.yaml   # mug, coaster and desk geometry
+  scripts/              # reproduce.sh (re-runs a few results), hygiene.py
+  tests/
   results/              # eval logs, metrics json, videos/GIFs
   envs/                 # pip lock + constraints files per conda env (reproducible installs)
   docs/log.md           # running log: what was tried, what broke, numbers
@@ -299,6 +303,7 @@ Code in `retarget/` (hoi-sim, kinematic only), outputs in `results/m3_retarget/`
   - b_hybrid 112/200; b_hybrid_h45 179/200; oracle 44/50.
   - Sweep: phi 45/55/65 20/20, 75 13/20, 85 8/20.
   - The comparisons are a sequential ablation (approach bundle, then heading), so the ranking of the two factors is not tested.
+  - Regenerate with `python -m retarget.m4b_summary summarize`.
 - **M5 selector (`policy/`):**
   - `features.py` / `rules.py`: numpy only, shared by both envs.
   - `m5.py`: hoi-sim layouts, items, the candidate table, the ONNX check, selection, evaluation and the summary.
@@ -314,35 +319,25 @@ Code in `retarget/` (hoi-sim, kinematic only), outputs in `results/m3_retarget/`
   - Noisy path: R2 44/50, F 38/50.
   - CV: AUC 0.916; R1 = F = 115/120 held out (D2: learning does not beat F in CV).
   - Regenerate with `python -m policy.m5 summarize`. Reproduce check: `bash scripts/reproduce.sh`.
-  - Regenerate with `python -m retarget.m4b_summary summarize`.
+- **Own yaw (polish, `run --own-yaw`):** naive / b_level / b_tilt re-run at each trial's own handle yaw (M4 turned the handle with
+  my heading: trial + (phi_h - phi_ora)). Rows keep M4's names, in `results/final/own_yaw/runs/` (field `own_yaw: true`).
+  Summary: `python -m retarget.own_yaw_summary` -> `results/final/own_yaw/summary.md`. The README's table uses these rows, M5's
+  b_hybrid at the original yaw (98/200) and M4b's b_hybrid_h45; the M4 / M4b turned-handle numbers stay in docs/details.md.
 
 ---
 
-## Milestones (one per day — stop and report at each)
+## Milestones: what happened each day (from docs/log.md and the git history)
 
-- **M1 — Oct 29 — Sim foundation**
-  - `hoi-sim` env created.
-  - HERO running in MuJoCo: G1 standing and balancing, tracking a **scripted** palm target (e.g. a circle in front of the chest).
-  - Scene with table + cup + coaster.
-  - Fallback decision by end of day.
-- **M2 — Oct 30 — Perception**
-  - Parse Stray Scanner recordings.
-  - WiLoR hand + SAM 2 masks + depth produce `.npz` per demo.
-  - Overlay video confirming 3D keypoints project back onto the RGB frames.
-- **M3 — Oct 31 — Retargeting**
-  - Table frame + object-centric wrist trajectory + Dex3 finger mapping.
-  - Kinematic replay video in MuJoCo.
-- **M4 — Nov 1 — Physical execution**
-  - HERO tracks the retargeted palm path, fingers close until fingertip contact, cup lifted and placed.
-  - Works on the recorded layouts.
-- **M5 — Nov 2 — Learning**
-  - Randomized layouts → success-filtered demos → ACT / Diffusion Policy → closed-loop eval on 50 layouts.
-- **M6 — Nov 3 — Polish**
-  - Ablation table (a/b/c), GIFs.
-  - Live webcam mode if time allows.
-- **M7 — Nov 4 — Ship**
-  - README, data sample, clean install instructions.
-  - Push public repo well before 23:59 IST.
+- **Wed 28 Oct:** repo skeleton; HERO cloned and read (the key facts above); hoi-sim env plan.
+- **Thu 29 Oct (M1):** hoi-sim env; MuJoCo scene with table, mug and coaster; HERO standing and reaching; reference builder and the
+  first scripted pick-and-place with a touch-gated grasp. HERO worked, so the LeRobot fallback was not needed.
+- **Fri 30 Oct (M2 + grasp fix):** hoi-perception env (WiLoR, SAM 2, MANO); Stray Scanner parser and format checks; perception on
+  all 4 clips in three versions (v1 → v2 → v3, frozen after v3, schema 4). In parallel (Track B) the scripted grasp failed on my
+  mug's model (0/50, against 50/50 on the test cylinder); the fix ladder ended in the `mug_v1` profile (44/50, just after midnight).
+- **Sat 31 Oct (M3-M7):** M3 kinematic retargeting; M4 physical execution (62/600 trial runs); M4b fix (b_hybrid, heading sweep);
+  M5 learned selector overnight (2160 training rollouts, R2 49/50); figures, GIFs, README draft, reproduce.sh, clean-clone check.
+  Then the polish step: own-yaw ablation, README restructure, LICENSE, all four raw clips committed, fresh-env check.
+- **Sun 1 to Wed 4 Nov:** owner review, then push the public repo (code freeze 4 Nov 12:00 IST, deadline 23:59 IST).
 
 ---
 

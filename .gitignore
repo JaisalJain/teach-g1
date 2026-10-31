@@ -2,7 +2,7 @@
 third_party/*
 !third_party/.gitkeep
 
-# Raw Record3D exports. Only a small hand-picked sample under data/raw/sample/ is committed.
+# Raw Stray Scanner recordings. Only a small hand-picked sample under data/raw/sample/ is committed.
 data/raw/*
 !data/raw/.gitkeep
 !data/raw/sample/
